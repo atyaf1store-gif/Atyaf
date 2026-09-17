@@ -23,12 +23,37 @@
     .modal{position:fixed;inset:0;z-index:120;background:rgba(35,20,12,.55);display:none;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.modalCard{width:min(620px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:22px;padding:19px}.field{display:grid;gap:6px;margin-bottom:10px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px}.field textarea{min-height:80px}.empty{text-align:center;color:var(--muted);padding:28px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2f1d13;color:#fff;padding:11px 18px;border-radius:12px;z-index:300}
     @media(max-width:900px){.products{grid-template-columns:repeat(2,1fr)}.footerIn{grid-template-columns:1fr}.heroBox{min-height:300px;padding:28px}.hero h2{font-size:39px}}@media(max-width:520px){.headin{padding:8px}.brand h1{font-size:18px}.brand small{display:none}.logo{width:45px;height:45px}.iconbtn{padding:8px}.hero{padding:0 9px}.heroBox{padding:24px 18px;min-height:280px;border-radius:22px}.hero h2{font-size:35px}.wrap{padding:0 9px}.products{gap:8px}.product{border-radius:15px}.info{padding:10px}.info h4{font-size:14px}.banner{align-items:start;flex-direction:column}}
     </style>
-    </head>
+    
+<style id="atyafLuxuryRedesign">
+:root{--bg:#fff;--card:#fff;--brown:#24180f;--brown2:#6e4b31;--gold:#b69162;--cream:#f4efe8;--ink:#17120e;--muted:#77716b;--line:#ebe7e2;--shadow:0 10px 35px rgba(24,18,13,.06)}
+body{background:#fff;color:var(--ink)}
+.topline{background:#17120e;color:#fff;padding:9px 12px;letter-spacing:.3px}
+.header{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.headin{max-width:1320px;padding:12px 22px;display:grid;grid-template-columns:1fr auto 1fr}
+.brand{grid-column:2}.logo{width:62px;height:62px;background:#f6f1e9;border:1px solid #e2d6c7}.brand h1{font-size:25px;color:#24180f}.brand small{text-align:center;letter-spacing:2px}
+.actions{grid-column:1;grid-row:1;justify-self:start}.iconbtn{border:0;background:transparent;border-radius:50px}.iconbtn:hover{background:#f4efe8}.count{background:#17120e}
+.hero{max-width:1440px;margin:0 auto;padding:0}.heroBox{min-height:560px;border:0;border-radius:0;padding:70px 7%;background:linear-gradient(90deg,rgba(20,13,8,.08),transparent 50%),radial-gradient(circle at 80% 45%,#ead8c3 0,#f4ede4 30%,#eee5db 58%,#faf8f5 100%)}
+.heroBox:before{content:"ATYAF";position:absolute;left:4%;bottom:-30px;font-size:190px;font-weight:800;letter-spacing:18px;color:rgba(36,24,15,.035);direction:ltr}.heroBox:after{left:10%;top:50%;transform:translateY(-50%) rotate(-7deg);font-size:190px;color:rgba(96,57,31,.055)}
+.eyebrow{color:#8c6a48;letter-spacing:4px;font-size:12px}.hero h2{font-size:58px;line-height:1.3;color:#2d2017}.hero p{font-size:16px;color:#625a53;max-width:510px}
+.primary,.secondary{border-radius:0;padding:13px 22px}.primary{background:#1d1712}.primary:hover{background:#6e4b31}.secondary{background:#fff;border:1px solid #dcd5cd;color:#24180f}
+.wrap{max-width:1320px;padding:0 22px}.search{max-width:680px;margin:34px auto 20px}.search input{border:0;border-bottom:1px solid #bdb5ad;border-radius:0;text-align:center}
+.cats{justify-content:center}.cat{border:0;background:transparent;color:#655b52;border-radius:0}.cat.active{background:transparent;color:#17120e;border-bottom:2px solid #17120e}
+.section{padding:45px 0}.title{display:block;text-align:center;margin-bottom:25px}.title h3{font-size:34px;color:#24180f}.products{gap:20px}
+.product{border:0;border-radius:0;box-shadow:none}.pic{aspect-ratio:4/5;background:#f5f2ee}.pic img{transition:transform .45s}.product:hover .pic img{transform:scale(1.035)}
+.badge{border-radius:0;background:#1b1713}.badge.gold{background:#a98559}.fav{width:38px;height:38px}.info{text-align:center;padding:15px 3px 4px}.price{color:#24180f}.product .primary{margin-top:12px}
+.banner{min-height:240px;border-radius:0;padding:45px 7%;background:linear-gradient(115deg,#2a1d14,#6f4d34);position:relative;overflow:hidden}.banner:after{content:"ATYAF";position:absolute;left:3%;font-size:110px;font-weight:800;letter-spacing:12px;color:rgba(255,255,255,.04)}.banner h3{font-size:38px}
+.horizontal{gap:16px;scroll-snap-type:x mandatory}.miniCard{min-width:290px;border-radius:0;background:#faf8f5;padding:22px;scroll-snap-align:start}
+.footer{background:#17120e;padding:48px 22px 25px}.footerIn{max-width:1320px;gap:35px}.modalCard{border-radius:0;padding:24px}
+@media(max-width:900px){.heroBox{min-height:440px;padding:45px 6%}.hero h2{font-size:45px}.heroBox:after{font-size:130px}}
+@media(max-width:520px){.headin{padding:8px 10px}.brand{gap:6px}.brand h1{font-size:17px}.brand small{font-size:7px}.logo{width:46px;height:46px}.iconbtn{padding:8px;font-size:12px}.heroBox{min-height:410px;padding:40px 20px;background:radial-gradient(circle at 70% 25%,#ead8c3,#f6f0e9 55%,#fff 100%)}.heroBox:after{font-size:95px;left:-2%;top:28%}.heroBox:before{font-size:70px}.hero h2{font-size:38px}.hero p{font-size:14px}.wrap{padding:0 12px}.section{padding:34px 0}.products{gap:10px}.info h4{font-size:13px}.desc{display:none}.price{font-size:14px}.product .primary{padding:10px 4px;font-size:12px}.banner{min-height:210px;padding:30px 22px;align-items:flex-start;flex-direction:column}.banner h3{font-size:30px}.miniCard{min-width:255px}.title h3{font-size:29px}}
+</style>
+
+</head>
     <body>
     <div class="topline" id="announcement">أهلاً بك في متجر أطياف</div>
     <header class="header"><div class="headin"><div class="brand"><div class="logo" id="logo">أطياف</div><div><h1 id="storeName">متجر أطياف</h1><small id="storeEn">ATYAF STORE</small></div></div><div class="actions"><button class="iconbtn" onclick="openFav()">♡<span class="count" id="favCount">0</span></button><button class="iconbtn" onclick="openCart()">السلة <span class="count" id="cartCount">0</span></button></div></div></header>
 
-    <section class="hero"><div class="heroBox"><div class="heroText"><div class="eyebrow">MORE THAN A STORE</div><h2>أهلاً بك في عالم أطياف</h2><p id="heroDesc">تجربة تسوق أنيقة، منتجات مختارة، عروض وهدايا وباقات في مكان واحد.</p><button class="primary" onclick="document.getElementById('shop').scrollIntoView()">تسوق الآن</button> <button class="secondary" onclick="filterSpecial()">اكتشف العروض</button></div></div></section>
+    <section class="hero"><div class="heroBox"><div class="heroText"><div class="eyebrow">ATYAF • SIGNATURE COLLECTION</div><h2>عالمٌ من الأناقة يبدأ من أطياف</h2><p id="heroDesc">تجربة تسوق أنيقة، منتجات مختارة، عروض وهدايا وباقات في مكان واحد.</p><button class="primary" onclick="document.getElementById('shop').scrollIntoView()">تسوق الآن</button> <button class="secondary" onclick="filterSpecial()">اكتشف العروض</button></div></div></section>
 
     <main class="wrap">
     <div class="search"><input id="search" placeholder="ابحث عن منتج..." oninput="renderProducts()"></div>

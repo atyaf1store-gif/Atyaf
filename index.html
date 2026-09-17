@@ -55,6 +55,8 @@ body{background:#fff}
 .floatingWa{position:fixed;bottom:22px;left:22px;z-index:80;width:54px;height:54px;border-radius:50%;border:0;background:#22c55e;color:#fff;font-size:24px;box-shadow:0 7px 24px rgba(0,0,0,.18)}
 @media(max-width:900px){.categoryGrid{grid-template-columns:repeat(3,1fr)}.productSection .products{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:520px){.desktopNav{justify-content:flex-start}.hero{padding:0 8px;margin-top:8px}.heroSlider,.heroSlide img,.heroFallback{min-height:250px;height:250px}.slideOverlay h2,.heroFallback h2{font-size:30px}.featuresIn{justify-content:flex-start}.featureItem{min-width:185px}.categoryGrid{grid-template-columns:repeat(2,1fr)}.productSection .products{grid-template-columns:repeat(2,1fr)}.homeBlock{padding:22px 9px}.dynamicBanner{padding:0 9px}}
+
+.emptyState{grid-column:1/-1;width:100%;min-height:120px;border:1px dashed #ded7ce;background:#fcfbf9;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px;color:#766d65}.emptyState .emptyIcon{font-size:24px;color:#b88a50;margin-bottom:5px}.emptyState b{color:#40362e}.emptyState small{margin-top:5px}.categoryGrid>.emptyState{grid-column:1/-1}.scentRow>.emptyState{min-width:100%}
 </style>
 
 </head>
@@ -96,7 +98,7 @@ let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(lo
     function updateCounts(){$("cartCount").textContent=CART.reduce((s,x)=>s+x.qty,0);$("favCount").textContent=FAV.length}
     function finalPrice(p){return Math.max(0,(+p.price||0)*(1-(+p.discount_percent||0)/100))}
     async function load(){
-     const results=await Promise.all([
+     const queries=[
       sb.from("store_settings").select("*").limit(1).maybeSingle(),
       sb.from("categories").select("*").eq("is_active",true).order("sort_order"),
       sb.from("products").select("*,categories(name_ar)").eq("is_active",true).order("sort_order"),
@@ -113,11 +115,62 @@ let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(lo
       sb.from("home_sections").select("*").eq("is_active",true).order("sort_order"),
       sb.from("social_links").select("*").eq("is_active",true).order("sort_order"),
       sb.from("product_scents").select("*")
-     ]);
-     SETTINGS=results[0].data||{};CATEGORIES=results[1].data||[];PRODUCTS=results[2].data||[];GIFTS=results[3].data||[];BUNDLES=results[4].data||[];POLICIES=results[7].data||[];
-     ADS=results[9]?.data||[];FEATURES=results[10]?.data||[];SCENTS=results[11]?.data||[];NAVIGATION=results[12]?.data||[];HOME_SECTIONS=results[13]?.data||[];SOCIALS=results[14]?.data||[];PRODUCT_SCENTS=results[15]?.data||[];
-     applySettings();renderCats();renderProducts();renderGifts();renderBundles();renderReviews(results[5].data||[]);renderPayments(results[6].data||[]);renderPolicies();renderBranches(results[8].data||[]);renderDynamicHomepage();updateCounts()
+     ];
+     const results=await Promise.all(queries.map(q=>q.then(r=>r).catch(error=>({data:null,error}))));
+     results.forEach((r,i)=>{if(r?.error)console.warn("ATYAF query",i,r.error.message||r.error)});
+     SETTINGS=results[0]?.data||{};
+     CATEGORIES=results[1]?.data||[];
+     PRODUCTS=results[2]?.data||[];
+     GIFTS=results[3]?.data||[];
+     BUNDLES=results[4]?.data||[];
+     POLICIES=results[7]?.data||[];
+     ADS=results[9]?.data||[];
+     FEATURES=results[10]?.data||[];
+     SCENTS=results[11]?.data||[];
+     NAVIGATION=results[12]?.data||[];
+     HOME_SECTIONS=results[13]?.data||[];
+     SOCIALS=results[14]?.data||[];
+     PRODUCT_SCENTS=results[15]?.data||[];
+
+     // Defaults guarantee that the storefront structure never disappears.
+     if(!HOME_SECTIONS.length) HOME_SECTIONS=defaultHomeSections();
+     if(!FEATURES.length) FEATURES=[
+       {title_ar:"شحن سريع",description_ar:"خدمة توصيل حسب منطقتك",icon:"truck",sort_order:10},
+       {title_ar:"تسوق بثقة",description_ar:"منتجات مختارة بعناية",icon:"star",sort_order:20},
+       {title_ar:"خدمة العملاء",description_ar:"نحن هنا لخدمتك",icon:"rotate",sort_order:30}
+     ];
+     if(!NAVIGATION.length) NAVIGATION=[
+       {location:"header",label_ar:"الرئيسية",link_type:"section",link_value:"home",sort_order:10},
+       {location:"header",label_ar:"المنتجات",link_type:"section",link_value:"shop",sort_order:20},
+       {location:"header",label_ar:"الفئات",link_type:"section",link_value:"categories",sort_order:30},
+       {location:"header",label_ar:"الروائح",link_type:"section",link_value:"scents",sort_order:40},
+       {location:"header",label_ar:"العروض",link_type:"section",link_value:"offers",sort_order:50}
+     ];
+
+     applySettings();
+     renderDynamicHomepage();
+     renderPayments(results[6]?.data||[]);
+     renderPolicies();
+     renderBranches(results[8]?.data||[]);
+     updateCounts();
     }
+
+    function defaultHomeSections(){
+      return [
+       {section_key:"hero",title_ar:"الرئيسية",sort_order:10,is_active:true},
+       {section_key:"features",title_ar:"مميزات المتجر",sort_order:20,is_active:true},
+       {section_key:"categories",title_ar:"الفئات",subtitle_ar:"تسوق حسب الفئة",sort_order:30,is_active:true},
+       {section_key:"best_sellers",title_ar:"الأكثر مبيعاً",sort_order:40,is_active:true},
+       {section_key:"scents",title_ar:"الروائح",subtitle_ar:"اختر طابعك المفضل",sort_order:50,is_active:true},
+       {section_key:"featured",title_ar:"منتجات مميزة",sort_order:60,is_active:true},
+       {section_key:"new_products",title_ar:"وصل حديثاً",sort_order:70,is_active:true},
+       {section_key:"offers",title_ar:"العروض",sort_order:80,is_active:true},
+       {section_key:"gifts",title_ar:"الهدايا",sort_order:90,is_active:true},
+       {section_key:"bundles",title_ar:"الباقات",sort_order:100,is_active:true},
+       {section_key:"reviews",title_ar:"آراء العملاء",sort_order:110,is_active:true}
+      ];
+    }
+
     function applySettings(){
      $("storeName").textContent=SETTINGS.store_name_ar||"متجر أطياف";$("storeEn").textContent=SETTINGS.store_name_en||"ATYAF STORE";$("footName").textContent=SETTINGS.store_name_ar||"متجر أطياف";$("footDesc").textContent=SETTINGS.description||"شكراً لاختياركم أطياف.";$("heroDesc").textContent=SETTINGS.description||$("heroDesc").textContent;$("announcement").textContent=SETTINGS.announcement||"أهلاً بك في متجر أطياف";
      if(SETTINGS.logo_url)$("logo").innerHTML=`<img src="${esc(SETTINGS.logo_url)}" alt="أطياف">`;
@@ -128,29 +181,37 @@ function renderDynamicHomepage(){
  renderNavigation();renderHero();renderFeatures();renderHomeSections();
 }
 function renderNavigation(){
- const a=NAVIGATION.filter(x=>x.location==="header");
+ const a=NAVIGATION.filter(x=>x.location==="header").sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
  $("dynamicNav").innerHTML=a.map(x=>`<button onclick="navGo('${esc(x.link_type)}','${esc(x.link_value||"")}')">${esc(x.label_ar)}</button>`).join("");
 }
 function navGo(type,val){
- if(type==="section"){const el=document.getElementById(val==="products"?"shop":val);if(el)el.scrollIntoView({behavior:"smooth"});return}
+ if(type==="section"){
+   if(val==="home"){window.scrollTo({top:0,behavior:"smooth"});return}
+   const el=document.getElementById(val==="products"?"shop":val);if(el)el.scrollIntoView({behavior:"smooth"});return
+ }
  if(type==="category"){ACTIVE=val;renderProducts();document.getElementById("shop")?.scrollIntoView({behavior:"smooth"});return}
  if(type==="url"&&val)location.href=val;
 }
 function activeAds(place){const n=new Date();return ADS.filter(x=>(x.placement||"hero")===place&&(!x.starts_at||n>=new Date(x.starts_at))&&(!x.ends_at||n<=new Date(x.ends_at)))}
 function renderHero(){
  const a=activeAds("hero"),box=$("heroSlider");
- if(!a.length)return;
- box.innerHTML=a.map((x,i)=>`<div class="heroSlide ${i===0?"active":""}">${x.image_url?`<img src="${esc(x.image_url)}" alt="${esc(x.title_ar||"إعلان أطياف")}">`:""}${x.title_ar?`<div class="slideOverlay"><div><h2>${esc(x.title_ar)}</h2><p>${esc(x.subtitle_ar||"")}</p>${x.link_url?`<button class="secondary" onclick="location.href='${esc(x.link_url)}'">${esc(x.button_text_ar||"تسوق الآن")}</button>`:""}</div></div>`:""}</div>`).join("")+`<div class="sliderDots">${a.map((_,i)=>`<button class="${i===0?"active":""}" onclick="showSlide(${i})"></button>`).join("")}</div>`;
+ if(!a.length){
+   box.innerHTML=`<div class="heroFallback"><div><h2>متجر أطياف</h2><p id="heroDescFallback">${esc(SETTINGS.description||"تجربة تسوق أنيقة ومنتجات مختارة بعناية.")}</p><button class="primary" onclick="document.getElementById('shop')?.scrollIntoView({behavior:'smooth'})">تسوق الآن</button></div></div>`;
+   return;
+ }
+ box.innerHTML=a.map((x,i)=>`<div class="heroSlide ${i===0?"active":""}">${x.image_url?`<picture>${x.mobile_image_url?`<source media="(max-width:600px)" srcset="${esc(x.mobile_image_url)}">`:""}<img src="${esc(x.image_url)}" alt="${esc(x.title_ar||"إعلان أطياف")}"></picture>`:""}${x.title_ar?`<div class="slideOverlay"><div><h2>${esc(x.title_ar)}</h2><p>${esc(x.subtitle_ar||"")}</p>${x.link_url?`<button class="secondary" onclick="location.href='${esc(x.link_url)}'">${esc(x.button_text_ar||"تسوق الآن")}</button>`:""}</div></div>`:""}</div>`).join("")+`<div class="sliderDots">${a.map((_,i)=>`<button class="${i===0?"active":""}" onclick="showSlide(${i})"></button>`).join("")}</div>`;
  window._heroIndex=0;clearInterval(window._heroTimer);if(a.length>1)window._heroTimer=setInterval(()=>showSlide((window._heroIndex+1)%a.length),5000);
 }
 function showSlide(i){const b=$("heroSlider");if(!b)return;const ss=[...b.querySelectorAll(".heroSlide")],ds=[...b.querySelectorAll(".sliderDots button")];ss.forEach((x,n)=>x.classList.toggle("active",n===i));ds.forEach((x,n)=>x.classList.toggle("active",n===i));window._heroIndex=i}
 function renderFeatures(){
  $("featuresBar").innerHTML=FEATURES.map(x=>`<div class="featureItem"><div class="featureIcon">${x.icon==="truck"?"🚚":x.icon==="rotate"?"↻":"✦"}</div><div><b>${esc(x.title_ar)}</b><small>${esc(x.description_ar||"")}</small></div></div>`).join("");
 }
-function sectionHead(x){return `<div class="blockHead"><div><h3>${esc(x.title_ar||"")}</h3>${x.subtitle_ar?`<small>${esc(x.subtitle_ar)}</small>`:""}</div></div>`}
+function sectionHead(x,allTarget=""){return `<div class="blockHead"><div><h3>${esc(x.title_ar||"")}</h3>${x.subtitle_ar?`<small>${esc(x.subtitle_ar)}</small>`:""}</div>${allTarget?`<button onclick="document.getElementById('${allTarget}')?.scrollIntoView({behavior:'smooth'})">عرض الكل ‹</button>`:""}</div>`}
+function emptyBlock(text){return `<div class="emptyState"><div class="emptyIcon">✦</div><b>${esc(text)}</b><small>يمكنك إضافة المحتوى من لوحة إدارة أطياف</small></div>`}
 function renderHomeSections(){
  const root=$("dynamicHome");let html="";
- HOME_SECTIONS.filter(x=>!["hero","features"].includes(x.section_key)).forEach(x=>{
+ const sections=(HOME_SECTIONS.length?HOME_SECTIONS:defaultHomeSections()).filter(x=>x.is_active!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+ sections.filter(x=>!["hero","features"].includes(x.section_key)).forEach(x=>{
   if(x.section_key==="categories") html+=renderCategorySection(x);
   else if(x.section_key==="scents") html+=renderScentSection(x);
   else if(["best_sellers","featured","new_products","offers"].includes(x.section_key)) html+=renderProductSection(x);
@@ -158,17 +219,22 @@ function renderHomeSections(){
   else if(x.section_key==="bundles") html+=renderBundleSection(x);
   else if(x.section_key==="reviews") html+=`<section class="homeBlock" id="reviews-section">${sectionHead(x)}<div class="horizontal" id="reviews"></div></section>`;
  });
- const mids=activeAds("middle");if(mids.length){const b=mids[0];html+=`<div class="dynamicBanner">${b.image_url?`<img src="${esc(b.image_url)}" onclick="${b.link_url?`location.href='${esc(b.link_url)}'`:""}">`:""}</div>`}
+ const mids=activeAds("middle");if(mids.length){const b=mids[0];html+=`<div class="dynamicBanner">${b.image_url?`<img src="${esc(b.image_url)}" ${b.link_url?`onclick="location.href='${esc(b.link_url)}'"`:""}>`:""}</div>`}
  root.innerHTML=html;
  renderProducts();renderGifts();renderBundles();
- // reviews are rendered again by a lightweight reload because the original call happened before dynamic containers existed
- sb.from("reviews").select("*").eq("is_approved",true).order("created_at",{ascending:false}).limit(10).then(r=>renderReviews(r.data||[]));
+ sb.from("reviews").select("*").eq("is_approved",true).order("created_at",{ascending:false}).limit(10).then(r=>renderReviews(r.data||[])).catch(()=>renderReviews([]));
 }
-function renderCategorySection(x){return `<section class="homeBlock" id="categories">${sectionHead(x)}<div class="categoryGrid">${CATEGORIES.map(c=>`<button class="categoryTile" onclick="ACTIVE='${c.id}';renderProducts();document.getElementById('shop')?.scrollIntoView()">${c.image_url?`<img src="${esc(c.image_url)}" alt="${esc(c.name_ar)}">`:`<div class="categoryPlaceholder">${esc(c.name_ar)}</div>`}<b>${esc(c.name_ar)}</b></button>`).join("")}</div></section>`}
-function renderScentSection(x){return `<section class="homeBlock" id="scents">${sectionHead(x)}<div class="scentRow">${SCENTS.map(c=>`<button class="scentBtn" onclick="filterScent('${c.id}')">${c.image_url?`<img class="scentPic" src="${esc(c.image_url)}">`:`<span class="scentPic">✦</span>`}<span>${esc(c.name_ar)}</span></button>`).join("")}</div></section>`}
-function filterScent(id){const ids=PRODUCT_SCENTS.filter(x=>x.scent_id===id).map(x=>x.product_id);window._scentFilter=ids;ACTIVE="all";renderProducts();document.getElementById("shop")?.scrollIntoView()}
-function renderProductSection(x){return `<section class="homeBlock productSection" id="${x.section_key==="featured"?"shop":x.section_key}">${sectionHead(x)}<div class="products" id="products-${x.section_key}"></div></section>`}
-function productsForSection(k){if(k==="best_sellers")return PRODUCTS.filter(p=>p.is_best_seller);if(k==="featured")return PRODUCTS.filter(p=>p.is_featured);if(k==="new_products")return PRODUCTS.filter(p=>p.is_new);if(k==="offers")return PRODUCTS.filter(p=>+p.discount_percent>0);return PRODUCTS}
+function renderCategorySection(x){return `<section class="homeBlock" id="categories">${sectionHead(x)}<div class="categoryGrid">${CATEGORIES.length?CATEGORIES.map(c=>`<button class="categoryTile" onclick="ACTIVE='${c.id}';renderProducts();document.getElementById('shop')?.scrollIntoView()">${c.image_url?`<img src="${esc(c.image_url)}" alt="${esc(c.name_ar)}">`:`<div class="categoryPlaceholder">${esc(c.name_ar)}</div>`}<b>${esc(c.name_ar)}</b></button>`).join(""):emptyBlock("لا توجد فئات مضافة حالياً")}</div></section>`}
+function renderScentSection(x){return `<section class="homeBlock" id="scents">${sectionHead(x)}<div class="scentRow">${SCENTS.length?SCENTS.map(c=>`<button class="scentBtn" onclick="filterScent('${c.id}')">${c.image_url?`<img class="scentPic" src="${esc(c.image_url)}">`:`<span class="scentPic">✦</span>`}<span>${esc(c.name_ar)}</span></button>`).join(""):emptyBlock("لا توجد روائح مضافة حالياً")}</div></section>`}
+function filterScent(id){window._scentFilter=PRODUCT_SCENTS.filter(x=>x.scent_id===id).map(x=>x.product_id);renderProducts();document.getElementById("shop")?.scrollIntoView({behavior:"smooth"})}
+function renderProductSection(x){return `<section class="homeBlock productSection" id="${x.section_key==="featured"?"shop":x.section_key}">${sectionHead(x,x.section_key==="featured"?"shop":"")}<div class="products" id="products-${x.section_key}"></div></section>`}
+function productsForSection(k){
+ if(k==="best_sellers"){const a=PRODUCTS.filter(p=>p.is_best_seller);return a.length?a:PRODUCTS.slice(0,10)}
+ if(k==="featured"){const a=PRODUCTS.filter(p=>p.is_featured);return a.length?a:PRODUCTS}
+ if(k==="new_products"){const a=PRODUCTS.filter(p=>p.is_new);return a.length?a:PRODUCTS.slice(0,10)}
+ if(k==="offers")return PRODUCTS.filter(p=>+p.discount_percent>0)
+ return PRODUCTS
+}
 function renderGiftSection(x){return `<section class="homeBlock" id="gifts">${sectionHead(x)}<div class="horizontal" id="giftCards"></div></section>`}
 function renderBundleSection(x){return `<section class="homeBlock" id="bundles">${sectionHead(x)}<div class="horizontal" id="bundleCards"></div></section>`}
 function renderCats(){if(!$("cats"))return;$("cats").innerHTML=`<button class="cat ${ACTIVE==="all"?"active":""}" onclick="setCat('all')">الكل</button><button class="cat ${ACTIVE==="offers"?"active":""}" onclick="setCat('offers')">العروض</button>`+CATEGORIES.map(c=>`<button class="cat ${ACTIVE===c.id?"active":""}" onclick="setCat('${c.id}')">${esc(c.name_ar)}</button>`).join("")}
@@ -180,9 +246,8 @@ function renderCats(){if(!$("cats"))return;$("cats").innerHTML=`<button class="c
  ["best_sellers","featured","new_products","offers"].forEach(k=>{
    const el=document.getElementById("products-"+k);if(!el)return;
    let a=productsForSection(k).filter(p=>(!q||(p.name_ar||"").toLowerCase().includes(q)||(p.description||"").toLowerCase().includes(q)||(p.sku||"").toLowerCase().includes(q))&&(!ids||ids.includes(p.id)));
-   el.innerHTML=a.length?a.slice(0,10).map(productCard).join(""):'<div class="empty" style="grid-column:1/-1">لا توجد منتجات حالياً</div>';
+   el.innerHTML=a.length?a.slice(0,10).map(productCard).join(""):emptyBlock(k==="offers"?"لا توجد عروض حالياً":"لا توجد منتجات مضافة حالياً");
  });
- const old=$("products");if(old){let a=PRODUCTS.filter(p=>!q||(p.name_ar||"").toLowerCase().includes(q));old.innerHTML=a.map(productCard).join("")}
 }
 function productCard(p){const fp=finalPrice(p);return `<article class="product"><div class="pic">${p.main_image_url?`<img src="${esc(p.main_image_url)}" alt="${esc(p.name_ar)}">`:"صورة المنتج"}</div><div class="badges">${+p.discount_percent>0?`<span class="badge">خصم ${p.discount_percent}%</span>`:""}${p.is_new?'<span class="badge gold">جديد</span>':""}</div><button class="fav" onclick="toggleFav('${p.id}')">${FAV.includes(p.id)?"♥":"♡"}</button><div class="info"><h4>${esc(p.name_ar)}</h4><div class="desc">${esc(p.short_description||p.description||"")}</div><div><span class="price">${money(fp)}</span>${+p.discount_percent>0?`<span class="old">${money(p.price)}</span>`:""}</div><button class="primary" ${p.stock<=0?"disabled":""} onclick="addCart('${p.id}')">${p.stock>0?"إضافة للسلة":"نفد المخزون"}</button></div></article>`}
     function toggleFav(id){FAV=FAV.includes(id)?FAV.filter(x=>x!==id):[...FAV,id];saveLocal();renderProducts()}
@@ -207,9 +272,9 @@ function productCard(p){const fp=finalPrice(p);return `<article class="product">
      const {error:ie}=await sb.from("order_items").insert(items);if(ie)return toast("تم إنشاء الطلب لكن حدث خطأ في تفاصيله");
      CART=[];saveLocal();closeModal("checkoutModal");toast("تم استلام طلبك رقم "+o.order_number);setTimeout(()=>{alert("رقم طلبك: "+o.order_number+"\nاحتفظ به لتتبع الطلب.")},300)
     }
-    function renderGifts(){$("giftCards").innerHTML=GIFTS.length?GIFTS.map(x=>`<div class="miniCard"><b>${esc(x.name_ar)}</b><p>${esc(x.description||"")}</p><span class="price">${money(x.price)}</span></div>`).join(""):'<div class="empty">لا توجد هدايا حالياً</div>'}
-    function renderBundles(){$("bundleCards").innerHTML=BUNDLES.length?BUNDLES.map(x=>`<div class="miniCard"><b>${esc(x.name_ar)}</b><p>${esc(x.description||"")}</p><span class="price">${money(x.offer_price)}</span>${x.regular_price>x.offer_price?` <span class="old">${money(x.regular_price)}</span>`:""}</div>`).join(""):'<div class="empty">لا توجد باقات حالياً</div>'}
-    function renderReviews(a){$("reviews").innerHTML=a.length?a.map(x=>`<div class="miniCard"><b>${esc(x.customer_name)}</b><div style="color:#b88a50">${"★".repeat(x.rating)}</div><p>${esc(x.comment||"")}</p></div>`).join(""):'<div class="empty">لا توجد تقييمات بعد</div>'}
+    function renderGifts(){if(!$("giftCards"))return;$("giftCards").innerHTML=GIFTS.length?GIFTS.map(x=>`<div class="miniCard"><b>${esc(x.name_ar)}</b><p>${esc(x.description||"")}</p><span class="price">${money(x.price)}</span></div>`).join(""):'<div class="empty">لا توجد هدايا حالياً</div>'}
+    function renderBundles(){if(!$("bundleCards"))return;$("bundleCards").innerHTML=BUNDLES.length?BUNDLES.map(x=>`<div class="miniCard"><b>${esc(x.name_ar)}</b><p>${esc(x.description||"")}</p><span class="price">${money(x.offer_price)}</span>${x.regular_price>x.offer_price?` <span class="old">${money(x.regular_price)}</span>`:""}</div>`).join(""):'<div class="empty">لا توجد باقات حالياً</div>'}
+    function renderReviews(a){if(!$("reviews"))return;$("reviews").innerHTML=a.length?a.map(x=>`<div class="miniCard"><b>${esc(x.customer_name)}</b><div style="color:#b88a50">${"★".repeat(x.rating)}</div><p>${esc(x.comment||"")}</p></div>`).join(""):'<div class="empty">لا توجد تقييمات بعد</div>'}
     function renderPayments(a){$("coPayment").innerHTML='<option value="">اختر طريقة الدفع</option>'+a.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("")}
     function renderPolicies(){$("policyLinks").innerHTML=POLICIES.map(x=>`<a href="#" onclick="showPolicy('${x.id}');return false">${esc(x.title)}</a>`).join("")}
     function showPolicy(id){const x=POLICIES.find(x=>x.id===id);if(!x)return;$("policyTitle").textContent=x.title;$("policyContent").textContent=x.content||"";$("policyModal").classList.add("show")}

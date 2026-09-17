@@ -126,7 +126,7 @@ document.addEventListener("change",e=>{
    const pr=document.getElementById("pImagePreview");pr.src=URL.createObjectURL(e.target.files[0]);pr.classList.remove("hidden");
  }
 });
-renderAll();loadLiveAdmin();
+renderAll();loadLiveAdmin();loadProductsLive();
     }
     async function logout(){await sb.auth.signOut();location.href="./"}
     function showRecovery(){
@@ -233,19 +233,61 @@ const fileFld=(label,id,current="")=>`<div class="field full"><label>${label}</l
 let PRODUCT_LIVE=[];
 
 async function loadProductsLive(){
-  const {data,error}=await sb.from("products").select("*,categories(name_ar)").order("sort_order");
-  if(error){toast("تعذر تحميل المنتجات: "+error.message);return}
-  PRODUCT_LIVE=data||[];
   const el=document.getElementById("productRows");
+  if(el)el.innerHTML='<tr><td colspan="7"><div class="empty">جارٍ تحميل المنتجات...</div></td></tr>';
+
+  const [pr,cr]=await Promise.all([
+    withTimeout(sb.from("products").select("*").order("sort_order",{ascending:true}).order("created_at",{ascending:false}),25000,"تحميل المنتجات"),
+    withTimeout(sb.from("categories").select("id,name_ar"),25000,"تحميل الأقسام")
+  ]);
+
+  if(pr.error){
+    if(el)el.innerHTML=`<tr><td colspan="7"><div class="empty">تعذر تحميل المنتجات: ${E(pr.error.message)}</div></td></tr>`;
+    toast("تعذر تحميل المنتجات: "+pr.error.message);
+    return;
+  }
+
+  const cats=Object.fromEntries((cr.data||[]).map(c=>[String(c.id),c.name_ar]));
+  PRODUCT_LIVE=pr.data||[];
+
   if(!el)return;
   el.innerHTML=PRODUCT_LIVE.length?PRODUCT_LIVE.map(p=>`<tr>
-    <td>${p.main_image_url?`<img src="${E(p.main_image_url)}" style="width:48px;height:48px;object-fit:cover;border-radius:8px">`:""}</td>
-    <td>${E(p.name_ar)}</td><td>${E(p.sku||"")}</td><td>${E(p.categories?.name_ar||"")}</td>
-    <td>${p.price||0}</td><td>${p.stock||0}</td>
-    <td><button type="button" class="secondary" onclick="openProduct('${p.id}')">تعديل</button></td>
+    <td>${p.main_image_url?`<img src="${E(p.main_image_url)}" style="width:48px;height:48px;object-fit:contain;border-radius:8px;background:#fff">`:""}</td>
+    <td>${E(p.name_ar||"")}</td>
+    <td>${E(p.sku||"")}</td>
+    <td>${E(cats[String(p.category_id)]||"بدون قسم")}</td>
+    <td>${p.price||0}</td>
+    <td>${p.stock||0}</td>
+    <td>
+      <div class="row-actions">
+        <button type="button" class="secondary" onclick="openProduct('${p.id}')">تعديل</button>
+        <button type="button" class="danger" onclick="deleteProductLive('${p.id}')">حذف</button>
+      </div>
+    </td>
   </tr>`).join(""):'<tr><td colspan="7"><div class="empty">لا توجد منتجات</div></td></tr>';
 }
 
+async function deleteProductLive(id){
+  if(!confirm("هل تريد حذف هذا المنتج؟"))return;
+  try{
+    const result=await withTimeout(sb.from("products").delete().eq("id",id),25000,"حذف المنتج");
+    if(result.error)throw result.error;
+    toast("تم حذف المنتج");
+    await loadProductsLive();
+  }catch(e){toast("تعذر حذف المنتج: "+(e.message||e))}
+}
+window.deleteProductLive=deleteProductLive;
+
+function filterProductsLive(){
+  const q=(document.getElementById("searchProducts")?.value||"").trim().toLowerCase();
+  const cat=document.getElementById("filterCategory")?.value||"";
+  document.querySelectorAll("#productRows tr").forEach(tr=>{
+    const txt=(tr.textContent||"").toLowerCase();
+    const matchQ=!q||txt.includes(q);
+    const matchCat=!cat||txt.includes(cat.toLowerCase());
+    tr.style.display=(matchQ&&matchCat)?"":"none";
+  });
+}
 async function loadProductCategories(){
   const {data,error}=await sb.from("categories").select("id,name_ar").order("sort_order");
   if(error)return;

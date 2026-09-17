@@ -24,28 +24,37 @@
     @media(max-width:900px){.products{grid-template-columns:repeat(2,1fr)}.footerIn{grid-template-columns:1fr}.heroBox{min-height:300px;padding:28px}.hero h2{font-size:39px}}@media(max-width:520px){.headin{padding:8px}.brand h1{font-size:18px}.brand small{display:none}.logo{width:45px;height:45px}.iconbtn{padding:8px}.hero{padding:0 9px}.heroBox{padding:24px 18px;min-height:280px;border-radius:22px}.hero h2{font-size:35px}.wrap{padding:0 9px}.products{gap:8px}.product{border-radius:15px}.info{padding:10px}.info h4{font-size:14px}.banner{align-items:start;flex-direction:column}}
     </style>
     
-<style id="atyafLuxuryRedesign">
-:root{--bg:#fff;--card:#fff;--brown:#24180f;--brown2:#6e4b31;--gold:#b69162;--cream:#f4efe8;--ink:#17120e;--muted:#77716b;--line:#ebe7e2;--shadow:0 10px 35px rgba(24,18,13,.06)}
-body{background:#fff;color:var(--ink)}
-.topline{background:#17120e;color:#fff;padding:9px 12px;letter-spacing:.3px}
-.header{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.headin{max-width:1320px;padding:12px 22px;display:grid;grid-template-columns:1fr auto 1fr}
-.brand{grid-column:2}.logo{width:62px;height:62px;background:#f6f1e9;border:1px solid #e2d6c7}.brand h1{font-size:25px;color:#24180f}.brand small{text-align:center;letter-spacing:2px}
-.actions{grid-column:1;grid-row:1;justify-self:start}.iconbtn{border:0;background:transparent;border-radius:50px}.iconbtn:hover{background:#f4efe8}.count{background:#17120e}
-.hero{max-width:1440px;margin:0 auto;padding:0}.heroBox{min-height:560px;border:0;border-radius:0;padding:70px 7%;background:linear-gradient(90deg,rgba(20,13,8,.08),transparent 50%),radial-gradient(circle at 80% 45%,#ead8c3 0,#f4ede4 30%,#eee5db 58%,#faf8f5 100%)}
-.heroBox:before{content:"ATYAF";position:absolute;left:4%;bottom:-30px;font-size:190px;font-weight:800;letter-spacing:18px;color:rgba(36,24,15,.035);direction:ltr}.heroBox:after{left:10%;top:50%;transform:translateY(-50%) rotate(-7deg);font-size:190px;color:rgba(96,57,31,.055)}
-.eyebrow{color:#8c6a48;letter-spacing:4px;font-size:12px}.hero h2{font-size:58px;line-height:1.3;color:#2d2017}.hero p{font-size:16px;color:#625a53;max-width:510px}
-.primary,.secondary{border-radius:0;padding:13px 22px}.primary{background:#1d1712}.primary:hover{background:#6e4b31}.secondary{background:#fff;border:1px solid #dcd5cd;color:#24180f}
-.wrap{max-width:1320px;padding:0 22px}.search{max-width:680px;margin:34px auto 20px}.search input{border:0;border-bottom:1px solid #bdb5ad;border-radius:0;text-align:center}
-.cats{justify-content:center}.cat{border:0;background:transparent;color:#655b52;border-radius:0}.cat.active{background:transparent;color:#17120e;border-bottom:2px solid #17120e}
-.section{padding:45px 0}.title{display:block;text-align:center;margin-bottom:25px}.title h3{font-size:34px;color:#24180f}.products{gap:20px}
-.product{border:0;border-radius:0;box-shadow:none}.pic{aspect-ratio:4/5;background:#f5f2ee}.pic img{transition:transform .45s}.product:hover .pic img{transform:scale(1.035)}
-.badge{border-radius:0;background:#1b1713}.badge.gold{background:#a98559}.fav{width:38px;height:38px}.info{text-align:center;padding:15px 3px 4px}.price{color:#24180f}.product .primary{margin-top:12px}
-.banner{min-height:240px;border-radius:0;padding:45px 7%;background:linear-gradient(115deg,#2a1d14,#6f4d34);position:relative;overflow:hidden}.banner:after{content:"ATYAF";position:absolute;left:3%;font-size:110px;font-weight:800;letter-spacing:12px;color:rgba(255,255,255,.04)}.banner h3{font-size:38px}
-.horizontal{gap:16px;scroll-snap-type:x mandatory}.miniCard{min-width:290px;border-radius:0;background:#faf8f5;padding:22px;scroll-snap-align:start}
-.footer{background:#17120e;padding:48px 22px 25px}.footerIn{max-width:1320px;gap:35px}.modalCard{border-radius:0;padding:24px}
-@media(max-width:900px){.heroBox{min-height:440px;padding:45px 6%}.hero h2{font-size:45px}.heroBox:after{font-size:130px}}
-@media(max-width:520px){.headin{padding:8px 10px}.brand{gap:6px}.brand h1{font-size:17px}.brand small{font-size:7px}.logo{width:46px;height:46px}.iconbtn{padding:8px;font-size:12px}.heroBox{min-height:410px;padding:40px 20px;background:radial-gradient(circle at 70% 25%,#ead8c3,#f6f0e9 55%,#fff 100%)}.heroBox:after{font-size:95px;left:-2%;top:28%}.heroBox:before{font-size:70px}.hero h2{font-size:38px}.hero p{font-size:14px}.wrap{padding:0 12px}.section{padding:34px 0}.products{gap:10px}.info h4{font-size:13px}.desc{display:none}.price{font-size:14px}.product .primary{padding:10px 4px;font-size:12px}.banner{min-height:210px;padding:30px 22px;align-items:flex-start;flex-direction:column}.banner h3{font-size:30px}.miniCard{min-width:255px}.title h3{font-size:29px}}
+<style id="atyaf-v2">
+:root{--atyaf:#8b5d2e;--atyaf-dark:#21150d;--atyaf-gold:#c79a43;--soft:#f8f5ef}
+body{background:#fff}
+.header{background:rgba(255,255,255,.97)}
+.headin{max-width:1320px}
+.desktopNav{max-width:1320px;margin:auto;display:flex;justify-content:center;gap:8px;padding:0 15px 12px;overflow:auto}
+.desktopNav button{border:0;background:transparent;padding:9px 15px;font-weight:700;color:#4b4037;white-space:nowrap}
+.desktopNav button:hover{color:var(--atyaf)}
+.hero{max-width:1320px;margin:16px auto;padding:0 16px}
+.heroSlider{position:relative;overflow:hidden;border-radius:22px;background:#eee;min-height:410px}
+.heroSlide{position:absolute;inset:0;opacity:0;transition:opacity .55s;pointer-events:none}
+.heroSlide.active{opacity:1;pointer-events:auto}
+.heroSlide img{width:100%;height:100%;min-height:410px;object-fit:cover;display:block}
+.heroFallback{height:410px;background:linear-gradient(120deg,#ead8bd,#fffaf1);display:grid;place-items:center;text-align:center;padding:30px}
+.heroFallback h2{font-family:"Aref Ruqaa";font-size:48px;color:#60391f;margin:0}
+.slideOverlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.38),transparent 60%);display:flex;align-items:center;padding:7%;color:#fff}
+.slideOverlay h2{font-family:"Aref Ruqaa";font-size:45px;margin:0 0 8px}
+.sliderDots{position:absolute;bottom:15px;left:0;right:0;display:flex;justify-content:center;gap:7px;z-index:5}
+.sliderDots button{width:8px;height:8px;border:0;border-radius:50%;background:rgba(255,255,255,.6);padding:0}
+.sliderDots button.active{width:24px;border-radius:10px;background:#fff}
+.featuresBar{border-top:1px solid #eee;border-bottom:1px solid #eee;background:#fff}
+.featuresIn{max-width:1320px;margin:auto;display:flex;justify-content:space-around;gap:20px;padding:14px 18px;overflow:auto}
+.featureItem{display:flex;align-items:center;gap:10px;min-width:220px}.featureIcon{font-size:25px}.featureItem b{display:block}.featureItem small{color:#777}
+.homeBlock{max-width:1320px;margin:auto;padding:28px 16px}.blockHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.blockHead h3{margin:0;font-size:22px}.blockHead button{border:0;background:none}
+.categoryGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.categoryTile{border:0;background:none;padding:0;text-align:center}.categoryTile img,.categoryPlaceholder{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:16px;border:1px solid #eee;background:#fafafa}.categoryPlaceholder{display:grid;place-items:center;font-family:"Aref Ruqaa";font-size:25px;color:#8b5d2e}.categoryTile b{display:block;padding-top:8px;font-size:13px}
+.scentRow{display:flex;gap:13px;overflow:auto;padding-bottom:8px}.scentBtn{min-width:72px;border:0;background:none;text-align:center}.scentPic{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#f4f2ef;border:1px solid #e9e5df;display:grid;place-items:center;font-size:22px;margin:auto}.scentBtn span{display:block;font-size:12px;margin-top:6px}
+.dynamicBanner{max-width:1320px;margin:18px auto;padding:0 16px}.dynamicBanner img{width:100%;max-height:390px;object-fit:cover;border-radius:20px;display:block}
+.productSection .products{grid-template-columns:repeat(5,1fr)}.productSection .product{box-shadow:none;border:1px solid #eee;border-radius:8px}.productSection .pic{background:#fff}.productSection .info{text-align:right}.productSection .primary{border-radius:5px}
+.floatingWa{position:fixed;bottom:22px;left:22px;z-index:80;width:54px;height:54px;border-radius:50%;border:0;background:#22c55e;color:#fff;font-size:24px;box-shadow:0 7px 24px rgba(0,0,0,.18)}
+@media(max-width:900px){.categoryGrid{grid-template-columns:repeat(3,1fr)}.productSection .products{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){.desktopNav{justify-content:flex-start}.hero{padding:0 8px;margin-top:8px}.heroSlider,.heroSlide img,.heroFallback{min-height:250px;height:250px}.slideOverlay h2,.heroFallback h2{font-size:30px}.featuresIn{justify-content:flex-start}.featureItem{min-width:185px}.categoryGrid{grid-template-columns:repeat(2,1fr)}.productSection .products{grid-template-columns:repeat(2,1fr)}.homeBlock{padding:22px 9px}.dynamicBanner{padding:0 9px}}
 </style>
 
 </head>
@@ -53,21 +62,14 @@ body{background:#fff;color:var(--ink)}
     <div class="topline" id="announcement">أهلاً بك في متجر أطياف</div>
     <header class="header"><div class="headin"><div class="brand"><div class="logo" id="logo">أطياف</div><div><h1 id="storeName">متجر أطياف</h1><small id="storeEn">ATYAF STORE</small></div></div><div class="actions"><button class="iconbtn" onclick="openFav()">♡<span class="count" id="favCount">0</span></button><button class="iconbtn" onclick="openCart()">السلة <span class="count" id="cartCount">0</span></button></div></div></header>
 
-    <section class="hero"><div class="heroBox"><div class="heroText"><div class="eyebrow">ATYAF • SIGNATURE COLLECTION</div><h2>عالمٌ من الأناقة يبدأ من أطياف</h2><p id="heroDesc">تجربة تسوق أنيقة، منتجات مختارة، عروض وهدايا وباقات في مكان واحد.</p><button class="primary" onclick="document.getElementById('shop').scrollIntoView()">تسوق الآن</button> <button class="secondary" onclick="filterSpecial()">اكتشف العروض</button></div></div></section>
+    <nav class="desktopNav" id="dynamicNav"></nav>
+<section class="hero"><div class="heroSlider" id="heroSlider"><div class="heroFallback"><div><h2>متجر أطياف</h2><p id="heroDesc">تجربة تسوق أنيقة ومنتجات مختارة بعناية.</p></div></div></div></section>
+<div class="featuresBar"><div class="featuresIn" id="featuresBar"></div></div>
+<div id="dynamicHome"></div>
 
-    <main class="wrap">
-    <div class="search"><input id="search" placeholder="ابحث عن منتج..." oninput="renderProducts()"></div>
-    <div class="cats" id="cats"></div>
+    
 
-    <section class="section" id="shop"><div class="title"><div><h3>منتجات أطياف</h3><p>مختاراتنا المتاحة الآن</p></div></div><div class="products" id="products"><div class="empty">جارٍ تحميل المنتجات...</div></div></section>
-
-    <section class="section"><div class="banner"><div><h3>هدايا أطياف</h3><p>اختر هديتك وأضف لمستك الخاصة.</p></div><button class="secondary" onclick="document.getElementById('gifts').scrollIntoView()">عرض الهدايا</button></div></section>
-    <section class="section" id="gifts"><div class="title"><div><h3>الهدايا</h3><p>خيارات إهداء مميزة</p></div></div><div class="horizontal" id="giftCards"></div></section>
-    <section class="section"><div class="title"><div><h3>باقات أطياف</h3><p>منتجات مختارة بسعر عرض</p></div></div><div class="horizontal" id="bundleCards"></div></section>
-    <section class="section"><div class="title"><div><h3>آراء العملاء</h3><p>تقييمات منشورة بعد المراجعة</p></div></div><div class="horizontal" id="reviews"></div></section>
-    </main>
-
-    <footer class="footer"><div class="footerIn"><div><h4 id="footName">متجر أطياف</h4><p id="footDesc">شكراً لاختياركم أطياف.</p></div><div><h4>خدمة العملاء</h4><a href="#" id="whatsapp">واتساب</a><a href="#" id="phone">اتصال</a><a href="#" onclick="openTrack();return false">تتبع الطلب</a></div><div><h4>معلومات</h4><div id="policyLinks"></div><div id="branchLinks"></div></div></div><div class="copyright">© <span id="year"></span> ATYAF STORE</div></footer>
+    <footer class="footer"><div class="footerIn"><div><h4 id="footName">متجر أطياف</h4><p id="footDesc">شكراً لاختياركم أطياف.</p></div><div><h4>خدمة العملاء</h4><a href="#" id="whatsapp">واتساب</a><a href="#" id="phone">اتصال</a><a href="#" onclick="openTrack();return false">تتبع الطلب</a></div><div><h4>معلومات</h4><div id="policyLinks"></div><div id="branchLinks"></div></div></div><div class="copyright">© <span id="year"></span> ATYAF STORE</div></footer><button class="floatingWa" onclick="document.getElementById('whatsapp')?.click()" aria-label="واتساب">◉</button>
 
     <div class="drawer" id="cartDrawer" onclick="if(event.target===this)closeDrawers()"><div class="panel"><div class="panelHead"><h2>سلة التسوق</h2><button class="close" onclick="closeDrawers()">×</button></div><div id="cartItems"></div><div class="total">الإجمالي: <span id="cartTotal">0 ر.ي</span></div><button class="primary" style="width:100%" onclick="openCheckout()">إتمام الطلب</button></div></div>
     <div class="drawer" id="favDrawer" onclick="if(event.target===this)closeDrawers()"><div class="panel"><div class="panelHead"><h2>المفضلة</h2><button class="close" onclick="closeDrawers()">×</button></div><div id="favItems"></div></div></div>
@@ -84,7 +86,8 @@ body{background:#fff;color:var(--ink)}
     const SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
     const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
     const $=id=>document.getElementById(id);
-    let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(localStorage.getItem("atyaf_cart")||"[]"),FAV=JSON.parse(localStorage.getItem("atyaf_fav")||"[]"),ACTIVE="all",COUPON=null,SETTINGS={};
+    let ADS=[],FEATURES=[],SCENTS=[],NAVIGATION=[],HOME_SECTIONS=[],SOCIALS=[],PRODUCT_SCENTS=[];
+let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(localStorage.getItem("atyaf_cart")||"[]"),FAV=JSON.parse(localStorage.getItem("atyaf_fav")||"[]"),ACTIVE="all",COUPON=null,SETTINGS={};
 
     function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
     function money(n){return new Intl.NumberFormat("ar-YE").format(Number(n)||0)+" "+(SETTINGS.currency||"ر.ي")}
@@ -102,21 +105,86 @@ body{background:#fff;color:var(--ink)}
       sb.from("reviews").select("*").eq("is_approved",true).order("created_at",{ascending:false}).limit(10),
       sb.from("payment_methods").select("*").eq("is_active",true).order("sort_order"),
       sb.from("policies").select("*").eq("is_active",true).order("title"),
-      sb.from("branches").select("*").eq("is_active",true).order("sort_order")
+      sb.from("branches").select("*").eq("is_active",true).order("sort_order"),
+      sb.from("ads").select("*").eq("is_active",true).order("sort_order"),
+      sb.from("store_features").select("*").eq("is_active",true).order("sort_order"),
+      sb.from("scents").select("*").eq("is_active",true).order("sort_order"),
+      sb.from("navigation_items").select("*").eq("is_active",true).order("sort_order"),
+      sb.from("home_sections").select("*").eq("is_active",true).order("sort_order"),
+      sb.from("social_links").select("*").eq("is_active",true).order("sort_order"),
+      sb.from("product_scents").select("*")
      ]);
      SETTINGS=results[0].data||{};CATEGORIES=results[1].data||[];PRODUCTS=results[2].data||[];GIFTS=results[3].data||[];BUNDLES=results[4].data||[];POLICIES=results[7].data||[];
-     applySettings();renderCats();renderProducts();renderGifts();renderBundles();renderReviews(results[5].data||[]);renderPayments(results[6].data||[]);renderPolicies();renderBranches(results[8].data||[]);updateCounts()
+     ADS=results[9]?.data||[];FEATURES=results[10]?.data||[];SCENTS=results[11]?.data||[];NAVIGATION=results[12]?.data||[];HOME_SECTIONS=results[13]?.data||[];SOCIALS=results[14]?.data||[];PRODUCT_SCENTS=results[15]?.data||[];
+     applySettings();renderCats();renderProducts();renderGifts();renderBundles();renderReviews(results[5].data||[]);renderPayments(results[6].data||[]);renderPolicies();renderBranches(results[8].data||[]);renderDynamicHomepage();updateCounts()
     }
     function applySettings(){
      $("storeName").textContent=SETTINGS.store_name_ar||"متجر أطياف";$("storeEn").textContent=SETTINGS.store_name_en||"ATYAF STORE";$("footName").textContent=SETTINGS.store_name_ar||"متجر أطياف";$("footDesc").textContent=SETTINGS.description||"شكراً لاختياركم أطياف.";$("heroDesc").textContent=SETTINGS.description||$("heroDesc").textContent;$("announcement").textContent=SETTINGS.announcement||"أهلاً بك في متجر أطياف";
      if(SETTINGS.logo_url)$("logo").innerHTML=`<img src="${esc(SETTINGS.logo_url)}" alt="أطياف">`;
      const wa=(SETTINGS.whatsapp||"").replace(/\D/g,"");$("whatsapp").href=wa?`https://wa.me/${wa}`:"#";$("phone").href=SETTINGS.phone?`tel:${SETTINGS.phone}`:"#"
     }
-    function renderCats(){$("cats").innerHTML=`<button class="cat ${ACTIVE==="all"?"active":""}" onclick="setCat('all')">الكل</button><button class="cat ${ACTIVE==="offers"?"active":""}" onclick="setCat('offers')">العروض</button>`+CATEGORIES.map(c=>`<button class="cat ${ACTIVE===c.id?"active":""}" onclick="setCat('${c.id}')">${esc(c.name_ar)}</button>`).join("")}
+    
+function renderDynamicHomepage(){
+ renderNavigation();renderHero();renderFeatures();renderHomeSections();
+}
+function renderNavigation(){
+ const a=NAVIGATION.filter(x=>x.location==="header");
+ $("dynamicNav").innerHTML=a.map(x=>`<button onclick="navGo('${esc(x.link_type)}','${esc(x.link_value||"")}')">${esc(x.label_ar)}</button>`).join("");
+}
+function navGo(type,val){
+ if(type==="section"){const el=document.getElementById(val==="products"?"shop":val);if(el)el.scrollIntoView({behavior:"smooth"});return}
+ if(type==="category"){ACTIVE=val;renderProducts();document.getElementById("shop")?.scrollIntoView({behavior:"smooth"});return}
+ if(type==="url"&&val)location.href=val;
+}
+function activeAds(place){const n=new Date();return ADS.filter(x=>(x.placement||"hero")===place&&(!x.starts_at||n>=new Date(x.starts_at))&&(!x.ends_at||n<=new Date(x.ends_at)))}
+function renderHero(){
+ const a=activeAds("hero"),box=$("heroSlider");
+ if(!a.length)return;
+ box.innerHTML=a.map((x,i)=>`<div class="heroSlide ${i===0?"active":""}">${x.image_url?`<img src="${esc(x.image_url)}" alt="${esc(x.title_ar||"إعلان أطياف")}">`:""}${x.title_ar?`<div class="slideOverlay"><div><h2>${esc(x.title_ar)}</h2><p>${esc(x.subtitle_ar||"")}</p>${x.link_url?`<button class="secondary" onclick="location.href='${esc(x.link_url)}'">${esc(x.button_text_ar||"تسوق الآن")}</button>`:""}</div></div>`:""}</div>`).join("")+`<div class="sliderDots">${a.map((_,i)=>`<button class="${i===0?"active":""}" onclick="showSlide(${i})"></button>`).join("")}</div>`;
+ window._heroIndex=0;clearInterval(window._heroTimer);if(a.length>1)window._heroTimer=setInterval(()=>showSlide((window._heroIndex+1)%a.length),5000);
+}
+function showSlide(i){const b=$("heroSlider");if(!b)return;const ss=[...b.querySelectorAll(".heroSlide")],ds=[...b.querySelectorAll(".sliderDots button")];ss.forEach((x,n)=>x.classList.toggle("active",n===i));ds.forEach((x,n)=>x.classList.toggle("active",n===i));window._heroIndex=i}
+function renderFeatures(){
+ $("featuresBar").innerHTML=FEATURES.map(x=>`<div class="featureItem"><div class="featureIcon">${x.icon==="truck"?"🚚":x.icon==="rotate"?"↻":"✦"}</div><div><b>${esc(x.title_ar)}</b><small>${esc(x.description_ar||"")}</small></div></div>`).join("");
+}
+function sectionHead(x){return `<div class="blockHead"><div><h3>${esc(x.title_ar||"")}</h3>${x.subtitle_ar?`<small>${esc(x.subtitle_ar)}</small>`:""}</div></div>`}
+function renderHomeSections(){
+ const root=$("dynamicHome");let html="";
+ HOME_SECTIONS.filter(x=>!["hero","features"].includes(x.section_key)).forEach(x=>{
+  if(x.section_key==="categories") html+=renderCategorySection(x);
+  else if(x.section_key==="scents") html+=renderScentSection(x);
+  else if(["best_sellers","featured","new_products","offers"].includes(x.section_key)) html+=renderProductSection(x);
+  else if(x.section_key==="gifts") html+=renderGiftSection(x);
+  else if(x.section_key==="bundles") html+=renderBundleSection(x);
+  else if(x.section_key==="reviews") html+=`<section class="homeBlock" id="reviews-section">${sectionHead(x)}<div class="horizontal" id="reviews"></div></section>`;
+ });
+ const mids=activeAds("middle");if(mids.length){const b=mids[0];html+=`<div class="dynamicBanner">${b.image_url?`<img src="${esc(b.image_url)}" onclick="${b.link_url?`location.href='${esc(b.link_url)}'`:""}">`:""}</div>`}
+ root.innerHTML=html;
+ renderProducts();renderGifts();renderBundles();
+ // reviews are rendered again by a lightweight reload because the original call happened before dynamic containers existed
+ sb.from("reviews").select("*").eq("is_approved",true).order("created_at",{ascending:false}).limit(10).then(r=>renderReviews(r.data||[]));
+}
+function renderCategorySection(x){return `<section class="homeBlock" id="categories">${sectionHead(x)}<div class="categoryGrid">${CATEGORIES.map(c=>`<button class="categoryTile" onclick="ACTIVE='${c.id}';renderProducts();document.getElementById('shop')?.scrollIntoView()">${c.image_url?`<img src="${esc(c.image_url)}" alt="${esc(c.name_ar)}">`:`<div class="categoryPlaceholder">${esc(c.name_ar)}</div>`}<b>${esc(c.name_ar)}</b></button>`).join("")}</div></section>`}
+function renderScentSection(x){return `<section class="homeBlock" id="scents">${sectionHead(x)}<div class="scentRow">${SCENTS.map(c=>`<button class="scentBtn" onclick="filterScent('${c.id}')">${c.image_url?`<img class="scentPic" src="${esc(c.image_url)}">`:`<span class="scentPic">✦</span>`}<span>${esc(c.name_ar)}</span></button>`).join("")}</div></section>`}
+function filterScent(id){const ids=PRODUCT_SCENTS.filter(x=>x.scent_id===id).map(x=>x.product_id);window._scentFilter=ids;ACTIVE="all";renderProducts();document.getElementById("shop")?.scrollIntoView()}
+function renderProductSection(x){return `<section class="homeBlock productSection" id="${x.section_key==="featured"?"shop":x.section_key}">${sectionHead(x)}<div class="products" id="products-${x.section_key}"></div></section>`}
+function productsForSection(k){if(k==="best_sellers")return PRODUCTS.filter(p=>p.is_best_seller);if(k==="featured")return PRODUCTS.filter(p=>p.is_featured);if(k==="new_products")return PRODUCTS.filter(p=>p.is_new);if(k==="offers")return PRODUCTS.filter(p=>+p.discount_percent>0);return PRODUCTS}
+function renderGiftSection(x){return `<section class="homeBlock" id="gifts">${sectionHead(x)}<div class="horizontal" id="giftCards"></div></section>`}
+function renderBundleSection(x){return `<section class="homeBlock" id="bundles">${sectionHead(x)}<div class="horizontal" id="bundleCards"></div></section>`}
+function renderCats(){if(!$("cats"))return;$("cats").innerHTML=`<button class="cat ${ACTIVE==="all"?"active":""}" onclick="setCat('all')">الكل</button><button class="cat ${ACTIVE==="offers"?"active":""}" onclick="setCat('offers')">العروض</button>`+CATEGORIES.map(c=>`<button class="cat ${ACTIVE===c.id?"active":""}" onclick="setCat('${c.id}')">${esc(c.name_ar)}</button>`).join("")}
     function setCat(x){ACTIVE=x;renderCats();renderProducts()}
     function filterSpecial(){ACTIVE="offers";renderCats();renderProducts();$("shop").scrollIntoView()}
-    function renderProducts(){const q=$("search").value.trim().toLowerCase();let a=PRODUCTS.filter(p=>{const match=!q||(p.name_ar||"").toLowerCase().includes(q)||(p.description||"").toLowerCase().includes(q)||(p.sku||"").toLowerCase().includes(q);const cat=ACTIVE==="all"||ACTIVE==="offers"?(ACTIVE==="all"||+p.discount_percent>0):p.category_id===ACTIVE;return match&&cat});$("products").innerHTML=a.length?a.map(p=>productCard(p)).join(""):'<div class="empty" style="grid-column:1/-1">لا توجد منتجات مطابقة</div>'}
-    function productCard(p){const fp=finalPrice(p);return `<article class="product"><div class="pic">${p.main_image_url?`<img src="${esc(p.main_image_url)}" alt="${esc(p.name_ar)}">`:"صورة المنتج"}</div><div class="badges">${+p.discount_percent>0?`<span class="badge">خصم ${p.discount_percent}%</span>`:""}${p.is_new?'<span class="badge gold">جديد</span>':""}</div><button class="fav" onclick="toggleFav('${p.id}')">${FAV.includes(p.id)?"♥":"♡"}</button><div class="info"><h4>${esc(p.name_ar)}</h4><div class="desc">${esc(p.short_description||p.description||"")}</div><div><span class="price">${money(fp)}</span>${+p.discount_percent>0?`<span class="old">${money(p.price)}</span>`:""}</div><button class="primary" ${p.stock<=0?"disabled":""} onclick="addCart('${p.id}')">${p.stock>0?"إضافة للسلة":"نفد المخزون"}</button></div></article>`}
+    function renderProducts(){
+ const q=$("search")?.value?.trim().toLowerCase()||"";
+ const ids=window._scentFilter||null;
+ ["best_sellers","featured","new_products","offers"].forEach(k=>{
+   const el=document.getElementById("products-"+k);if(!el)return;
+   let a=productsForSection(k).filter(p=>(!q||(p.name_ar||"").toLowerCase().includes(q)||(p.description||"").toLowerCase().includes(q)||(p.sku||"").toLowerCase().includes(q))&&(!ids||ids.includes(p.id)));
+   el.innerHTML=a.length?a.slice(0,10).map(productCard).join(""):'<div class="empty" style="grid-column:1/-1">لا توجد منتجات حالياً</div>';
+ });
+ const old=$("products");if(old){let a=PRODUCTS.filter(p=>!q||(p.name_ar||"").toLowerCase().includes(q));old.innerHTML=a.map(productCard).join("")}
+}
+function productCard(p){const fp=finalPrice(p);return `<article class="product"><div class="pic">${p.main_image_url?`<img src="${esc(p.main_image_url)}" alt="${esc(p.name_ar)}">`:"صورة المنتج"}</div><div class="badges">${+p.discount_percent>0?`<span class="badge">خصم ${p.discount_percent}%</span>`:""}${p.is_new?'<span class="badge gold">جديد</span>':""}</div><button class="fav" onclick="toggleFav('${p.id}')">${FAV.includes(p.id)?"♥":"♡"}</button><div class="info"><h4>${esc(p.name_ar)}</h4><div class="desc">${esc(p.short_description||p.description||"")}</div><div><span class="price">${money(fp)}</span>${+p.discount_percent>0?`<span class="old">${money(p.price)}</span>`:""}</div><button class="primary" ${p.stock<=0?"disabled":""} onclick="addCart('${p.id}')">${p.stock>0?"إضافة للسلة":"نفد المخزون"}</button></div></article>`}
     function toggleFav(id){FAV=FAV.includes(id)?FAV.filter(x=>x!==id):[...FAV,id];saveLocal();renderProducts()}
     function addCart(id){const p=PRODUCTS.find(x=>x.id===id);if(!p||p.stock<=0)return;const x=CART.find(x=>x.id===id);if(x){if(x.qty>=p.stock)return toast("لا توجد كمية إضافية");x.qty++}else CART.push({id,qty:1});saveLocal();toast("تمت الإضافة للسلة")}
     function openCart(){renderCart();$("cartDrawer").classList.add("show")}

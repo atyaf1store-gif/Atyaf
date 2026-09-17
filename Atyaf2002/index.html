@@ -251,11 +251,13 @@ async function loadProductCategories(){
   if(error)return;
   const sel=document.getElementById("pCategory");
   if(sel)sel.innerHTML='<option value="">بدون قسم</option>'+(data||[]).map(c=>`<option value="${c.id}">${E(c.name_ar)}</option>`).join("");
+  if(sel && !(data||[]).length) sel.innerHTML='<option value="">لا توجد أقسام — أضف قسماً أولاً</option>';
 }
 
-function openProduct(id){
+async function openProduct(id){
   try{
     const p=id?PRODUCT_LIVE.find(x=>String(x.id)===String(id)):null;
+    await loadProductCategories();
     const g=id=>document.getElementById(id);
     ["pId","pName","pSku","pPrice","pDesc","pColors","pSizes","pImage"].forEach(k=>{if(g(k))g(k).value=""});
     g("pDiscount").value=0;g("pStock").value=0;g("pLow").value=5;g("pSort").value=0;
@@ -288,7 +290,7 @@ async function saveProduct(){
     }
     const row={
       name_ar:name,slug:name.toLowerCase().trim().replace(/\s+/g,"-"),sku:g("pSku").value.trim()||null,
-      category_id:g("pCategory").value||null,price:+g("pPrice").value||0,discount_percent:+g("pDiscount").value||0,
+      category_id:/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(g("pCategory").value)?g("pCategory").value:null,price:+g("pPrice").value||0,discount_percent:+g("pDiscount").value||0,
       stock:+g("pStock").value||0,low_stock_threshold:+g("pLow").value||5,sort_order:+g("pSort").value||0,
       description:g("pDesc").value.trim()||null,colors:g("pColors").value.split(",").map(x=>x.trim()).filter(Boolean),
       sizes:g("pSizes").value.split(",").map(x=>x.trim()).filter(Boolean),main_image_url:image,

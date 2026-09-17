@@ -116,13 +116,16 @@
       document.getElementById("recoveryView").classList.add("hidden");
       document.getElementById("appView").classList.remove("hidden");
       
-let PRODUCT_LIVE=[];
-async function loadProductsLive(){const {data,error}=await sb.from("products").select("*,categories(name_ar)").order("sort_order");if(error)return toast(error.message);PRODUCT_LIVE=data||[];const el=document.getElementById("productRows");if(!el)return;el.innerHTML=PRODUCT_LIVE.length?PRODUCT_LIVE.map(p=>`<tr><td>${p.main_image_url?`<img src="${E(p.main_image_url)}" style="width:48px;height:48px;object-fit:cover;border-radius:8px">`:""}</td><td>${E(p.name_ar)}</td><td>${E(p.sku||"")}</td><td>${E(p.categories?.name_ar||"")}</td><td>${p.price||0}</td><td>${p.stock||0}</td><td><button class="secondary" onclick="openProduct('${p.id}')">تعديل</button></td></tr>`).join(""):'<tr><td colspan="7"><div class="empty">لا توجد منتجات</div></td></tr>'}
-async function loadProductCategories(){const {data}=await sb.from("categories").select("id,name_ar").order("sort_order");const sel=document.getElementById("pCategory");if(sel)sel.innerHTML='<option value="">بدون قسم</option>'+(data||[]).map(c=>`<option value="${c.id}">${E(c.name_ar)}</option>`).join("")}
-function openProduct(id){const p=id?PRODUCT_LIVE.find(x=>x.id===id):null;["pId","pName","pSku","pPrice","pDesc","pColors","pSizes","pImage"].forEach(k=>{const e=document.getElementById(k);if(e)e.value=""});pDiscount.value=0;pStock.value=0;pLow.value=5;pSort.value=0;pActive.checked=true;pFeatured.checked=false;pNew.checked=false;pBest.checked=false;pImageFile.value="";pImagePreview.classList.add("hidden");if(p){pId.value=p.id;pName.value=p.name_ar||"";pSku.value=p.sku||"";pCategory.value=p.category_id||"";pPrice.value=p.price||0;pDiscount.value=p.discount_percent||0;pStock.value=p.stock||0;pLow.value=p.low_stock_threshold||5;pSort.value=p.sort_order||0;pDesc.value=p.description||"";pColors.value=(p.colors||[]).join(", ");pSizes.value=(p.sizes||[]).join(", ");pImage.value=p.main_image_url||"";pActive.checked=p.is_active!==false;pFeatured.checked=!!p.is_featured;pNew.checked=!!p.is_new;pBest.checked=!!p.is_best_seller;if(p.main_image_url){pImagePreview.src=p.main_image_url;pImagePreview.classList.remove("hidden")}}productModalTitle.textContent=p?"تعديل المنتج":"إضافة منتج";productModal.classList.add("show")}
-async function saveProduct(){try{const name=pName.value.trim();if(!name)return toast("اكتب اسم المنتج");let image=pImage.value||null;if(pImageFile.files[0])image=await uploadAdminImage(pImageFile.files[0],"products");const row={name_ar:name,slug:name.toLowerCase().trim().replace(/\s+/g,"-"),sku:pSku.value.trim()||null,category_id:pCategory.value||null,price:+pPrice.value||0,discount_percent:+pDiscount.value||0,stock:+pStock.value||0,low_stock_threshold:+pLow.value||5,sort_order:+pSort.value||0,description:pDesc.value.trim()||null,colors:pColors.value.split(",").map(x=>x.trim()).filter(Boolean),sizes:pSizes.value.split(",").map(x=>x.trim()).filter(Boolean),main_image_url:image,is_active:pActive.checked,is_featured:pFeatured.checked,is_new:pNew.checked,is_best_seller:pBest.checked};const id=pId.value;const {error}=id?await sb.from("products").update(row).eq("id",id):await sb.from("products").insert(row);if(error)throw error;closeProduct();toast("تم حفظ المنتج");await loadProductsLive()}catch(e){toast(e.message)}}
-pImageFile?.addEventListener("change",()=>{const f=pImageFile.files[0];if(!f)return;pImagePreview.src=URL.createObjectURL(f);pImagePreview.classList.remove("hidden")});
-loadProductCategories();loadProductsLive();
+
+["editCategory","editFeature","editScent","editNavItem","editSocial","editBundle","editGift","editSection",
+ "delRow","closeManage","closeProduct","saveSettingsLive","saveDesign"].forEach(n=>{
+   try{if(typeof eval(n)==="function")window[n]=eval(n)}catch(e){}
+});
+document.addEventListener("change",e=>{
+ if(e.target?.id==="pImageFile"&&e.target.files?.[0]){
+   const pr=document.getElementById("pImagePreview");pr.src=URL.createObjectURL(e.target.files[0]);pr.classList.remove("hidden");
+ }
+});
 renderAll();loadLiveAdmin();
     }
     async function logout(){await sb.auth.signOut();location.href="./"}
@@ -213,6 +216,78 @@ async function uploadAdminImage(file,folder="media"){
  return sb.storage.from("atyaf-media").getPublicUrl(path).data.publicUrl;
 }
 const fileFld=(label,id,current="")=>`<div class="field full"><label>${label}</label><input id="${id}" type="file" accept="image/*">${current?`<img class="preview-img" src="${E(current)}">`:""}</div>`;
+
+let PRODUCT_LIVE=[];
+
+async function loadProductsLive(){
+  const {data,error}=await sb.from("products").select("*,categories(name_ar)").order("sort_order");
+  if(error){toast("تعذر تحميل المنتجات: "+error.message);return}
+  PRODUCT_LIVE=data||[];
+  const el=document.getElementById("productRows");
+  if(!el)return;
+  el.innerHTML=PRODUCT_LIVE.length?PRODUCT_LIVE.map(p=>`<tr>
+    <td>${p.main_image_url?`<img src="${E(p.main_image_url)}" style="width:48px;height:48px;object-fit:cover;border-radius:8px">`:""}</td>
+    <td>${E(p.name_ar)}</td><td>${E(p.sku||"")}</td><td>${E(p.categories?.name_ar||"")}</td>
+    <td>${p.price||0}</td><td>${p.stock||0}</td>
+    <td><button type="button" class="secondary" onclick="openProduct('${p.id}')">تعديل</button></td>
+  </tr>`).join(""):'<tr><td colspan="7"><div class="empty">لا توجد منتجات</div></td></tr>';
+}
+
+async function loadProductCategories(){
+  const {data,error}=await sb.from("categories").select("id,name_ar").order("sort_order");
+  if(error)return;
+  const sel=document.getElementById("pCategory");
+  if(sel)sel.innerHTML='<option value="">بدون قسم</option>'+(data||[]).map(c=>`<option value="${c.id}">${E(c.name_ar)}</option>`).join("");
+}
+
+function openProduct(id){
+  try{
+    const p=id?PRODUCT_LIVE.find(x=>String(x.id)===String(id)):null;
+    const g=id=>document.getElementById(id);
+    ["pId","pName","pSku","pPrice","pDesc","pColors","pSizes","pImage"].forEach(k=>{if(g(k))g(k).value=""});
+    g("pDiscount").value=0;g("pStock").value=0;g("pLow").value=5;g("pSort").value=0;
+    g("pActive").checked=true;g("pFeatured").checked=false;g("pNew").checked=false;g("pBest").checked=false;
+    g("pImageFile").value="";g("pImagePreview").classList.add("hidden");
+    if(p){
+      g("pId").value=p.id;g("pName").value=p.name_ar||"";g("pSku").value=p.sku||"";
+      g("pCategory").value=p.category_id||"";g("pPrice").value=p.price||0;g("pDiscount").value=p.discount_percent||0;
+      g("pStock").value=p.stock||0;g("pLow").value=p.low_stock_threshold||5;g("pSort").value=p.sort_order||0;
+      g("pDesc").value=p.description||"";g("pColors").value=(p.colors||[]).join(", ");g("pSizes").value=(p.sizes||[]).join(", ");
+      g("pImage").value=p.main_image_url||"";g("pActive").checked=p.is_active!==false;g("pFeatured").checked=!!p.is_featured;
+      g("pNew").checked=!!p.is_new;g("pBest").checked=!!p.is_best_seller;
+      if(p.main_image_url){g("pImagePreview").src=p.main_image_url;g("pImagePreview").classList.remove("hidden")}
+    }
+    g("productModalTitle").textContent=p?"تعديل المنتج":"إضافة منتج";
+    g("productModal").classList.add("show");
+  }catch(e){toast("تعذر فتح المنتج: "+e.message)}
+}
+
+async function saveProduct(){
+  const btn=document.querySelector('#productModal .primary[onclick="saveProduct()"]');
+  try{
+    if(btn){btn.disabled=true;btn.textContent="جارٍ الحفظ..."}
+    const g=id=>document.getElementById(id),name=g("pName").value.trim();
+    if(!name){toast("اكتب اسم المنتج");return}
+    let image=g("pImage").value||null;
+    if(g("pImageFile").files[0])image=await uploadAdminImage(g("pImageFile").files[0],"products");
+    const row={
+      name_ar:name,slug:name.toLowerCase().trim().replace(/\s+/g,"-"),sku:g("pSku").value.trim()||null,
+      category_id:g("pCategory").value||null,price:+g("pPrice").value||0,discount_percent:+g("pDiscount").value||0,
+      stock:+g("pStock").value||0,low_stock_threshold:+g("pLow").value||5,sort_order:+g("pSort").value||0,
+      description:g("pDesc").value.trim()||null,colors:g("pColors").value.split(",").map(x=>x.trim()).filter(Boolean),
+      sizes:g("pSizes").value.split(",").map(x=>x.trim()).filter(Boolean),main_image_url:image,
+      is_active:g("pActive").checked,is_featured:g("pFeatured").checked,is_new:g("pNew").checked,is_best_seller:g("pBest").checked
+    };
+    const id=g("pId").value;
+    const {error}=id?await sb.from("products").update(row).eq("id",id):await sb.from("products").insert(row);
+    if(error)throw error;
+    closeProduct();toast("تم حفظ المنتج بنجاح");await loadProductsLive();
+  }catch(e){toast("لم يتم حفظ المنتج: "+(e.message||e))}
+  finally{if(btn){btn.disabled=false;btn.textContent="حفظ المنتج"}}
+}
+
+window.openProduct=openProduct;
+window.saveProduct=saveProduct;
 let LIVE={categories:[],ads:[],sections:[],features:[],scents:[],navigation:[],socials:[],bundles:[],gifts:[]};
 const E=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 async function loadLiveAdmin(){
@@ -232,7 +307,13 @@ async function loadLiveAdmin(){
 }
 function renderLiveAdmin(){renderLiveCategories();renderAdsAdmin();renderSectionsAdmin();renderFeaturesAdmin();renderScentsAdmin();renderNavAdmin();renderSocialAdmin();renderBundlesAdmin();renderGiftsAdmin();loadStoreAdminSettings()}
 function closeManage(){document.getElementById("manageModal").classList.remove("show")}
-function openManage(title,html,save){document.getElementById("manageTitle").textContent=title;document.getElementById("manageFields").innerHTML=html;document.getElementById("manageSave").onclick=save;document.getElementById("manageModal").classList.add("show")}
+function openManage(title,html,save){
+ const titleEl=document.getElementById("manageTitle"),fields=document.getElementById("manageFields"),btn=document.getElementById("manageSave"),modal=document.getElementById("manageModal");
+ titleEl.textContent=title;fields.innerHTML=html;
+ btn.disabled=false;btn.textContent="حفظ";
+ btn.onclick=async()=>{try{btn.disabled=true;btn.textContent="جارٍ الحفظ...";await save()}catch(e){toast("تعذر الحفظ: "+(e.message||e))}finally{btn.disabled=false;btn.textContent="حفظ"}};
+ modal.classList.add("show");
+}
 const fld=(label,id,value="",type="text")=>`<div class="field"><label>${label}</label><input id="${id}" type="${type}" value="${E(value)}"></div>`;
 const chk=(label,id,value)=>`<label class="check"><input id="${id}" type="checkbox" ${value?"checked":""}> ${label}</label>`;
 async function delRow(table,id){if(!confirm("تأكيد الحذف؟"))return;const {error}=await sb.from(table).delete().eq("id",id);if(error)return toast(error.message);toast("تم الحذف");loadLiveAdmin()}
@@ -244,10 +325,41 @@ if(mBannerFile.files[0])banner=await uploadAdminImage(mBannerFile.files[0],"cate
 const row={name_ar:mName.value.trim(),name_en:mNameEn.value.trim()||null,image_url:image,banner_url:banner,sort_order:+mSort.value||0,is_active:mActive.checked};if(!row.name_ar)return toast("اكتب اسم القسم");const q=id?sb.from("categories").update(row).eq("id",id):sb.from("categories").insert(row);const {error}=await q;if(error)return toast(error.message);closeManage();toast("تم حفظ القسم");loadLiveAdmin()})}
 
 function renderAdsAdmin(){const el=document.getElementById("adList");if(!el)return;el.innerHTML=LIVE.ads.length?LIVE.ads.map(x=>`<div class="manage-item"><div style="display:flex;gap:12px">${x.image_url?`<img src="${E(x.image_url)}">`:""}<div><b>${E(x.title_ar||"إعلان بدون عنوان")}</b><div class="hint">${E(x.placement||"hero")} • ترتيب ${x.sort_order||0} • ${x.is_active?"نشط":"موقوف"}</div></div></div><div class="row-actions"><button class="secondary" onclick="editAd('${x.id}')">تعديل</button><button class="danger" onclick="delRow('ads','${x.id}')">حذف</button></div></div>`).join(""):'<div class="empty">لا توجد إعلانات</div>'}
-function editAd(id){const x=LIVE.ads.find(v=>v.id===id)||{};openManage(id?"تعديل الإعلان":"إعلان جديد",`<div class="form-grid">${fld("العنوان","mTitle",x.title_ar)}${fld("النص الفرعي","mSub",x.subtitle_ar)}${fileFld("صورة الإعلان","mImageFile",x.image_url)}${fileFld("صورة الجوال - اختياري","mMobileFile",x.mobile_image_url)}${fld("نص الزر","mButton",x.button_text_ar||"تسوق الآن")}${fld("الرابط عند الضغط","mLink",x.link_url)}<div class="field"><label>مكان الإعلان</label><select id="mPlace"><option value="hero" ${x.placement==="hero"?"selected":""}>السلايدر الرئيسي</option><option value="middle" ${x.placement==="middle"?"selected":""}>وسط الصفحة</option><option value="bottom" ${x.placement==="bottom"?"selected":""}>أسفل الصفحة</option></select></div>${fld("الترتيب","mSort",x.sort_order||0,"number")}<div class="full">${chk("نشط","mActive",x.is_active!==false)}</div></div>`,async()=>{let image=x.image_url||null,mobile=x.mobile_image_url||null;
-if(mImageFile.files[0])image=await uploadAdminImage(mImageFile.files[0],"ads");
-if(mMobileFile.files[0])mobile=await uploadAdminImage(mMobileFile.files[0],"ads-mobile");
-const row={title_ar:mTitle.value.trim()||null,subtitle_ar:mSub.value.trim()||null,image_url:image,mobile_image_url:mobile,button_text_ar:mButton.value.trim()||null,link_url:mLink.value.trim()||null,placement:mPlace.value,sort_order:+mSort.value||0,is_active:mActive.checked};const q=id?sb.from("ads").update(row).eq("id",id):sb.from("ads").insert(row);const {error}=await q;if(error)return toast(error.message);closeManage();toast("تم حفظ الإعلان");loadLiveAdmin()})}
+function editAd(id){
+ const x=LIVE.ads.find(v=>String(v.id)===String(id))||{};
+ openManage(id?"تعديل الإعلان":"إعلان جديد",
+ `<div class="form-grid">
+ ${fld("العنوان","mTitle",x.title_ar)}
+ ${fld("النص الفرعي","mSub",x.subtitle_ar)}
+ ${fileFld("صورة الإعلان","mImageFile",x.image_url)}
+ ${fileFld("صورة الجوال - اختياري","mMobileFile",x.mobile_image_url)}
+ ${fld("نص الزر","mButton",x.button_text_ar||"تسوق الآن")}
+ ${fld("الرابط عند الضغط","mLink",x.link_url)}
+ <div class="field"><label>مكان الإعلان</label><select id="mPlace">
+ <option value="hero" ${x.placement==="hero"?"selected":""}>السلايدر الرئيسي</option>
+ <option value="middle" ${x.placement==="middle"?"selected":""}>وسط الصفحة</option>
+ <option value="bottom" ${x.placement==="bottom"?"selected":""}>أسفل الصفحة</option>
+ </select></div>
+ ${fld("الترتيب","mSort",x.sort_order||0,"number")}
+ <div class="full">${chk("نشط","mActive",x.is_active!==false)}</div></div>`,
+ async()=>{
+   const g=id=>document.getElementById(id);
+   let image=x.image_url||null,mobile=x.mobile_image_url||null;
+   if(g("mImageFile").files[0])image=await uploadAdminImage(g("mImageFile").files[0],"ads");
+   if(g("mMobileFile").files[0])mobile=await uploadAdminImage(g("mMobileFile").files[0],"ads-mobile");
+   if(!image)throw new Error("اختر صورة الإعلان");
+   const row={
+     title_ar:g("mTitle").value.trim()||null,subtitle_ar:g("mSub").value.trim()||null,
+     image_url:image,mobile_image_url:mobile,button_text_ar:g("mButton").value.trim()||null,
+     link_url:g("mLink").value.trim()||null,placement:g("mPlace").value,
+     sort_order:+g("mSort").value||0,is_active:g("mActive").checked
+   };
+   const {error}=id?await sb.from("ads").update(row).eq("id",id):await sb.from("ads").insert(row);
+   if(error)throw error;
+   closeManage();toast("تم حفظ الإعلان بنجاح");await loadLiveAdmin();
+ });
+}
+window.editAd=editAd;
 
 function renderSectionsAdmin(){const el=document.getElementById("homeSectionList");if(!el)return;el.innerHTML=LIVE.sections.map(x=>`<div class="manage-item"><b>${E(x.title_ar||x.section_key)}</b><div class="hint">${E(x.section_key)} • ترتيب ${x.sort_order} • ${x.is_active?"ظاهر":"مخفي"}</div><div class="row-actions"><button class="secondary" onclick="editSection('${x.id}')">تعديل</button></div></div>`).join("")}
 function editSection(id){const x=LIVE.sections.find(v=>v.id===id);if(!x)return;openManage("تعديل قسم الرئيسية",`<div class="form-grid">${fld("العنوان","mTitle",x.title_ar)}${fld("العنوان الفرعي","mSub",x.subtitle_ar)}${fld("الترتيب","mSort",x.sort_order,"number")}<div class="field"><label>خط هذا القسم</label><select id="mFont"><option value="">الخط العام</option><option value="Tajawal">Tajawal</option><option value="Cairo">Cairo</option><option value="Aref Ruqaa">Aref Ruqaa</option><option value="Amiri">Amiri</option></select></div><div class="full">${chk("إظهار القسم","mActive",x.is_active)}</div></div>`,async()=>{const {error}=await sb.from("home_sections").update({title_ar:mTitle.value.trim(),subtitle_ar:mSub.value.trim()||null,sort_order:+mSort.value||0,font_family:mFont.value||null,is_active:mActive.checked}).eq("id",id);if(error)return toast(error.message);closeManage();toast("تم الحفظ");loadLiveAdmin()});setTimeout(()=>{if(document.getElementById("mFont"))mFont.value=x.font_family||""},0)}

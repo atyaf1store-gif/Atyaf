@@ -49,7 +49,7 @@
     </header>
     <div class="layout">
     <aside class="side"><nav class="nav" id="nav">
-    <button class="active" data-page="dashboard">الرئيسية</button><button data-page="identity">هوية المتجر</button><button data-page="products">المنتجات</button><button data-page="orders">الطلبات</button><button data-page="categories">الأقسام</button><button data-page="bundles">الباقات</button><button data-page="gifts">الهدايا</button><button data-page="coupons">الكوبونات</button><button data-page="reviews">التقييمات</button><button data-page="notifications">الإشعارات</button><button data-page="payments">الدفع والبنوك</button><button data-page="ads">الإعلانات</button><button data-page="branches">الفروع</button><button data-page="policies">السياسات</button><button data-page="design">التصميم</button><button data-page="homepage">أقسام الرئيسية</button><button data-page="features">مميزات المتجر</button><button data-page="scents">الروائح</button><button data-page="navigation">قائمة المتجر</button><button data-page="socials">التواصل الاجتماعي</button><button data-page="settings">الإعدادات</button>
+    <button class="active" data-page="dashboard">الرئيسية</button><button data-page="identity">هوية المتجر</button><button data-page="products">المنتجات</button><button data-page="orders">الطلبات</button><button data-page="categories">الأقسام</button><button data-page="bundles">الباقات</button><button data-page="gifts">الهدايا</button><button data-page="coupons">الكوبونات</button><button data-page="reviews">التقييمات</button><button data-page="notifications">الإشعارات</button><button data-page="payments">الدفع والبنوك</button><button data-page="ads">الإعلانات</button><button data-page="branches">الفروع</button><button data-page="policies">السياسات</button><button data-page="design">التصميم</button><button data-page="homepage">أقسام الرئيسية</button><button data-page="announcements">الشريط المتحرك</button><button data-page="features">مميزات المتجر</button><button data-page="scents">الروائح</button><button data-page="navigation">قائمة المتجر</button><button data-page="socials">التواصل الاجتماعي</button><button data-page="settings">الإعدادات</button>
     </nav></aside>
     <main class="main">
 
@@ -77,6 +77,7 @@
     <section class="page" id="policies"><div class="page-title"><div><h2>السياسات</h2><p>الشحن والاستبدال والاسترجاع والخصوصية</p></div></div><div class="card"><div class="field"><label>سياسة الشحن والتوصيل</label><textarea></textarea></div><div class="field"><label>سياسة الاستبدال والاسترجاع</label><textarea></textarea></div><div class="field"><label>سياسة الخصوصية</label><textarea></textarea></div><button class="primary" onclick="toast('تم حفظ السياسات محلياً')">حفظ السياسات</button></div></section>
     <section class="page" id="design"><div class="page-title"><div><h2>التصميم والخطوط</h2><p>الخط العام وألوان المتجر</p></div></div><div class="card"><div class="form-grid"><div class="field"><label>اللون الأساسي</label><input id="designPrimary" type="color" value="#60391f"></div><div class="field"><label>اللون الذهبي</label><input id="designGold" type="color" value="#b88a50"></div><div class="field"><label>الخط العام</label><select id="designFont"><option value="Tajawal">Tajawal</option><option value="Cairo">Cairo</option><option value="Aref Ruqaa">Aref Ruqaa</option><option value="Amiri">Amiri</option></select></div></div><button class="primary" onclick="saveDesign()">حفظ التصميم</button></div></section>
     <section class="page" id="homepage"><div class="page-title"><div><h2>أقسام الصفحة الرئيسية</h2><p>تحكم بالعنوان والترتيب والإظهار</p></div></div><div class="card" id="homeSectionList"></div></section>
+<section class="page" id="announcements"><div class="page-title"><div><h2>الشريط المتحرك</h2><p>إضافة وتعديل وحذف نصوص الشريط</p></div><button class="primary" onclick="editAnnouncement()">+ إضافة نص</button></div><div class="card" id="announcementList"><div class="empty">جارٍ التحميل...</div></div></section>
 <section class="page" id="features"><div class="page-title"><div><h2>مميزات المتجر</h2><p>مثل الشحن المجاني والإرجاع السهل</p></div><button class="primary" onclick="editFeature()">+ إضافة ميزة</button></div><div class="card" id="featureList"></div></section>
 <section class="page" id="scents"><div class="page-title"><div><h2>الروائح</h2><p>الاختصارات الدائرية: عود، مسك، ورد...</p></div><button class="primary" onclick="editScent()">+ إضافة رائحة</button></div><div class="card" id="scentList"></div></section>
 <section class="page" id="navigation"><div class="page-title"><div><h2>قائمة المتجر</h2><p>روابط الهيدر والفوتر وترتيبها</p></div><button class="primary" onclick="editNavItem()">+ إضافة رابط</button></div><div class="card" id="navItemList"></div></section>
@@ -87,7 +88,7 @@
 
     <div class="modal" id="manageModal"><div class="modal-card"><div class="modal-head"><h3 id="manageTitle">إدارة</h3><button class="close" onclick="closeManage()">×</button></div><div id="manageFields"></div><button class="primary" id="manageSave">حفظ</button></div></div>
 <div class="modal" id="productModal"><div class="modal-card"><div class="modal-head"><h3 id="productModalTitle">إضافة منتج</h3><button class="close" onclick="closeProduct()">×</button></div><div class="form-grid">
-    <input type="hidden" id="pId"><div class="field"><label>اسم المنتج</label><input id="pName"></div><div class="field"><label>SKU</label><input id="pSku"></div><div class="field"><label>القسم</label><select id="pCategory"></select></div><div class="field"><label>السعر</label><input id="pPrice" type="number"></div><div class="field"><label>نسبة الخصم %</label><input id="pDiscount" type="number" value="0"></div><div class="field"><label>المخزون</label><input id="pStock" type="number" value="0"></div><div class="field"><label>حد المخزون المنخفض</label><input id="pLow" type="number" value="5"></div><div class="field"><label>ترتيب العرض</label><input id="pSort" type="number" value="0"></div><div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field"><label>الألوان (بفواصل)</label><input id="pColors"></div><div class="field"><label>المقاسات (بفواصل)</label><input id="pSizes"></div><div class="field full"><label>صورة المنتج</label><input id="pImageFile" type="file" accept="image/*"><input id="pImage" type="hidden"><img id="pImagePreview" class="preview-img hidden" alt="معاينة"></div><div class="full switch-row"><label class="check"><input id="pActive" type="checkbox" checked> نشط</label><label class="check"><input id="pFeatured" type="checkbox"> مميز</label><label class="check"><input id="pNew" type="checkbox"> جديد</label><label class="check"><input id="pBest" type="checkbox"> الأكثر مبيعاً</label></div>
+    <input type="hidden" id="pId"><div class="field"><label>اسم المنتج</label><input id="pName"></div><div class="field"><label>SKU</label><input id="pSku"></div><div class="field"><label>القسم</label><select id="pCategory"></select></div><div class="field"><label>السعر</label><input id="pPrice" type="number"></div><div class="field"><label>نسبة الخصم %</label><input id="pDiscount" type="number" value="0"></div><div class="field"><label>المخزون</label><input id="pStock" type="number" value="0"></div><div class="field"><label>حد المخزون المنخفض</label><input id="pLow" type="number" value="5"></div><div class="field"><label>ترتيب العرض</label><input id="pSort" type="number" value="0"></div><div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field"><label>الألوان (بفواصل)</label><input id="pColors"></div><div class="field"><label>المقاسات (بفواصل)</label><input id="pSizes"></div><div class="field full"><label>صورة المنتج</label><input id="pImageFile" type="file" accept="image/*"><input id="pImage" type="hidden"><img id="pImagePreview" class="preview-img hidden" alt="معاينة"></div><div class="full switch-row"><label class="check"><input id="pActive" type="checkbox" checked> نشط</label><label class="check"><input id="pFeatured" type="checkbox"> مميز</label><label class="check"><input id="pNew" type="checkbox"> جديد</label><label class="check"><input id="pBest" type="checkbox"> الأكثر مبيعاً</label><label class="check"><input id="pRecommended" type="checkbox"> قد يعجبك</label></div>
     </div><button class="primary" onclick="saveProduct()">حفظ المنتج</button></div></div>
 
     <script>
@@ -126,7 +127,7 @@ document.addEventListener("change",e=>{
    const pr=document.getElementById("pImagePreview");pr.src=URL.createObjectURL(e.target.files[0]);pr.classList.remove("hidden");
  }
 });
-renderAll();loadLiveAdmin();loadProductsLive();
+renderAll();loadLiveAdmin();loadProductsLive();loadAnnouncementsAdmin();
     }
     async function logout(){await sb.auth.signOut();location.href="./"}
     function showRecovery(){
@@ -303,7 +304,7 @@ async function openProduct(id){
     const g=id=>document.getElementById(id);
     ["pId","pName","pSku","pPrice","pDesc","pColors","pSizes","pImage"].forEach(k=>{if(g(k))g(k).value=""});
     g("pDiscount").value=0;g("pStock").value=0;g("pLow").value=5;g("pSort").value=0;
-    g("pActive").checked=true;g("pFeatured").checked=false;g("pNew").checked=false;g("pBest").checked=false;
+    g("pActive").checked=true;g("pFeatured").checked=false;g("pNew").checked=false;g("pBest").checked=false;g("pRecommended").checked=false;
     g("pImageFile").value="";g("pImagePreview").classList.add("hidden");
     if(p){
       g("pId").value=p.id;g("pName").value=p.name_ar||"";g("pSku").value=p.sku||"";
@@ -311,7 +312,7 @@ async function openProduct(id){
       g("pStock").value=p.stock||0;g("pLow").value=p.low_stock_threshold||5;g("pSort").value=p.sort_order||0;
       g("pDesc").value=p.description||"";g("pColors").value=(p.colors||[]).join(", ");g("pSizes").value=(p.sizes||[]).join(", ");
       g("pImage").value=p.main_image_url||"";g("pActive").checked=p.is_active!==false;g("pFeatured").checked=!!p.is_featured;
-      g("pNew").checked=!!p.is_new;g("pBest").checked=!!p.is_best_seller;
+      g("pNew").checked=!!p.is_new;g("pBest").checked=!!p.is_best_seller;g("pRecommended").checked=!!p.is_recommended;
       if(p.main_image_url){g("pImagePreview").src=p.main_image_url;g("pImagePreview").classList.remove("hidden")}
     }
     g("productModalTitle").textContent=p?"تعديل المنتج":"إضافة منتج";
@@ -451,6 +452,26 @@ let STORE_LIVE=null;
 async function loadStoreAdminSettings(){const {data}=await sb.from("store_settings").select("*").limit(1).maybeSingle();STORE_LIVE=data||null;if(!data)return;if(document.getElementById("whatsapp"))whatsapp.value=data.whatsapp||"";if(document.getElementById("phone"))phone.value=data.phone||"";if(document.getElementById("currency"))currency.value=data.currency||"ر.ي";if(document.getElementById("designFont"))designFont.value=data.font_family||"Tajawal";if(document.getElementById("designPrimary"))designPrimary.value=data.primary_color||"#60391f";if(document.getElementById("designGold"))designGold.value=data.gold_color||"#b88a50"}
 async function saveSettingsLive(){if(!STORE_LIVE)return toast("لم يتم العثور على إعدادات المتجر");const {error}=await sb.from("store_settings").update({whatsapp:whatsapp.value.trim(),phone:phone.value.trim(),currency:currency.value}).eq("id",STORE_LIVE.id);if(error)return toast(error.message);toast("تم حفظ العملة والإعدادات");loadStoreAdminSettings()}
 async function saveDesign(){if(!STORE_LIVE)return toast("لم يتم العثور على إعدادات المتجر");const {error}=await sb.from("store_settings").update({font_family:designFont.value,primary_color:designPrimary.value,gold_color:designGold.value}).eq("id",STORE_LIVE.id);if(error)return toast(error.message);toast("تم حفظ التصميم");loadStoreAdminSettings()}
+
+let ANNOUNCEMENTS_LIVE=[];
+async function loadAnnouncementsAdmin(){
+ const {data,error}=await sb.from("announcement_messages").select("*").order("sort_order");
+ if(error)return;
+ ANNOUNCEMENTS_LIVE=data||[];
+ const el=document.getElementById("announcementList");if(!el)return;
+ el.innerHTML=ANNOUNCEMENTS_LIVE.length?ANNOUNCEMENTS_LIVE.map(x=>`<div class="manage-item"><div><b>${E(x.text_ar)}</b><div class="hint">الترتيب ${x.sort_order||0} • ${x.is_active?"ظاهر":"مخفي"}</div></div><div class="row-actions"><button class="secondary" onclick="editAnnouncement('${x.id}')">تعديل</button><button class="danger" onclick="deleteAnnouncement('${x.id}')">حذف</button></div></div>`).join(""):'<div class="empty">لا توجد نصوص</div>';
+}
+function editAnnouncement(id){
+ const x=ANNOUNCEMENTS_LIVE.find(v=>String(v.id)===String(id))||{};
+ openManage(id?"تعديل النص":"إضافة نص",`<div class="form-grid"><div class="field full"><label>النص</label><input id="mAnnText" value="${E(x.text_ar||"")}"></div>${fld("الترتيب","mSort",x.sort_order||0,"number")}<div class="full">${chk("ظاهر","mActive",x.is_active!==false)}</div></div>`,async()=>{
+  const row={text_ar:document.getElementById("mAnnText").value.trim(),sort_order:+document.getElementById("mSort").value||0,is_active:document.getElementById("mActive").checked};
+  if(!row.text_ar)throw new Error("اكتب النص");
+  const {error}=id?await sb.from("announcement_messages").update(row).eq("id",id):await sb.from("announcement_messages").insert(row);
+  if(error)throw error;closeManage();toast("تم الحفظ");loadAnnouncementsAdmin();
+ });
+}
+async function deleteAnnouncement(id){if(!confirm("حذف النص؟"))return;const {error}=await sb.from("announcement_messages").delete().eq("id",id);if(error)return toast(error.message);loadAnnouncementsAdmin()}
+window.editAnnouncement=editAnnouncement;window.deleteAnnouncement=deleteAnnouncement;
 function renderAll(){renderCategories();renderProducts();renderOrders();renderCoupons();updateStats()}
     </script>
     </body>

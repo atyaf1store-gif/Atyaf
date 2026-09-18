@@ -819,13 +819,14 @@ function productSlug(v){
  const base=String(v||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^\u0600-\u06FFa-z0-9-]/gi,"").replace(/-+/g,"-").replace(/^-|-$/g,"");
  return base||("product-"+Date.now());
 }
-function categoryByName(name){return categories.find(c=>String(c.name||"").trim()===String(name||"").trim())||null}
+function categoryDisplayName(c){return String(c?.name_ar||c?.name||"").trim()}
+function categoryByName(name){return categories.find(c=>categoryDisplayName(c)===String(name||"").trim())||null}
 function normalizeProductRow(p){
  const cat=categories.find(c=>String(c.id)===String(p.category_id||""));
  const imgs=Array.isArray(p.images)?p.images:(p.main_image_url?[p.main_image_url]:[]);
  return {...p,
    name:p.name_ar||p.name||"",
-   category:p.category||cat?.name||"",
+   category:p.category||categoryDisplayName(cat)||"",
    images:imgs,
    discount:Number(p.discount_percent??p.discount??0),
    is_active:p.is_active!==undefined?p.is_active:(p.active!==false),
@@ -899,7 +900,7 @@ async function loadAll(){
   safe(db.rpc("admin_customer_report")),
   safe(db.from("settings").select("*"))
  ]);
- categories=cat||[];products=(p||[]).map(normalizeProductRow);variants=v||[];bundles=b||[];gifts=g||[];coupons=c||[];orders=o||[];reviews=r||[];relations=rel||[];customers=customerReport||[];settingsRows=settings||[];
+ categories=(cat||[]).map(c=>({...c,name:categoryDisplayName(c)}));products=(p||[]).map(normalizeProductRow);variants=v||[];bundles=b||[];gifts=g||[];coupons=c||[];orders=o||[];reviews=r||[];relations=rel||[];customers=customerReport||[];settingsRows=settings||[];
  parseSettings();renderStats(stats||{});fillProductCategories();fillProducts();renderAdminProducts();renderCategories();renderVariants();renderBundles();renderGifts();renderCoupons();renderCustomers();renderOrders();renderReviews();renderRelations();renderPoliciesEditor();fillSimpleSettings();
 }
 function parseSettings(){generalSettings=settingsRows.find(x=>x.id==="general")?.data||{};paymentSettings=settingsRows.find(x=>x.id==="payment")?.data||{};designSettings=settingsRows.find(x=>x.id==="design")?.data||{};adSettings=settingsRows.find(x=>x.id==="ads")?.data||{};footerSettings=settingsRows.find(x=>x.id==="footer")?.data||{}}
@@ -915,11 +916,11 @@ async function saveCategory(){
  const btn=$("saveCategoryButton");btn.disabled=true;
  try{
   if(id){
-   const{error}=await db.from("categories").update({name,sort_order}).eq("id",id);if(error)throw error;
+   const{error}=await db.from("categories").update({name_ar:name,name,sort_order}).eq("id",id);if(error)throw error;
    if(oldName&&oldName!==name){const{error:e2}=await db.from("products").update({category:name}).eq("category",oldName);if(e2)throw e2}
    toast("تم تعديل القسم ✓");
   }else{
-   const{error}=await db.from("categories").insert({name,sort_order});if(error)throw error;toast("تمت إضافة القسم ✓");
+   const{error}=await db.from("categories").insert({name_ar:name,name,sort_order});if(error)throw error;toast("تمت إضافة القسم ✓");
   }
   resetCategoryForm();await loadAll();
  }catch(e){alert("تعذر حفظ القسم:\n"+(e.message||"حدث خطأ"))}

@@ -835,10 +835,12 @@ function previewSelectedAdFiles(){$("newAdFilesPreview").innerHTML=Array.from($(
 
 async function getSession(){const{data,error}=await db.auth.getSession();if(error)return null;return data?.session||null}
 async function isAdmin(){
- const s=await getSession(); if(!s?.user)return false;
+ const s=await getSession();
+ if(!s?.user)return false;
  if(String(s.user.email||"").trim().toLowerCase()!==ADMIN_EMAIL.toLowerCase())return false;
- const{data,error}=await db.from("store_admins").select("user_id").eq("user_id",s.user.id).maybeSingle();
- return !error&&!!data;
+ const {data,error}=await db.rpc("is_store_admin");
+ if(error)throw error;
+ return data===true;
 }
 async function login(){
  const msg=$("msg"), b=$("loginButton"), password=$("password").value;
@@ -851,7 +853,7 @@ async function login(){
   const{data,error}=await Promise.race([loginRequest,timeout]);
   if(error)throw error;
   if(!data?.session)throw new Error("تعذر إنشاء جلسة تسجيل الدخول");
-  if(!await isAdmin())throw new Error("تم تسجيل البريد، لكن هذا الحساب غير مصرح له كمدير في store_admins");
+  if(!await isAdmin())throw new Error("هذا الحساب غير مصرح له كمدير متجر أطياف");
   $("login").classList.add("hidden");$("app").classList.remove("hidden");renderNav();await loadAll();$("password").value="";toast("تم تسجيل الدخول بنجاح ✓");
  }catch(e){
   let t=e?.message||"تعذر تسجيل الدخول";

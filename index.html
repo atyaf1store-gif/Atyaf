@@ -94,7 +94,7 @@ button,input,textarea,select{font:inherit} button{cursor:pointer} a{color:inheri
 .sunrise{width:100%;display:flex;justify-content:center;margin:4px 0 12px}.sunrise svg{width:260px;max-width:70vw;opacity:.7}
 
 .ad-section{width:min(900px,calc(100% - 30px));margin:15px auto 22px;display:none}.ad-wrap{width:100%;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--cream-deep);box-shadow:var(--shadow);position:relative}.ad-wrap img,.ad-wrap video{display:block;width:100%;max-height:420px;object-fit:cover}.ad-slide{display:none}.ad-slide.active{display:block}
-.bottom-ad-section{width:100%;margin:20px 0 0;display:none}.bottom-ad-section>a{display:block;width:100%}.bottom-ad-section .ad-wrap{width:100%;border-radius:0;box-shadow:none}.bottom-ad-section .ad-wrap img,.bottom-ad-section .ad-wrap video{display:block;width:100%;height:auto;max-height:520px;object-fit:cover}
+.bottom-ad-section{width:min(900px,calc(100% - 30px));margin:20px auto 28px;display:none}.bottom-ad-section .ad-wrap{width:100%}.bottom-ad-section .ad-wrap img,.bottom-ad-section .ad-wrap video{display:block;width:100%;max-height:420px;object-fit:cover}
 
 /* ===== GIFT STRIP ===== */
 .gift-strip{width:min(980px,calc(100% - 30px));margin:0 auto 28px;padding:18px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(255,251,240,.95),rgba(241,221,166,.78));box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;align-items:center;gap:18px}
@@ -421,8 +421,8 @@ button,input,textarea,select{font:inherit} button{cursor:pointer} a{color:inheri
   #adWrap video{display:block;width:100%;height:auto;max-height:300px;object-fit:cover;}
   #adWrap .ad-slide{display:none;}
   #adWrap .ad-slide.active{display:block !important;}
-  #bottomAdSection{width:100%;margin:18px 0 0;padding:0;}
-  #bottomAdWrap{width:100%;min-height:0;border-radius:0;overflow:hidden;background:var(--card);}
+  #bottomAdSection{width:calc(100% - 20px);margin:18px auto 22px;padding:0;}
+  #bottomAdWrap{width:100%;min-height:0;border-radius:18px;overflow:hidden;background:var(--card);}
   #bottomAdWrap img{display:block;width:100%;height:auto;min-height:120px;max-height:260px;object-fit:cover;}
   #bottomAdWrap video{display:block;width:100%;height:auto;max-height:300px;object-fit:cover;}
   #bottomAdWrap .ad-slide{display:none;}
@@ -1292,6 +1292,73 @@ body{background:var(--atyaf-bg)!important;color:var(--atyaf-text)!important}
  #productsArea .ibraq-products-grid{gap:12px 8px!important}#productsArea .ibraq-products-grid .product-card{padding:7px!important;border-radius:12px!important}#productsArea .ibraq-products-grid .product-card h3{font-size:13px!important}#productsArea .ibraq-products-grid .add-btn{border-radius:7px!important}
 }
 
+
+
+/* =========================================================
+   ATYAF — PREMIUM BOTTOM AD BANNER
+   شاشة إعلانات سفلية عريضة قبل الفوتر
+========================================================= */
+#bottomAdSection.bottom-ad-section{
+  display:none;
+  width:min(1180px,calc(100% - 36px))!important;
+  max-width:1180px!important;
+  margin:34px auto 28px!important;
+  padding:0!important;
+  position:relative!important;
+  overflow:visible!important;
+}
+#bottomAdSection #bottomAdLink{
+  display:block!important;
+  width:100%!important;
+  border-radius:22px!important;
+  overflow:hidden!important;
+  background:#f7f3eb!important;
+  box-shadow:0 10px 28px rgba(32,48,28,.08)!important;
+}
+#bottomAdSection #bottomAdWrap{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+  height:260px!important;
+  min-height:260px!important;
+  max-height:260px!important;
+  overflow:hidden!important;
+  border:1px solid rgba(32,48,28,.08)!important;
+  border-radius:22px!important;
+  background:#f7f3eb!important;
+  box-shadow:none!important;
+}
+#bottomAdSection #bottomAdWrap img,
+#bottomAdSection #bottomAdWrap video{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  padding:0!important;
+  margin:0!important;
+  border-radius:0!important;
+}
+#bottomAdSection #bottomAdWrap .ad-slide{display:none!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+#bottomAdSection #bottomAdWrap .ad-slide.active{display:block!important}
+
+@media(max-width:768px){
+  #bottomAdSection.bottom-ad-section{
+    width:calc(100% - 22px)!important;
+    margin:24px auto 20px!important;
+  }
+  #bottomAdSection #bottomAdLink,
+  #bottomAdSection #bottomAdWrap{border-radius:16px!important}
+  #bottomAdSection #bottomAdWrap{
+    height:clamp(150px,38vw,220px)!important;
+    min-height:150px!important;
+    max-height:220px!important;
+  }
+}
+
 </style>
 </head>
 
@@ -1608,9 +1675,6 @@ async function fetchSettings(){
   designSettings=settingValue("design");
   adSettings=settingValue("ads");
   bottomAdSettings=settingValue("bottom_ads");
-  if(!Object.keys(bottomAdSettings||{}).length) bottomAdSettings=settingValue("bottomAds");
-  if(!Object.keys(bottomAdSettings||{}).length) bottomAdSettings=settingValue("bottom_ad");
-  if(!Object.keys(bottomAdSettings||{}).length) bottomAdSettings=settingValue("ads_bottom");
   giftSettings=settingValue("gifts");
   applySettings();
 }
@@ -1879,7 +1943,6 @@ function renderAdvertisement(){
 function normalizeBottomAdMedia(){
   const raw=bottomAdSettings||{};
   const media=[];
-  if(Array.isArray(raw)) raw.forEach(v=>{ if(typeof v==="string"&&v.trim()) media.push(v.trim()); else if(v&&typeof v==="object"){ const u=v.url||v.src||v.image_url||v.imageUrl||v.media_url||v.mediaUrl||v.video_url||v.videoUrl; if(u) media.push(String(u).trim()); } });
   const pushValue=value=>{
     if(!value)return;
     if(Array.isArray(value)){value.forEach(pushValue);return;}
@@ -1895,8 +1958,7 @@ function renderBottomAdvertisement(){
   if(!section||!wrap||!linkEl)return;
   const media=normalizeBottomAdMedia();
   const s=bottomAdSettings||{};
-  const disabled=[s.enabled,s.is_active,s.active,s.show].some(v=>v===false||String(v).toLowerCase()==="false"||String(v)==="0");
-  if(disabled||!media.length){section.style.display="none";wrap.innerHTML="";return;}
+  if(s.enabled===false||s.is_active===false||s.active===false||s.show===false||!media.length){section.style.display="none";wrap.innerHTML="";return;}
   section.style.display="block";
   const link=s.link||s.url||s.linkUrl||s.link_url||"";
   if(link){linkEl.href=link;linkEl.style.pointerEvents="auto";}else{linkEl.removeAttribute("href");linkEl.style.pointerEvents="none";}

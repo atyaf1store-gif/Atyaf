@@ -925,23 +925,53 @@ async function saveCategory(){
   }
   const btn=$("saveCategoryButton");
   btn.disabled=true;
-  const nameColumn=categoryNameColumn();
   try{
-    const row={sort_order};
-    row[nameColumn]=name;
-    if(id){
-      const{error}=await db.from("categories").update(row).eq("id",id);
-      if(error)throw error;
-      if(oldName&&oldName!==name){
-        const{error:e2}=await db.from("products").update({category:name}).eq("category",oldName);
-        if(e2)throw e2;
+    // إذا كان جدول الأقسام فارغاً فلا يمكن استنتاج اسم عمود الاسم من أول سجل.
+    // نجرب أسماء الأعمدة المدعومة فعلياً حتى نجد العمود الموجود في قاعدة أطياف.
+    const detected=categories.length ? categoryNameColumn() : null;
+    const candidates=[detected,"name_ar","title","label","category_name","name"]
+      .filter((v,i,a)=>v&&a.indexOf(v)===i);
+
+    let saved=false;
+    let lastError=null;
+
+    for(const nameColumn of candidates){
+      const row={sort_order};
+      row[nameColumn]=name;
+
+      let result;
+      if(id){
+        result=await db.from("categories").update(row).eq("id",id).select();
+      }else{
+        result=await db.from("categories").insert(row).select();
       }
+
+      if(!result.error){
+        saved=true;
+        break;
+      }
+
+      lastError=result.error;
+
+      // ننتقل للاسم التالي فقط إذا كان الخطأ أن العمود غير موجود.
+      const msg=String(result.error?.message||"").toLowerCase();
+      if(!(msg.includes("column") && (msg.includes("does not exist") || msg.includes("schema cache") || msg.includes("could not find")))){
+        throw result.error;
+      }
+    }
+
+    if(!saved)throw lastError||new Error("تعذر تحديد عمود اسم القسم في قاعدة البيانات");
+
+    if(id&&oldName&&oldName!==name){
+      const{error:e2}=await db.from("products").update({category:name}).eq("category",oldName);
+      if(e2)throw e2;
+      toast("تم تعديل القسم ✓");
+    }else if(id){
       toast("تم تعديل القسم ✓");
     }else{
-      const{error}=await db.from("categories").insert(row);
-      if(error)throw error;
       toast("تمت إضافة القسم ✓");
     }
+
     resetCategoryForm();
     await loadAll();
   }catch(e){

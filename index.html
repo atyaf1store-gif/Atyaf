@@ -3571,6 +3571,8 @@ function closePolicy(){$("policyModal").classList.remove("show");updateMainScrim
 
 function renderSkeletons(){if(generalSettings.featureSkel!==true)return;$("productsArea").innerHTML='<div class="empty">جارِ تحميل المنتجات…</div>'}
 async function initializeStore(){
+  // حماية: لا تبقى شاشة البداية عالقة حتى لو فشل اتصال خارجي.
+  setTimeout(()=>{const sp=$("storeSplash");if(sp){sp.classList.add("hide");setTimeout(()=>sp.remove(),700)}},4500);
   $("cartCount").textContent="0";
   await fetchSettings();
   renderSkeletons();

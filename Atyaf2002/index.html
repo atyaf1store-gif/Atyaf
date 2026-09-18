@@ -56,7 +56,7 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
 <div id="login" class="login">
 <div class="box">
 <h1 class="login-title">أطياف PRO</h1>
-<div class="login-security">🔐 لوحة الإدارة محمية. يجب إدخال كلمة مرور حساب الإدارة في كل مرة يتم فيها فتح الصفحة.</div>
+<div class="login-security">🔐 لوحة إدارة أطياف مستقلة ومحمية عبر Supabase Auth الخاص بمشروع أطياف.</div>
 <label>البريد</label>
 <input id="email" value="omara1store@gmail.com" readonly>
 <label>كلمة المرور</label>
@@ -3967,27 +3967,6 @@ async function removeRow(table,id){if(!confirm("تأكيد الحذف؟"))return
 async function startAdmin(){try{await db.auth.signOut({scope:"local"})}catch{};$("app").classList.add("hidden");$("login").classList.remove("hidden");$("password").value="";setTimeout(()=>$("password")?.focus(),150)}
 db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT"){$("app").classList.add("hidden");$("login").classList.remove("hidden")}})
 startAdmin();
-
-/* ===== ATYAF ADMIN IDENTITY LOCK ===== */
-function enforceAtyafAdminIdentity(){
-  document.title="لوحة إدارة أطياف PRO";
-  document.querySelectorAll("*").forEach(el=>{
-    if(el.children.length===0 && typeof el.textContent==="string"){
-      el.textContent=el.textContent
-        .replaceAll("متجر الشعيبي","متجر أطياف")
-        .replaceAll("لوحة إدارة الشعيبي","لوحة إدارة أطياف")
-        .replaceAll("الشعيبي PRO","أطياف PRO")
-        .replaceAll("الشعيبي","أطياف")
-        .replaceAll("ALSHUAIIBE STORE","ATYAF STORE")
-        .replaceAll("ALSHUAIIBE","ATYAF");
-    }
-  });
-}
-document.addEventListener("DOMContentLoaded",()=>{
-  enforceAtyafAdminIdentity();
-  new MutationObserver(()=>enforceAtyafAdminIdentity()).observe(document.body,{childList:true,subtree:true});
-});
-
 </script>
 </body>
 </html>

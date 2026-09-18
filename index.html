@@ -57,14 +57,21 @@ body{background:#fff}
 @media(max-width:520px){.desktopNav{justify-content:flex-start}.hero{padding:0 8px;margin-top:8px}.heroSlider,.heroSlide img,.heroFallback{min-height:250px;height:250px}.slideOverlay h2,.heroFallback h2{font-size:30px}.featuresIn{justify-content:flex-start}.featureItem{min-width:185px}.categoryGrid{grid-template-columns:repeat(2,1fr)}.productSection .products{grid-template-columns:repeat(2,1fr)}.homeBlock{padding:22px 9px}.dynamicBanner{padding:0 9px}}
 
 .emptyState{grid-column:1/-1;width:100%;min-height:120px;border:1px dashed #ded7ce;background:#fcfbf9;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px;color:#766d65}.emptyState .emptyIcon{font-size:24px;color:#b88a50;margin-bottom:5px}.emptyState b{color:#40362e}.emptyState small{margin-top:5px}.categoryGrid>.emptyState{grid-column:1/-1}.scentRow>.emptyState{min-width:100%}
+
+.movingAnnouncement{overflow:hidden;white-space:nowrap;padding:9px 0;border-block:1px solid #eee;color:var(--brown);font-weight:700}
+.movingAnnouncement span{display:inline-block;min-width:100%;animation:atyafMove 18s linear infinite}
+@keyframes atyafMove{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.productActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px 10px}.giftBtn{background:#fff;border:1px solid var(--gold);color:var(--brown);border-radius:6px;font-weight:800}
+.productDetailGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.productDetailGrid img{width:100%;max-height:420px;object-fit:contain;border-radius:15px}
+@media(max-width:620px){.productDetailGrid{grid-template-columns:1fr}.actions{gap:3px}.iconbtn{font-size:11px;padding:7px}}
 </style>
 
 </head>
     <body>
     <div class="topline" id="announcement">أهلاً بك في متجر أطياف</div>
-    <header class="header"><div class="headin"><div class="brand"><div class="logo" id="logo">أطياف</div><div><h1 id="storeName">متجر أطياف</h1><small id="storeEn">ATYAF STORE</small></div></div><div class="actions"><button class="iconbtn" onclick="openFav()">♡<span class="count" id="favCount">0</span></button><button class="iconbtn" onclick="openCart()">السلة <span class="count" id="cartCount">0</span></button></div></div></header>
+    <header class="header"><div class="headin"><div class="brand"><div class="logo" id="logo">أطياف</div><div><h1 id="storeName">متجر أطياف</h1><small id="storeEn">ATYAF STORE</small></div></div><div class="actions"><button class="iconbtn" onclick="openSearch()">⌕</button><button class="iconbtn" onclick="openTrack()">تتبع</button><button class="iconbtn" onclick="openFav()">♡<span class="count" id="favCount">0</span></button><button class="iconbtn" onclick="openCart()">السلة <span class="count" id="cartCount">0</span></button></div></div></header>
 
-    <nav class="desktopNav" id="dynamicNav"></nav>
+    <nav class="desktopNav" id="dynamicNav"></nav><div class="movingAnnouncement" id="movingAnnouncement"></div>
 <section class="hero"><div class="heroSlider" id="heroSlider"><div class="heroFallback"><div><h2>متجر أطياف</h2><p id="heroDesc">تجربة تسوق أنيقة ومنتجات مختارة بعناية.</p></div></div></div></section>
 <div class="featuresBar"><div class="featuresIn" id="featuresBar"></div></div>
 <div id="dynamicHome"></div>
@@ -76,8 +83,9 @@ body{background:#fff}
     <div class="drawer" id="cartDrawer" onclick="if(event.target===this)closeDrawers()"><div class="panel"><div class="panelHead"><h2>سلة التسوق</h2><button class="close" onclick="closeDrawers()">×</button></div><div id="cartItems"></div><div class="total">الإجمالي: <span id="cartTotal">0 ر.ي</span></div><button class="primary" style="width:100%" onclick="openCheckout()">إتمام الطلب</button></div></div>
     <div class="drawer" id="favDrawer" onclick="if(event.target===this)closeDrawers()"><div class="panel"><div class="panelHead"><h2>المفضلة</h2><button class="close" onclick="closeDrawers()">×</button></div><div id="favItems"></div></div></div>
 
-    <div class="modal" id="checkoutModal"><div class="modalCard"><div class="panelHead"><h2>إتمام الطلب</h2><button class="close" onclick="closeModal('checkoutModal')">×</button></div>
-    <div class="field"><label>الاسم</label><input id="coName"></div><div class="field"><label>رقم الهاتف</label><input id="coPhone"></div><div class="field"><label>المدينة / المنطقة</label><input id="coCity"></div><div class="field"><label>العنوان</label><textarea id="coAddress"></textarea></div><div class="field"><label>طريقة الدفع</label><select id="coPayment"></select></div><div class="field"><label>كوبون الخصم</label><input id="coCoupon"><button class="secondary" onclick="applyCoupon()">تطبيق</button></div><div class="field"><label>ملاحظات</label><textarea id="coNotes"></textarea></div><div class="total">الإجمالي النهائي: <span id="checkoutTotal"></span></div><button class="primary" style="width:100%" onclick="submitOrder()">تأكيد الطلب</button></div></div>
+    <div class="modal" id="productDetailModal"><div class="modalCard"><div class="panelHead"><h2>تفاصيل المنتج</h2><button class="close" onclick="closeModal('productDetailModal')">×</button></div><div id="productDetailBody"></div></div></div>
+<div class="modal" id="checkoutModal"><div class="modalCard"><div class="panelHead"><h2>إتمام الطلب</h2><button class="close" onclick="closeModal('checkoutModal')">×</button></div>
+    <div class="field"><label>الاسم</label><input id="coName"></div><div class="field"><label>رقم الهاتف</label><input id="coPhone"></div><div class="field"><label>المدينة / المنطقة</label><input id="coCity"></div><div class="field"><label>العنوان</label><textarea id="coAddress"></textarea></div><div class="field"><label>طريقة الدفع</label><select id="coPayment"></select></div><div class="field"><label>كوبون الخصم</label><input id="coCoupon"><button class="secondary" onclick="applyCoupon()">تطبيق</button></div><div id="giftCheckoutFields" class="hidden"><h3>بيانات الهدية</h3><div class="field"><label>اسم المستلم</label><input id="giftRecipientName"></div><div class="field"><label>رقم المستلم</label><input id="giftRecipientPhone"></div><div class="field"><label>اسم المرسل</label><input id="giftSenderName"></div><div class="field"><label>رقم المرسل</label><input id="giftSenderPhone"></div><div class="field"><label>رسالة الإهداء</label><textarea id="giftMessage"></textarea></div></div><div class="field"><label>ملاحظات</label><textarea id="coNotes"></textarea></div><div class="total">الإجمالي النهائي: <span id="checkoutTotal"></span></div><button class="primary" style="width:100%" onclick="submitOrder()">تأكيد الطلب</button></div></div>
 
     <div class="modal" id="trackModal"><div class="modalCard"><div class="panelHead"><h2>تتبع الطلب</h2><button class="close" onclick="closeModal('trackModal')">×</button></div><div class="field"><label>رقم الطلب</label><input id="trackNo" placeholder="مثال 100001"></div><div class="field"><label>رقم الهاتف</label><input id="trackPhone"></div><button class="primary" onclick="trackOrder()">بحث</button><div id="trackResult"></div></div></div>
 
@@ -97,7 +105,11 @@ let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(lo
     function saveLocal(){localStorage.setItem("atyaf_cart",JSON.stringify(CART));localStorage.setItem("atyaf_fav",JSON.stringify(FAV));updateCounts()}
     function updateCounts(){$("cartCount").textContent=CART.reduce((s,x)=>s+x.qty,0);$("favCount").textContent=FAV.length}
     function finalPrice(p){return Math.max(0,(+p.price||0)*(1-(+p.discount_percent||0)/100))}
-    async function load(){
+    
+function openSearch(){const q=prompt("ابحث عن منتج");if(q===null)return;const v=q.trim().toLowerCase();const p=PRODUCTS.find(x=>(x.name_ar||"").toLowerCase().includes(v)||(x.description||"").toLowerCase().includes(v));p?openProductDetail(p.id):toast("لا توجد نتائج")}
+function openProductDetail(id){const p=PRODUCTS.find(x=>String(x.id)===String(id));if(!p)return;$("productDetailBody").innerHTML=`<div class="productDetailGrid"><div>${p.main_image_url?`<img src="${esc(p.main_image_url)}">`:""}</div><div><h2>${esc(p.name_ar)}</h2><p>${esc(p.description||"")}</p><div class="price">${money(finalPrice(p))}</div><div class="productActions"><button class="primary" onclick="addCart('${p.id}');closeModal('productDetailModal')">إضافة للسلة</button><button class="giftBtn" onclick="buyAsGift('${p.id}');closeModal('productDetailModal')">شراء كهدية 🎁</button></div></div></div>`;$("productDetailModal").classList.add("show")}
+function buyAsGift(id){const p=PRODUCTS.find(x=>String(x.id)===String(id));if(!p)return;const x=CART.find(v=>String(v.id)===String(id)&&v.is_gift);if(x)x.qty++;else CART.push({id:p.id,qty:1,is_gift:true});saveLocal();toast("تمت إضافته كهدية 🎁")}
+async function load(){
      const queries=[
       sb.from("store_settings").select("*").limit(1).maybeSingle(),
       sb.from("categories").select("*").eq("is_active",true).order("sort_order"),
@@ -114,7 +126,8 @@ let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(lo
       sb.from("navigation_items").select("*").eq("is_active",true).order("sort_order"),
       sb.from("home_sections").select("*").eq("is_active",true).order("sort_order"),
       sb.from("social_links").select("*").eq("is_active",true).order("sort_order"),
-      sb.from("product_scents").select("*")
+      sb.from("product_scents").select("*"),
+       sb.from("announcement_messages").select("*").eq("is_active",true).order("sort_order")
      ];
      const results=await Promise.all(queries.map(q=>q.then(r=>r).catch(error=>({data:null,error}))));
      results.forEach((r,i)=>{if(r?.error)console.warn("ATYAF query",i,r.error.message||r.error)});
@@ -131,6 +144,7 @@ let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(lo
      HOME_SECTIONS=results[13]?.data||[];
      SOCIALS=results[14]?.data||[];
      PRODUCT_SCENTS=results[15]?.data||[];
+      window.ANNOUNCEMENTS=results[16]?.data||[];
 
      // Defaults guarantee that the storefront structure never disappears.
      if(!HOME_SECTIONS.length) HOME_SECTIONS=defaultHomeSections();
@@ -167,7 +181,8 @@ let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(lo
        {section_key:"offers",title_ar:"العروض",sort_order:80,is_active:true},
        {section_key:"gifts",title_ar:"الهدايا",sort_order:90,is_active:true},
        {section_key:"bundles",title_ar:"الباقات",sort_order:100,is_active:true},
-       {section_key:"reviews",title_ar:"آراء العملاء",sort_order:110,is_active:true}
+       {section_key:"recommended",title_ar:"قد يعجبك",sort_order:95,is_active:true},
+        {section_key:"reviews",title_ar:"آراء العملاء",sort_order:110,is_active:true}
       ];
     }
 
@@ -238,6 +253,7 @@ function productsForSection(k){
  if(k==="featured") return PRODUCTS.filter(p=>p.is_featured===true);
  if(k==="new_products") return PRODUCTS.filter(p=>p.is_new===true);
  if(k==="offers") return PRODUCTS.filter(p=>Number(p.discount_percent||0)>0);
+ if(k==="recommended") return PRODUCTS.filter(p=>p.is_recommended===true);
  return [];
 }
 function renderGiftSection(x){return `<section class="homeBlock" id="gifts">${sectionHead(x)}<div class="horizontal" id="giftCards"></div></section>`}
@@ -270,7 +286,7 @@ function productCard(p){const fp=finalPrice(p);return `<article class="product">
     function qty(id,n){const x=CART.find(x=>x.id===id),p=PRODUCTS.find(p=>p.id===id);if(!x)return;x.qty=Math.max(1,Math.min(p.stock,x.qty+n));renderCart()}
     function removeCart(id){CART=CART.filter(x=>x.id!==id);renderCart()}
     function cartSubtotal(){return CART.reduce((s,x)=>{const p=PRODUCTS.find(p=>p.id===x.id);return s+(p?finalPrice(p)*x.qty:0)},0)}
-    function openCheckout(){if(!CART.length)return toast("السلة فارغة");closeDrawers();COUPON=null;$("checkoutTotal").textContent=money(cartSubtotal());$("checkoutModal").classList.add("show")}
+    function openCheckout(){document.getElementById("giftCheckoutFields")?.classList.toggle("hidden",!CART.some(x=>x.is_gift));if(!CART.length)return toast("السلة فارغة");closeDrawers();COUPON=null;$("checkoutTotal").textContent=money(cartSubtotal());$("checkoutModal").classList.add("show")}
     function closeModal(id){$(id).classList.remove("show")}
     async function applyCoupon(){const code=$("coCoupon").value.trim().toUpperCase();if(!code)return;const {data,error}=await sb.from("coupons").select("*").eq("code",code).eq("is_active",true).maybeSingle();if(error||!data)return toast("الكوبون غير صالح");const now=new Date();if(data.starts_at&&now<new Date(data.starts_at))return toast("الكوبون لم يبدأ بعد");if(data.ends_at&&now>new Date(data.ends_at))return toast("انتهت صلاحية الكوبون");if(data.usage_limit&&data.used_count>=data.usage_limit)return toast("انتهى استخدام الكوبون");if(cartSubtotal()<(+data.min_order_amount||0))return toast("قيمة الطلب أقل من الحد المطلوب");COUPON=data;$("checkoutTotal").textContent=money(calcTotal());toast("تم تطبيق الكوبون")}
     function calcTotal(){let total=cartSubtotal();if(COUPON){const d=COUPON.discount_type==="percentage"?total*(+COUPON.discount_value/100):+COUPON.discount_value;total-=Math.min(d,+COUPON.max_discount||d)}return Math.max(0,total)}

@@ -233,11 +233,12 @@ function renderScentSection(x){return `<section class="homeBlock" id="scents">${
 function filterScent(id){window._scentFilter=PRODUCT_SCENTS.filter(x=>x.scent_id===id).map(x=>x.product_id);renderProducts();document.getElementById("shop")?.scrollIntoView({behavior:"smooth"})}
 function renderProductSection(x){return `<section class="homeBlock productSection" id="${x.section_key==="featured"?"shop":x.section_key}">${sectionHead(x,x.section_key==="featured"?"shop":"")}<div class="products" id="products-${x.section_key}"></div></section>`}
 function productsForSection(k){
- if(k==="best_sellers"){const a=PRODUCTS.filter(p=>p.is_best_seller);return a.length?a:PRODUCTS.slice(0,10)}
- if(k==="featured"){const a=PRODUCTS.filter(p=>p.is_featured);return a.length?a:PRODUCTS}
- if(k==="new_products"){const a=PRODUCTS.filter(p=>p.is_new);return a.length?a:PRODUCTS.slice(0,10)}
- if(k==="offers")return PRODUCTS.filter(p=>+p.discount_percent>0)
- return PRODUCTS
+ // لا يوجد أي fallback: كل قسم يعرض فقط المنتجات المفعّل لها خياره.
+ if(k==="best_sellers") return PRODUCTS.filter(p=>p.is_best_seller===true);
+ if(k==="featured") return PRODUCTS.filter(p=>p.is_featured===true);
+ if(k==="new_products") return PRODUCTS.filter(p=>p.is_new===true);
+ if(k==="offers") return PRODUCTS.filter(p=>Number(p.discount_percent||0)>0);
+ return [];
 }
 function renderGiftSection(x){return `<section class="homeBlock" id="gifts">${sectionHead(x)}<div class="horizontal" id="giftCards"></div></section>`}
 function renderBundleSection(x){return `<section class="homeBlock" id="bundles">${sectionHead(x)}<div class="horizontal" id="bundleCards"></div></section>`}
@@ -250,7 +251,13 @@ function renderCats(){if(!$("cats"))return;$("cats").innerHTML=`<button class="c
  ["best_sellers","featured","new_products","offers"].forEach(k=>{
    const el=document.getElementById("products-"+k);if(!el)return;
    let a=productsForSection(k).filter(p=>(!q||(p.name_ar||"").toLowerCase().includes(q)||(p.description||"").toLowerCase().includes(q)||(p.sku||"").toLowerCase().includes(q))&&(!ids||ids.includes(p.id)));
-   el.innerHTML=a.length?a.slice(0,10).map(productCard).join(""):emptyBlock(k==="offers"?"لا توجد عروض حالياً":"لا توجد منتجات مضافة حالياً");
+   const emptyText={
+     best_sellers:"لا توجد منتجات محددة كأكثر مبيعاً",
+     featured:"لا توجد منتجات مميزة",
+     new_products:"لا توجد منتجات محددة كوصل حديثاً",
+     offers:"لا توجد عروض حالياً"
+   }[k]||"لا توجد منتجات";
+   el.innerHTML=a.length?a.slice(0,10).map(productCard).join(""):emptyBlock(emptyText);
  });
 }
 function productCard(p){const fp=finalPrice(p);return `<article class="product"><div class="pic">${p.main_image_url?`<img src="${esc(p.main_image_url)}" alt="${esc(p.name_ar)}">`:"صورة المنتج"}</div><div class="badges">${+p.discount_percent>0?`<span class="badge">خصم ${p.discount_percent}%</span>`:""}${p.is_new?'<span class="badge gold">جديد</span>':""}</div><button class="fav" onclick="toggleFav('${p.id}')">${FAV.includes(p.id)?"♥":"♡"}</button><div class="info"><h4>${esc(p.name_ar)}</h4><div class="desc">${esc(p.short_description||p.description||"")}</div><div><span class="price">${money(fp)}</span>${+p.discount_percent>0?`<span class="old">${money(p.price)}</span>`:""}</div><button class="primary" ${p.stock<=0?"disabled":""} onclick="addCart('${p.id}')">${p.stock>0?"إضافة للسلة":"نفد المخزون"}</button></div></article>`}

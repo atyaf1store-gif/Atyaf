@@ -1319,9 +1319,9 @@ body{background:var(--atyaf-bg)!important;color:var(--atyaf-text)!important}
   display:block!important;
   position:relative!important;
   width:100%!important;
-  height:260px!important;
-  min-height:260px!important;
-  max-height:260px!important;
+  height:300px!important;
+  min-height:300px!important;
+  max-height:300px!important;
   overflow:hidden!important;
   border:1px solid rgba(32,48,28,.08)!important;
   border-radius:22px!important;
@@ -1941,7 +1941,11 @@ function renderAdvertisement(){
 }
 
 function normalizeBottomAdMedia(){
-  const raw=bottomAdSettings||{};
+  // الإعلان السفلي مستقل عند وجود bottom_ads، وإن لم تتم تهيئته بعد
+  // نستخدم وسائط الإعلان الرئيسي مؤقتاً حتى لا تختفي الشاشة من المتجر.
+  const own=bottomAdSettings||{};
+  const hasOwn=Object.keys(own).length>0;
+  const raw=hasOwn?own:(adSettings||{});
   const media=[];
   const pushValue=value=>{
     if(!value)return;
@@ -1957,8 +1961,11 @@ function renderBottomAdvertisement(){
   const section=$("bottomAdSection"),wrap=$("bottomAdWrap"),linkEl=$("bottomAdLink");
   if(!section||!wrap||!linkEl)return;
   const media=normalizeBottomAdMedia();
-  const s=bottomAdSettings||{};
-  if(s.enabled===false||s.is_active===false||s.active===false||s.show===false||!media.length){section.style.display="none";wrap.innerHTML="";return;}
+  const own=bottomAdSettings||{};
+  const s=Object.keys(own).length?own:(adSettings||{});
+  // لا نخفي الحاوية بسبب قيمة enabled مفقودة؛ نخفيها فقط إذا تم إيقاف الإعلان السفلي صراحةً.
+  const explicitlyDisabled=(Object.keys(own).length>0)&&(s.enabled===false||s.is_active===false||s.active===false||s.show===false);
+  if(explicitlyDisabled||!media.length){section.style.display="none";wrap.innerHTML="";return;}
   section.style.display="block";
   const link=s.link||s.url||s.linkUrl||s.link_url||"";
   if(link){linkEl.href=link;linkEl.style.pointerEvents="auto";}else{linkEl.removeAttribute("href");linkEl.style.pointerEvents="none";}

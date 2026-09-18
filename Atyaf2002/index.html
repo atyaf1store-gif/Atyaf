@@ -71,10 +71,10 @@
     <section class="page" id="coupons"><div class="page-title"><div><h2>الكوبونات</h2><p>رموز الخصم وحدود الاستخدام</p></div></div><div class="card"><div class="toolbar"><input id="couponCode" placeholder="مثال ATYAF10"><input id="couponPercent" type="number" placeholder="نسبة الخصم"><button class="primary" onclick="addCoupon()">إضافة كوبون</button></div><div id="couponList"></div></div></section>
     <section class="page" id="reviews"><div class="page-title"><div><h2>التقييمات</h2><p>مراجعة تقييمات العملاء قبل/بعد النشر</p></div></div><div class="card"><div class="empty">ستظهر تقييمات العملاء هنا بعد ربط Supabase.</div></div></section>
     <section class="page" id="notifications"><div class="page-title"><div><h2>الإشعارات</h2><p>إرسال إشعارات وعروض للعملاء</p></div></div><div class="card"><div class="field"><label>عنوان الإشعار</label><input id="notifyTitle"></div><div class="field"><label>النص</label><textarea id="notifyBody"></textarea></div><button class="primary" onclick="toast('تم حفظ الإشعار كمسودة')">حفظ الإشعار</button></div></section>
-    <section class="page" id="payments"><div class="page-title"><div><h2>الدفع والبنوك</h2><p>طرق الدفع والتحويل البنكي</p></div></div><div class="card"><div class="form-grid"><div class="field"><label>طريقة الدفع</label><input placeholder="تحويل بنكي / عند الاستلام"></div><div class="field"><label>اسم البنك</label><input placeholder="اسم البنك"></div><div class="field"><label>اسم المستفيد</label><input></div><div class="field"><label>رقم الحساب</label><input></div></div><button class="primary" onclick="toast('تم حفظ بيانات الدفع محلياً')">حفظ</button></div></section>
+    <section class="page" id="payments"><div class="page-title"><div><h2>الدفع والبنوك</h2><p>كل ما تضيفه هنا يظهر في إتمام الطلب</p></div><button class="primary" onclick="editPayment()">+ إضافة طريقة دفع</button></div><div class="card" id="paymentList"><div class="empty">جارٍ التحميل...</div></div></section>
     <section class="page" id="ads"><div class="page-title"><div><h2>الإعلانات والبنرات</h2><p>سلايدر الرئيسية والبنرات الداخلية</p></div><button class="primary" onclick="editAd()">+ إعلان جديد</button></div><div class="card"><div id="adList"><div class="empty">جارٍ التحميل...</div></div></div></section>
-    <section class="page" id="branches"><div class="page-title"><div><h2>الفروع</h2><p>العناوين وأرقام التواصل وساعات العمل</p></div></div><div class="card"><div class="form-grid"><div class="field"><label>اسم الفرع</label><input></div><div class="field"><label>الهاتف</label><input></div><div class="field full"><label>العنوان</label><input></div><div class="field full"><label>رابط الموقع</label><input placeholder="Google Maps"></div></div><button class="primary" onclick="toast('تم حفظ بيانات الفرع محلياً')">حفظ الفرع</button></div></section>
-    <section class="page" id="policies"><div class="page-title"><div><h2>السياسات</h2><p>الشحن والاستبدال والاسترجاع والخصوصية</p></div></div><div class="card"><div class="field"><label>سياسة الشحن والتوصيل</label><textarea></textarea></div><div class="field"><label>سياسة الاستبدال والاسترجاع</label><textarea></textarea></div><div class="field"><label>سياسة الخصوصية</label><textarea></textarea></div><button class="primary" onclick="toast('تم حفظ السياسات محلياً')">حفظ السياسات</button></div></section>
+    <section class="page" id="branches"><div class="page-title"><div><h2>الفروع</h2><p>إضافة وتعديل وحذف الفروع الظاهرة للعملاء</p></div><button class="primary" onclick="editBranch()">+ إضافة فرع</button></div><div class="card" id="branchList"><div class="empty">جارٍ التحميل...</div></div></section>
+    <section class="page" id="policies"><div class="page-title"><div><h2>السياسات</h2><p>إضافة وتعديل وحذف سياسات المتجر</p></div><button class="primary" onclick="editPolicy()">+ إضافة سياسة</button></div><div class="card" id="policyList"><div class="empty">جارٍ التحميل...</div></div></section>
     <section class="page" id="design"><div class="page-title"><div><h2>التصميم والخطوط</h2><p>الخط العام وألوان المتجر</p></div></div><div class="card"><div class="form-grid"><div class="field"><label>اللون الأساسي</label><input id="designPrimary" type="color" value="#60391f"></div><div class="field"><label>اللون الذهبي</label><input id="designGold" type="color" value="#b88a50"></div><div class="field"><label>الخط العام</label><select id="designFont"><option value="Tajawal">Tajawal</option><option value="Cairo">Cairo</option><option value="Aref Ruqaa">Aref Ruqaa</option><option value="Amiri">Amiri</option></select></div></div><button class="primary" onclick="saveDesign()">حفظ التصميم</button></div></section>
     <section class="page" id="homepage"><div class="page-title"><div><h2>أقسام الصفحة الرئيسية</h2><p>تحكم بالعنوان والترتيب والإظهار</p></div></div><div class="card" id="homeSectionList"></div></section>
 <section class="page" id="announcements"><div class="page-title"><div><h2>الشريط المتحرك</h2><p>إضافة وتعديل وحذف نصوص الشريط</p></div><button class="primary" onclick="editAnnouncement()">+ إضافة نص</button></div><div class="card" id="announcementList"><div class="empty">جارٍ التحميل...</div></div></section>
@@ -127,7 +127,7 @@ document.addEventListener("change",e=>{
    const pr=document.getElementById("pImagePreview");pr.src=URL.createObjectURL(e.target.files[0]);pr.classList.remove("hidden");
  }
 });
-renderAll();loadLiveAdmin();loadProductsLive();loadAnnouncementsAdmin();
+renderAll();loadLiveAdmin();loadProductsLive();loadAnnouncementsAdmin();loadCouponsLive();loadStoreAdminSettings();loadExtraManagers();
     }
     async function logout(){await sb.auth.signOut();location.href="./"}
     function showRecovery(){
@@ -173,9 +173,40 @@ renderAll();loadLiveAdmin();loadProductsLive();loadAnnouncementsAdmin();
     function renderOrders(){document.getElementById("orderRows").innerHTML=db.orders.length?db.orders.slice().reverse().map(o=>`<tr><td>#${o.id}</td><td>${o.customer}</td><td>${o.phone}</td><td>${money(o.total)}</td><td><select onchange="changeOrder('${o.id}',this.value)"><option ${o.status==="جديد"?"selected":""}>جديد</option><option ${o.status==="قيد التجهيز"?"selected":""}>قيد التجهيز</option><option ${o.status==="تم الشحن"?"selected":""}>تم الشحن</option><option ${o.status==="مكتمل"?"selected":""}>مكتمل</option><option ${o.status==="ملغي"?"selected":""}>ملغي</option></select></td><td><button class="secondary" onclick="invoice('${o.id}')">فاتورة</button></td></tr>`).join(""):'<tr><td colspan="6" class="empty">لا توجد طلبات</td></tr>'}
     function changeOrder(id,s){const o=db.orders.find(x=>x.id==id);if(o){o.status=s;persist();toast("تم تحديث حالة الطلب")}}
     function invoice(id){const o=db.orders.find(x=>x.id==id);if(!o)return;const w=window.open("","_blank");w.document.write(`<html dir="rtl"><meta charset="utf-8"><title>فاتورة ${o.id}</title><body style="font-family:Arial;padding:35px"><h1>متجر أطياف</h1><h2>فاتورة #${o.id}</h2><p>العميل: ${o.customer}</p><p>الهاتف: ${o.phone}</p><p>الإجمالي: ${money(o.total)}</p><p>الحالة: ${o.status}</p><hr><button onclick="print()">طباعة الفاتورة</button></body></html>`);w.document.close()}
-    function addCoupon(){const c=document.getElementById("couponCode").value.trim().toUpperCase(),p=+document.getElementById("couponPercent").value;if(!c||!p)return;db.coupons.push({code:c,percent:p});persist();renderCoupons();document.getElementById("couponCode").value="";document.getElementById("couponPercent").value=""}
-    function renderCoupons(){document.getElementById("couponList").innerHTML=db.coupons.length?db.coupons.map((c,i)=>`<span class="pill" style="margin:5px">${c.code} — ${c.percent}% <button style="border:0;background:none;color:#a94138" onclick="db.coupons.splice(${i},1);persist();renderCoupons()">×</button></span>`).join(""):'<div class="empty">لا توجد كوبونات</div>'}
-    function saveSettings(){db.settings={...db.settings,nameAr:document.getElementById("storeNameAr")?.value||db.settings.nameAr,nameEn:document.getElementById("storeNameEn")?.value||db.settings.nameEn,whatsapp:document.getElementById("whatsapp")?.value||db.settings.whatsapp,phone:document.getElementById("phone")?.value||db.settings.phone};persist();toast("تم الحفظ محلياً")}
+    async function addCoupon(){
+ const code=document.getElementById("couponCode").value.trim().toUpperCase(),percent=+document.getElementById("couponPercent").value;
+ if(!code||percent<=0)return toast("أدخل الكود ونسبة الخصم");
+ const row={code,discount_type:"percent",discount_value:percent,is_active:true};
+ const {error}=await sb.from("coupons").insert(row);
+ if(error)return toast(error.message);
+ document.getElementById("couponCode").value="";document.getElementById("couponPercent").value="";
+ toast("تمت إضافة الكوبون");await loadCouponsLive();
+}
+let COUPONS_LIVE=[];
+async function loadCouponsLive(){
+ const {data,error}=await sb.from("coupons").select("*").order("created_at",{ascending:false});
+ if(error)return;
+ COUPONS_LIVE=data||[];
+ const el=document.getElementById("couponList");if(!el)return;
+ el.innerHTML=COUPONS_LIVE.length?COUPONS_LIVE.map(c=>`<span class="pill" style="margin:5px">${E(c.code)} — ${Number(c.discount_value||0)}% <button style="border:0;background:none;color:#a94138" onclick="deleteCoupon('${c.id}')">×</button></span>`).join(""):'<div class="empty">لا توجد كوبونات</div>';
+}
+async function deleteCoupon(id){if(!confirm("حذف الكوبون؟"))return;const {error}=await sb.from("coupons").delete().eq("id",id);if(error)return toast(error.message);loadCouponsLive()}
+    async function saveSettings(){
+      try{
+        if(!STORE_LIVE) await loadStoreAdminSettings();
+        if(!STORE_LIVE)return toast("لم يتم العثور على إعدادات المتجر");
+        const row={
+          store_name_ar:document.getElementById("storeNameAr")?.value.trim()||"متجر أطياف",
+          store_name_en:document.getElementById("storeNameEn")?.value.trim()||"ATYAF STORE",
+          description:document.getElementById("storeDesc")?.value.trim()||null,
+          logo_url:document.getElementById("logoUrl")?.value.trim()||null
+        };
+        const {error}=await sb.from("store_settings").update(row).eq("id",STORE_LIVE.id);
+        if(error)throw error;
+        toast("تم حفظ الهوية في المتجر");
+        await loadStoreAdminSettings();
+      }catch(e){toast(e.message||"تعذر حفظ الهوية")}
+    }
     function simpleAdd(target,label,inputId){const el=document.getElementById(target);let name=inputId?document.getElementById(inputId).value.trim():prompt(label);if(!name)return;if(el.querySelector(".empty"))el.innerHTML="";el.insertAdjacentHTML("beforeend",`<div style="padding:12px;border-bottom:1px solid #eee"><b>${name}</b> <span class="pill">نشط</span></div>`);toast("تمت الإضافة")}
     
 
@@ -449,7 +480,11 @@ function editBundle(id){const x=LIVE.bundles.find(v=>v.id===id)||{};openManage(i
 function renderGiftsAdmin(){const el=document.getElementById("giftList");if(!el)return;el.innerHTML=LIVE.gifts.length?LIVE.gifts.map(x=>`<div class="manage-item"><div style="display:flex;gap:12px;align-items:center">${x.image_url?`<img src="${E(x.image_url)}">`:""}<div><b>${E(x.name_ar)}</b><div class="hint">${E(x.description||"")} • ${x.price||0} • مخزون ${x.stock||0}</div></div></div><div class="row-actions"><button class="secondary" onclick="editGift('${x.id}')">تعديل</button><button class="danger" onclick="delRow('gifts','${x.id}')">حذف</button></div></div>`).join(""):'<div class="empty">لا توجد هدايا</div>'}
 function editGift(id){const x=LIVE.gifts.find(v=>v.id===id)||{};openManage(id?"تعديل الهدية":"إضافة هدية",`<div class="form-grid">${fld("اسم الهدية","mName",x.name_ar)}${fld("السعر","mPrice",x.price||0,"number")}${fld("المخزون","mStock",x.stock||0,"number")}<div class="field full"><label>الوصف</label><textarea id="mDesc">${E(x.description||"")}</textarea></div>${fileFld("صورة الهدية","mImageFile",x.image_url)}<div class="full">${chk("نشطة","mActive",x.is_active!==false)}</div></div>`,async()=>{try{const name=mName.value.trim();if(!name)return toast("اكتب اسم الهدية");let image=x.image_url||null;if(mImageFile.files[0])image=await uploadAdminImage(mImageFile.files[0],"gifts");const row={name_ar:name,description:mDesc.value.trim()||null,price:+mPrice.value||0,stock:+mStock.value||0,image_url:image,is_active:mActive.checked};const {error}=id?await sb.from("gifts").update(row).eq("id",id):await sb.from("gifts").insert(row);if(error)throw error;closeManage();toast("تم حفظ الهدية");loadLiveAdmin()}catch(e){toast(e.message)}})}
 let STORE_LIVE=null;
-async function loadStoreAdminSettings(){const {data}=await sb.from("store_settings").select("*").limit(1).maybeSingle();STORE_LIVE=data||null;if(!data)return;if(document.getElementById("whatsapp"))whatsapp.value=data.whatsapp||"";if(document.getElementById("phone"))phone.value=data.phone||"";if(document.getElementById("currency"))currency.value=data.currency||"ر.ي";if(document.getElementById("designFont"))designFont.value=data.font_family||"Tajawal";if(document.getElementById("designPrimary"))designPrimary.value=data.primary_color||"#60391f";if(document.getElementById("designGold"))designGold.value=data.gold_color||"#b88a50"}
+async function loadStoreAdminSettings(){const {data}=await sb.from("store_settings").select("*").limit(1).maybeSingle();STORE_LIVE=data||null;if(!data)return;if(document.getElementById("whatsapp"))whatsapp.value=data.whatsapp||"";if(document.getElementById("phone"))phone.value=data.phone||"";if(document.getElementById("currency"))currency.value=data.currency||"ر.ي";if(document.getElementById("designFont"))designFont.value=data.font_family||"Tajawal";if(document.getElementById("designPrimary"))designPrimary.value=data.primary_color||"#60391f";if(document.getElementById("designGold"))designGold.value=data.gold_color||"#b88a50";
+if(document.getElementById("storeNameAr"))storeNameAr.value=data.store_name_ar||"متجر أطياف";
+if(document.getElementById("storeNameEn"))storeNameEn.value=data.store_name_en||"ATYAF STORE";
+if(document.getElementById("storeDesc"))storeDesc.value=data.description||"";
+if(document.getElementById("logoUrl"))logoUrl.value=data.logo_url||""}
 async function saveSettingsLive(){if(!STORE_LIVE)return toast("لم يتم العثور على إعدادات المتجر");const {error}=await sb.from("store_settings").update({whatsapp:whatsapp.value.trim(),phone:phone.value.trim(),currency:currency.value}).eq("id",STORE_LIVE.id);if(error)return toast(error.message);toast("تم حفظ العملة والإعدادات");loadStoreAdminSettings()}
 async function saveDesign(){if(!STORE_LIVE)return toast("لم يتم العثور على إعدادات المتجر");const {error}=await sb.from("store_settings").update({font_family:designFont.value,primary_color:designPrimary.value,gold_color:designGold.value}).eq("id",STORE_LIVE.id);if(error)return toast(error.message);toast("تم حفظ التصميم");loadStoreAdminSettings()}
 
@@ -472,6 +507,25 @@ function editAnnouncement(id){
 }
 async function deleteAnnouncement(id){if(!confirm("حذف النص؟"))return;const {error}=await sb.from("announcement_messages").delete().eq("id",id);if(error)return toast(error.message);loadAnnouncementsAdmin()}
 window.editAnnouncement=editAnnouncement;window.deleteAnnouncement=deleteAnnouncement;
+
+let EXTRA_LIVE={payments:[],branches:[],policies:[]};
+async function loadExtraManagers(){
+ const rs=await Promise.all([
+   sb.from("payment_methods").select("*").order("sort_order"),
+   sb.from("branches").select("*").order("sort_order"),
+   sb.from("policies").select("*").order("title")
+ ]);
+ EXTRA_LIVE.payments=rs[0].data||[];EXTRA_LIVE.branches=rs[1].data||[];EXTRA_LIVE.policies=rs[2].data||[];
+ renderPaymentAdmin();renderBranchAdmin();renderPolicyAdmin();
+}
+function renderPaymentAdmin(){const el=document.getElementById("paymentList");if(!el)return;el.innerHTML=EXTRA_LIVE.payments.length?EXTRA_LIVE.payments.map(x=>`<div class="manage-item"><b>${E(x.name)}</b><div class="hint">${x.is_active?"ظاهر":"مخفي"} • ترتيب ${x.sort_order||0}</div><div class="row-actions"><button class="secondary" onclick="editPayment('${x.id}')">تعديل</button><button class="danger" onclick="deleteExtra('payment_methods','${x.id}')">حذف</button></div></div>`).join(""):'<div class="empty">لا توجد طرق دفع</div>'}
+function editPayment(id){const x=EXTRA_LIVE.payments.find(v=>String(v.id)===String(id))||{};openManage(id?"تعديل طريقة الدفع":"إضافة طريقة دفع",`<div class="form-grid">${fld("اسم طريقة الدفع","mName",x.name)}${fld("الترتيب","mSort",x.sort_order||0,"number")}<div class="full">${chk("نشطة","mActive",x.is_active!==false)}</div></div>`,async()=>{const row={name:mName.value.trim(),sort_order:+mSort.value||0,is_active:mActive.checked};if(!row.name)return toast("اكتب اسم طريقة الدفع");const {error}=id?await sb.from("payment_methods").update(row).eq("id",id):await sb.from("payment_methods").insert(row);if(error)return toast(error.message);closeManage();toast("تم الحفظ");loadExtraManagers()})}
+function renderBranchAdmin(){const el=document.getElementById("branchList");if(!el)return;el.innerHTML=EXTRA_LIVE.branches.length?EXTRA_LIVE.branches.map(x=>`<div class="manage-item"><b>${E(x.name)}</b><div class="hint">${E(x.address||"")} • ${x.is_active?"ظاهر":"مخفي"}</div><div class="row-actions"><button class="secondary" onclick="editBranch('${x.id}')">تعديل</button><button class="danger" onclick="deleteExtra('branches','${x.id}')">حذف</button></div></div>`).join(""):'<div class="empty">لا توجد فروع</div>'}
+function editBranch(id){const x=EXTRA_LIVE.branches.find(v=>String(v.id)===String(id))||{};openManage(id?"تعديل الفرع":"إضافة فرع",`<div class="form-grid">${fld("اسم الفرع","mName",x.name)}${fld("الهاتف","mPhone",x.phone)}<div class="field full"><label>العنوان</label><input id="mAddress" value="${E(x.address||"")}"></div>${fld("الترتيب","mSort",x.sort_order||0,"number")}<div class="full">${chk("نشط","mActive",x.is_active!==false)}</div></div>`,async()=>{const row={name:mName.value.trim(),phone:mPhone.value.trim()||null,address:mAddress.value.trim()||null,sort_order:+mSort.value||0,is_active:mActive.checked};if(!row.name)return toast("اكتب اسم الفرع");const {error}=id?await sb.from("branches").update(row).eq("id",id):await sb.from("branches").insert(row);if(error)return toast(error.message);closeManage();toast("تم الحفظ");loadExtraManagers()})}
+function renderPolicyAdmin(){const el=document.getElementById("policyList");if(!el)return;el.innerHTML=EXTRA_LIVE.policies.length?EXTRA_LIVE.policies.map(x=>`<div class="manage-item"><b>${E(x.title)}</b><div class="hint">${x.is_active?"ظاهرة":"مخفية"}</div><div class="row-actions"><button class="secondary" onclick="editPolicy('${x.id}')">تعديل</button><button class="danger" onclick="deleteExtra('policies','${x.id}')">حذف</button></div></div>`).join(""):'<div class="empty">لا توجد سياسات</div>'}
+function editPolicy(id){const x=EXTRA_LIVE.policies.find(v=>String(v.id)===String(id))||{};openManage(id?"تعديل السياسة":"إضافة سياسة",`<div class="form-grid">${fld("العنوان","mTitle",x.title)}<div class="field full"><label>المحتوى</label><textarea id="mContent">${E(x.content||"")}</textarea></div><div class="full">${chk("نشطة","mActive",x.is_active!==false)}</div></div>`,async()=>{const row={title:mTitle.value.trim(),content:mContent.value.trim(),is_active:mActive.checked};if(!row.title)return toast("اكتب عنوان السياسة");const {error}=id?await sb.from("policies").update(row).eq("id",id):await sb.from("policies").insert(row);if(error)return toast(error.message);closeManage();toast("تم الحفظ");loadExtraManagers()})}
+async function deleteExtra(table,id){if(!confirm("تأكيد الحذف؟"))return;const {error}=await sb.from(table).delete().eq("id",id);if(error)return toast(error.message);toast("تم الحذف");loadExtraManagers()}
+window.editPayment=editPayment;window.editBranch=editBranch;window.editPolicy=editPolicy;window.deleteExtra=deleteExtra;
 function renderAll(){renderCategories();renderProducts();renderOrders();renderCoupons();updateStats()}
     </script>
     </body>

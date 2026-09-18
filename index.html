@@ -1810,6 +1810,55 @@ function renderAdvertisement(){
   wrap.innerHTML=`<img src="${escapeHTML(media[0])}" alt="إعلان متجر أطياف" loading="eager">`;
 }
 
+function normalizeStoreCategory(row){
+  const c=row||{};
+  return {
+    ...c,
+    name:String(c.name_ar??c.name??c.name_en??'').trim(),
+    name_ar:String(c.name_ar??c.name??'').trim(),
+    name_en:String(c.name_en??'').trim(),
+    is_active:c.is_active!==false,
+    sort_order:Number(c.sort_order??0)
+  };
+}
+
+function normalizeStoreProduct(row){
+  const p=row||{};
+  let imgs=[];
+  if(Array.isArray(p.images)) imgs=p.images.filter(Boolean);
+  else if(typeof p.images==='string'){
+    try{const parsed=JSON.parse(p.images);imgs=Array.isArray(parsed)?parsed.filter(Boolean):[];}catch(e){}
+  }
+  if(!imgs.length && p.main_image_url) imgs=[p.main_image_url];
+
+  const colors=Array.isArray(p.colors)?p.colors.filter(Boolean):[];
+  const sizes=Array.isArray(p.sizes)?p.sizes.filter(Boolean):[];
+
+  return {
+    ...p,
+    name:String(p.name_ar??p.name??p.name_en??'').trim(),
+    name_ar:String(p.name_ar??p.name??'').trim(),
+    name_en:String(p.name_en??'').trim(),
+    description:String(p.description??p.short_description??''),
+    category:p.category??'',
+    category_id:p.category_id??null,
+    price:Number(p.price??0),
+    discount:Number(p.discount_percent??p.discount??0),
+    discount_percent:Number(p.discount_percent??p.discount??0),
+    stock:Number(p.stock??0),
+    currency:p.currency||'YER',
+    images:imgs,
+    colors,
+    sizes,
+    active:p.is_active!==false && p.active!==false,
+    is_active:p.is_active!==false && p.active!==false,
+    featured:p.is_featured===true || p.featured===true,
+    is_featured:p.is_featured===true || p.featured===true,
+    is_new:p.is_new===true,
+    sort_order:Number(p.sort_order??0)
+  };
+}
+
 async function fetchCatalog({silent=false}={}){
   if(catalogRefreshRunning){
     catalogRefreshPending=true;
@@ -1843,8 +1892,12 @@ async function fetchCatalog({silent=false}={}){
       لذلك عند تعديل منتج أو قسم من لوحة الإدارة تبقى المنتجات
       القديمة ظاهرة حتى تصبح النسخة الجديدة كاملة وجاهزة.
     */
-    const nextCategories=Array.isArray(categoriesResult.data)?categoriesResult.data:[];
-    const nextProducts=Array.isArray(productsResult.data)?productsResult.data:[];
+    const nextCategories=Array.isArray(categoriesResult.data)
+      ? categoriesResult.data.map(normalizeStoreCategory)
+      : [];
+    const nextProducts=Array.isArray(productsResult.data)
+      ? productsResult.data.map(normalizeStoreProduct)
+      : [];
 
     categories=nextCategories;
     products=nextProducts;
@@ -3460,4 +3513,3 @@ async function initializeStore(){
 initializeStore();
 </script>
 </body>
-</html>

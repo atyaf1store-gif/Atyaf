@@ -309,7 +309,18 @@ function productCard(p){const fp=finalPrice(p);return `<article class="product">
     function openTrack(){$("trackResult").innerHTML="";$("trackModal").classList.add("show")}
     async function trackOrder(){const no=$("trackNo").value.trim(),phone=$("trackPhone").value.trim();if(!no||!phone)return toast("أدخل رقم الطلب والهاتف");const {data,error}=await sb.from("orders").select("order_number,status,total,created_at").eq("order_number",no).eq("customer_phone",phone).maybeSingle();$("trackResult").innerHTML=error||!data?'<div class="empty">لم يتم العثور على الطلب</div>':`<div class="miniCard" style="margin-top:15px"><b>الطلب #${data.order_number}</b><p>الحالة: <strong>${esc(statusAr(data.status))}</strong></p><p>الإجمالي: ${money(data.total)}</p></div>`}
     function statusAr(s){return({new:"جديد",confirmed:"تم التأكيد",processing:"قيد التجهيز",ready:"جاهز",shipped:"تم الشحن",delivered:"تم التوصيل",completed:"مكتمل",cancelled:"ملغي"})[s]||s}
-    $("year").textContent=new Date().getFullYear();updateCounts();load();
+    $("year").textContent=new Date().getFullYear();updateCounts();
+let ATYAF_SYNC_BUSY=false;
+async function syncStore(){
+ if(ATYAF_SYNC_BUSY)return;
+ ATYAF_SYNC_BUSY=true;
+ try{await load()}finally{ATYAF_SYNC_BUSY=false}
+}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")syncStore()});
+window.addEventListener("focus",syncStore);
+setInterval(()=>{if(document.visibilityState==="visible")syncStore()},15000);
+
+load();
     </script>
     </body>
     </html>

@@ -3451,7 +3451,41 @@ function renderCustomerInvoice(invoice){
 }
 function printInvoice(){
   if(!currentInvoiceData){toast("لا توجد فاتورة");return}const sheet=$("printInvoiceSheet");if(!sheet)return;const popup=window.open("","_blank");if(!popup){alert("المتصفح منع نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم حاول مرة أخرى.");return}
-  popup.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>فاتورة ${escapeHTML(getStoreName())} #${escapeHTML(currentInvoiceData.invoice_number||"")}</title><link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{font-family:${escapeHTML((designSettings.fonts||{}).invoice||"Tajawal")},sans-serif;padding:25px;margin:0;color:#1e1e1e}.invoice-sheet{max-width:900px;margin:auto}.invoice-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;padding-bottom:14px;border-bottom:2px solid #222}.invoice-logo{width:82px;height:82px;object-fit:contain;display:block}.invoice-brand{font-family:'Aref Ruqaa';font-weight:700;font-size:36px}.invoice-brand-en{font-size:10px;letter-spacing:.15em;direction:ltr}.invoice-title{font-size:21px;font-weight:900}.invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.invoice-info{border:1px solid #ddd;padding:11px;border-radius:10px;font-size:12px;line-height:1.9}.invoice-table{width:100%;border-collapse:collapse;margin-top:12px}.invoice-table th,.invoice-table td{padding:8px;border:1px solid #ddd;font-size:11px;text-align:right}.invoice-table th{background:#f2ecdf}.invoice-totals{width:330px;max-width:100%;margin:15px 0 0 auto}.invoice-totals div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #ddd}.invoice-totals .grand{font-size:17px;font-weight:900;border-top:2px solid #222;border-bottom:0}@media print{body{padding:0}}</style></head><body>${sheet.outerHTML}<script>window.onload=function(){setTimeout(function(){window.print()},400)};<\/script></body></html>`);popup.document.close()
+  popup.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>فاتورة ${escapeHTML(getStoreName())} #${escapeHTML(currentInvoiceData.invoice_number||"")}</title><link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{font-family:${escapeHTML((designSettings.fonts||{}).invoice||"Tajawal")},sans-serif;padding:25px;margin:0;color:#1e1e1e}.invoice-sheet{max-width:900px;margin:auto}.invoice-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;padding-bottom:14px;border-bottom:2px solid #222}.invoice-logo{width:82px;height:82px;object-fit:contain;display:block}.invoice-brand{font-family:'Aref Ruqaa';font-weight:700;font-size:36px}.invoice-brand-en{font-size:10px;letter-spacing:.15em;direction:ltr}.invoice-title{font-size:21px;font-weight:900}.invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.invoice-info{border:1px solid #ddd;padding:11px;border-radius:10px;font-size:12px;line-height:1.9}.invoice-table{width:100%;border-collapse:collapse;margin-top:12px}.invoice-table th,.invoice-table td{padding:8px;border:1px solid #ddd;font-size:11px;text-align:right}.invoice-table th{background:#f2ecdf}.invoice-totals{width:330px;max-width:100%;margin:15px 0 0 auto}.invoice-totals div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #ddd}.invoice-totals .grand{font-size:17px;font-weight:900;border-top:2px solid #222;border-bottom:0}@media print{body{padding:0}}
+/* ===== ATYAF FULL-BLEED ADVERTISEMENT ===== */
+#adSection.ad-section{
+  width:100vw !important;
+  max-width:none !important;
+  margin:16px calc(50% - 50vw) 24px !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+#adSection #adLink{display:block;width:100%;}
+#adSection #adWrap{
+  width:100% !important;
+  max-width:none !important;
+  border-radius:0 !important;
+  border-left:0 !important;
+  border-right:0 !important;
+  overflow:hidden !important;
+  box-shadow:none !important;
+}
+#adSection #adWrap img,
+#adSection #adWrap video{
+  display:block;
+  width:100% !important;
+  max-width:none !important;
+  height:auto !important;
+  max-height:none !important;
+  object-fit:cover !important;
+  border-radius:0 !important;
+}
+#adSection #adWrap .ad-slide{display:none !important;}
+#adSection #adWrap .ad-slide.active{display:block !important;}
+@media (max-width:640px){
+  #adSection.ad-section{margin-top:10px !important;margin-bottom:18px !important;}
+}
+</style></head><body>${sheet.outerHTML}<script>window.onload=function(){setTimeout(function(){window.print()},400)};<\/script></body></html>`);popup.document.close()
 }
 
 function renderReviews(){if(!reviews.length){$("reviewsRow").innerHTML='<div class="empty">لا توجد تقييمات بعد.</div>';return}$("reviewsRow").innerHTML=reviews.map(r=>`<div class="review-card"><div class="review-stars">${"★".repeat(Number(r.rating||0))}${"☆".repeat(Math.max(0,5-Number(r.rating||0)))}</div><div class="review-text">${escapeHTML(r.text||r.comment||"")}</div><div class="review-name">— ${escapeHTML(r.customer_name||r.name||"عميل")}</div>${r.is_verified_purchase?'<div class="verified">✓ شراء موثق</div>':""}</div>`).join("")}
@@ -3513,3 +3547,4 @@ async function initializeStore(){
 initializeStore();
 </script>
 </body>
+</html>

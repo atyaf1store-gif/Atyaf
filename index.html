@@ -1246,6 +1246,45 @@ button,
   }
 }
 
+
+/* =========================================================
+   ATYAF 2026 — LUXURY STOREFRONT REDESIGN
+   Inspired by the approved visual reference; keeps all data/features.
+========================================================= */
+:root{--atyaf-bg:#fffdf8;--atyaf-green:#123b28;--atyaf-gold:#b7842d;--atyaf-text:#2d2924}
+body{background:var(--atyaf-bg)!important;color:var(--atyaf-text)!important}
+.topbar{position:sticky!important;top:0!important;background:rgba(255,253,248,.97)!important;border-bottom:1px solid #eee7da!important;box-shadow:0 4px 18px rgba(0,0,0,.035)!important}
+.topbar-inner{max-width:1280px!important;padding:12px 28px!important;min-height:92px!important}
+.brand{order:2!important}.header-actions{order:3!important}.main-nav{order:1!important;border:0!important;background:transparent!important;border-radius:0!important;gap:4px!important}
+.store-logo-img{width:72px!important;height:62px!important;border-radius:0!important}.brand-name{font-size:34px!important;color:var(--atyaf-green)!important}.brand-en{color:#766b5e!important}
+.main-nav button{border-radius:0!important;background:transparent!important;color:#39342f!important;padding:11px 14px!important;border-bottom:2px solid transparent!important}
+.main-nav button.active,.main-nav button:hover{background:transparent!important;color:var(--atyaf-gold)!important;border-bottom-color:var(--atyaf-gold)!important}
+.round-btn{background:#fff!important;box-shadow:none!important}.cart-btn{background:var(--atyaf-green)!important;color:#fff!important;box-shadow:none!important}
+.hero,.sunrise{display:none!important}
+.ad-section{display:none;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+.ad-wrap{width:100%!important;border:0!important;border-radius:0!important;background:#eee!important;box-shadow:none!important;overflow:hidden!important}
+.ad-wrap img,.ad-wrap video{width:100%!important;height:clamp(300px,38vw,560px)!important;max-height:none!important;object-fit:cover!important;padding:0!important}
+.ad-slide{width:100%!important}
+.atyaf-service-strip{width:100%;background:#fff;border-bottom:1px solid #eee7da;display:grid;grid-template-columns:repeat(4,1fr);padding:16px max(22px,calc((100vw - 1180px)/2));direction:rtl}
+.atyaf-service{display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 20px;border-left:1px solid #eee7da}.atyaf-service:last-child{border-left:0}.atyaf-service-icon{font-size:27px}.atyaf-service strong{display:block;font-size:14px;color:#25211e}.atyaf-service small{display:block;margin-top:2px;color:#82786d;font-size:11px}
+.gift-strip{margin-top:28px!important}
+#shop.section{max-width:1240px!important;padding-top:30px!important}.section-head{justify-content:center!important;flex-direction:column!important}.section-head h2{font-size:34px!important;color:var(--atyaf-green)!important}.category-filters{justify-content:center!important;width:100%!important;flex-wrap:wrap!important;overflow:visible!important}.category-filters button{background:#fff!important;border:1px solid #eee5d7!important;color:#4b433a!important}.category-filters button.active{background:var(--atyaf-green)!important;color:#fff!important;border-color:var(--atyaf-green)!important}
+#productsArea .ibraq-category-title{text-align:center!important;border:0!important;color:var(--atyaf-green)!important;font-size:30px!important}
+#productsArea .ibraq-products-grid{gap:22px!important}
+#productsArea .ibraq-products-grid .product-card{background:#fff!important;border:1px solid #eee8de!important;border-radius:15px!important;padding:10px!important;box-shadow:0 6px 18px rgba(36,28,19,.055)!important;overflow:hidden!important}
+#productsArea .ibraq-products-grid .product-image{border-radius:12px!important;background:#faf9f6!important;aspect-ratio:1/1!important}
+#productsArea .ibraq-products-grid .product-card h3{font-family:var(--font-product-names)!important;font-size:16px!important;color:#2e2924!important}
+#productsArea .ibraq-products-grid .price{color:#1e3c2c!important}.discount-badge{background:#d74c2f!important}.new-badge{background:var(--atyaf-green)!important}
+#productsArea .ibraq-products-grid .add-btn{border-radius:8px!important;background:var(--atyaf-gold)!important;color:#fff!important}
+#bundlesSection{background:#fff!important}.store-footer{background:#173427!important}
+@media(max-width:768px){
+ .topbar-inner{padding:7px 10px!important;min-height:auto!important}.brand{order:1!important}.header-actions{order:2!important}.main-nav{order:3!important;width:100%!important;justify-content:flex-start!important;overflow-x:auto!important;flex-wrap:nowrap!important}.store-logo-img{width:48px!important;height:45px!important}.brand-name{font-size:25px!important}
+ .ad-section{width:100%!important;margin:0!important;padding:0!important}.ad-wrap{border-radius:0!important}.ad-wrap img,.ad-wrap video{height:clamp(190px,52vw,310px)!important;min-height:0!important;max-height:none!important;aspect-ratio:auto!important;object-fit:cover!important}
+ .atyaf-service-strip{grid-template-columns:repeat(2,1fr);padding:10px 8px}.atyaf-service{padding:9px 6px;border-bottom:1px solid #eee7da}.atyaf-service:nth-child(2){border-left:0}.atyaf-service-icon{font-size:21px}.atyaf-service strong{font-size:11px}.atyaf-service small{font-size:9px}
+ #shop.section{padding-top:24px!important}.section-head h2{font-size:28px!important}.category-filters{flex-wrap:nowrap!important;justify-content:flex-start!important;overflow-x:auto!important}
+ #productsArea .ibraq-products-grid{gap:12px 8px!important}#productsArea .ibraq-products-grid .product-card{padding:7px!important;border-radius:12px!important}#productsArea .ibraq-products-grid .product-card h3{font-size:13px!important}#productsArea .ibraq-products-grid .add-btn{border-radius:7px!important}
+}
+
 </style>
 </head>
 
@@ -1291,6 +1330,12 @@ button,
 <div class="sunrise"><svg viewBox="0 0 200 85" fill="none" stroke="currentColor"><path d="M100 70 A45 45 0 0 1 10 70"/><path d="M20 74 Q60 60 100 74 Q140 60 180 74"/><circle cx="70" cy="58" r="2" fill="currentColor"/><circle cx="130" cy="58" r="2" fill="currentColor"/></svg></div>
 
 <section id="adSection" class="ad-section"><a id="adLink" target="_blank"><div id="adWrap" class="ad-wrap"></div></a></section>
+<section class="atyaf-service-strip" aria-label="مميزات المتجر">
+  <div class="atyaf-service"><span class="atyaf-service-icon">🚚</span><div><strong>شحن وتوصيل</strong><small>خدمة توصيل موثوقة</small></div></div>
+  <div class="atyaf-service"><span class="atyaf-service-icon">🛡️</span><div><strong>منتجات أصلية</strong><small>جودة نضمنها لك</small></div></div>
+  <div class="atyaf-service"><span class="atyaf-service-icon">↻</span><div><strong>خدمة سهلة</strong><small>تجربة شراء مريحة</small></div></div>
+  <div class="atyaf-service"><span class="atyaf-service-icon">🎧</span><div><strong>دعم سريع</strong><small>نحن هنا لخدمتك</small></div></div>
+</section>
 
 <!-- NEW: GIFT STRIP -->
 <section id="giftStrip" class="gift-strip">
@@ -1541,11 +1586,19 @@ async function fetchSettings(){
   const {data,error}=await client.from("settings").select("*");
   if(error){console.error(error);applySettings();return}
   const docs=data||[];
-  generalSettings=docs.find(x=>x.id==="general")?.data||{};
-  paymentSettings=docs.find(x=>x.id==="payment")?.data||{};
-  designSettings=docs.find(x=>x.id==="design")?.data||{};
-  adSettings=docs.find(x=>x.id==="ads")?.data||{};
-  giftSettings=docs.find(x=>x.id==="gifts")?.data||{};
+  // Compatible with Atyaf settings schema: {id bigint, key text, value jsonb}
+  // Also keeps backward compatibility with the older {id text, data jsonb} shape.
+  const settingValue=(name)=>{
+    const row=docs.find(x=>String(x.key||x.id||"")===name);
+    const value=row?.value ?? row?.data ?? {};
+    if(typeof value==="string"){try{return JSON.parse(value)}catch(e){return {}}}
+    return value&&typeof value==="object"?value:{};
+  };
+  generalSettings=settingValue("general");
+  paymentSettings=settingValue("payment");
+  designSettings=settingValue("design");
+  adSettings=settingValue("ads");
+  giftSettings=settingValue("gifts");
   applySettings();
 }
 function applyStoreIdentity(){
@@ -3451,41 +3504,7 @@ function renderCustomerInvoice(invoice){
 }
 function printInvoice(){
   if(!currentInvoiceData){toast("لا توجد فاتورة");return}const sheet=$("printInvoiceSheet");if(!sheet)return;const popup=window.open("","_blank");if(!popup){alert("المتصفح منع نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم حاول مرة أخرى.");return}
-  popup.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>فاتورة ${escapeHTML(getStoreName())} #${escapeHTML(currentInvoiceData.invoice_number||"")}</title><link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{font-family:${escapeHTML((designSettings.fonts||{}).invoice||"Tajawal")},sans-serif;padding:25px;margin:0;color:#1e1e1e}.invoice-sheet{max-width:900px;margin:auto}.invoice-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;padding-bottom:14px;border-bottom:2px solid #222}.invoice-logo{width:82px;height:82px;object-fit:contain;display:block}.invoice-brand{font-family:'Aref Ruqaa';font-weight:700;font-size:36px}.invoice-brand-en{font-size:10px;letter-spacing:.15em;direction:ltr}.invoice-title{font-size:21px;font-weight:900}.invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.invoice-info{border:1px solid #ddd;padding:11px;border-radius:10px;font-size:12px;line-height:1.9}.invoice-table{width:100%;border-collapse:collapse;margin-top:12px}.invoice-table th,.invoice-table td{padding:8px;border:1px solid #ddd;font-size:11px;text-align:right}.invoice-table th{background:#f2ecdf}.invoice-totals{width:330px;max-width:100%;margin:15px 0 0 auto}.invoice-totals div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #ddd}.invoice-totals .grand{font-size:17px;font-weight:900;border-top:2px solid #222;border-bottom:0}@media print{body{padding:0}}
-/* ===== ATYAF FULL-BLEED ADVERTISEMENT ===== */
-#adSection.ad-section{
-  width:100vw !important;
-  max-width:none !important;
-  margin:16px calc(50% - 50vw) 24px !important;
-  padding:0 !important;
-  overflow:hidden !important;
-}
-#adSection #adLink{display:block;width:100%;}
-#adSection #adWrap{
-  width:100% !important;
-  max-width:none !important;
-  border-radius:0 !important;
-  border-left:0 !important;
-  border-right:0 !important;
-  overflow:hidden !important;
-  box-shadow:none !important;
-}
-#adSection #adWrap img,
-#adSection #adWrap video{
-  display:block;
-  width:100% !important;
-  max-width:none !important;
-  height:auto !important;
-  max-height:none !important;
-  object-fit:cover !important;
-  border-radius:0 !important;
-}
-#adSection #adWrap .ad-slide{display:none !important;}
-#adSection #adWrap .ad-slide.active{display:block !important;}
-@media (max-width:640px){
-  #adSection.ad-section{margin-top:10px !important;margin-bottom:18px !important;}
-}
-</style></head><body>${sheet.outerHTML}<script>window.onload=function(){setTimeout(function(){window.print()},400)};<\/script></body></html>`);popup.document.close()
+  popup.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>فاتورة ${escapeHTML(getStoreName())} #${escapeHTML(currentInvoiceData.invoice_number||"")}</title><link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{font-family:${escapeHTML((designSettings.fonts||{}).invoice||"Tajawal")},sans-serif;padding:25px;margin:0;color:#1e1e1e}.invoice-sheet{max-width:900px;margin:auto}.invoice-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;padding-bottom:14px;border-bottom:2px solid #222}.invoice-logo{width:82px;height:82px;object-fit:contain;display:block}.invoice-brand{font-family:'Aref Ruqaa';font-weight:700;font-size:36px}.invoice-brand-en{font-size:10px;letter-spacing:.15em;direction:ltr}.invoice-title{font-size:21px;font-weight:900}.invoice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.invoice-info{border:1px solid #ddd;padding:11px;border-radius:10px;font-size:12px;line-height:1.9}.invoice-table{width:100%;border-collapse:collapse;margin-top:12px}.invoice-table th,.invoice-table td{padding:8px;border:1px solid #ddd;font-size:11px;text-align:right}.invoice-table th{background:#f2ecdf}.invoice-totals{width:330px;max-width:100%;margin:15px 0 0 auto}.invoice-totals div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #ddd}.invoice-totals .grand{font-size:17px;font-weight:900;border-top:2px solid #222;border-bottom:0}@media print{body{padding:0}}</style></head><body>${sheet.outerHTML}<script>window.onload=function(){setTimeout(function(){window.print()},400)};<\/script></body></html>`);popup.document.close()
 }
 
 function renderReviews(){if(!reviews.length){$("reviewsRow").innerHTML='<div class="empty">لا توجد تقييمات بعد.</div>';return}$("reviewsRow").innerHTML=reviews.map(r=>`<div class="review-card"><div class="review-stars">${"★".repeat(Number(r.rating||0))}${"☆".repeat(Math.max(0,5-Number(r.rating||0)))}</div><div class="review-text">${escapeHTML(r.text||r.comment||"")}</div><div class="review-name">— ${escapeHTML(r.customer_name||r.name||"عميل")}</div>${r.is_verified_purchase?'<div class="verified">✓ شراء موثق</div>':""}</div>`).join("")}

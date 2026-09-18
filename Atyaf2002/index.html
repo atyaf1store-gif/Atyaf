@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
     <html lang="ar" dir="rtl">
     <head>
     <meta charset="UTF-8">
@@ -20,7 +20,24 @@
 .manage-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.manage-item{border:1px solid var(--line);background:#fff;padding:14px;border-radius:15px;margin:9px 0}.manage-item img{width:90px;height:70px;object-fit:cover;border-radius:10px;background:#eee}.row-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.hint{font-size:11px;color:var(--muted)}.preview-img{width:120px;height:85px;object-fit:cover;border:1px solid var(--line);border-radius:12px}
 @media(max-width:700px){.manage-grid{grid-template-columns:1fr}}
 </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+/* ===== V11: منتجات الباقات — متوافق مع متجر أطياف V11 ===== */
+async function atyafBundleProducts(bundleId){
+  const {data,error}=await sb.from("bundle_products").select("*").eq("bundle_id",bundleId);
+  if(error){console.warn(error);return []}
+  return data||[];
+}
+async function atyafSetBundleProducts(bundleId,productIds){
+  const ids=[...new Set((productIds||[]).filter(Boolean))];
+  const del=await sb.from("bundle_products").delete().eq("bundle_id",bundleId);
+  if(del.error)throw del.error;
+  if(!ids.length)return;
+  const rows=ids.map((product_id,i)=>({bundle_id:bundleId,product_id,quantity:1,sort_order:i}));
+  const ins=await sb.from("bundle_products").insert(rows);
+  if(ins.error)throw ins.error;
+}
+
+</script>
 </head>
     <body>
     <section id="loginView" class="login">
@@ -60,19 +77,24 @@
     <section class="page" id="identity"><div class="page-title"><div><h2>هوية المتجر</h2><p>الشعار والاسم والنصوص الأساسية</p></div></div><div class="card"><div class="form-grid">
     <div class="field"><label>اسم المتجر بالعربي</label><input id="storeNameAr" value="متجر أطياف"></div><div class="field"><label>الاسم بالإنجليزي</label><input id="storeNameEn" value="ATYAF STORE"></div><div class="field"><label>النص الترحيبي</label><input id="eyebrow" value="لأن ذوقك يستحق الأفضل"></div><div class="field"><label>رابط الشعار</label><input id="logoUrl" placeholder="https://..."></div><div class="field full"><label>وصف المتجر</label><textarea id="storeDesc">تجربة تسوق أنيقة تجمع اختيارات مميزة وعروضاً استثنائية في مكان واحد.</textarea></div></div><button class="primary" onclick="saveSettings()">حفظ الهوية</button></div></section>
 
-    <section class="page" id="products"><div class="page-title"><div><h2>المنتجات</h2><p>إضافة وتعديل وإدارة المخزون</p></div><button class="primary" onclick="openProduct()">+ إضافة منتج</button></div><div class="card"><div class="toolbar"><input id="productSearch" placeholder="بحث..." oninput="renderProducts()"><select id="productFilter" onchange="renderProducts()"><option value="">كل الأقسام</option></select></div><div class="table-wrap"><table class="table"><thead><tr><th>المنتج</th><th>SKU</th><th>القسم</th><th>السعر</th><th>المخزون</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
+    <section class="page" id="products"><div class="page-title"><div><h2>المنتجات</h2><p>إضافة وتعديل وإدارة المخزون</p></div><button class="primary" onclick="openProduct()">+ إضافة منتج</button></div>
+<div class="card" style="border:1px solid #d9c3a8;background:#fffaf4">
+  <h3 style="margin-top:0">نظام ظهور المنتجات في متجر أطياف</h3>
+  <p class="hint">القسم الأساسي مستقل عن أقسام الرئيسية. يمكنك جعل المنتج يظهر في الأكثر مبيعاً أو وصل حديثاً أو المميز أو قد يعجبك بدون تغيير قسمه الأساسي.</p>
+</div>
+<div class="card"><div class="toolbar"><input id="productSearch" placeholder="بحث..." oninput="renderProducts()"><select id="productFilter" onchange="renderProducts()"><option value="">كل الأقسام</option></select></div><div class="table-wrap"><table class="table"><thead><tr><th>المنتج</th><th>SKU</th><th>القسم</th><th>السعر</th><th>المخزون</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
 
-    <section class="page" id="orders"><div class="page-title"><div><h2>الطلبات</h2><p>متابعة الطلبات والفواتير والحالات</p></div><button class="primary" onclick="addDemoOrder()">+ طلب تجريبي</button></div><div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>رقم</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th><th>الفاتورة</th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
+    <section class="page" id="orders"><div class="page-title"><div><h2>📦 الطلبات</h2><p>متابعة الطلبات وبيانات العميل والهدية والفواتير وتغيير حالة الطلب.</p></div><button class="primary" onclick="addDemoOrder()">+ طلب تجريبي</button></div><div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>رقم</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th><th>الفاتورة</th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
 
     <section class="page" id="categories"><div class="page-title"><div><h2>الأقسام</h2><p>الاسم والصورة والبنر والترتيب</p></div><button class="primary" onclick="editCategory()">+ إضافة قسم</button></div><div class="card"><div id="categoryList"><div class="empty">جارٍ التحميل...</div></div></div></section>
 
-    <section class="page" id="bundles"><div class="page-title"><div><h2>الباقات</h2><p>الصورة والنص والأسعار والمخزون</p></div><button class="primary" onclick="editBundle()">+ إضافة باقة</button></div><div class="card" id="bundleList"><div class="empty">جارٍ التحميل...</div></div></section>
-    <section class="page" id="gifts"><div class="page-title"><div><h2>الهدايا</h2><p>الصورة والوصف والسعر والمخزون</p></div><button class="primary" onclick="editGift()">+ إضافة هدية</button></div><div class="card" id="giftList"><div class="empty">جارٍ التحميل...</div></div></section>
+    <section class="page" id="bundles"><div class="page-title"><div><h2>🔥 الباقات والعروض</h2><p>إدارة صورة الباقة والوصف والسعر قبل العرض وسعر العرض والمخزون ومنتجات الباقة.</p></div><button class="primary" onclick="editBundle()">+ إضافة باقة</button></div><div class="card" id="bundleList"><div class="empty">جارٍ التحميل...</div></div></section>
+    <section class="page" id="gifts"><div class="page-title"><div><h2>🎁 الهدايا والتغليف</h2><p>إدارة خيارات الهدايا والتغليف والصورة والوصف والسعر والمخزون.</p></div><button class="primary" onclick="editGift()">+ إضافة هدية</button></div><div class="card" id="giftList"><div class="empty">جارٍ التحميل...</div></div></section>
     <section class="page" id="coupons"><div class="page-title"><div><h2>الكوبونات</h2><p>رموز الخصم وحدود الاستخدام</p></div></div><div class="card"><div class="toolbar"><input id="couponCode" placeholder="مثال ATYAF10"><input id="couponPercent" type="number" placeholder="نسبة الخصم"><button class="primary" onclick="addCoupon()">إضافة كوبون</button></div><div id="couponList"></div></div></section>
     <section class="page" id="reviews"><div class="page-title"><div><h2>التقييمات</h2><p>مراجعة تقييمات العملاء قبل/بعد النشر</p></div></div><div class="card"><div class="empty">ستظهر تقييمات العملاء هنا بعد ربط Supabase.</div></div></section>
     <section class="page" id="notifications"><div class="page-title"><div><h2>الإشعارات</h2><p>إرسال إشعارات وعروض للعملاء</p></div></div><div class="card"><div class="field"><label>عنوان الإشعار</label><input id="notifyTitle"></div><div class="field"><label>النص</label><textarea id="notifyBody"></textarea></div><button class="primary" onclick="toast('تم حفظ الإشعار كمسودة')">حفظ الإشعار</button></div></section>
     <section class="page" id="payments"><div class="page-title"><div><h2>الدفع والبنوك</h2><p>كل ما تضيفه هنا يظهر في إتمام الطلب</p></div><button class="primary" onclick="editPayment()">+ إضافة طريقة دفع</button></div><div class="card" id="paymentList"><div class="empty">جارٍ التحميل...</div></div></section>
-    <section class="page" id="ads"><div class="page-title"><div><h2>الإعلانات والبنرات</h2><p>سلايدر الرئيسية والبنرات الداخلية</p></div><button class="primary" onclick="editAd()">+ إعلان جديد</button></div><div class="card"><div id="adList"><div class="empty">جارٍ التحميل...</div></div></div></section>
+    <section class="page" id="ads"><div class="page-title"><div><h2>🖼️ الإعلانات والبنرات</h2><p>صور أو فيديو، موضع الإعلان، الرابط، الترتيب والتشغيل والإيقاف.</p></div><button class="primary" onclick="editAd()">+ إعلان جديد</button></div><div class="card"><div id="adList"><div class="empty">جارٍ التحميل...</div></div></div></section>
     <section class="page" id="branches"><div class="page-title"><div><h2>الفروع</h2><p>إضافة وتعديل وحذف الفروع الظاهرة للعملاء</p></div><button class="primary" onclick="editBranch()">+ إضافة فرع</button></div><div class="card" id="branchList"><div class="empty">جارٍ التحميل...</div></div></section>
     <section class="page" id="policies"><div class="page-title"><div><h2>السياسات</h2><p>إضافة وتعديل وحذف سياسات المتجر</p></div><button class="primary" onclick="editPolicy()">+ إضافة سياسة</button></div><div class="card" id="policyList"><div class="empty">جارٍ التحميل...</div></div></section>
     <section class="page" id="design"><div class="page-title"><div><h2>التصميم والخطوط</h2><p>الخط العام وألوان المتجر</p></div></div><div class="card"><div class="form-grid"><div class="field"><label>اللون الأساسي</label><input id="designPrimary" type="color" value="#60391f"></div><div class="field"><label>اللون الذهبي</label><input id="designGold" type="color" value="#b88a50"></div><div class="field"><label>الخط العام</label><select id="designFont"><option value="Tajawal">Tajawal</option><option value="Cairo">Cairo</option><option value="Aref Ruqaa">Aref Ruqaa</option><option value="Amiri">Amiri</option></select></div></div><button class="primary" onclick="saveDesign()">حفظ التصميم</button></div></section>
@@ -368,7 +390,7 @@ async function saveProduct(){
       stock:+g("pStock").value||0,low_stock_threshold:+g("pLow").value||5,sort_order:+g("pSort").value||0,
       description:g("pDesc").value.trim()||null,colors:g("pColors").value.split(",").map(x=>x.trim()).filter(Boolean),
       sizes:g("pSizes").value.split(",").map(x=>x.trim()).filter(Boolean),main_image_url:image,
-      is_active:g("pActive").checked,is_featured:g("pFeatured").checked,is_new:g("pNew").checked,is_best_seller:g("pBest").checked
+      is_active:g("pActive").checked,is_featured:g("pFeatured").checked,is_recommended:(document.getElementById("pRecommended")?.checked||false),is_new:g("pNew").checked,is_best_seller:g("pBest").checked
     };
     const id=g("pId").value;
     if(btn)btn.textContent="جارٍ حفظ البيانات...";

@@ -3458,39 +3458,8 @@ async function initializeStore(){
     .subscribe()
 }
 initializeStore();
-
-/* ===== ATYAF IDENTITY LOCK =====
-   Atyaf is a separate storefront identity. Old Shuaibi settings must never repaint its brand.
-*/
-function enforceAtyafIdentity(){
-  const setText=(sel,val)=>{const el=document.querySelector(sel);if(el)el.textContent=val;};
-  document.title="متجر أطياف | ATYAF STORE";
-  const md=document.getElementById("metaDesc"); if(md) md.content="متجر أطياف";
-  const ot=document.getElementById("ogTitle"); if(ot) ot.content="متجر أطياف";
-  const od=document.getElementById("ogDesc"); if(od) od.content="متجر أطياف";
-  setText(".brand-name","أطياف");
-  setText(".brand-en","ATYAF STORE");
-  const sf=document.getElementById("splashTextFallback"); if(sf) sf.textContent="أطياف";
-  const ss=document.querySelector(".splash-subtitle"); if(ss) ss.textContent="ATYAF STORE";
-  document.querySelectorAll("*").forEach(el=>{
-    if(el.children.length===0 && typeof el.textContent==="string"){
-      el.textContent=el.textContent
-        .replaceAll("متجر الشعيبي","متجر أطياف")
-        .replaceAll("باقات الشعيبي","باقات أطياف")
-        .replaceAll("قصة الشعيبي","قصة أطياف")
-        .replaceAll("باقة الشعيبي","باقة أطياف")
-        .replaceAll("الشعيبي","أطياف")
-        .replaceAll("ALSHUAIIBE STORE","ATYAF STORE")
-        .replaceAll("ALSHUAIIBE","ATYAF");
-    }
-  });
-}
-document.addEventListener("DOMContentLoaded",()=>{
-  enforceAtyafIdentity();
-  const observer=new MutationObserver(()=>enforceAtyafIdentity());
-  observer.observe(document.body,{childList:true,subtree:true});
-});
-
 </script>
+</body>
+</html>
 </body>
 </html>

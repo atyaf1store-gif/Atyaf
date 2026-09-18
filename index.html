@@ -94,6 +94,7 @@ button,input,textarea,select{font:inherit} button{cursor:pointer} a{color:inheri
 .sunrise{width:100%;display:flex;justify-content:center;margin:4px 0 12px}.sunrise svg{width:260px;max-width:70vw;opacity:.7}
 
 .ad-section{width:min(900px,calc(100% - 30px));margin:15px auto 22px;display:none}.ad-wrap{width:100%;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--cream-deep);box-shadow:var(--shadow);position:relative}.ad-wrap img,.ad-wrap video{display:block;width:100%;max-height:420px;object-fit:cover}.ad-slide{display:none}.ad-slide.active{display:block}
+.bottom-ad-section{width:min(900px,calc(100% - 30px));margin:20px auto 28px;display:none}.bottom-ad-section .ad-wrap{width:100%}.bottom-ad-section .ad-wrap img,.bottom-ad-section .ad-wrap video{display:block;width:100%;max-height:420px;object-fit:cover}
 
 /* ===== GIFT STRIP ===== */
 .gift-strip{width:min(980px,calc(100% - 30px));margin:0 auto 28px;padding:18px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(255,251,240,.95),rgba(241,221,166,.78));box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;align-items:center;gap:18px}
@@ -420,6 +421,12 @@ button,input,textarea,select{font:inherit} button{cursor:pointer} a{color:inheri
   #adWrap video{display:block;width:100%;height:auto;max-height:300px;object-fit:cover;}
   #adWrap .ad-slide{display:none;}
   #adWrap .ad-slide.active{display:block !important;}
+  #bottomAdSection{width:calc(100% - 20px);margin:18px auto 22px;padding:0;}
+  #bottomAdWrap{width:100%;min-height:0;border-radius:18px;overflow:hidden;background:var(--card);}
+  #bottomAdWrap img{display:block;width:100%;height:auto;min-height:120px;max-height:260px;object-fit:cover;}
+  #bottomAdWrap video{display:block;width:100%;height:auto;max-height:300px;object-fit:cover;}
+  #bottomAdWrap .ad-slide{display:none;}
+  #bottomAdWrap .ad-slide.active{display:block !important;}
   .category-group{width:100%;display:block;clear:both;margin:0 0 48px;padding:0;overflow:visible;}
   .category-group + .category-group{margin-top:8px;}
   .category-title{display:block;width:100%;margin:0 10px 12px;font-size:27px;}
@@ -1380,6 +1387,8 @@ body{background:var(--atyaf-bg)!important;color:var(--atyaf-text)!important}
 <section class="section" id="reviewsSection"><div class="section-head"><h2>آراء عملائنا</h2></div><div id="reviewsRow" class="reviews-row"></div></section>
 
 <!-- NEW: FULL FOOTER -->
+<section id="bottomAdSection" class="bottom-ad-section"><a id="bottomAdLink" target="_blank"><div id="bottomAdWrap" class="ad-wrap"></div></a></section>
+
 <footer class="store-footer">
   <div class="footer-grid">
     <div>
@@ -1528,8 +1537,8 @@ let catalogLoaded=false;
 let catalogRefreshTimer=null;
 let catalogRefreshRunning=false;
 let catalogRefreshPending=false;
-let generalSettings={},paymentSettings={},designSettings={},adSettings={},giftSettings={};
-let activeCategory="الكل",searchText="",sortMode="newest",currentProduct=null,currentCoupon=null,adTimer=null;
+let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},giftSettings={};
+let activeCategory="الكل",searchText="",sortMode="newest",currentProduct=null,currentCoupon=null,adTimer=null,bottomAdTimer=null;
 let customerOrders=[],currentCustomerPhone="",currentCustomerOrderNumber="",currentInvoiceData=null,reviewContext=null,reviewRating=5;
 let flowObservers=[];
 
@@ -1598,6 +1607,7 @@ async function fetchSettings(){
   paymentSettings=settingValue("payment");
   designSettings=settingValue("design");
   adSettings=settingValue("ads");
+  bottomAdSettings=settingValue("bottom_ads");
   giftSettings=settingValue("gifts");
   applySettings();
 }
@@ -1700,7 +1710,7 @@ function applySettings(){
   const wa=generalSettings.whatsapp||"";if(wa){$("whatsappButton").href="https://wa.me/"+wa.replace(/\D/g,"");$("whatsappButton").style.display="inline-flex"}else $("whatsappButton").style.display="none";
   const es=generalSettings.enableSearch!==false,eo=generalSettings.enableSort!==false;$("searchWrap").style.display=es?"block":"none";$("sortWrap").style.display=eo?"block":"none";$("tools").style.display=(es||eo)?"flex":"none";$("favoriteNav").style.display=generalSettings.featureWish!==false?"inline-block":"none";$("reviewsSection").style.display=generalSettings.featureReviews===false?"none":"block";
   $("giftStrip").style.display=giftSettings.enabled===false?"none":"grid";
-  applyStoreIdentity();applySEO();renderSocials();renderFooterInfo();renderCheckoutPaymentMethods();setupPWA();renderAdvertisement()
+  applyStoreIdentity();applySEO();renderSocials();renderFooterInfo();renderCheckoutPaymentMethods();setupPWA();renderAdvertisement();renderBottomAdvertisement()
 }
 function applySEO(){const title=generalSettings.seoTitle||getStoreEyebrow(),desc=generalSettings.seoDescription||generalSettings.sloganDesc||getStoreEyebrow();document.title=title+" | "+getStoreNameEn();$("metaDesc").setAttribute("content",desc);$("ogTitle").setAttribute("content",title);$("ogDesc").setAttribute("content",desc)}
 function renderSocials(){
@@ -1862,6 +1872,41 @@ function renderAdvertisement(){
 
   wrap.innerHTML=`<img src="${escapeHTML(media[0])}" alt="إعلان متجر أطياف" loading="eager">`;
 }
+
+function normalizeBottomAdMedia(){
+  const raw=bottomAdSettings||{};
+  const media=[];
+  const pushValue=value=>{
+    if(!value)return;
+    if(Array.isArray(value)){value.forEach(pushValue);return;}
+    if(typeof value==="object"){pushValue(value.url||value.src||value.image_url||value.imageUrl||value.media_url||value.mediaUrl||value.video_url||value.videoUrl);return;}
+    if(typeof value==="string"&&value.trim())media.push(value.trim());
+  };
+  [raw.media,raw.images,raw.slides,raw.mediaUrls,raw.media_urls,raw.urls,raw.banners,raw.items,raw.image,raw.imageUrl,raw.image_url,raw.video,raw.videoUrl,raw.video_url].forEach(pushValue);
+  return [...new Set(media)];
+}
+function renderBottomAdvertisement(){
+  if(bottomAdTimer){clearInterval(bottomAdTimer);bottomAdTimer=null;}
+  const section=$("bottomAdSection"),wrap=$("bottomAdWrap"),linkEl=$("bottomAdLink");
+  if(!section||!wrap||!linkEl)return;
+  const media=normalizeBottomAdMedia();
+  const s=bottomAdSettings||{};
+  if(s.enabled===false||s.is_active===false||s.active===false||s.show===false||!media.length){section.style.display="none";wrap.innerHTML="";return;}
+  section.style.display="block";
+  const link=s.link||s.url||s.linkUrl||s.link_url||"";
+  if(link){linkEl.href=link;linkEl.style.pointerEvents="auto";}else{linkEl.removeAttribute("href");linkEl.style.pointerEvents="none";}
+  wrap.style.borderRadius=Math.max(0,Number(s.radius||0))+"px";
+  const fit=s.fit||"cover",position=s.position||"center";
+  let type=String(s.type||"").toLowerCase();
+  if(!type){const first=String(media[0]||"").toLowerCase();type=/\.(mp4|webm|mov)(\?|$)/i.test(first)?"video":(media.length>1?"slider":"image");}
+  if(type.includes("video")){wrap.innerHTML=`<video src="${escapeHTML(media[0])}" autoplay muted loop playsinline controls preload="metadata" style="object-fit:${fit};object-position:${position}"></video>`;return;}
+  if(type.includes("slider")||media.length>1){
+    wrap.innerHTML=media.map((u,i)=>`<img class="ad-slide ${i===0?"active":""}" src="${escapeHTML(u)}" alt="إعلان متجر أطياف" style="object-fit:${fit};object-position:${position}">`).join("");
+    let c=0;bottomAdTimer=setInterval(()=>{const slides=wrap.querySelectorAll(".ad-slide");if(slides.length<2)return;slides[c].classList.remove("active");c=(c+1)%slides.length;slides[c].classList.add("active");},Math.max(1200,Number(s.interval||3500)));return;
+  }
+  wrap.innerHTML=`<img src="${escapeHTML(media[0])}" alt="إعلان متجر أطياف" style="object-fit:${fit};object-position:${position}">`;
+}
+
 
 function normalizeStoreCategory(row){
   const c=row||{};

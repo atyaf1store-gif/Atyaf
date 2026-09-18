@@ -22,7 +22,16 @@
     .drawer{position:fixed;inset:0;z-index:100;background:rgba(35,20,12,.45);display:none}.drawer.show{display:block}.panel{position:absolute;top:0;bottom:0;left:0;width:min(430px,92vw);background:#fff;padding:18px;overflow:auto}.panelHead{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#eee;width:36px;height:36px;border-radius:50%}.cartItem{display:grid;grid-template-columns:60px 1fr auto;gap:9px;padding:11px 0;border-bottom:1px solid var(--line)}.cartItem img{width:60px;height:60px;border-radius:10px;object-fit:cover;background:#eee}.qty{display:flex;align-items:center;gap:5px}.qty button{border:1px solid var(--line);background:#fff;border-radius:7px}.total{font-size:20px;font-weight:800;color:var(--brown);padding:15px 0}
     .modal{position:fixed;inset:0;z-index:120;background:rgba(35,20,12,.55);display:none;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.modalCard{width:min(620px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:22px;padding:19px}.field{display:grid;gap:6px;margin-bottom:10px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px}.field textarea{min-height:80px}.empty{text-align:center;color:var(--muted);padding:28px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2f1d13;color:#fff;padding:11px 18px;border-radius:12px;z-index:300}
     @media(max-width:900px){.products{grid-template-columns:repeat(2,1fr)}.footerIn{grid-template-columns:1fr}.heroBox{min-height:300px;padding:28px}.hero h2{font-size:39px}}@media(max-width:520px){.headin{padding:8px}.brand h1{font-size:18px}.brand small{display:none}.logo{width:45px;height:45px}.iconbtn{padding:8px}.hero{padding:0 9px}.heroBox{padding:24px 18px;min-height:280px;border-radius:22px}.hero h2{font-size:35px}.wrap{padding:0 9px}.products{gap:8px}.product{border-radius:15px}.info{padding:10px}.info h4{font-size:14px}.banner{align-items:start;flex-direction:column}}
-    </style>
+    
+/* ===== V11 — أفكار الباقات والهدايا المقتبسة وظيفياً من متجر أطياف ===== */
+.atyafGiftStrip{max-width:1180px;margin:18px auto 8px;padding:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,#fff,#f6eadc);display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px;box-shadow:var(--shadow)}
+.atyafGiftStrip h3{margin:0 0 5px;font-size:26px}.atyafGiftStrip p{margin:0;color:var(--muted);line-height:1.8}.giftChips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.giftChip{font-size:11px;padding:5px 9px;border:1px solid var(--line);border-radius:999px;background:#fff}
+.bundlePro{flex:0 0 285px;max-width:84vw;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;box-shadow:var(--shadow)}
+.bundlePro img{width:100%;height:180px;object-fit:contain;border-radius:13px;background:#faf7f2}.bundlePro h3{margin:10px 0 4px;font-size:21px}.bundlePro p{font-size:12px;color:var(--muted);line-height:1.7;min-height:40px}.bundleStock{font-size:11px;color:var(--muted);text-align:center;margin-top:5px}.bundleActions{display:grid;grid-template-columns:1fr;gap:6px;margin-top:9px}
+.bundleItems{display:grid;gap:8px;margin:12px 0}.bundleItem{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px}.bundleItem img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:8px}
+@media(max-width:700px){.atyafGiftStrip{margin:12px 10px;grid-template-columns:1fr}.atyafGiftStrip .primary{width:100%}.bundlePro{flex-basis:78vw}}
+
+</style>
     
 <style id="atyaf-v2">
 :root{--atyaf:#8b5d2e;--atyaf-dark:#21150d;--atyaf-gold:#c79a43;--soft:#f8f5ef}
@@ -74,6 +83,16 @@ body{background:#fff}
     <nav class="desktopNav" id="dynamicNav"></nav><div class="movingAnnouncement" id="movingAnnouncement"></div>
 <section class="hero"><div class="heroSlider" id="heroSlider"><div class="heroFallback"><div><h2>متجر أطياف</h2><p id="heroDesc">تجربة تسوق أنيقة ومنتجات مختارة بعناية.</p></div></div></div></section>
 <div class="featuresBar"><div class="featuresIn" id="featuresBar"></div></div>
+
+<section class="atyafGiftStrip" id="giftBuilderStrip">
+ <div>
+  <h3>🎁 جهّز هديتك من أطياف</h3>
+  <p>اختر عطرك كهدية، ثم أدخل بيانات المرسل والمستلم ورسالة الإهداء عند إتمام الطلب.</p>
+  <div class="giftChips"><span class="giftChip">اختيار المنتج</span><span class="giftChip">بيانات المستلم</span><span class="giftChip">رسالة إهداء</span><span class="giftChip">طلب واحد آمن</span></div>
+ </div>
+ <button class="primary" onclick="openGiftChooser()">ابدأ تجهيز الهدية</button>
+</section>
+
 <div id="dynamicHome"></div>
 
     
@@ -89,14 +108,20 @@ body{background:#fff}
 
     <div class="modal" id="trackModal"><div class="modalCard"><div class="panelHead"><h2>تتبع الطلب</h2><button class="close" onclick="closeModal('trackModal')">×</button></div><div class="field"><label>رقم الطلب</label><input id="trackNo" placeholder="مثال 100001"></div><div class="field"><label>رقم الهاتف</label><input id="trackPhone"></div><button class="primary" onclick="trackOrder()">بحث</button><div id="trackResult"></div></div></div>
 
-    <div class="modal" id="policyModal"><div class="modalCard"><div class="panelHead"><h2 id="policyTitle"></h2><button class="close" onclick="closeModal('policyModal')">×</button></div><div id="policyContent" style="line-height:2;white-space:pre-wrap"></div></div></div>
+    
+<div class="modal" id="bundleDetailModal"><div class="modalCard">
+ <div class="panelHead"><h2 id="bundleDetailTitle">تفاصيل الباقة</h2><button class="close" onclick="closeModal('bundleDetailModal')">×</button></div>
+ <div id="bundleDetailBody"></div>
+</div>
+
+<div class="modal" id="policyModal"><div class="modalCard"><div class="panelHead"><h2 id="policyTitle"></h2><button class="close" onclick="closeModal('policyModal')">×</button></div><div id="policyContent" style="line-height:2;white-space:pre-wrap"></div></div></div>
 
     <script>
     const SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
     const SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
     const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
     const $=id=>document.getElementById(id);
-    let ADS=[],FEATURES=[],SCENTS=[],NAVIGATION=[],HOME_SECTIONS=[],SOCIALS=[],PRODUCT_SCENTS=[];
+    let ADS=[],FEATURES=[],SCENTS=[],NAVIGATION=[],HOME_SECTIONS=[],SOCIALS=[],PRODUCT_SCENTS=[],BUNDLE_PRODUCTS=[];
 let PRODUCTS=[],CATEGORIES=[],GIFTS=[],BUNDLES=[],POLICIES=[],CART=JSON.parse(localStorage.getItem("atyaf_cart")||"[]"),FAV=JSON.parse(localStorage.getItem("atyaf_fav")||"[]"),ACTIVE="all",COUPON=null,SETTINGS={};
 
     function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -127,7 +152,8 @@ async function load(){
       sb.from("home_sections").select("*").eq("is_active",true).order("sort_order"),
       sb.from("social_links").select("*").eq("is_active",true).order("sort_order"),
       sb.from("product_scents").select("*"),
-       sb.from("announcement_messages").select("*").eq("is_active",true).order("sort_order")
+       sb.from("announcement_messages").select("*").eq("is_active",true).order("sort_order"),
+      sb.from("bundle_products").select("*")
      ];
      const results=await Promise.all(queries.map(q=>q.then(r=>r).catch(error=>({data:null,error}))));
      results.forEach((r,i)=>{if(r?.error)console.warn("ATYAF query",i,r.error.message||r.error)});
@@ -143,6 +169,8 @@ async function load(){
      NAVIGATION=results[12]?.data||[];
      HOME_SECTIONS=results[13]?.data||[];
      SOCIALS=results[14]?.data||[];
+     PRODUCT_SCENTS=results[15]?.data||[];
+     BUNDLE_PRODUCTS=results[17]?.data||[];
      PRODUCT_SCENTS=results[15]?.data||[];
       window.ANNOUNCEMENTS=results[16]?.data||[];
 
@@ -301,7 +329,48 @@ function productCard(p){const fp=finalPrice(p);return `<article class="product">
      CART=[];saveLocal();closeModal("checkoutModal");toast("تم استلام طلبك رقم "+o.order_number);setTimeout(()=>{alert("رقم طلبك: "+o.order_number+"\nاحتفظ به لتتبع الطلب.")},300)
     }
     function renderGifts(){if(!$("giftCards"))return;$("giftCards").innerHTML=GIFTS.length?GIFTS.map(x=>`<div class="miniCard">${x.image_url?`<img src="${esc(x.image_url)}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;margin-bottom:10px">`:""}<b>${esc(x.name_ar)}</b><p>${esc(x.description||"")}</p><span class="price">${money(x.price)}</span></div>`).join(""):'<div class="empty">لا توجد هدايا حالياً</div>'}
-    function renderBundles(){if(!$("bundleCards"))return;$("bundleCards").innerHTML=BUNDLES.length?BUNDLES.map(x=>`<div class="miniCard">${x.image_url?`<img src="${esc(x.image_url)}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;margin-bottom:10px">`:""}<b>${esc(x.name_ar)}</b><p>${esc(x.description||"")}</p><span class="price">${money(x.offer_price)}</span>${x.regular_price>x.offer_price?` <span class="old">${money(x.regular_price)}</span>`:""}</div>`).join(""):'<div class="empty">لا توجد باقات حالياً</div>'}
+    function renderBundles(){
+      if(!$("bundleCards"))return;
+      $("bundleCards").innerHTML=BUNDLES.length?BUNDLES.map(x=>{
+        const regular=Number(x.regular_price??x.price??0)||0;
+        const offer=Number(x.offer_price??x.sale_price??regular)||0;
+        const stock=Math.max(0,Number(x.stock??0)||0);
+        const image=x.image_url||x.image||"";
+        const name=x.name_ar||x.name||x.title||"باقة أطياف";
+        return `<article class="bundlePro">
+          ${image?`<img src="${esc(image)}" alt="${esc(name)}">`:""}
+          <h3>${esc(name)}</h3><p>${esc(x.description||"باقة مختارة من أطياف بسعر مميز.")}</p>
+          <div><span class="price">${money(offer)}</span>${regular>offer?` <span class="old">${money(regular)}</span>`:""}</div>
+          <div class="bundleStock">${stock>0?`متوفر: ${stock}`:"تحقق من توفر الباقة"}</div>
+          <div class="bundleActions"><button class="primary" onclick="openBundleDetail('${x.id}')">تفاصيل الباقة</button></div>
+        </article>`;
+      }).join(""):'<div class="empty">لا توجد باقات حالياً</div>'
+    }
+    async function openBundleDetail(id){
+      const b=BUNDLES.find(x=>String(x.id)===String(id));if(!b)return toast("تعذر تحديد الباقة");
+      $("bundleDetailTitle").textContent=b.name_ar||b.name||b.title||"تفاصيل الباقة";
+      let links=BUNDLE_PRODUCTS.filter(x=>String(x.bundle_id)===String(id));
+      if(!links.length){
+        const {data,error}=await sb.from("bundle_products").select("*").eq("bundle_id",id);
+        if(!error){links=data||[];BUNDLE_PRODUCTS=[...BUNDLE_PRODUCTS.filter(x=>String(x.bundle_id)!==String(id)),...links]}
+      }
+      const items=links.map(link=>{
+        const p=PRODUCTS.find(p=>String(p.id)===String(link.product_id));
+        if(!p)return "";
+        const qty=Math.max(1,Number(link.quantity||1)||1);
+        return `<div class="bundleItem">${(p.main_image_url||p.image_url)?`<img src="${esc(p.main_image_url||p.image_url)}">`:""}<div><b>${esc(p.name_ar)}</b><small style="display:block;color:var(--muted)">الكمية: ${qty}</small></div></div>`;
+      }).join("");
+      const regular=Number(b.regular_price??b.price??0)||0,offer=Number(b.offer_price??b.sale_price??regular)||0;
+      $("bundleDetailBody").innerHTML=`${b.image_url?`<img src="${esc(b.image_url)}" style="width:100%;max-height:260px;object-fit:contain;border-radius:14px">`:""}<p style="line-height:1.9">${esc(b.description||"")}</p><div class="bundleItems">${items||'<div class="empty">لم تتم إضافة منتجات لهذه الباقة بعد</div>'}</div><div class="total">سعر الباقة: <span>${money(offer)}</span>${regular>offer?` <span class="old">${money(regular)}</span>`:""}</div>`;
+      $("bundleDetailModal").classList.add("show");
+    }
+    function openGiftChooser(){
+      const available=PRODUCTS.filter(p=>Number(p.stock||0)>0);
+      if(!available.length)return toast("لا توجد منتجات متاحة للهدايا حالياً");
+      const p=available[0];
+      openProductDetail(p.id);
+      toast("اختر المنتج ثم اضغط شراء كهدية 🎁");
+    }
     function renderReviews(a){if(!$("reviews"))return;$("reviews").innerHTML=a.length?a.map(x=>`<div class="miniCard"><b>${esc(x.customer_name)}</b><div style="color:#b88a50">${"★".repeat(x.rating)}</div><p>${esc(x.comment||"")}</p></div>`).join(""):'<div class="empty">لا توجد تقييمات بعد</div>'}
     function renderPayments(a){$("coPayment").innerHTML='<option value="">اختر طريقة الدفع</option>'+a.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("")}
     function renderPolicies(){$("policyLinks").innerHTML=POLICIES.map(x=>`<a href="#" onclick="showPolicy('${x.id}');return false">${esc(x.title)}</a>`).join("")}

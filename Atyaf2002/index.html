@@ -791,13 +791,13 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
 </div>
 <div id="toast" class="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2'"></script>
 <script>
 const SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
 const SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
 const ADMIN_EMAIL="atyaf1store@gmail.com";
 const STORAGE_BUCKET="store-media";
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const db=window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY) : null;
 const $=id=>document.getElementById(id);
 
 let products=[],categories=[],variants=[],bundles=[],gifts=[],coupons=[],orders=[],reviews=[],relations=[],customers=[],settingsRows=[];
@@ -839,16 +839,23 @@ async function isAdmin(){
  return !error&&!!data;
 }
 async function login(){
- const password=$("password").value;if(!password){$("msg").textContent="أدخل كلمة المرور";return}
- const b=$("loginButton");b.disabled=true;b.textContent="جارِ التحقق...";$("msg").textContent="";
+ const msg=$("msg"), b=$("loginButton"), password=$("password").value;
+ if(!password){msg.textContent="أدخل كلمة المرور";return}
+ if(!db){msg.textContent="تعذر تحميل اتصال Supabase. حدّث الصفحة أو جرّب شبكة أخرى.";return}
+ b.disabled=true;b.textContent="جارِ التحقق...";msg.textContent="";
  try{
-  try{await db.auth.signOut({scope:"local"})}catch{}
-  const{data,error}=await db.auth.signInWithPassword({email:ADMIN_EMAIL,password});if(error)throw error;
+  const loginRequest=db.auth.signInWithPassword({email:ADMIN_EMAIL,password});
+  const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("انتهت مهلة الاتصال بـ Supabase. تحقق من الشبكة ثم حاول مجددًا.")),15000));
+  const{data,error}=await Promise.race([loginRequest,timeout]);
+  if(error)throw error;
   if(!data?.session)throw new Error("تعذر إنشاء جلسة تسجيل الدخول");
-  if(!await isAdmin())throw new Error("هذا الحساب غير مصرح له بالدخول");
+  if(!await isAdmin())throw new Error("تم تسجيل البريد، لكن هذا الحساب غير مصرح له كمدير في store_admins");
   $("login").classList.add("hidden");$("app").classList.remove("hidden");renderNav();await loadAll();$("password").value="";toast("تم تسجيل الدخول بنجاح ✓");
- }catch(e){$("msg").textContent=(e.message||"تعذر تسجيل الدخول").replace("Invalid login credentials","كلمة المرور غير صحيحة");try{await db.auth.signOut({scope:"local"})}catch{}}
- finally{b.disabled=false;b.textContent="دخول"}
+ }catch(e){
+  let t=e?.message||"تعذر تسجيل الدخول";
+  t=t.replace("Invalid login credentials","البريد أو كلمة المرور غير صحيحة");
+  msg.textContent=t;
+ }finally{b.disabled=false;b.textContent="دخول"}
 }
 async function logout(){try{await db.auth.signOut({scope:"local"})}catch{};$("app").classList.add("hidden");$("login").classList.remove("hidden");$("password").value=""}
 function renderNav(){$("nav").innerHTML=tabs.map((t,i)=>`<button class="${i===0?"active":""}" onclick="tab('${t[0]}',this)">${t[1]}</button>`).join("")}
@@ -3641,332 +3648,4 @@ function resetBankForm(){
   $("bankAccountName").value="";
   $("bankAccountNumber").value="";
   $("bankIban").value="";
-  $("bankInstructions").value="";
-  $("bankEnabled").checked=true;
-  $("saveBankButton").textContent="إضافة الحساب البنكي";
-}
-
-function editBankAccount(id){
-  const item=getBanksAdmin().find(x=>String(x.id)===String(id));
-  if(!item)return;
-
-  $("bankAccountId").value=item.id||"";
-  $("bankName").value=item.bankName||"";
-  $("bankAccountName").value=item.accountName||item.bankHolder||"";
-  $("bankAccountNumber").value=item.accountNumber||item.bankAccount||"";
-  $("bankIban").value=item.iban||item.bankIban||"";
-  $("bankInstructions").value=item.instructions||item.bankInstructions||"";
-  $("bankEnabled").checked=item.enabled!==false;
-  $("saveBankButton").textContent="حفظ تعديل الحساب";
-}
-
-async function saveBankAccount(){
-  const id=$("bankAccountId").value;
-  const bankName=$("bankName").value.trim();
-
-  if(!bankName){
-    toast("اكتب اسم البنك");
-    return;
-  }
-
-  const list=cloneJson(getBanksAdmin(),[]);
-
-  const row={
-    id:id||makeId("bank"),
-    bankName,
-    accountName:$("bankAccountName").value.trim(),
-    accountNumber:$("bankAccountNumber").value.trim(),
-    iban:$("bankIban").value.trim(),
-    instructions:$("bankInstructions").value.trim(),
-    enabled:$("bankEnabled").checked
-  };
-
-  const index=list.findIndex(x=>String(x.id)===String(id));
-
-  if(index>=0){
-    list[index]={...list[index],...row};
-  }else{
-    list.push(row);
-  }
-
-  try{
-    await persistPaymentSettings({
-      ...paymentSettings,
-      bankAccounts:list
-    });
-
-    resetBankForm();
-    toast(id?"تم تعديل الحساب البنكي ✓":"تمت إضافة الحساب البنكي ✓");
-  }catch(e){
-    alert("تعذر حفظ الحساب:\n"+(e.message||e));
-  }
-}
-
-async function deleteBankAccount(id){
-  if(!confirm("حذف الحساب البنكي؟"))return;
-
-  const list=getBanksAdmin()
-    .filter(x=>String(x.id)!==String(id));
-
-  try{
-    await persistPaymentSettings({
-      ...paymentSettings,
-      bankAccounts:list
-    });
-    toast("تم حذف الحساب البنكي");
-  }catch(e){
-    alert(e.message||e);
-  }
-}
-
-function renderPaymentSettings(){
-  const methods=getPaymentMethodsAdmin();
-
-  $("paymentMethodsList").innerHTML=methods.length
-    ? methods.map(item=>`
-      <div class="order-card">
-        <div class="order-card-head">
-          <div>
-            <strong>💳 ${esc(item.name||item.title||"طريقة دفع")}</strong>
-            <div class="note">
-              النوع: ${esc(item.type||"—")}
-              · الكود: ${esc(item.code||item.id||"—")}
-              · ${item.enabled===false?"متوقفة":"مفعلة"}
-            </div>
-          </div>
-          <div class="actions">
-            <button class="btn sm" onclick="editPaymentMethod('${esc(item.id)}')">تعديل</button>
-            <button class="btn red sm" onclick="deletePaymentMethod('${esc(item.id)}')">حذف</button>
-          </div>
-        </div>
-      </div>
-    `).join("")
-    : `<div class="note">لا توجد طرق دفع. أضف أول طريقة دفع من الأعلى.</div>`;
-
-  const banks=getBanksAdmin();
-
-  $("bankAccountsList").innerHTML=banks.length
-    ? banks.map(item=>`
-      <div class="order-card">
-        <div class="order-card-head">
-          <div>
-            <strong>🏦 ${esc(item.bankName||"حساب بنكي")}</strong>
-            <div class="note">
-              ${item.accountName?`صاحب الحساب: ${esc(item.accountName)}<br>`:""}
-              ${item.accountNumber?`رقم الحساب: <span dir="ltr">${esc(item.accountNumber)}</span><br>`:""}
-              ${item.iban?`IBAN: <span dir="ltr">${esc(item.iban)}</span><br>`:""}
-              ${item.enabled===false?"متوقف":"مفعل"}
-            </div>
-          </div>
-          <div class="actions">
-            <button class="btn sm" onclick="editBankAccount('${esc(item.id)}')">تعديل</button>
-            <button class="btn red sm" onclick="deleteBankAccount('${esc(item.id)}')">حذف</button>
-          </div>
-        </div>
-      </div>
-    `).join("")
-    : `<div class="note">لا توجد حسابات بنكية. أضف أول حساب من الأعلى.</div>`;
-}
-
-/* ================= POLICIES ================= */
-
-function renderPoliciesEditor(){
-  const saved=footerSettings.policies||{};
-
-  $("policiesEditor").innerHTML=policies.map(([k,t])=>`
-    <div class="order-card">
-      <label>${t}</label>
-      <textarea id="policyText_${k}">${esc(saved[k]||"")}</textarea>
-    </div>
-  `).join("");
-}
-
-async function saveFooterSettings(){
-  const data={};
-
-  policies.forEach(([k])=>{
-    data[k]=$("policyText_"+k).value.trim();
-  });
-
-  try{
-    const next={
-      ...footerSettings,
-      policies:{
-        ...(footerSettings.policies||{}),
-        ...data
-      }
-    };
-
-    await saveSetting("footer",next);
-    footerSettings=next;
-    toast("تم حفظ السياسات ✓");
-  }catch(e){
-    alert("تعذر حفظ السياسات:\n"+(e.message||e));
-  }
-}
-
-/* ================= GENERAL SETTINGS ================= */
-
-function fillSimpleSettings(){
-  $("setStoreName").value=generalSettings.storeName||"أطياف";
-  $("setStoreNameEn").value=generalSettings.storeNameEn||"ATYAF STORE";
-  $("setStoreEyebrow").value=generalSettings.storeEyebrow||"متجر أطياف";
-  $("setEmail").value=generalSettings.email||"";
-  $("setPhone").value=generalSettings.phone||"";
-  $("setWhatsapp").value=generalSettings.whatsapp||"";
-  $("setSloganTitle").value=generalSettings.sloganTitle||"";
-  $("setSloganDesc").value=generalSettings.sloganDesc||"";
-  $("setAboutText").value=generalSettings.aboutText||"";
-  $("setLogoUrl").value=generalSettings.logoUrl||"";
-  $("setSplashLogoUrl").value=generalSettings.splashLogoUrl||"";
-  $("setSplashDuration").value=Number(generalSettings.splashDuration||2300);
-  $("setSplashDesktopWidth").value=Number(generalSettings.splashDesktopWidth||generalSettings.splashLogoWidth||330);
-  $("setSplashTabletWidth").value=Number(generalSettings.splashTabletWidth||280);
-  $("setSplashMobileWidth").value=Number(generalSettings.splashMobileWidth||220);
-  $("setSplashBackground").value=generalSettings.splashBackground||"#F8EACB";
-  $("setSplashEnabled").checked=generalSettings.splashEnabled!==false;
-
-  $("setInstagram").value=generalSettings.instagram||"";
-  $("setFacebook").value=generalSettings.facebook||"";
-  $("setTiktok").value=generalSettings.tiktok||"";
-  $("setTwitter").value=generalSettings.twitter||"";
-  $("setSnapchat").value=generalSettings.snapchat||"";
-  $("setTelegram").value=generalSettings.telegram||"";
-
-  $("setEnableSearch").checked=generalSettings.enableSearch!==false;
-  $("setEnableSort").checked=generalSettings.enableSort!==false;
-  $("setFeatureReviews").checked=generalSettings.featureReviews!==false;
-
-  $("adEnabledSelect").value=String(adSettings.enabled===true);
-  $("adType").value=adSettings.type||"image";
-  $("adFit").value=adSettings.fit||"cover";
-  $("adHeightDesktop").value=Number(adSettings.heightDesktop||650);
-  $("adHeightTablet").value=Number(adSettings.heightTablet||520);
-  $("adHeightMobile").value=Number(adSettings.heightMobile||360);
-  $("adRadius").value=Number(adSettings.radius||0);
-  $("adInterval").value=Number(adSettings.interval||3500);
-  $("adPosition").value=adSettings.position||"center";
-  $("adLinkInput").value=adSettings.link||"";
-
-  const colors=designSettings.colors||{};
-  $("designCream").value=colors.cream||"#F8EACB";
-  $("designCard").value=colors.card||"#FFFBF0";
-  $("designInk").value=colors.ink||"#20301C";
-  $("designGold").value=colors.gold||"#A9793C";
-
-  $("designCardDesktop").value=Number(
-    designSettings.cards?.desktopWidth
-    || designSettings.cardWidth
-    || 180
-  );
-
-  $("designCardTablet").value=Number(
-    designSettings.cards?.tabletWidth
-    || 220
-  );
-
-  $("designCardMobile").value=Number(
-    designSettings.cards?.mobileWidth
-    || 280
-  );
-
-  $("designBackgroundUrl").value=designSettings.backgroundUrl||"";
-
-  fillFontSelects();
-  renderExistingAdMedia();
-  renderPaymentSettings();
-  updateProductSizePreview();
-}
-
-async function saveGeneralSettings(){
-  const button=$("saveGeneralButton");
-  button.disabled=true;
-
-  try{
-    let logoUrl=$("setLogoUrl").value.trim();
-    let splashLogoUrl=$("setSplashLogoUrl").value.trim();
-
-    const logoFile=$("setLogoFile").files?.[0];
-    const splashFile=$("setSplashLogoFile").files?.[0];
-
-    if(logoFile){
-      logoUrl=await uploadMediaFile(logoFile,"identity");
-    }
-
-    if(splashFile){
-      splashLogoUrl=await uploadMediaFile(splashFile,"splash");
-    }
-
-    const next={
-      ...generalSettings,
-
-      storeName:$("setStoreName").value.trim(),
-      storeNameEn:$("setStoreNameEn").value.trim(),
-      storeEyebrow:$("setStoreEyebrow").value.trim(),
-
-      email:$("setEmail").value.trim(),
-      phone:$("setPhone").value.trim(),
-      whatsapp:$("setWhatsapp").value.trim(),
-
-      sloganTitle:$("setSloganTitle").value.trim(),
-      sloganDesc:$("setSloganDesc").value.trim(),
-      aboutText:$("setAboutText").value.trim(),
-
-      logoUrl,
-      splashLogoUrl,
-      splashEnabled:$("setSplashEnabled").checked,
-      splashDuration:Number($("setSplashDuration").value||2300),
-
-      splashLogoWidth:Number($("setSplashDesktopWidth").value||330),
-      splashDesktopWidth:Number($("setSplashDesktopWidth").value||330),
-      splashTabletWidth:Number($("setSplashTabletWidth").value||280),
-      splashMobileWidth:Number($("setSplashMobileWidth").value||220),
-      splashBackground:$("setSplashBackground").value,
-
-      instagram:$("setInstagram").value.trim(),
-      facebook:$("setFacebook").value.trim(),
-      tiktok:$("setTiktok").value.trim(),
-      twitter:$("setTwitter").value.trim(),
-      snapchat:$("setSnapchat").value.trim(),
-      telegram:$("setTelegram").value.trim(),
-
-      enableSearch:$("setEnableSearch").checked,
-      enableSort:$("setEnableSort").checked,
-      featureReviews:$("setFeatureReviews").checked
-    };
-
-    await saveSetting("general",next);
-    generalSettings=next;
-
-    $("setLogoUrl").value=logoUrl;
-    $("setSplashLogoUrl").value=splashLogoUrl;
-    $("setLogoFile").value="";
-    $("setSplashLogoFile").value="";
-
-    toast("تم حفظ جميع إعدادات المتجر ✓");
-  }catch(e){
-    alert("تعذر حفظ إعدادات المتجر:\n"+(e.message||e));
-  }finally{
-    button.disabled=false;
-  }
-}
-
-
-window.addEventListener(
-  "resize",
-  ()=>{
-    if($("productSizePreviewCard")){
-      updateProductSizePreview();
-    }
-  },
-  {passive:true}
-);
-
-async function removeRow(table,id){if(!confirm("تأكيد الحذف؟"))return;const{error}=await db.from(table).delete().eq("id",id);if(error)return alert(error.message);toast("تم الحذف");await loadAll()}
-
-async function startAdmin(){try{await db.auth.signOut({scope:"local"})}catch{};$("app").classList.add("hidden");$("login").classList.remove("hidden");$("password").value="";setTimeout(()=>$("password")?.focus(),150)}
-db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT"){$("app").classList.add("hidden");$("login").classList.remove("hidden")}})
-startAdmin();
-</script>
-</body>
-</html>
+  $("ban

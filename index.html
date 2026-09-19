@@ -1421,20 +1421,20 @@ html,body{max-width:100%;overflow-x:hidden}
  #scentShortcutSection .scent-shortcut{flex-basis:72px!important}
  #scentShortcutSection .scent-circle{width:64px!important;height:64px!important}
 }
+
+/* ===== ATYAF DIRECT OPEN + PROFESSIONAL BRAND MOTION ===== */
+#storeSplash{display:none!important}
+.store-profile{animation:atyafBrandEntrance .82s cubic-bezier(.22,.78,.28,1) both}
+.store-profile-logo{animation:atyafLogoEntrance .95s cubic-bezier(.2,.85,.3,1) both}
+.store-profile-copy{animation:atyafNameEntrance .9s .10s cubic-bezier(.2,.8,.3,1) both}
+@keyframes atyafBrandEntrance{0%{opacity:0;transform:translateY(-10px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes atyafLogoEntrance{0%{opacity:0;transform:scale(.72) rotate(-5deg)}70%{opacity:1;transform:scale(1.04) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes atyafNameEntrance{0%{opacity:0;transform:translateX(14px);filter:blur(4px)}100%{opacity:1;transform:translateX(0);filter:blur(0)}}
+@media (prefers-reduced-motion:reduce){.store-profile,.store-profile-logo,.store-profile-copy{animation:none!important}}
 </style>
 </head>
 
 <body>
-<div id="storeSplash"><div class="splash-inner"><div class="splash-ring"></div><div class="splash-glow"></div><img id="splashLogo" alt="شعار المتجر"><div id="splashTextFallback">أطياف</div><div id="splashSubtitle" class="splash-subtitle">ATYAF STORE</div></div></div>
-
-<div id="pushPermissionBox">
-  <div class="push-title"><div class="push-icon">🔔</div><div id="pushPermissionTitle">فعّل إشعارات متجر أطياف</div></div>
-  <div id="pushPermissionMessage" class="push-message">اسمح لنا بإرسال إشعارات الطلبات والعروض الجديدة لك حتى عندما يكون الموقع مغلقًا.</div>
-  <div class="push-actions"><button id="enablePushButton" class="btn" type="button" onclick="enablePushNotifications()">🔔 نعم، فعّل الإشعارات</button><button class="btn secondary" type="button" onclick="dismissPushPermission()">لاحقًا</button></div>
-</div>
-
-<div id="customBackground"></div><div id="watermark"></div>
-
 <header class="topbar"><div class="topbar-inner atyaf-header-pro"><button class="brand store-profile" type="button" onclick="scrollSection('about')"><span class="store-profile-logo"><img id="headerStoreLogo" class="store-logo-img" alt="شعار المتجر"><span class="store-profile-fallback">أ</span></span><span class="store-profile-copy"><span id="storeBrandName" class="brand-name">أطياف</span><span id="storeBrandEn" class="brand-en">ATYAF STORE</span></span></button><nav class="header-quick-actions"><button class="header-icon-action" onclick="openHeaderSearch()"><span class="lux-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg></span><small>البحث</small></button><button id="favoriteNav" class="header-icon-action" onclick="showFavorites()"><span class="lux-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg></span><small>المفضلة</small></button><button class="header-icon-action" onclick="openMyOrders()"><span class="lux-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 7 8.5-4 8.5 4-8.5 4-8.5-4Z"></path><path d="M3.5 7v10L12 21l8.5-4V7M12 11v10"></path></svg></span><small>تتبع الطلب</small></button><button class="header-icon-action" onclick="openCart()"><span class="lux-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 13H6L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></span><small>السلة</small><b id="cartCount" class="header-cart-count">0</b></button></nav><div id="notificationsPanel" class="notifications-panel"><div id="notificationsList"></div></div></div></header>
 
 <section class="hero">
@@ -1727,12 +1727,10 @@ async function fetchSettings(){
   applySettings();
 }
 function applyStoreIdentity(){
-  const storeName=getStoreName(),storeNameEn=getStoreNameEn(),eyebrow=getStoreEyebrow(),logoUrl=getStoreLogo(),splashLogoUrl=generalSettings.splashLogoUrl||logoUrl||"";
-  const splashLogoWidth=Math.max(120,Math.min(700,Number(generalSettings.splashLogoWidth||330))),splashDuration=Math.max(700,Math.min(10000,Number(generalSettings.splashDuration||2300)));
-  $("storeBrandName").textContent=storeName;$("storeBrandEn").textContent=storeNameEn;$("storeEyebrow").textContent=eyebrow;$("footerStoreName").textContent=eyebrow;$("aboutStoreTitle").textContent="قصة "+storeName;$("splashSubtitle").textContent=storeNameEn;
+  const storeName=getStoreName(),storeNameEn=getStoreNameEn(),eyebrow=getStoreEyebrow(),logoUrl=getStoreLogo();
+
+  $("storeBrandName").textContent=storeName;$("storeBrandEn").textContent=storeNameEn;$("storeEyebrow").textContent=eyebrow;$("footerStoreName").textContent=eyebrow;$("aboutStoreTitle").textContent="قصة "+storeName;
   const hl=$("headerStoreLogo");if(logoUrl){hl.src=logoUrl;hl.classList.add("show")}else{hl.classList.remove("show");hl.removeAttribute("src")}
-  const sl=$("splashLogo"),sf=$("splashTextFallback");sl.style.width=splashLogoWidth+"px";if(splashLogoUrl){sl.src=splashLogoUrl;sl.style.display="block";sf.style.display="none"}else{sl.style.display="none";sf.style.display="block";sf.textContent=storeName}
-  clearTimeout(window.__splashTimer);window.__splashTimer=setTimeout(()=>{$("storeSplash")?.classList.add("hide");setTimeout(()=>$("storeSplash")?.remove(),900)},splashDuration)
 }
 function applySettings(){
   const colors=designSettings.colors||generalSettings.colors||{},root=document.documentElement;
@@ -3808,7 +3806,6 @@ function closePolicy(){$("policyModal").classList.remove("show");updateMainScrim
 function renderSkeletons(){if(generalSettings.featureSkel!==true)return;$("productsArea").innerHTML='<div class="empty">جارِ تحميل المنتجات…</div>'}
 async function initializeStore(){
   // حماية: لا تبقى شاشة البداية عالقة حتى لو فشل اتصال خارجي.
-  setTimeout(()=>{const sp=$("storeSplash");if(sp){sp.classList.add("hide");setTimeout(()=>sp.remove(),700)}},4500);
   $("cartCount").textContent="0";
   await fetchSettings();
   renderSkeletons();

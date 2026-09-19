@@ -332,6 +332,49 @@ a{text-decoration:none;color:inherit}
   .footer-grid{grid-template-columns:1fr 1fr;gap:15px}
   .detail{grid-template-columns:1fr}
 }
+
+/* ATYAF: lower advertising screen after products */
+.after-products-ad{
+  width:100%;
+  margin:42px 0 0;
+  position:relative;
+  overflow:hidden;
+  background:var(--cream);
+}
+.after-products-ad .after-ad-slide{
+  display:none;
+  width:100%;
+  height:320px;
+  position:relative;
+}
+.after-products-ad .after-ad-slide.active{display:block}
+.after-products-ad img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.after-products-ad .after-ad-overlay{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,rgba(23,54,41,.12),rgba(23,54,41,.38));
+  color:#fff;text-align:center;padding:24px;
+}
+.after-products-ad .after-ad-content h2{margin:0 0 8px;font-size:30px}
+.after-products-ad .after-ad-content p{margin:0 0 14px;font-size:14px}
+.after-products-ad .after-ad-content button{
+  border:1px solid #fff;background:var(--gold);color:#fff;
+  padding:10px 25px;font-size:12px;
+}
+.after-ad-dots{
+  position:absolute;z-index:3;bottom:14px;left:50%;
+  transform:translateX(-50%);display:flex;gap:7px;
+}
+.after-ad-dot{width:8px;height:8px;border:0;border-radius:50%;background:#ffffff88;padding:0}
+.after-ad-dot.active{background:#fff}
+@media(max-width:600px){
+  .after-products-ad .after-ad-slide{height:190px}
+  .after-products-ad .after-ad-content h2{font-size:21px}
+  .after-products-ad .after-ad-content p{font-size:11px}
+}
+
 </style>
 </head>
 
@@ -488,6 +531,30 @@ a{text-decoration:none;color:inherit}
     </section>
 
   </div>
+
+  <!-- شاشة إعلانية بعد المنتجات -->
+  <section class="after-products-ad" id="afterProductsAd">
+    <div class="after-ad-slide active">
+      <img src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1800&q=85" alt="إعلان أطياف">
+      <div class="after-ad-overlay"><div class="after-ad-content">
+        <h2>أطياف العطر</h2>
+        <p>اختيارات فاخرة تترك أثراً لا يُنسى</p>
+        <button onclick="document.querySelector('#best').scrollIntoView({behavior:'smooth'})">تسوق الآن</button>
+      </div></div>
+    </div>
+    <div class="after-ad-slide">
+      <img src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=1800&q=85" alt="عروض أطياف">
+      <div class="after-ad-overlay"><div class="after-ad-content">
+        <h2>عروض أطياف</h2>
+        <p>اكتشف العروض والاختيارات المميزة</p>
+        <button onclick="document.querySelector('#offers').scrollIntoView({behavior:'smooth'})">اكتشف العروض</button>
+      </div></div>
+    </div>
+    <div class="after-ad-dots">
+      <button class="after-ad-dot active" onclick="afterAdTo(0)"></button>
+      <button class="after-ad-dot" onclick="afterAdTo(1)"></button>
+    </div>
+  </section>
 </main>
 
 <footer class="footer" id="contact">
@@ -792,6 +859,17 @@ setInterval(()=>{
  currentSlide=currentSlide?0:1;
  slideTo(currentSlide);
 },5000);
+
+let afterAdIndex=0;
+function afterAdTo(n){
+  const slides=document.querySelectorAll('.after-ad-slide');
+  const dots=document.querySelectorAll('.after-ad-dot');
+  if(!slides.length) return;
+  afterAdIndex=(n+slides.length)%slides.length;
+  slides.forEach((el,i)=>el.classList.toggle('active',i===afterAdIndex));
+  dots.forEach((el,i)=>el.classList.toggle('active',i===afterAdIndex));
+}
+setInterval(()=>afterAdTo(afterAdIndex+1),4000);
 
 renderAll();
 saveCart();

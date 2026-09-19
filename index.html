@@ -679,58 +679,71 @@ async function loadAnnouncementBars(){
 }
 loadAnnouncementBars();
 
-const products=[
- {
-  id:1,name:"عطر بريستيج ربي",
-  price:240,old:290,category:"عود",sale:1,best:1,new:0,featured:1,
-  image:"https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:2,name:"مسك أبيض فاخر",
-  price:120,old:150,category:"مسك",sale:1,best:1,new:1,featured:1,
-  image:"https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:3,name:"دهن عود ملكي",
-  price:185,old:220,category:"عود",sale:1,best:1,new:0,featured:0,
-  image:"https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:4,name:"عطر الورد الدمشقي",
-  price:145,old:170,category:"ورد",sale:1,best:0,new:1,featured:1,
-  image:"https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:5,name:"بخور شرقي فاخر",
-  price:95,old:115,category:"عنبر",sale:0,best:1,new:0,featured:1,
-  image:"https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:6,name:"عطر فانيلا ناعم",
-  price:130,old:155,category:"فانيلا",sale:1,best:0,new:1,featured:0,
-  image:"https://images.unsplash.com/photo-1563170351-be82bc888aa4?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:7,name:"مجموعة عطور صغيرة",
-  price:210,old:250,category:"مجموعة",sale:1,best:1,new:0,featured:1,
-  image:"https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:8,name:"عطر المساء الأسود",
-  price:175,old:200,category:"عنبر",sale:0,best:0,new:1,featured:1,
-  image:"https://images.unsplash.com/photo-1619994403073-2cec844b8e63?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:9,name:"هدية العروس",
-  price:280,old:330,category:"هدايا",sale:1,best:1,new:0,featured:1,
-  image:"https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=700&q=85"
- },
- {
-  id:10,name:"عطر زهرة المسك",
-  price:155,old:180,category:"مسك",sale:1,best:0,new:1,featured:0,
-  image:"https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=700&q=85"
- }
-];
+let products=[];
+
+function atyafProductImage(row){
+  let images=row?.images;
+  if(typeof images==="string"){
+    try{images=JSON.parse(images)}catch(e){images=[]}
+  }
+  if(!Array.isArray(images))images=[];
+  const first=images[0];
+  const fromImages=typeof first==="string"
+    ? first
+    : (first?.url||first?.src||first?.publicUrl||first?.public_url||"");
+  return row?.main_image_url || fromImages || "";
+}
+
+function normalizeAtyafProduct(row){
+  const price=Number(row?.price||0);
+  const compare=Number(row?.compare_price||0);
+  const discount=Number(row?.discount_percent ?? row?.discount ?? 0);
+  return {
+    id:String(row.id),
+    name:row.name_ar || row.name || row.name_en || "منتج",
+    price,
+    old:compare>price ? compare : 0,
+    category:row.category || row.category_name || "",
+    categoryId:row.category_id || "",
+    sale:discount>0 || compare>price,
+    best:row.is_best_seller===true,
+    new:row.is_new===true,
+    featured:row.is_featured===true || row.featured===true || row.is_recommended===true,
+    image:atyafProductImage(row),
+    description:row.description || row.short_description || "",
+    stock:Number(row.stock||0),
+    currency:row.currency || "YER"
+  };
+}
+
+async function loadProductsFromSupabase(){
+  const ids=["bestProducts","newProducts","featuredProducts","allProducts"];
+  try{
+    if(!atyafDb)throw new Error("Supabase client is not available");
+
+    const {data,error}=await atyafDb
+      .from("products")
+      .select("*")
+      .order("sort_order",{ascending:true})
+      .order("created_at",{ascending:false});
+
+    if(error)throw error;
+
+    products=(Array.isArray(data)?data:[])
+      .filter(row => row.is_active!==false && row.active!==false)
+      .map(normalizeAtyafProduct);
+
+    renderAll();
+    console.info("ATYAF products loaded from Supabase:",products.length);
+  }catch(e){
+    console.warn("ATYAF products:",e);
+    products=[];
+    ids.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.innerHTML="<p>تعذر تحميل المنتجات حالياً</p>";
+    });
+  }
+}
 
 let cart=JSON.parse(localStorage.getItem("cart")||"[]");
 let activeFilter="";
@@ -741,19 +754,19 @@ function productCard(p){
  <div class="product">
    ${p.sale?'<span class="sale">خصم</span>':''}
    <button class="heart" onclick="addFavorite()">♡</button>
-   <div class="product-image" onclick="showProduct(${p.id})">
-     <img src="${p.image}" alt="${p.name}">
+   <div class="product-image" onclick='showProduct(${JSON.stringify(p.id)})'>
+     <img src="${p.image||""}" alt="${p.name}" onerror="this.style.visibility='hidden'">
    </div>
    <div class="product-info">
-     <h3 onclick="showProduct(${p.id})">${p.name}</h3>
+     <h3 onclick='showProduct(${JSON.stringify(p.id)})'>${p.name}</h3>
      <div class="stars">★★★★★</div>
      <div class="price">
        ${p.price} ر.س
        ${p.old?`<span class="old">${p.old} ر.س</span>`:""}
      </div>
      <div class="product-actions">
-       <button onclick="addToCart(${p.id})">أضف للسلة</button>
-       <button onclick="gift(${p.id})">شراء كهدية</button>
+       <button onclick='addToCart(${JSON.stringify(p.id)})'>أضف للسلة</button>
+       <button onclick='gift(${JSON.stringify(p.id)})'>شراء كهدية</button>
      </div>
    </div>
  </div>`;
@@ -1110,14 +1123,14 @@ function filterCategory(value){
 }
 
 function addToCart(id){
- let p=products.find(x=>x.id===id);
+ let p=products.find(x=>String(x.id)===String(id));
  cart.push(p);
  saveCart();
  showMessage("تمت إضافة المنتج إلى السلة");
 }
 
 function gift(id){
- let p=products.find(x=>x.id===id);
+ let p=products.find(x=>String(x.id)===String(id));
  let giftPreparation=null;
  try{giftPreparation=JSON.parse(localStorage.getItem("atyafGiftPreparation")||"null")}catch(e){}
  if(!giftPreparation){
@@ -1151,7 +1164,7 @@ function renderCart(){
  }else{
    box.innerHTML=cart.map((p,i)=>`
     <div class="cart-item">
-      <img src="${p.image}">
+      <img src="${p.image||""}" onerror="this.style.visibility='hidden'">
       <div class="cart-item-info">
         <b>${p.name}</b><br>
         <span>${p.price} ر.س</span>
@@ -1244,14 +1257,14 @@ function saveGiftPreparation(){
 }
 
 function showProduct(id){
- let p=products.find(x=>x.id===id);
+ let p=products.find(x=>String(x.id)===String(id));
  document.getElementById("modalContent").innerHTML=`
   <div class="detail">
-   <img src="${p.image}">
+   <img src="${p.image||""}" onerror="this.style.visibility='hidden'">
    <div>
     <h2>${p.name}</h2>
     <div class="stars">★★★★★</div>
-    <p style="color:#777">عطر فاخر مختار بعناية، يتميز بثباته ورائحته الراقية المناسبة لجميع المناسبات.</p>
+    <p style="color:#777">${p.description||""}</p>
     <h2 style="color:#b33128">${p.price} ر.س</h2>
     <p>التوفر: <span style="color:green">متوفر</span></p>
     <button onclick="addToCart(${p.id});closeModal()">إضافة إلى السلة</button>
@@ -1291,8 +1304,8 @@ function slideTo(n){
 }
 
 
-renderAll();
 saveCart();
+loadProductsFromSupabase();
 loadTopAds();
 loadBottomAds();
 /* ATYAF ADS SYNC FIX 2026-09-19 */

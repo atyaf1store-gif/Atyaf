@@ -384,6 +384,24 @@ a{text-decoration:none;color:inherit}
   .after-products-ad .after-ad-content p{font-size:11px}
 }
 
+
+/* ===== ATYAF PRO PRODUCT CARDS ===== */
+.product{border:0;background:#fff;box-shadow:none;overflow:hidden;display:flex;flex-direction:column;min-height:100%}
+.product:hover{box-shadow:0 8px 28px rgba(24,52,39,.08);transform:translateY(-3px)}
+.product-image{height:285px;background:#fff;border:1px solid #f0eee8;overflow:hidden}
+.product-image img{width:100%;height:100%;object-fit:contain;padding:14px;mix-blend-mode:normal}
+.sale{top:12px;right:auto;left:10px;border-radius:14px;background:#111;padding:4px 10px;font-size:9px;z-index:3}
+.heart{z-index:4;top:10px;right:10px;left:auto;border:1px solid #e7e3da;background:rgba(255,255,255,.94);width:31px;height:31px}
+.product-info{padding:13px 0 0;text-align:right;display:flex;flex-direction:column;flex:1}
+.product-info h3{font-size:13px;line-height:1.8;font-weight:600;margin:0 4px 6px;color:#191919;min-height:46px;white-space:normal;overflow:visible}
+.stars{color:#b9923f;font-size:10px;margin:0 4px 7px}.price{color:#9d342b;font-size:13px;font-weight:700;margin:0 4px 12px}.old{color:#999;font-size:10px}
+.product-actions{display:grid;grid-template-columns:1fr;gap:6px;margin-top:auto}
+.product-actions button{min-height:42px;width:100%;border-radius:0;font-size:11px;font-weight:600;transition:.2s}
+.product-actions button:first-child{order:1;background:#183427;border-color:#183427;color:#fff}.product-actions button:first-child::before{content:"+";margin-left:8px;font-size:15px}
+.product-actions button:last-child{order:2;background:#fff;color:#183427;border:1px solid #d8d3c8}.product-actions button:last-child::before{content:"🎁";margin-left:6px}
+.product-actions button:hover{opacity:.9}
+@media(max-width:600px){.product-image{height:210px}.product-info h3{font-size:12px;min-height:43px}.product-actions button{min-height:39px;font-size:10px}}
+
 </style>
 </head>
 
@@ -696,7 +714,7 @@ function productCard(p){
      </div>
      <div class="product-actions">
        <button onclick="addToCart(${p.id})">أضف للسلة</button>
-       <button onclick="gift(${p.id})">هدية</button>
+       <button onclick="gift(${p.id})">شراء كهدية</button>
      </div>
    </div>
  </div>`;

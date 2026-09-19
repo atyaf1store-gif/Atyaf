@@ -503,6 +503,7 @@ body{color:#20231f}
   .nav a{font-size:13px}
 }
 
+.auth-tabs{display:flex;gap:8px;margin-bottom:18px}.auth-tabs button{flex:1;padding:11px;border:1px solid #ddd;background:#fff;color:#222!important;font-weight:800}.auth-tabs button.active,.auth-action{background:#173629;color:#fff!important}.auth-form{display:grid;gap:10px}.auth-form input{width:100%;padding:12px;border:1px solid #ddd;font:inherit}.auth-action{width:100%;padding:12px;border:0;font-weight:800}.auth-link{border:0;background:transparent;color:#765b27!important;text-decoration:underline}.account-card{text-align:center;padding:10px}.account-email{direction:ltr;color:#555;margin:8px 0 18px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -530,7 +531,7 @@ body{color:#20231f}
     </div>
 
     <div class="header-tools">
-      <button class="tool" onclick="showMessage('ميزة الحساب ستكون متاحة قريباً')">♙<small>الحساب</small></button>
+      <button class="tool" id="accountButton" onclick="openAccount()">♙<small id="accountLabel">الحساب</small></button>
       <button class="tool" onclick="showMessage('تم فتح المفضلة')">♡<small>المفضلة</small></button>
       <button class="tool" onclick="openCart()">🛒<span class="badge" id="cartCount">0</span></button>
     </div>
@@ -686,7 +687,7 @@ body{color:#20231f}
   <div class="container copyright">جميع الحقوق محفوظة © 2026 متجر أطياف | ATYAF STORE</div>
 </footer>
 
-<button class="whatsapp" onclick="showMessage('سيتم تحويلك إلى الواتساب')">◉</button>
+<button class="whatsapp" id="whatsappButton" onclick="openWhatsApp()">◉</button>
 
 <div class="drawer" id="drawer" onclick="closeCart(event)">
   <div class="cart" onclick="event.stopPropagation()">
@@ -723,6 +724,69 @@ body{color:#20231f}
 const ATYAF_SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
 const ATYAF_SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
 const atyafDb=window.supabase?.createClient ? window.supabase.createClient(ATYAF_SUPABASE_URL,ATYAF_SUPABASE_KEY) : null;
+let atyafGeneralSettings={},atyafAuthUser=null;
+function normalizeWhatsAppNumber(v){
+ let n=String(v||"").replace(/[^\d+]/g,"");
+ if(n.startsWith("00"))n="+"+n.slice(2);
+ if(n.startsWith("0"))n="967"+n.slice(1);
+ return n.replace(/\+/g,"");
+}
+function openWhatsApp(){
+ const n=normalizeWhatsAppNumber(atyafGeneralSettings.whatsapp||atyafGeneralSettings.whatsappNumber||atyafGeneralSettings.phone||"");
+ if(!n)return showMessage("أضف رقم الواتساب من إعدادات المتجر أولاً");
+ const msg=encodeURIComponent("السلام عليكم، أرغب بالتواصل مع متجر "+(atyafGeneralSettings.storeName||"أطياف"));
+ window.open("https://wa.me/"+n+"?text="+msg,"_blank","noopener");
+}
+async function refreshAccountState(){
+ if(!atyafDb)return;
+ const {data}=await atyafDb.auth.getSession();
+ atyafAuthUser=data?.session?.user||null;
+ const x=document.getElementById("accountLabel");if(x)x.textContent=atyafAuthUser?"حسابي":"الحساب";
+}
+if(atyafDb)atyafDb.auth.onAuthStateChange((_e,session)=>{
+ atyafAuthUser=session?.user||null;
+ const x=document.getElementById("accountLabel");if(x)x.textContent=atyafAuthUser?"حسابي":"الحساب";
+});
+function openAccount(){
+ if(!atyafDb)return showMessage("تعذر الاتصال بالحسابات");
+ if(atyafAuthUser)return renderAccountProfile();
+ renderLogin();document.getElementById("modal").classList.add("open");
+}
+function renderLogin(){
+ document.getElementById("modalContent").innerHTML=`<h2>حساب العميل</h2><div class="auth-tabs"><button class="active">تسجيل الدخول</button><button onclick="renderRegister()">إنشاء حساب</button></div><div class="auth-form"><input id="authEmail" type="email" placeholder="البريد الإلكتروني"><input id="authPassword" type="password" placeholder="كلمة المرور"><button class="auth-action" onclick="loginCustomer()">دخول</button><button class="auth-link" onclick="resetCustomerPassword()">نسيت كلمة المرور؟</button></div>`;
+}
+function renderRegister(){
+ document.getElementById("modalContent").innerHTML=`<h2>إنشاء حساب جديد</h2><div class="auth-tabs"><button onclick="renderLogin()">تسجيل الدخول</button><button class="active">إنشاء حساب</button></div><div class="auth-form"><input id="authName" placeholder="الاسم الكامل"><input id="authEmail" type="email" placeholder="البريد الإلكتروني"><input id="authPassword" type="password" placeholder="كلمة المرور — 6 أحرف على الأقل"><button class="auth-action" onclick="registerCustomer()">إنشاء الحساب</button></div>`;
+}
+async function loginCustomer(){
+ const email=document.getElementById("authEmail")?.value.trim(),password=document.getElementById("authPassword")?.value||"";
+ if(!email||!password)return showMessage("أدخل البريد الإلكتروني وكلمة المرور");
+ const {data,error}=await atyafDb.auth.signInWithPassword({email,password});
+ if(error)return showMessage(error.message==="Invalid login credentials"?"البريد أو كلمة المرور غير صحيحة":error.message);
+ atyafAuthUser=data.user;renderAccountProfile();
+}
+async function registerCustomer(){
+ const name=document.getElementById("authName")?.value.trim(),email=document.getElementById("authEmail")?.value.trim(),password=document.getElementById("authPassword")?.value||"";
+ if(!name||!email||password.length<6)return showMessage("أدخل الاسم والبريد وكلمة مرور من 6 أحرف على الأقل");
+ const {data,error}=await atyafDb.auth.signUp({email,password,options:{data:{full_name:name}}});
+ if(error)return showMessage(error.message);
+ atyafAuthUser=data?.session?.user||null;
+ if(atyafAuthUser)renderAccountProfile();else showMessage("تم إنشاء الحساب. تحقق من بريدك الإلكتروني ثم سجل الدخول.");
+}
+async function resetCustomerPassword(){
+ const email=document.getElementById("authEmail")?.value.trim();
+ if(!email)return showMessage("اكتب بريدك الإلكتروني أولاً");
+ const {error}=await atyafDb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+ if(error)return showMessage(error.message);showMessage("تم إرسال رابط استعادة كلمة المرور");
+}
+function renderAccountProfile(){
+ const u=atyafAuthUser;if(!u)return openAccount();
+ document.getElementById("modalContent").innerHTML=`<div class="account-card"><h2>${atyafEsc(u.user_metadata?.full_name||"عميل أطياف")}</h2><div class="account-email">${atyafEsc(u.email||"")}</div><button class="auth-action" onclick="closeModal()">متابعة التسوق</button><button class="auth-link" onclick="logoutCustomer()">تسجيل الخروج</button></div>`;
+ document.getElementById("modal").classList.add("open");
+}
+async function logoutCustomer(){await atyafDb.auth.signOut();atyafAuthUser=null;closeModal();showMessage("تم تسجيل الخروج")}
+setTimeout(refreshAccountState,0);
+
 const defaultAnnouncementBars={
   top:{enabled:true,items:["شحن مجاني للطلبات أكثر من 250 ر.س","استخدم الكود FIRST15 واحصل على خصم 15%"]},
   service:{enabled:true,items:["الدفع عند الاستلام متاح","تغليف هدايا مجاني","منتجات أصلية 100%"]}
@@ -852,6 +916,7 @@ function renderManagedHomepage(cfg={}){
   }
 }
 function applyManagedGeneral(g={}){
+  atyafGeneralSettings=g||{};
   const logo=document.querySelector(".logo");
   if(logo){
     if(g.logoUrl){

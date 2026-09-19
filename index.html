@@ -770,19 +770,182 @@ function renderAll(){
 }
 
 let bottomAdTimer=null;
-function renderBottomAds(s={}){
- const section=document.getElementById("afterProductsAd"); if(!section)return;
- const media=Array.isArray(s.media)?s.media.filter(Boolean):[];
- if(s.enabled===false||!media.length){section.style.display="none";section.innerHTML="";return}
- section.style.display="block";
- section.style.setProperty("--bad-desktop",Number(s.heightDesktop||320)+"px");section.style.setProperty("--bad-tablet",Number(s.heightTablet||260)+"px");section.style.setProperty("--bad-mobile",Number(s.heightMobile||190)+"px");section.style.borderRadius=Number(s.radius||0)+"px";
- const pos=s.position||"center",fit=s.fit||"cover",link=String(s.link||"").trim();
- section.innerHTML=media.map((url,i)=>{const video=/\.(mp4|webm|ogg)(\?|$)/i.test(url);const el=video?`<video src="${url}" muted playsinline autoplay loop style="object-fit:${fit};object-position:${pos}"></video>`:`<img src="${url}" alt="إعلان أطياف" style="object-fit:${fit};object-position:${pos}">`;return `<div class="after-ad-slide ${i===0?'active':''}">${el}</div>`}).join("")+(media.length>1?`<div class="after-ad-dots">${media.map((_,i)=>`<button class="after-ad-dot ${i===0?'active':''}" onclick="bottomAdTo(${i})"></button>`).join('')}</div>`:'');
- if(link)section.querySelectorAll('.after-ad-slide').forEach(x=>x.onclick=()=>window.open(link,'_blank'));
- window.bottomAdIndex=0;clearInterval(bottomAdTimer);if(media.length>1)bottomAdTimer=setInterval(()=>bottomAdTo((window.bottomAdIndex||0)+1),Number(s.interval||4000));
+
+function atyafMediaUrl(item){
+  if(!item)return "";
+  if(typeof item==="string")return item.trim();
+  if(typeof item==="object"){
+    return String(
+      item.url || item.src || item.publicUrl || item.public_url ||
+      item.image || item.image_url || item.video || item.video_url ||
+      item.path || item.file || ""
+    ).trim();
+  }
+  return "";
 }
-function bottomAdTo(n){const section=document.getElementById("afterProductsAd"),slides=[...section.querySelectorAll('.after-ad-slide')],dots=[...section.querySelectorAll('.after-ad-dot')];if(!slides.length)return;window.bottomAdIndex=(n+slides.length)%slides.length;slides.forEach((x,i)=>x.classList.toggle('active',i===window.bottomAdIndex));dots.forEach((x,i)=>x.classList.toggle('active',i===window.bottomAdIndex))}
-async function loadBottomAds(){try{const url="https://zgvkiqoxmtifuvgcmrqc.supabase.co/rest/v1/settings?key=eq.bottom_ads&select=id,key,value&order=id.desc&limit=1",key="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";const r=await fetch(url,{headers:{apikey:key,Authorization:"Bearer "+key}});if(!r.ok)throw new Error("settings");const rows=await r.json();renderBottomAds(rows?.[0]?.value||{})}catch(e){console.warn("Bottom ads:",e);renderBottomAds({enabled:false})}}
+
+function normalizeBottomAdSettings(raw){
+  let s=raw;
+  if(typeof s==="string"){
+    try{s=JSON.parse(s)}catch(e){s={}}
+  }
+  if(!s || typeof s!=="object")s={};
+
+  /* دعم جميع أسماء الحقول التي قد تحفظها لوحة الإدارة */
+  if(s.bottom_ads && typeof s.bottom_ads==="object")s=s.bottom_ads;
+  if(s.bottomAds && typeof s.bottomAds==="object")s=s.bottomAds;
+  if(s.lower_ad && typeof s.lower_ad==="object")s=s.lower_ad;
+  if(s.lowerAd && typeof s.lowerAd==="object")s=s.lowerAd;
+
+  let rawMedia =
+    s.media ?? s.medias ?? s.slides ?? s.images ?? s.files ??
+    s.items ?? s.urls ?? s.ad_media ?? [];
+
+  if(typeof rawMedia==="string"){
+    try{
+      const parsed=JSON.parse(rawMedia);
+      rawMedia=Array.isArray(parsed)?parsed:[rawMedia];
+    }catch(e){
+      rawMedia=rawMedia.split(/\r?\n|,/).map(x=>x.trim()).filter(Boolean);
+    }
+  }
+  if(!Array.isArray(rawMedia))rawMedia=[rawMedia];
+
+  const media=rawMedia.map(atyafMediaUrl).filter(Boolean);
+
+  return {
+    enabled: !(s.enabled===false || s.active===false || s.is_active===false || s.show===false),
+    media,
+    fit: s.fit || s.objectFit || s.mediaFit || "cover",
+    position: s.position || s.objectPosition || s.mediaPosition || "center",
+    link: s.link || s.href || s.url_link || "",
+    heightDesktop: Number(s.heightDesktop || s.desktopHeight || s.height_desktop || 320),
+    heightTablet: Number(s.heightTablet || s.tabletHeight || s.height_tablet || 260),
+    heightMobile: Number(s.heightMobile || s.mobileHeight || s.height_mobile || 190),
+    radius: Number(s.radius || s.borderRadius || s.border_radius || 0),
+    interval: Number(s.interval || s.slideInterval || s.interval_ms || 4000)
+  };
+}
+
+function renderBottomAds(raw={}){
+  const section=document.getElementById("afterProductsAd");
+  if(!section)return;
+
+  const s=normalizeBottomAdSettings(raw);
+  const media=s.media;
+
+  clearInterval(bottomAdTimer);
+  bottomAdTimer=null;
+
+  if(!s.enabled || !media.length){
+    section.style.display="none";
+    section.innerHTML="";
+    return;
+  }
+
+  section.style.display="block";
+  section.style.setProperty("--bad-desktop",s.heightDesktop+"px");
+  section.style.setProperty("--bad-tablet",s.heightTablet+"px");
+  section.style.setProperty("--bad-mobile",s.heightMobile+"px");
+  section.style.borderRadius=s.radius+"px";
+
+  const safeLink=String(s.link||"").trim();
+
+  section.innerHTML=media.map((url,i)=>{
+    const video=/\.(mp4|webm|ogg)(?:\?|#|$)/i.test(url);
+    const el=video
+      ? `<video src="${url}" muted playsinline autoplay loop preload="metadata" style="object-fit:${s.fit};object-position:${s.position}"></video>`
+      : `<img src="${url}" alt="إعلان أطياف" loading="${i===0?'eager':'lazy'}" style="object-fit:${s.fit};object-position:${s.position}">`;
+    return `<div class="after-ad-slide ${i===0?'active':''}">${el}</div>`;
+  }).join("")+
+  (media.length>1
+    ? `<div class="after-ad-dots">${media.map((_,i)=>`<button class="after-ad-dot ${i===0?'active':''}" type="button" onclick="bottomAdTo(${i})"></button>`).join("")}</div>`
+    : "");
+
+  if(safeLink){
+    section.querySelectorAll(".after-ad-slide").forEach(x=>{
+      x.style.cursor="pointer";
+      x.addEventListener("click",()=>window.open(safeLink,"_blank","noopener"));
+    });
+  }
+
+  window.bottomAdIndex=0;
+  if(media.length>1){
+    bottomAdTimer=setInterval(
+      ()=>bottomAdTo((window.bottomAdIndex||0)+1),
+      Math.max(1500,s.interval||4000)
+    );
+  }
+}
+
+function bottomAdTo(n){
+  const section=document.getElementById("afterProductsAd");
+  if(!section)return;
+  const slides=[...section.querySelectorAll(".after-ad-slide")];
+  const dots=[...section.querySelectorAll(".after-ad-dot")];
+  if(!slides.length)return;
+  window.bottomAdIndex=(Number(n)+slides.length)%slides.length;
+  slides.forEach((x,i)=>x.classList.toggle("active",i===window.bottomAdIndex));
+  dots.forEach((x,i)=>x.classList.toggle("active",i===window.bottomAdIndex));
+}
+
+/* قراءة أحدث إعداد محفوظ، مع دعم أسماء المفاتيح القديمة والجديدة */
+async function loadBottomAds(){
+  const section=document.getElementById("afterProductsAd");
+  try{
+    if(!atyafDb)throw new Error("Supabase client is not available");
+
+    const keys=[
+      "bottom_ads",
+      "bottom_ad",
+      "lower_ads",
+      "lower_ad",
+      "after_products_ad",
+      "after_products_ads"
+    ];
+
+    const {data,error}=await atyafDb
+      .from("settings")
+      .select("id,key,value,updated_at")
+      .in("key",keys)
+      .order("updated_at",{ascending:false,nullsFirst:false})
+      .order("id",{ascending:false})
+      .limit(20);
+
+    if(error)throw error;
+
+    const rows=Array.isArray(data)?data:[];
+    let chosen=null;
+
+    for(const key of keys){
+      const row=rows.find(r=>r.key===key && r.value!=null);
+      if(row){chosen=row;break}
+    }
+
+    if(!chosen && rows.length)chosen=rows[0];
+
+    if(!chosen){
+      renderBottomAds({enabled:false});
+      console.warn("ATYAF: no lower advertisement setting was found");
+      return;
+    }
+
+    renderBottomAds(chosen.value);
+    console.info("ATYAF lower ad loaded:",chosen.key,chosen.id);
+  }catch(e){
+    console.warn("ATYAF lower ads:",e);
+    if(section){
+      section.style.display="none";
+      section.innerHTML="";
+    }
+  }
+}
+
+/* تحديث الإعلان فور رجوع المستخدم للصفحة أو بعد تعديل الإدارة */
+window.addEventListener("focus",()=>loadBottomAds());
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible")loadBottomAds();
+});
 
 
 function searchProducts(){
@@ -982,6 +1145,7 @@ setInterval(()=>{
 renderAll();
 saveCart();
 loadBottomAds();
+/* ATYAF ADS SYNC FIX 2026-09-19 */
 </script>
 
 </body>

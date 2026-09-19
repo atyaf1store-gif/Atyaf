@@ -494,6 +494,56 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
   </div>
 </section>
 
+
+<section id="homepage" class="page hidden">
+  <div class="card">
+    <h2>🏠 إدارة واجهة المتجر كاملة</h2>
+    <p class="note">من هنا تعدل الأقسام الظاهرة في صفحة العملاء. صيغة الماركات والروائح: الاسم | رابط الصورة، كل عنصر في سطر.</p>
+
+    <h3>الماركات</h3>
+    <div class="check-row"><input id="homeBrandsEnabled" type="checkbox" checked><label>إظهار قسم الماركات</label></div>
+    <div class="grid2"><div><label>العنوان</label><input id="homeBrandsTitle"></div><div><label>الوصف</label><input id="homeBrandsSubtitle"></div></div>
+    <label>الماركات — الاسم | رابط الصورة</label>
+    <textarea id="homeBrandsItems" style="min-height:150px"></textarea>
+
+    <h3>قسم تجهيز الهدية</h3>
+    <div class="check-row"><input id="homeGiftEnabled" type="checkbox" checked><label>إظهار تجهيز الهدية</label></div>
+    <div class="grid2"><div><label>العنوان</label><input id="homeGiftTitle"></div><div><label>نص الزر</label><input id="homeGiftButton"></div></div>
+    <label>الوصف</label><input id="homeGiftText">
+    <label>رابط صورة القسم</label><input id="homeGiftImage">
+
+    <h3>الأكثر مبيعاً</h3>
+    <div class="check-row"><input id="homeBestEnabled" type="checkbox" checked><label>إظهار القسم</label></div>
+    <div class="grid2"><input id="homeBestTitle" placeholder="العنوان"><input id="homeBestSubtitle" placeholder="الوصف"></div>
+
+    <h3>وصل حديثاً</h3>
+    <div class="check-row"><input id="homeNewEnabled" type="checkbox" checked><label>إظهار القسم</label></div>
+    <div class="grid2"><input id="homeNewTitle" placeholder="العنوان"><input id="homeNewSubtitle" placeholder="الوصف"></div>
+
+    <h3>بانر العروض</h3>
+    <div class="check-row"><input id="homeOfferEnabled" type="checkbox" checked><label>إظهار بانر العروض</label></div>
+    <div class="grid2"><input id="homeOfferTitle" placeholder="العنوان"><input id="homeOfferButton" placeholder="نص الزر"></div>
+    <input id="homeOfferText" placeholder="وصف العرض">
+    <input id="homeOfferImage" placeholder="رابط صورة العرض">
+
+    <h3>الروائح</h3>
+    <div class="check-row"><input id="homeScentsEnabled" type="checkbox" checked><label>إظهار قسم الروائح</label></div>
+    <div class="grid2"><input id="homeScentsTitle" placeholder="العنوان"><input id="homeScentsSubtitle" placeholder="الوصف"></div>
+    <label>الروائح — الاسم | رابط الصورة</label>
+    <textarea id="homeScentsItems" style="min-height:150px"></textarea>
+
+    <h3>المنتجات المميزة</h3>
+    <div class="check-row"><input id="homeFeaturedEnabled" type="checkbox" checked><label>إظهار القسم</label></div>
+    <div class="grid2"><input id="homeFeaturedTitle" placeholder="العنوان"><input id="homeFeaturedSubtitle" placeholder="الوصف"></div>
+
+    <h3>جميع المنتجات</h3>
+    <div class="check-row"><input id="homeAllEnabled" type="checkbox" checked><label>إظهار القسم</label></div>
+    <div class="grid2"><input id="homeAllTitle" placeholder="العنوان"><input id="homeAllSubtitle" placeholder="الوصف"></div>
+
+    <div class="actions"><button class="btn gold" onclick="saveHomepageSettings()">حفظ واجهة المتجر</button></div>
+  </div>
+</section>
+
 <section id="design" class="page hidden">
   <div class="card">
     <h2>🎨 التصميم والخطوط</h2>
@@ -846,11 +896,11 @@ const db=window.supabase?.createClient ? window.supabase.createClient(SUPABASE_U
 const $=id=>document.getElementById(id);
 
 let products=[],categories=[],variants=[],bundles=[],gifts=[],coupons=[],orders=[],reviews=[],relations=[],customers=[],settingsRows=[];
-let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={},announcementBarsSettings={};
+let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={},announcementBarsSettings={},homepageSettings={};
 let editingProductImages=[],currentInvoiceHTML="";
 
 const tabs=[
-["dashboard","الرئيسية"],["productManager","المنتجات"],["categories","الأقسام"],["products","الخيارات"],["bundles","العروض"],["gifts","الهدايا"],["coupons","الكوبونات"],["customers","العملاء"],["orders","الطلبات"],["reviews","التقييمات"],["recommend","الاقتراحات"],["ads","الإعلانات"],["bottomAds","الإعلان السفلي"],["design","التصميم والخطوط"],["payment","الدفع والبنوك"],["footer","السياسات"],["settings","إعدادات المتجر"]
+["dashboard","الرئيسية"],["productManager","المنتجات"],["categories","الأقسام"],["products","الخيارات"],["bundles","العروض"],["gifts","الهدايا"],["coupons","الكوبونات"],["customers","العملاء"],["orders","الطلبات"],["reviews","التقييمات"],["recommend","الاقتراحات"],["ads","الإعلانات"],["bottomAds","الإعلان السفلي"],["homepage","واجهة المتجر"],["design","التصميم والخطوط"],["payment","الدفع والبنوك"],["footer","السياسات"],["settings","إعدادات المتجر"]
 ];
 const policies=[["about","من نحن"],["returns","سياسة الاستبدال والاسترجاع"],["privacy","سياسة الخصوصية"],["terms","الشروط والأحكام"],["discounts","سياسة التخفيضات"],["customerService","خدمة العملاء"],["hr","الموارد البشرية"],["wholesale","مبيعات الجملة"],["branches","فروعنا"]];
 
@@ -930,7 +980,7 @@ async function loadAll(){
  parseSettings();renderStats(stats||{});fillProductCategories();fillProducts();renderAdminProducts();renderCategories();renderVariants();renderBundles();renderGifts();renderCoupons();renderCustomers();renderOrders();renderReviews();renderRelations();renderPoliciesEditor();fillSimpleSettings();
 }
 function settingValue(key){const row=settingsRows.find(x=>x.key===key||String(x.id)===key);return row?.value??row?.data??{}}
-function parseSettings(){generalSettings=settingValue("general");paymentSettings=settingValue("payment");designSettings=settingValue("design");adSettings=settingValue("ads");bottomAdSettings=settingValue("bottom_ads");footerSettings=settingValue("footer");announcementBarsSettings=settingValue("announcement_bars")}
+function parseSettings(){generalSettings=settingValue("general");paymentSettings=settingValue("payment");designSettings=settingValue("design");adSettings=settingValue("ads");bottomAdSettings=settingValue("bottom_ads");footerSettings=settingValue("footer");announcementBarsSettings=settingValue("announcement_bars");homepageSettings=settingValue("homepage")}
 async function saveSetting(key,value){
   const now=new Date().toISOString();
   const found=settingsRows.find(x=>x.key===key);
@@ -2149,6 +2199,40 @@ function fillSimpleSettings(){
   $("serviceBarEnabled").checked=bars.service?.enabled!==false;
   $("serviceBarItems").value=(Array.isArray(bars.service?.items)?bars.service.items:["الدفع عند الاستلام متاح","تغليف هدايا مجاني","منتجات أصلية 100% "]).join("\n");
 
+
+  const hp=homepageSettings||{};
+  const lineItems=v=>(Array.isArray(v)?v:[]).map(x=>`${x.name||""} | ${x.image||""}`).join("\n");
+  $("homeBrandsEnabled").checked=hp.brandsEnabled!==false;
+  $("homeBrandsTitle").value=hp.brandsTitle||"تسوق حسب الماركة";
+  $("homeBrandsSubtitle").value=hp.brandsSubtitle||"اختر ماركتك المفضلة";
+  $("homeBrandsItems").value=lineItems(hp.brands);
+  $("homeGiftEnabled").checked=hp.giftEnabled!==false;
+  $("homeGiftTitle").value=hp.giftTitle||"جهّز هديتك بكل حب";
+  $("homeGiftText").value=hp.giftText||"اختر الهدية وأدخل بيانات المستلم ورسالتك الخاصة";
+  $("homeGiftButton").value=hp.giftButton||"تجهيز الهدية";
+  $("homeGiftImage").value=hp.giftImage||"";
+  $("homeBestEnabled").checked=hp.bestEnabled!==false;
+  $("homeBestTitle").value=hp.bestTitle||"الأكثر مبيعاً";
+  $("homeBestSubtitle").value=hp.bestSubtitle||"اختيارات عملائنا المفضلة";
+  $("homeNewEnabled").checked=hp.newEnabled!==false;
+  $("homeNewTitle").value=hp.newTitle||"وصل حديثاً";
+  $("homeNewSubtitle").value=hp.newSubtitle||"اكتشف أحدث المنتجات";
+  $("homeOfferEnabled").checked=hp.offerEnabled!==false;
+  $("homeOfferTitle").value=hp.offerTitle||"عروض محدودة";
+  $("homeOfferText").value=hp.offerText||"خصومات مميزة على منتجات مختارة";
+  $("homeOfferButton").value=hp.offerButton||"شاهد العروض";
+  $("homeOfferImage").value=hp.offerImage||"";
+  $("homeScentsEnabled").checked=hp.scentsEnabled!==false;
+  $("homeScentsTitle").value=hp.scentsTitle||"اكتشف الروائح";
+  $("homeScentsSubtitle").value=hp.scentsSubtitle||"اختر الرائحة التي تناسب ذوقك";
+  $("homeScentsItems").value=lineItems(hp.scents);
+  $("homeFeaturedEnabled").checked=hp.featuredEnabled!==false;
+  $("homeFeaturedTitle").value=hp.featuredTitle||"منتجات مميزة";
+  $("homeFeaturedSubtitle").value=hp.featuredSubtitle||"منتجات اخترناها لك";
+  $("homeAllEnabled").checked=hp.allEnabled!==false;
+  $("homeAllTitle").value=hp.allTitle||"منتجات قد تعجبك";
+  $("homeAllSubtitle").value=hp.allSubtitle||"";
+
   const colors=designSettings.colors||{};
   $("designCream").value=colors.cream||"#F8EACB";
   $("designCard").value=colors.card||"#FFFBF0";
@@ -2179,6 +2263,54 @@ function fillSimpleSettings(){
   updateProductSizePreview();
 }
 
+
+
+function parseHomepageItems(id){
+  return $(id).value.split(/\n+/).map(line=>{
+    const parts=line.split("|");
+    return {name:(parts.shift()||"").trim(),image:parts.join("|").trim()};
+  }).filter(x=>x.name);
+}
+async function saveHomepageSettings(){
+  try{
+    const next={
+      ...homepageSettings,
+      brandsEnabled:$("homeBrandsEnabled").checked,
+      brandsTitle:$("homeBrandsTitle").value.trim(),
+      brandsSubtitle:$("homeBrandsSubtitle").value.trim(),
+      brands:parseHomepageItems("homeBrandsItems"),
+      giftEnabled:$("homeGiftEnabled").checked,
+      giftTitle:$("homeGiftTitle").value.trim(),
+      giftText:$("homeGiftText").value.trim(),
+      giftButton:$("homeGiftButton").value.trim(),
+      giftImage:$("homeGiftImage").value.trim(),
+      bestEnabled:$("homeBestEnabled").checked,
+      bestTitle:$("homeBestTitle").value.trim(),
+      bestSubtitle:$("homeBestSubtitle").value.trim(),
+      newEnabled:$("homeNewEnabled").checked,
+      newTitle:$("homeNewTitle").value.trim(),
+      newSubtitle:$("homeNewSubtitle").value.trim(),
+      offerEnabled:$("homeOfferEnabled").checked,
+      offerTitle:$("homeOfferTitle").value.trim(),
+      offerText:$("homeOfferText").value.trim(),
+      offerButton:$("homeOfferButton").value.trim(),
+      offerImage:$("homeOfferImage").value.trim(),
+      scentsEnabled:$("homeScentsEnabled").checked,
+      scentsTitle:$("homeScentsTitle").value.trim(),
+      scentsSubtitle:$("homeScentsSubtitle").value.trim(),
+      scents:parseHomepageItems("homeScentsItems"),
+      featuredEnabled:$("homeFeaturedEnabled").checked,
+      featuredTitle:$("homeFeaturedTitle").value.trim(),
+      featuredSubtitle:$("homeFeaturedSubtitle").value.trim(),
+      allEnabled:$("homeAllEnabled").checked,
+      allTitle:$("homeAllTitle").value.trim(),
+      allSubtitle:$("homeAllSubtitle").value.trim()
+    };
+    await saveSetting("homepage",next);
+    homepageSettings=next;
+    toast("تم حفظ واجهة المتجر ✓");
+  }catch(e){alert("تعذر حفظ واجهة المتجر:\n"+(e.message||e))}
+}
 
 async function saveAnnouncementBars(){
   try{

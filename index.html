@@ -1426,6 +1426,9 @@ html,body{max-width:100%;overflow-x:hidden}
 .store-profile{animation:atyafBrandArrival .72s cubic-bezier(.2,.8,.25,1) both}
 @keyframes atyafBrandArrival{0%{opacity:0;transform:translateX(16px) scale(.97)}100%{opacity:1;transform:translateX(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.store-profile{animation:none!important}}
+
+/* ATYAF: bundles section intentionally removed */
+#bundlesSection{display:none!important;}
 </style>
 </head>
 
@@ -1481,12 +1484,6 @@ html,body{max-width:100%;overflow-x:hidden}
   </div>
 </section>
 
-<!-- NEW: BUNDLES -->
-<section class="section" id="bundlesSection">
-  <div class="section-head"><h2>باقات أطياف</h2><div class="hint">اختيارات مجمّعة بعناية بسعر مميز</div></div>
-  <div id="bundlesRow" class="bundles-row"></div>
-</section>
-
 <section class="section" id="shop">
   <div class="section-head"><h2>تشكيلتنا</h2><div id="categoryFilters" class="category-filters"></div></div>
   <div id="tools" class="tools">
@@ -1510,7 +1507,6 @@ html,body{max-width:100%;overflow-x:hidden}
       <div class="footer-links">
         <button onclick="scrollSection('about')">من نحن</button>
         <button onclick="goShop()">المتجر</button>
-        <button onclick="scrollSection('bundlesSection')">العروض والباقات</button>
         <button onclick="openMyOrders()">متابعة الطلبات</button>
         <button onclick="openPolicy('returns')">سياسة الاستبدال والاسترجاع</button>
         <button onclick="openPolicy('privacy')">سياسة الخصوصية</button>

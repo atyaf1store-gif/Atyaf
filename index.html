@@ -427,6 +427,16 @@ a{text-decoration:none;color:inherit}
   #heroAds{height:var(--atyaf-ad-mobile,360px)!important}
 }
 
+
+/* ===== ATYAF READABILITY ===== */
+body{color:#20231f}
+.section-title h2,.product-info h3,.brand b,.round b,.footer h3,.nav a{color:#20231f!important}
+.section-title p,.note,.product-info p,.footer p,.footer a{color:#555b56!important;opacity:1!important}
+.old{color:#747874!important}
+.notice{color:#3e443f!important}
+.search input{color:#20231f!important}
+.search input::placeholder{color:#737873!important;opacity:1}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -512,7 +522,7 @@ a{text-decoration:none;color:inherit}
       </div>
     </section>
 
-    <div class="banner gift-prep-banner">
+    <div class="banner gift-prep-banner" id="giftHomeBanner">
       <img src="https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1500&q=85" alt="تجهيز الهدية">
       <div class="banner-text">
         <h2>جهّز هديتك بكل حب</h2>
@@ -561,7 +571,7 @@ a{text-decoration:none;color:inherit}
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="featuredSection">
       <div class="section-title">
         <h2>منتجات مميزة</h2>
         <p>منتجات اخترناها لك</p>
@@ -569,7 +579,7 @@ a{text-decoration:none;color:inherit}
       <div class="products" id="featuredProducts"></div>
     </section>
 
-    <section class="section">
+    <section class="section" id="allProductsSection">
       <div class="section-title">
         <h2>منتجات قد تعجبك</h2>
       </div>
@@ -678,6 +688,133 @@ async function loadAnnouncementBars(){
   }catch(e){console.warn("announcement bars",e)}
 }
 loadAnnouncementBars();
+
+
+/* ================= ATYAF MANAGED HOMEPAGE ================= */
+function atyafEsc(v){
+  return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+async function atyafGetSetting(key){
+  if(!atyafDb)return {};
+  const {data,error}=await atyafDb.from("settings")
+    .select("id,key,value,updated_at")
+    .eq("key",key)
+    .order("updated_at",{ascending:false,nullsFirst:false})
+    .order("id",{ascending:false})
+    .limit(1);
+  if(error)throw error;
+  return data?.[0]?.value||{};
+}
+function atyafSetSectionText(id,title,subtitle){
+  const el=document.getElementById(id); if(!el)return;
+  const h=el.querySelector(".section-title h2"); if(h&&title)h.textContent=title;
+  const p=el.querySelector(".section-title p"); if(p&&subtitle!==undefined)p.textContent=subtitle||"";
+}
+function atyafItems(v){
+  return Array.isArray(v)?v.filter(x=>x&&String(x.name||"").trim()):[];
+}
+function renderManagedHomepage(cfg={}){
+  // Brands
+  const brandsSec=document.getElementById("brands");
+  if(brandsSec){
+    brandsSec.style.display=cfg.brandsEnabled===false?"none":"";
+    atyafSetSectionText("brands",cfg.brandsTitle||"تسوق حسب الماركة",cfg.brandsSubtitle??"اختر ماركتك المفضلة");
+    const box=brandsSec.querySelector(".brands");
+    const items=atyafItems(cfg.brands);
+    if(box)box.innerHTML=items.map(x=>`<div class="brand" onclick="filterCategory(${JSON.stringify(String(x.name))})">${x.image?`<img src="${atyafEsc(x.image)}" alt="${atyafEsc(x.name)}">`:""}<b>${atyafEsc(x.name)}</b></div>`).join("");
+  }
+
+  // Gift preparation banner
+  const gift=document.getElementById("giftHomeBanner");
+  if(gift){
+    gift.style.display=cfg.giftEnabled===false?"none":"";
+    const img=gift.querySelector("img"); if(img&&cfg.giftImage)img.src=cfg.giftImage;
+    const h=gift.querySelector("h2"); if(h)h.textContent=cfg.giftTitle||"جهّز هديتك بكل حب";
+    const p=gift.querySelector("p"); if(p)p.textContent=cfg.giftText||"اختر الهدية وأدخل بيانات المستلم ورسالتك الخاصة";
+    const b=gift.querySelector("button"); if(b)b.textContent=cfg.giftButton||"تجهيز الهدية";
+  }
+
+  // Product section headings/visibility
+  const best=document.getElementById("best");
+  if(best){best.style.display=cfg.bestEnabled===false?"none":"";atyafSetSectionText("best",cfg.bestTitle||"الأكثر مبيعاً",cfg.bestSubtitle??"اختيارات عملائنا المفضلة")}
+  const fresh=document.getElementById("new");
+  if(fresh){fresh.style.display=cfg.newEnabled===false?"none":"";atyafSetSectionText("new",cfg.newTitle||"وصل حديثاً",cfg.newSubtitle??"اكتشف أحدث المنتجات")}
+  const featured=document.getElementById("featuredSection");
+  if(featured){featured.style.display=cfg.featuredEnabled===false?"none":"";atyafSetSectionText("featuredSection",cfg.featuredTitle||"منتجات مميزة",cfg.featuredSubtitle??"منتجات اخترناها لك")}
+  const all=document.getElementById("allProductsSection");
+  if(all){all.style.display=cfg.allEnabled===false?"none":"";atyafSetSectionText("allProductsSection",cfg.allTitle||"منتجات قد تعجبك",cfg.allSubtitle??"")}
+
+  // Offer banner
+  const offers=document.getElementById("offers");
+  if(offers){
+    offers.style.display=cfg.offerEnabled===false?"none":"";
+    const img=offers.querySelector("img"); if(img&&cfg.offerImage)img.src=cfg.offerImage;
+    const h=offers.querySelector("h2"); if(h)h.textContent=cfg.offerTitle||"عروض محدودة";
+    const p=offers.querySelector("p"); if(p)p.textContent=cfg.offerText||"خصومات مميزة على منتجات مختارة";
+    const b=offers.querySelector("button"); if(b)b.textContent=cfg.offerButton||"شاهد العروض";
+  }
+
+  // Scents
+  const scents=document.getElementById("scents");
+  if(scents){
+    scents.style.display=cfg.scentsEnabled===false?"none":"";
+    atyafSetSectionText("scents",cfg.scentsTitle||"اكتشف الروائح",cfg.scentsSubtitle??"اختر الرائحة التي تناسب ذوقك");
+    const box=scents.querySelector(".rounds");
+    const items=atyafItems(cfg.scents);
+    if(box)box.innerHTML=items.map(x=>`<div class="round" onclick="filterCategory(${JSON.stringify(String(x.name))})">${x.image?`<img src="${atyafEsc(x.image)}" alt="${atyafEsc(x.name)}">`:""}<b>${atyafEsc(x.name)}</b></div>`).join("");
+  }
+}
+function applyManagedGeneral(g={}){
+  const logo=document.querySelector(".logo");
+  if(logo){
+    if(g.logoUrl){
+      logo.innerHTML=`<img src="${atyafEsc(g.logoUrl)}" alt="${atyafEsc(g.storeName||"أطياف")}" style="max-height:58px;max-width:150px;object-fit:contain">`;
+    }else{
+      logo.innerHTML=`${atyafEsc(g.storeName||"أطياف")} <span>✦</span><small>${atyafEsc(g.storeNameEn||"ATYAF STORE")}</small>`;
+    }
+  }
+  const search=document.getElementById("search");
+  if(search)search.closest(".search").style.display=g.enableSearch===false?"none":"";
+}
+function applyManagedDesign(d={}){
+  const c=d.colors||{};
+  if(c.cream)document.documentElement.style.setProperty("--cream",c.cream);
+  if(c.card)document.documentElement.style.setProperty("--card",c.card);
+  if(c.ink)document.documentElement.style.setProperty("--dark",c.ink);
+  if(c.gold)document.documentElement.style.setProperty("--gold",c.gold);
+  if(d.backgroundUrl)document.body.style.backgroundImage=`url("${d.backgroundUrl}")`;
+  const fonts=d.fonts||{};
+  if(fonts.body)document.body.style.fontFamily=fonts.body+", Cairo, sans-serif";
+  if(fonts.sectionTitles)document.querySelectorAll(".section-title h2").forEach(x=>x.style.fontFamily=fonts.sectionTitles);
+  if(fonts.productNames)document.querySelectorAll(".product-info h3").forEach(x=>x.style.fontFamily=fonts.productNames);
+}
+function applyManagedFooter(g={},f={}){
+  const footer=document.getElementById("contact"); if(!footer)return;
+  const cols=footer.querySelectorAll(".footer-grid>div");
+  if(cols[0]){
+    cols[0].querySelector("h3").textContent=(g.storeName||"أطياف")+" | "+(g.storeNameEn||"ATYAF STORE");
+    const ps=cols[0].querySelectorAll("p");
+    if(ps[0])ps[0].textContent=g.aboutText||g.sloganDesc||"متجر متخصص في العطور والهدايا الفاخرة.";
+  }
+  if(cols[3]){
+    cols[3].innerHTML=`<h3>تواصل معنا</h3>
+      ${g.phone?`<p>الهاتف: ${atyafEsc(g.phone)}</p>`:""}
+      ${g.email?`<p>البريد: ${atyafEsc(g.email)}</p>`:""}
+      ${g.whatsapp?`<p>واتساب: ${atyafEsc(g.whatsapp)}</p>`:""}`;
+  }
+}
+async function loadManagedStoreSettings(){
+  try{
+    const [home,general,design,footer]=await Promise.all([
+      atyafGetSetting("homepage"),atyafGetSetting("general"),
+      atyafGetSetting("design"),atyafGetSetting("footer")
+    ]);
+    renderManagedHomepage(home);
+    applyManagedGeneral(general);
+    applyManagedDesign(design);
+    applyManagedFooter(general,footer);
+  }catch(e){console.warn("ATYAF managed settings:",e)}
+}
 
 let products=[];
 
@@ -1306,10 +1443,11 @@ function slideTo(n){
 
 saveCart();
 loadProductsFromSupabase();
+loadManagedStoreSettings();
 loadTopAds();
 loadBottomAds();
 /* ATYAF ADS SYNC FIX 2026-09-19 */
 </script>
 
 </body>
-</html> 
+</html>

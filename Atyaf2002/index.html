@@ -49,7 +49,7 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
 .invoice{background:#fff;color:#111;padding:24px;border-radius:15px}.invoice-header{text-align:center;padding-bottom:18px;border-bottom:2px solid #222}.invoice-header h1{font-family:'Aref Ruqaa';font-size:34px;margin:0}.invoice-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}.invoice-meta div{border:1px solid #ddd;padding:10px;border-radius:8px}.invoice-table{width:100%;min-width:0;border-collapse:collapse}.invoice-table th,.invoice-table td{border:1px solid #ddd;padding:9px;color:#111}.invoice-table th{background:#f3f3f3}.invoice-total{margin-top:18px;margin-right:auto;width:min(380px,100%)}.invoice-total-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #ddd}.invoice-total-row.final{font-size:18px;font-weight:900;border-bottom:2px solid #111}
 .toast{position:fixed;z-index:1000;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;bottom:32px}
 @media(max-width:900px){.grid,.grid2,.grid3,.grid4,.order-summary-grid,.invoice-meta{grid-template-columns:1fr}.brand{width:100%;margin:0}.nav{width:100%}.product-admin-card{grid-template-columns:75px 1fr}.product-admin-image{width:75px;height:75px}.product-admin-card .actions{grid-column:1/-1}.invoice{padding:12px}}
-</style>
+.scent-admin-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eee}.scent-admin-thumb{width:54px;height:54px;border-radius:50%;overflow:hidden;background:#f7f2e8;display:grid;place-items:center;border:1px solid #e5dac8}.scent-admin-thumb img{width:100%;height:100%;object-fit:cover}.scent-admin-row small{display:block;color:#777;margin-top:4px}@media(max-width:700px){.scent-admin-row{grid-template-columns:50px 1fr}.scent-admin-row>.actions{grid-column:1/-1}}</style>
 </head>
 <body>
 
@@ -791,7 +791,7 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
       <div class="check-row"><input id="setFeatureReviews" type="checkbox" checked><label for="setFeatureReviews">إظهار التقييمات</label></div>
     </div>
 
-    <div class="actions">
+<h3>🌸 أيقونات الروائح أسفل الإعلان العلوي</h3><p class="note">أضف صورة واسم الرائحة، وعدّلها أو احذفها ورتبها من هنا.</p><input id="scentItemId" type="hidden"><div class="grid4"><div><label>اسم الرائحة</label><input id="scentItemName" placeholder="مسك"></div><div><label>البحث عند الضغط</label><input id="scentItemSearch" placeholder="مسك"></div><div><label>الترتيب</label><input id="scentItemSort" type="number" value="0"></div><div><label>صورة دائرية</label><input id="scentItemFile" type="file" accept="image/*"></div></div><div class="check-row"><input id="scentItemEnabled" type="checkbox" checked><label>إظهار في المتجر</label></div><div class="actions"><button id="saveScentItemButton" class="btn gold" type="button" onclick="saveScentItem()">إضافة الرائحة</button><button class="btn out" type="button" onclick="resetScentItemForm()">جديد</button></div><div id="scentItemsAdminList" style="margin-top:14px"></div>    <div class="actions">
       <button id="saveGeneralButton" class="btn gold" onclick="saveGeneralSettings()">حفظ جميع إعدادات المتجر</button>
     </div>
   </div>
@@ -824,7 +824,7 @@ const db=window.supabase?.createClient ? window.supabase.createClient(SUPABASE_U
 const $=id=>document.getElementById(id);
 
 let products=[],categories=[],variants=[],bundles=[],gifts=[],coupons=[],orders=[],reviews=[],relations=[],customers=[],settingsRows=[];
-let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={};
+let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={},scentSettings={};
 let editingProductImages=[],currentInvoiceHTML="";
 
 const tabs=[
@@ -954,7 +954,7 @@ async function loadAll(){
  parseSettings();renderStats(stats||{});fillProductCategories();fillProducts();renderAdminProducts();renderCategories();renderVariants();renderBundles();renderGifts();renderCoupons();renderCustomers();renderOrders();renderReviews();renderRelations();renderPoliciesEditor();fillSimpleSettings();
 }
 function settingData(name){const row=settingsRows.find(x=>String(x.key||x.id||"")===name);const v=row?.value??row?.data??{};if(typeof v==="string"){try{return JSON.parse(v)}catch(e){return {}}}return v&&typeof v==="object"?v:{}}
-function parseSettings(){generalSettings=settingData("general");paymentSettings=settingData("payment");designSettings=settingData("design");adSettings=settingData("ads");bottomAdSettings=settingData("bottom_ads");footerSettings=settingData("footer")}
+function parseSettings(){generalSettings=settingData("general");paymentSettings=settingData("payment");designSettings=settingData("design");adSettings=settingData("ads");bottomAdSettings=settingData("bottom_ads");footerSettings=settingData("footer");scentSettings=settingData("scents")}
 async function saveSetting(key,value){const now=new Date().toISOString();const {data:found,error:findError}=await db.from("settings").select("id").eq("key",key).order("id",{ascending:true}).limit(1).maybeSingle();if(findError)throw findError;if(found?.id!=null){const{error}=await db.from("settings").update({value,updated_at:now}).eq("id",found.id);if(error)throw error;return}const{data:last,error:lastError}=await db.from("settings").select("id").order("id",{ascending:false}).limit(1).maybeSingle();if(lastError)throw lastError;const nextId=Number(last?.id||0)+1;const{error}=await db.from("settings").insert({id:nextId,key,value,created_at:now,updated_at:now});if(error)throw error}
 function renderStats(s){$("stats").innerHTML=[["المنتجات",s.products??products.length],["الأقسام",categories.length],["الباقات",s.active_bundles??bundles.length],["الطلبات",s.orders??orders.length],["العملاء",s.customers??customers.length],["التقييمات",reviews.length],["الكوبونات",coupons.length],["الخيارات",variants.length]].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]??0}</b></div>`).join("")}
 
@@ -2181,9 +2181,16 @@ function fillSimpleSettings(){
   fillFontSelects();
   renderExistingAdMedia();
   renderPaymentSettings();
+  renderScentItemsAdmin();
   updateProductSizePreview();
 }
 
+function getScentItemsAdmin(){return Array.isArray(scentSettings?.items)?scentSettings.items:[]}
+function renderScentItemsAdmin(){const b=$("scentItemsAdminList");if(!b)return;const a=[...getScentItemsAdmin()].sort((x,y)=>Number(x.sortOrder||0)-Number(y.sortOrder||0));b.innerHTML=a.map(x=>`<div class="scent-admin-row"><div class="scent-admin-thumb">${x.imageUrl?`<img src="${esc(x.imageUrl)}">`:'🌸'}</div><div><b>${esc(x.name||'')}</b><small>${x.enabled===false?'مخفي':'ظاهر'} · ترتيب ${Number(x.sortOrder||0)}</small></div><div class="actions"><button class="btn sm" onclick="editScentItem('${esc(x.id)}')">تعديل</button><button class="btn red sm" onclick="deleteScentItem('${esc(x.id)}')">حذف</button></div></div>`).join('')||'<div class="note">لا توجد روائح بعد.</div>'}
+function resetScentItemForm(){$("scentItemId").value="";$("scentItemName").value="";$("scentItemSearch").value="";$("scentItemSort").value=String(getScentItemsAdmin().length);$("scentItemFile").value="";$("scentItemEnabled").checked=true;$("saveScentItemButton").textContent="إضافة الرائحة"}
+function editScentItem(id){const x=getScentItemsAdmin().find(v=>String(v.id)===String(id));if(!x)return;$("scentItemId").value=x.id||"";$("scentItemName").value=x.name||"";$("scentItemSearch").value=x.search||x.name||"";$("scentItemSort").value=Number(x.sortOrder||0);$("scentItemEnabled").checked=x.enabled!==false;$("saveScentItemButton").textContent="حفظ تعديل الرائحة"}
+async function saveScentItem(){const btn=$("saveScentItemButton"),id=$("scentItemId").value,name=$("scentItemName").value.trim();if(!name)return toast("اكتب اسم الرائحة");btn.disabled=true;try{const list=JSON.parse(JSON.stringify(getScentItemsAdmin())),old=list.find(x=>String(x.id)===String(id));let imageUrl=old?.imageUrl||"";const file=$("scentItemFile").files?.[0];if(file)imageUrl=await uploadMediaFile(file,"scents");const row={id:id||"scent_"+Date.now(),name,search:$("scentItemSearch").value.trim()||name,imageUrl,sortOrder:Number($("scentItemSort").value||0),enabled:$("scentItemEnabled").checked},i=list.findIndex(x=>String(x.id)===String(id));if(i>=0)list[i]={...list[i],...row};else list.push(row);const next={...scentSettings,items:list};await saveSetting("scents",next);scentSettings=next;renderScentItemsAdmin();resetScentItemForm();toast("تم حفظ الرائحة ✓")}catch(e){alert("تعذر حفظ الرائحة:\n"+(e.message||e))}finally{btn.disabled=false}}
+async function deleteScentItem(id){if(!confirm("حذف أيقونة الرائحة؟"))return;const next={...scentSettings,items:getScentItemsAdmin().filter(x=>String(x.id)!==String(id))};try{await saveSetting("scents",next);scentSettings=next;renderScentItemsAdmin();resetScentItemForm();toast("تم حذف الرائحة")}catch(e){alert(e.message||e)}}
 async function saveGeneralSettings(){
   const button=$("saveGeneralButton");
   button.disabled=true;

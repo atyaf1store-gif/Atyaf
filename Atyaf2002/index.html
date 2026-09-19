@@ -468,6 +468,32 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
   </div>
 </section>
 
+<section id="bottomAds" class="page hidden">
+  <div class="card">
+    <h2>🖼️ شاشة الإعلانات السفلية</h2>
+    <p class="note">إدارة مستقلة للشاشة الإعلانية التي تظهر بعد المنتجات وقبل الفوتر.</p>
+    <div class="grid3">
+      <div><label>حالة الإعلان</label><select id="bottomAdEnabled"><option value="true">مفعل</option><option value="false">متوقف</option></select></div>
+      <div><label>نوع الإعلان</label><select id="bottomAdType"><option value="image">صورة</option><option value="slider">سلايدر صور</option><option value="video">فيديو</option></select></div>
+      <div><label>طريقة ملاءمة الوسائط</label><select id="bottomAdFit"><option value="cover">تغطية كاملة Cover</option><option value="contain">إظهار كامل Contain</option></select></div>
+      <div><label>ارتفاع الكمبيوتر</label><input id="bottomAdHeightDesktop" type="number" value="320"></div>
+      <div><label>ارتفاع التابلت</label><input id="bottomAdHeightTablet" type="number" value="260"></div>
+      <div><label>ارتفاع الجوال</label><input id="bottomAdHeightMobile" type="number" value="190"></div>
+      <div><label>تدوير الحواف</label><input id="bottomAdRadius" type="number" value="0"></div>
+      <div><label>مدة تبديل السلايدر بالمللي ثانية</label><input id="bottomAdInterval" type="number" value="4000"></div>
+      <div><label>موضع الصورة</label><select id="bottomAdPosition"><option value="center">وسط</option><option value="top">أعلى</option><option value="bottom">أسفل</option><option value="left">يسار</option><option value="right">يمين</option></select></div>
+    </div>
+    <label>رابط الإعلان عند الضغط عليه</label><input id="bottomAdLink" placeholder="https://example.com">
+    <label>إضافة صور / فيديو</label><input id="bottomAdFiles" type="file" accept="image/*,video/*" multiple onchange="previewSelectedBottomAdFiles()">
+    <div id="bottomAdExistingMedia" class="media-preview-grid"></div>
+    <div id="newBottomAdFilesPreview" class="media-preview-grid"></div>
+    <div class="actions">
+      <button id="saveBottomAdsButton" class="btn gold" onclick="saveBottomAds()">حفظ الإعلان السفلي</button>
+      <button class="btn red" onclick="clearBottomAdMedia()">حذف جميع وسائط الإعلان السفلي</button>
+    </div>
+  </div>
+</section>
+
 <section id="design" class="page hidden">
   <div class="card">
     <h2>🎨 التصميم والخطوط</h2>
@@ -820,11 +846,11 @@ const db=window.supabase?.createClient ? window.supabase.createClient(SUPABASE_U
 const $=id=>document.getElementById(id);
 
 let products=[],categories=[],variants=[],bundles=[],gifts=[],coupons=[],orders=[],reviews=[],relations=[],customers=[],settingsRows=[];
-let generalSettings={},paymentSettings={},designSettings={},adSettings={},footerSettings={},announcementBarsSettings={};
+let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={},announcementBarsSettings={};
 let editingProductImages=[],currentInvoiceHTML="";
 
 const tabs=[
-["dashboard","الرئيسية"],["productManager","المنتجات"],["categories","الأقسام"],["products","الخيارات"],["bundles","العروض"],["gifts","الهدايا"],["coupons","الكوبونات"],["customers","العملاء"],["orders","الطلبات"],["reviews","التقييمات"],["recommend","الاقتراحات"],["ads","الإعلانات"],["design","التصميم والخطوط"],["payment","الدفع والبنوك"],["footer","السياسات"],["settings","إعدادات المتجر"]
+["dashboard","الرئيسية"],["productManager","المنتجات"],["categories","الأقسام"],["products","الخيارات"],["bundles","العروض"],["gifts","الهدايا"],["coupons","الكوبونات"],["customers","العملاء"],["orders","الطلبات"],["reviews","التقييمات"],["recommend","الاقتراحات"],["ads","الإعلانات"],["bottomAds","الإعلان السفلي"],["design","التصميم والخطوط"],["payment","الدفع والبنوك"],["footer","السياسات"],["settings","إعدادات المتجر"]
 ];
 const policies=[["about","من نحن"],["returns","سياسة الاستبدال والاسترجاع"],["privacy","سياسة الخصوصية"],["terms","الشروط والأحكام"],["discounts","سياسة التخفيضات"],["customerService","خدمة العملاء"],["hr","الموارد البشرية"],["wholesale","مبيعات الجملة"],["branches","فروعنا"]];
 
@@ -849,6 +875,7 @@ function previewSelectedProductImages(){$("newProductImagesPreview").innerHTML=A
 function previewBundleImage(){const f=$("bundleImageFile").files?.[0];$("bundleImagePreview").innerHTML=f?localFileHTML(f):""}
 function previewGiftImage(){const f=$("giftImageFile").files?.[0];$("giftImagePreview").innerHTML=f?localFileHTML(f):""}
 function previewSelectedAdFiles(){$("newAdFilesPreview").innerHTML=Array.from($("adFiles").files||[]).map(localFileHTML).join("")}
+function previewSelectedBottomAdFiles(){$("newBottomAdFilesPreview").innerHTML=Array.from($("bottomAdFiles").files||[]).map(localFileHTML).join("")}
 
 async function getSession(){const{data,error}=await db.auth.getSession();if(error)return null;return data?.session||null}
 async function isAdmin(){
@@ -903,7 +930,7 @@ async function loadAll(){
  parseSettings();renderStats(stats||{});fillProductCategories();fillProducts();renderAdminProducts();renderCategories();renderVariants();renderBundles();renderGifts();renderCoupons();renderCustomers();renderOrders();renderReviews();renderRelations();renderPoliciesEditor();fillSimpleSettings();
 }
 function settingValue(key){const row=settingsRows.find(x=>x.key===key||String(x.id)===key);return row?.value??row?.data??{}}
-function parseSettings(){generalSettings=settingValue("general");paymentSettings=settingValue("payment");designSettings=settingValue("design");adSettings=settingValue("ads");footerSettings=settingValue("footer");announcementBarsSettings=settingValue("announcement_bars")}
+function parseSettings(){generalSettings=settingValue("general");paymentSettings=settingValue("payment");designSettings=settingValue("design");adSettings=settingValue("ads");bottomAdSettings=settingValue("bottom_ads");footerSettings=settingValue("footer");announcementBarsSettings=settingValue("announcement_bars")}
 async function saveSetting(key,value){
   const now=new Date().toISOString();
   const found=settingsRows.find(x=>x.key===key);
@@ -1638,6 +1665,27 @@ async function saveAds(){
   }
 }
 
+
+/* ================= BOTTOM ADS ================= */
+function renderExistingBottomAdMedia(){
+  const media=Array.isArray(bottomAdSettings.media)?bottomAdSettings.media:[];
+  $("bottomAdExistingMedia").innerHTML=media.map((url,index)=>{
+    const isVideo=/\.(mp4|webm|ogg)(\?|$)/i.test(String(url));
+    return `<div class="media-preview">${isVideo?`<video src="${esc(url)}" controls muted></video>`:`<img src="${esc(url)}" alt="">`}<button class="media-remove" onclick="removeBottomAdMedia(${index})" type="button">×</button></div>`;
+  }).join("");
+}
+function removeBottomAdMedia(index){const media=Array.isArray(bottomAdSettings.media)?[...bottomAdSettings.media]:[];media.splice(index,1);bottomAdSettings={...bottomAdSettings,media};renderExistingBottomAdMedia()}
+function clearBottomAdMedia(){if(!confirm("حذف جميع صور وفيديوهات الإعلان السفلي؟"))return;bottomAdSettings={...bottomAdSettings,media:[]};renderExistingBottomAdMedia();toast("تم حذف الوسائط مؤقتاً، اضغط حفظ الإعلان السفلي")}
+async function saveBottomAds(){
+ const button=$("saveBottomAdsButton");button.disabled=true;
+ try{
+  const uploaded=$("bottomAdFiles").files.length?await uploadMultipleFiles($("bottomAdFiles").files,"bottom-ads",""):[];
+  const oldMedia=Array.isArray(bottomAdSettings.media)?bottomAdSettings.media:[];
+  const next={...bottomAdSettings,enabled:$("bottomAdEnabled").value==="true",type:$("bottomAdType").value,fit:$("bottomAdFit").value,position:$("bottomAdPosition").value,radius:Number($("bottomAdRadius").value||0),interval:Number($("bottomAdInterval").value||4000),heightDesktop:Number($("bottomAdHeightDesktop").value||320),heightTablet:Number($("bottomAdHeightTablet").value||260),heightMobile:Number($("bottomAdHeightMobile").value||190),link:$("bottomAdLink").value.trim(),media:[...oldMedia,...uploaded]};
+  await saveSetting("bottom_ads",next);bottomAdSettings=next;$("bottomAdFiles").value="";$("newBottomAdFilesPreview").innerHTML="";renderExistingBottomAdMedia();toast("تم حفظ الإعلان السفلي ✓");
+ }catch(e){alert("تعذر حفظ الإعلان السفلي:\n"+(e.message||e))}finally{button.disabled=false}
+}
+
 /* ================= DESIGN ================= */
 
 function fillFontSelects(){
@@ -2081,6 +2129,18 @@ function fillSimpleSettings(){
   $("adInterval").value=Number(adSettings.interval||3500);
   $("adPosition").value=adSettings.position||"center";
   $("adLinkInput").value=adSettings.link||"";
+
+  $("bottomAdEnabled").value=String(bottomAdSettings.enabled!==false);
+  $("bottomAdType").value=bottomAdSettings.type||"slider";
+  $("bottomAdFit").value=bottomAdSettings.fit||"cover";
+  $("bottomAdHeightDesktop").value=Number(bottomAdSettings.heightDesktop||320);
+  $("bottomAdHeightTablet").value=Number(bottomAdSettings.heightTablet||260);
+  $("bottomAdHeightMobile").value=Number(bottomAdSettings.heightMobile||190);
+  $("bottomAdRadius").value=Number(bottomAdSettings.radius||0);
+  $("bottomAdInterval").value=Number(bottomAdSettings.interval||4000);
+  $("bottomAdPosition").value=bottomAdSettings.position||"center";
+  $("bottomAdLink").value=bottomAdSettings.link||"";
+  renderExistingBottomAdMedia();
 
 
   const bars=announcementBarsSettings||{};

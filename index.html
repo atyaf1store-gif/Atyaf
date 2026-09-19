@@ -776,17 +776,44 @@ function applyManagedGeneral(g={}){
   const search=document.getElementById("search");
   if(search)search.closest(".search").style.display=g.enableSearch===false?"none":"";
 }
+let atyafCurrentDesign={};
 function applyManagedDesign(d={}){
+  atyafCurrentDesign=d||{};
   const c=d.colors||{};
   if(c.cream)document.documentElement.style.setProperty("--cream",c.cream);
   if(c.card)document.documentElement.style.setProperty("--card",c.card);
   if(c.ink)document.documentElement.style.setProperty("--dark",c.ink);
   if(c.gold)document.documentElement.style.setProperty("--gold",c.gold);
   if(d.backgroundUrl)document.body.style.backgroundImage=`url("${d.backgroundUrl}")`;
+
   const fonts=d.fonts||{};
   if(fonts.body)document.body.style.fontFamily=fonts.body+", Cairo, sans-serif";
   if(fonts.sectionTitles)document.querySelectorAll(".section-title h2").forEach(x=>x.style.fontFamily=fonts.sectionTitles);
   if(fonts.productNames)document.querySelectorAll(".product-info h3").forEach(x=>x.style.fontFamily=fonts.productNames);
+
+  const t=d.textColors||{};
+  const rules=[
+    ["body",t.body],
+    [".logo",t.brand],
+    [".nav a",t.nav],
+    [".topbar,.topbar *",t.ticker],
+    [".section-title h2,.banner-text h2",t.sectionTitle],
+    [".section-title p,.banner-text p",t.sectionDesc],
+    [".brand b,.round b",t.category],
+    [".product-info h3",t.productName],
+    [".price,.product-info .price",t.price],
+    [".old",t.oldPrice],
+    ["button,.btn,.add-cart,.gift-btn",t.button],
+    [".footer,.footer p,.footer a",t.footer],
+    [".footer h3",t.footerTitle],
+    [".modal,.modal *,.cart,.cart *",t.modal],
+    [".search input",t.search],
+    [".notice,.muted,.note",t.muted]
+  ];
+  rules.forEach(([sel,color])=>{
+    if(!color)return;
+    document.querySelectorAll(sel).forEach(el=>el.style.setProperty("color",color,"important"));
+  });
 }
 function applyManagedFooter(g={},f={}){
   const footer=document.getElementById("contact"); if(!footer)return;
@@ -1446,6 +1473,7 @@ loadProductsFromSupabase();
 loadManagedStoreSettings();
 loadTopAds();
 loadBottomAds();
+setTimeout(()=>applyManagedDesign(atyafCurrentDesign),900);
 /* ATYAF ADS SYNC FIX 2026-09-19 */
 </script>
 

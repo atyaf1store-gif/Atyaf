@@ -503,14 +503,23 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
     <h3>الماركات</h3>
     <div class="check-row"><input id="homeBrandsEnabled" type="checkbox" checked><label>إظهار قسم الماركات</label></div>
     <div class="grid2"><div><label>العنوان</label><input id="homeBrandsTitle"></div><div><label>الوصف</label><input id="homeBrandsSubtitle"></div></div>
-    <label>الماركات — الاسم | رابط الصورة</label>
-    <textarea id="homeBrandsItems" style="min-height:150px"></textarea>
+    <label>الماركات الحالية</label>
+    <textarea id="homeBrandsItems" style="min-height:130px" readonly></textarea>
+    <div class="grid2">
+      <div><label>اسم الماركة الجديدة</label><input id="homeBrandNewName" placeholder="مثال: إبراق"></div>
+      <div><label>صورة الماركة من الجهاز</label><input id="homeBrandNewFile" type="file" accept="image/*"></div>
+    </div>
+    <button type="button" class="btn" onclick="addHomepageMediaItem('brand')">رفع وإضافة الماركة</button>
+    <div id="homeBrandsManagedList" class="media-preview-grid"></div>
 
     <h3>قسم تجهيز الهدية</h3>
     <div class="check-row"><input id="homeGiftEnabled" type="checkbox" checked><label>إظهار تجهيز الهدية</label></div>
     <div class="grid2"><div><label>العنوان</label><input id="homeGiftTitle"></div><div><label>نص الزر</label><input id="homeGiftButton"></div></div>
     <label>الوصف</label><input id="homeGiftText">
-    <label>رابط صورة القسم</label><input id="homeGiftImage">
+    <label>صورة قسم الهدية</label>
+    <input id="homeGiftImage" type="hidden">
+    <input id="homeGiftImageFile" type="file" accept="image/*">
+    <div id="homeGiftImagePreview" class="media-preview-grid"></div>
 
     <h3>الأكثر مبيعاً</h3>
     <div class="check-row"><input id="homeBestEnabled" type="checkbox" checked><label>إظهار القسم</label></div>
@@ -524,13 +533,22 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
     <div class="check-row"><input id="homeOfferEnabled" type="checkbox" checked><label>إظهار بانر العروض</label></div>
     <div class="grid2"><input id="homeOfferTitle" placeholder="العنوان"><input id="homeOfferButton" placeholder="نص الزر"></div>
     <input id="homeOfferText" placeholder="وصف العرض">
-    <input id="homeOfferImage" placeholder="رابط صورة العرض">
+    <input id="homeOfferImage" type="hidden">
+    <label>صورة بانر العروض من الجهاز</label>
+    <input id="homeOfferImageFile" type="file" accept="image/*">
+    <div id="homeOfferImagePreview" class="media-preview-grid"></div>
 
     <h3>الروائح</h3>
     <div class="check-row"><input id="homeScentsEnabled" type="checkbox" checked><label>إظهار قسم الروائح</label></div>
     <div class="grid2"><input id="homeScentsTitle" placeholder="العنوان"><input id="homeScentsSubtitle" placeholder="الوصف"></div>
-    <label>الروائح — الاسم | رابط الصورة</label>
-    <textarea id="homeScentsItems" style="min-height:150px"></textarea>
+    <label>الروائح الحالية</label>
+    <textarea id="homeScentsItems" style="min-height:130px" readonly></textarea>
+    <div class="grid2">
+      <div><label>اسم الرائحة الجديدة</label><input id="homeScentNewName" placeholder="مثال: عود"></div>
+      <div><label>صورة الرائحة من الجهاز</label><input id="homeScentNewFile" type="file" accept="image/*"></div>
+    </div>
+    <button type="button" class="btn" onclick="addHomepageMediaItem('scent')">رفع وإضافة الرائحة</button>
+    <div id="homeScentsManagedList" class="media-preview-grid"></div>
 
     <h3>المنتجات المميزة</h3>
     <div class="check-row"><input id="homeFeaturedEnabled" type="checkbox" checked><label>إظهار القسم</label></div>
@@ -555,6 +573,27 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
       <div><label>لون البطاقات</label><input id="designCard" type="color" value="#FFFBF0"></div>
       <div><label>لون النص الأساسي</label><input id="designInk" type="color" value="#20301C"></div>
       <div><label>اللون الذهبي</label><input id="designGold" type="color" value="#A9793C"></div>
+    </div>
+
+    <h3>🎨 ألوان الخطوط — كامل المتجر</h3>
+    <p class="note">تحكم مستقل في ألوان النصوص من أعلى الصفحة إلى الفوتر.</p>
+    <div class="grid4">
+      <div><label>النص العام</label><input id="colorBodyText" type="color" value="#20231f"></div>
+      <div><label>اسم المتجر</label><input id="colorBrandText" type="color" value="#173629"></div>
+      <div><label>القائمة العلوية</label><input id="colorNavText" type="color" value="#20231f"></div>
+      <div><label>الشريط المتحرك</label><input id="colorTickerText" type="color" value="#ffffff"></div>
+      <div><label>عناوين الأقسام</label><input id="colorSectionTitle" type="color" value="#20231f"></div>
+      <div><label>وصف الأقسام</label><input id="colorSectionDesc" type="color" value="#555b56"></div>
+      <div><label>أسماء الماركات والروائح</label><input id="colorCategoryText" type="color" value="#20231f"></div>
+      <div><label>أسماء المنتجات</label><input id="colorProductName" type="color" value="#20231f"></div>
+      <div><label>الأسعار</label><input id="colorPrice" type="color" value="#9f3028"></div>
+      <div><label>النص القديم/المشطوب</label><input id="colorOldPrice" type="color" value="#747874"></div>
+      <div><label>الأزرار</label><input id="colorButtonText" type="color" value="#ffffff"></div>
+      <div><label>الفوتر</label><input id="colorFooterText" type="color" value="#555b56"></div>
+      <div><label>عناوين الفوتر</label><input id="colorFooterTitle" type="color" value="#20231f"></div>
+      <div><label>نص النوافذ</label><input id="colorModalText" type="color" value="#20231f"></div>
+      <div><label>لون البحث</label><input id="colorSearchText" type="color" value="#20231f"></div>
+      <div><label>النص الثانوي</label><input id="colorMutedText" type="color" value="#555b56"></div>
     </div>
 
     <h3>📐 حجم بطاقات المنتجات</h3>
@@ -1850,7 +1889,25 @@ async function saveDesignSettings(){
 
       productFont:$("fontProductNames").value,
       backgroundUrl,
-      fonts
+      fonts,
+      textColors:{
+        body:$("colorBodyText").value,
+        brand:$("colorBrandText").value,
+        nav:$("colorNavText").value,
+        ticker:$("colorTickerText").value,
+        sectionTitle:$("colorSectionTitle").value,
+        sectionDesc:$("colorSectionDesc").value,
+        category:$("colorCategoryText").value,
+        productName:$("colorProductName").value,
+        price:$("colorPrice").value,
+        oldPrice:$("colorOldPrice").value,
+        button:$("colorButtonText").value,
+        footer:$("colorFooterText").value,
+        footerTitle:$("colorFooterTitle").value,
+        modal:$("colorModalText").value,
+        search:$("colorSearchText").value,
+        muted:$("colorMutedText").value
+      }
     };
 
     await saveSetting("design",next);
@@ -2232,6 +2289,7 @@ function fillSimpleSettings(){
   $("homeAllEnabled").checked=hp.allEnabled!==false;
   $("homeAllTitle").value=hp.allTitle||"منتجات قد تعجبك";
   $("homeAllSubtitle").value=hp.allSubtitle||"";
+  renderHomepageManagedLists();
 
   const colors=designSettings.colors||{};
   $("designCream").value=colors.cream||"#F8EACB";
@@ -2257,6 +2315,24 @@ function fillSimpleSettings(){
 
   $("designBackgroundUrl").value=designSettings.backgroundUrl||"";
 
+  const tc=designSettings.textColors||{};
+  $("colorBodyText").value=tc.body||"#20231f";
+  $("colorBrandText").value=tc.brand||"#173629";
+  $("colorNavText").value=tc.nav||"#20231f";
+  $("colorTickerText").value=tc.ticker||"#ffffff";
+  $("colorSectionTitle").value=tc.sectionTitle||"#20231f";
+  $("colorSectionDesc").value=tc.sectionDesc||"#555b56";
+  $("colorCategoryText").value=tc.category||"#20231f";
+  $("colorProductName").value=tc.productName||"#20231f";
+  $("colorPrice").value=tc.price||"#9f3028";
+  $("colorOldPrice").value=tc.oldPrice||"#747874";
+  $("colorButtonText").value=tc.button||"#ffffff";
+  $("colorFooterText").value=tc.footer||"#555b56";
+  $("colorFooterTitle").value=tc.footerTitle||"#20231f";
+  $("colorModalText").value=tc.modal||"#20231f";
+  $("colorSearchText").value=tc.search||"#20231f";
+  $("colorMutedText").value=tc.muted||"#555b56";
+
   fillFontSelects();
   renderExistingAdMedia();
   renderPaymentSettings();
@@ -2265,6 +2341,57 @@ function fillSimpleSettings(){
 
 
 
+
+function homepageItemsToText(items){
+  return (Array.isArray(items)?items:[]).map(x=>`${x.name||""} | ${x.image||""}`).join("\n");
+}
+function renderHomepageManagedLists(){
+  const hp=homepageSettings||{};
+  $("homeBrandsItems").value=homepageItemsToText(hp.brands);
+  $("homeScentsItems").value=homepageItemsToText(hp.scents);
+
+  const render=(id,items,type)=>{
+    $(id).innerHTML=(Array.isArray(items)?items:[]).map((x,i)=>`
+      <div class="media-preview" style="height:auto;min-height:120px;padding:8px">
+        ${x.image?`<img src="${esc(x.image)}" style="height:75px;object-fit:contain">`:""}
+        <div style="font-weight:800;margin:6px 0">${esc(x.name||"")}</div>
+        <button type="button" class="btn red sm" onclick="removeHomepageMediaItem('${type}',${i})">حذف</button>
+      </div>`).join("");
+  };
+  render("homeBrandsManagedList",hp.brands,"brand");
+  render("homeScentsManagedList",hp.scents,"scent");
+
+  $("homeGiftImagePreview").innerHTML=hp.giftImage?`<div class="media-preview"><img src="${esc(hp.giftImage)}"></div>`:"";
+  $("homeOfferImagePreview").innerHTML=hp.offerImage?`<div class="media-preview"><img src="${esc(hp.offerImage)}"></div>`:"";
+}
+async function addHomepageMediaItem(type){
+  const isBrand=type==="brand";
+  const nameEl=$(isBrand?"homeBrandNewName":"homeScentNewName");
+  const fileEl=$(isBrand?"homeBrandNewFile":"homeScentNewFile");
+  const name=nameEl.value.trim(), file=fileEl.files?.[0];
+  if(!name)return alert("اكتب الاسم أولاً");
+  if(!file)return alert("اختر الصورة من الجهاز");
+  try{
+    const url=await uploadMediaFile(file,isBrand?"homepage/brands":"homepage/scents");
+    const key=isBrand?"brands":"scents";
+    const next={...homepageSettings,[key]:[...(Array.isArray(homepageSettings[key])?homepageSettings[key]:[]),{name,image:url}]};
+    await saveSetting("homepage",next);
+    homepageSettings=next;
+    nameEl.value=""; fileEl.value="";
+    renderHomepageManagedLists();
+    toast("تم رفع الصورة وإضافة العنصر ✓");
+  }catch(e){alert("تعذر رفع الصورة:\n"+(e.message||e))}
+}
+async function removeHomepageMediaItem(type,index){
+  if(!confirm("حذف هذا العنصر؟"))return;
+  const key=type==="brand"?"brands":"scents";
+  const arr=[...(Array.isArray(homepageSettings[key])?homepageSettings[key]:[])];
+  arr.splice(index,1);
+  const next={...homepageSettings,[key]:arr};
+  await saveSetting("homepage",next);
+  homepageSettings=next;
+  renderHomepageManagedLists();
+}
 function parseHomepageItems(id){
   return $(id).value.split(/\n+/).map(line=>{
     const parts=line.split("|");
@@ -2273,17 +2400,23 @@ function parseHomepageItems(id){
 }
 async function saveHomepageSettings(){
   try{
+    let giftImage=homepageSettings.giftImage||$("homeGiftImage").value||"";
+    let offerImage=homepageSettings.offerImage||$("homeOfferImage").value||"";
+    const giftFile=$("homeGiftImageFile").files?.[0];
+    const offerFile=$("homeOfferImageFile").files?.[0];
+    if(giftFile)giftImage=await uploadMediaFile(giftFile,"homepage/gift");
+    if(offerFile)offerImage=await uploadMediaFile(offerFile,"homepage/offers");
     const next={
       ...homepageSettings,
       brandsEnabled:$("homeBrandsEnabled").checked,
       brandsTitle:$("homeBrandsTitle").value.trim(),
       brandsSubtitle:$("homeBrandsSubtitle").value.trim(),
-      brands:parseHomepageItems("homeBrandsItems"),
+      brands:Array.isArray(homepageSettings.brands)?homepageSettings.brands:[],
       giftEnabled:$("homeGiftEnabled").checked,
       giftTitle:$("homeGiftTitle").value.trim(),
       giftText:$("homeGiftText").value.trim(),
       giftButton:$("homeGiftButton").value.trim(),
-      giftImage:$("homeGiftImage").value.trim(),
+      giftImage,
       bestEnabled:$("homeBestEnabled").checked,
       bestTitle:$("homeBestTitle").value.trim(),
       bestSubtitle:$("homeBestSubtitle").value.trim(),
@@ -2294,11 +2427,11 @@ async function saveHomepageSettings(){
       offerTitle:$("homeOfferTitle").value.trim(),
       offerText:$("homeOfferText").value.trim(),
       offerButton:$("homeOfferButton").value.trim(),
-      offerImage:$("homeOfferImage").value.trim(),
+      offerImage,
       scentsEnabled:$("homeScentsEnabled").checked,
       scentsTitle:$("homeScentsTitle").value.trim(),
       scentsSubtitle:$("homeScentsSubtitle").value.trim(),
-      scents:parseHomepageItems("homeScentsItems"),
+      scents:Array.isArray(homepageSettings.scents)?homepageSettings.scents:[],
       featuredEnabled:$("homeFeaturedEnabled").checked,
       featuredTitle:$("homeFeaturedTitle").value.trim(),
       featuredSubtitle:$("homeFeaturedSubtitle").value.trim(),
@@ -2308,6 +2441,11 @@ async function saveHomepageSettings(){
     };
     await saveSetting("homepage",next);
     homepageSettings=next;
+    $("homeGiftImage").value=giftImage;
+    $("homeOfferImage").value=offerImage;
+    $("homeGiftImageFile").value="";
+    $("homeOfferImageFile").value="";
+    renderHomepageManagedLists();
     toast("تم حفظ واجهة المتجر ✓");
   }catch(e){alert("تعذر حفظ واجهة المتجر:\n"+(e.message||e))}
 }

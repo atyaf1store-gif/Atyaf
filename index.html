@@ -405,10 +405,13 @@ a{text-decoration:none;color:inherit}
 
 
 /* ===== ATYAF MANAGED ANNOUNCEMENT BARS ===== */
-.topbar{overflow:hidden;white-space:nowrap;background:#183427;color:#fff;padding:0;height:36px;display:flex;align-items:center}
-.topbar-track{display:inline-flex;align-items:center;gap:52px;min-width:max-content;animation:atyafTicker 24s linear infinite;padding-inline:28px;font-size:12px}
+.topbar{overflow:hidden;white-space:nowrap;background:#183427;color:#fff;padding:0;height:36px;display:flex;align-items:center;position:relative}
+.topbar-track{display:inline-flex;align-items:center;gap:52px;width:max-content;min-width:max-content;position:absolute;left:0;padding-inline:28px;font-size:12px;animation:atyafTicker 24s linear infinite;will-change:transform}
 .topbar-track span{color:#f1d89a;display:inline-block}
-@keyframes atyafTicker{from{transform:translateX(0)}to{transform:translateX(50%)}}
+@keyframes atyafTicker{
+  0%{transform:translateX(calc(-100% - 100vw))}
+  100%{transform:translateX(100vw)}
+}
 .notice{min-height:48px;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;background:#fbfaf6;border-bottom:1px solid #e8e2d6;border-top:1px solid #f1eee7;padding:10px 16px;color:#4d544f;font-size:12px;font-weight:500}
 .notice-item{display:inline-flex;align-items:center;gap:7px;padding:2px 18px;white-space:nowrap}
 .notice-item+.notice-item{border-right:1px solid #d9d2c5}

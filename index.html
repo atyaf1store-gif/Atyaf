@@ -402,15 +402,25 @@ a{text-decoration:none;color:inherit}
 .product-actions button:hover{opacity:.9}
 @media(max-width:600px){.product-image{height:210px}.product-info h3{font-size:12px;min-height:43px}.product-actions button{min-height:39px;font-size:10px}}
 
+
+/* ===== ATYAF MANAGED ANNOUNCEMENT BARS ===== */
+.topbar{overflow:hidden;white-space:nowrap;background:#183427;color:#fff;padding:0;height:36px;display:flex;align-items:center}
+.topbar-track{display:inline-flex;align-items:center;gap:52px;min-width:max-content;animation:atyafTicker 24s linear infinite;padding-inline:28px;font-size:12px}
+.topbar-track span{color:#f1d89a;display:inline-block}
+@keyframes atyafTicker{from{transform:translateX(0)}to{transform:translateX(50%)}}
+.notice{min-height:48px;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;background:#fbfaf6;border-bottom:1px solid #e8e2d6;border-top:1px solid #f1eee7;padding:10px 16px;color:#4d544f;font-size:12px;font-weight:500}
+.notice-item{display:inline-flex;align-items:center;gap:7px;padding:2px 18px;white-space:nowrap}
+.notice-item+.notice-item{border-right:1px solid #d9d2c5}
+.notice-icon{color:#b9934b;font-size:14px}
+@media(max-width:600px){.topbar{height:34px}.topbar-track{font-size:11px;gap:36px}.notice{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:9px 5px}.notice-item{padding:2px 13px}.notice-item+.notice-item{border-right:1px solid #d9d2c5}}
+
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-<div class="topbar">
-  شحن مجاني للطلبات أكثر من 250 ر.س
-  <span> | استخدم الكود FIRST15 واحصل على خصم 15%</span>
-</div>
+<div class="topbar" id="topAnnouncementBar"><div class="topbar-track" id="topAnnouncementTrack"></div></div>
 
 <header class="header">
   <div class="header-main">
@@ -469,11 +479,7 @@ a{text-decoration:none;color:inherit}
     </div>
   </section>
 
-  <div class="notice">
-    الدفع عند الاستلام متاح داخل المملكة
-    &nbsp; • &nbsp; تغليف هدايا مجاني
-    &nbsp; • &nbsp; منتجات أصلية 100%
-  </div>
+  <div class="notice" id="serviceNoticeBar"></div>
 
   <div class="container">
 
@@ -640,6 +646,47 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <script>
+
+const ATYAF_SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
+const ATYAF_SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
+const atyafDb=window.supabase?.createClient ? window.supabase.createClient(ATYAF_SUPABASE_URL,ATYAF_SUPABASE_KEY) : null;
+const defaultAnnouncementBars={
+  top:{enabled:true,items:["شحن مجاني للطلبات أكثر من 250 ر.س","استخدم الكود FIRST15 واحصل على خصم 15%"]},
+  service:{enabled:true,items:["الدفع عند الاستلام متاح","تغليف هدايا مجاني","منتجات أصلية 100%"]}
+};
+function normalizeBarSettings(v){
+  const x=(v&&typeof v==="object")?v:{};
+  return {
+    top:{enabled:x.top?.enabled!==false,items:Array.isArray(x.top?.items)?x.top.items.filter(Boolean):defaultAnnouncementBars.top.items},
+    service:{enabled:x.service?.enabled!==false,items:Array.isArray(x.service?.items)?x.service.items.filter(Boolean):defaultAnnouncementBars.service.items}
+  };
+}
+function renderAnnouncementBars(raw){
+  const cfg=normalizeBarSettings(raw);
+  const top=document.getElementById("topAnnouncementBar"),track=document.getElementById("topAnnouncementTrack");
+  if(top&&track){
+    top.style.display=cfg.top.enabled&&cfg.top.items.length?"flex":"none";
+    const items=cfg.top.items.map(x=>`<span>${String(x).replace(/[<>]/g,"")}</span>`).join("");
+    track.innerHTML=items+items;
+  }
+  const service=document.getElementById("serviceNoticeBar");
+  if(service){
+    service.style.display=cfg.service.enabled&&cfg.service.items.length?"flex":"none";
+    service.innerHTML=cfg.service.items.map(x=>`<span class="notice-item"><span class="notice-icon">✦</span>${String(x).replace(/[<>]/g,"")}</span>`).join("");
+  }
+}
+async function loadAnnouncementBars(){
+  renderAnnouncementBars(defaultAnnouncementBars);
+  if(!atyafDb)return;
+  try{
+    let value=null;
+    let r=await atyafDb.from("settings").select("value").eq("key","announcement_bars").order("id",{ascending:true}).limit(1).maybeSingle();
+    if(!r.error&&r.data)value=r.data.value;
+    if(value)renderAnnouncementBars(value);
+  }catch(e){console.warn("announcement bars",e)}
+}
+loadAnnouncementBars();
+
 const products=[
  {
   id:1,name:"عطر بريستيج ربي",

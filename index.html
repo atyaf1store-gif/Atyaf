@@ -3661,6 +3661,68 @@ function printInvoice(){
 #adWrap>img:not(.ad-slide),#adWrap>video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important;object-fit:cover!important}
 #bottomAdWrap>img:not(.ad-slide),#bottomAdWrap>video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important}
 @media(max-width:700px){#adWrap{min-height:clamp(190px,52vw,310px)!important}}
+
+/* ===== ATYAF SCENTS — SEPARATE + TRANSPARENT (FINAL) ===== */
+#scentShortcutSection.scent-shortcut-section{
+  display:none;
+  position:relative!important;
+  width:100%!important;
+  margin:0!important;
+  padding:22px 0 20px!important;
+  overflow:hidden!important;
+  background:transparent!important;
+  background-color:transparent!important;
+  border:0!important;
+  border-bottom:0!important;
+  box-shadow:none!important;
+  isolation:isolate;
+}
+#scentShortcutSection::before,#scentShortcutSection::after{content:none!important;display:none!important}
+#scentShortcutSection .scent-shortcut-track{
+  position:relative!important;
+  z-index:2!important;
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:flex-start!important;
+  gap:22px!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0 max(24px,4vw) 8px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  direction:ltr!important;
+  scrollbar-width:none!important;
+  -webkit-overflow-scrolling:touch;
+}
+#scentShortcutSection .scent-shortcut-track::-webkit-scrollbar{display:none!important}
+#scentShortcutSection .scent-shortcut{
+  flex:0 0 92px!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
+#scentShortcutSection .scent-circle{
+  width:78px!important;
+  height:78px!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#scentShortcutSection .scent-circle img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}
+#scentShortcutSection .scent-fade{background:transparent!important;display:none!important}
+/* Keep the ad screen and scent row as two independent blocks. */
+#adSection{margin-bottom:0!important}
+#adSection + #scentShortcutSection{clear:both!important}
+@media(max-width:768px){
+  #scentShortcutSection.scent-shortcut-section{padding:15px 0 14px!important}
+  #scentShortcutSection .scent-shortcut-track{gap:14px!important;padding:0 14px 6px!important}
+  #scentShortcutSection .scent-shortcut{flex-basis:72px!important}
+  #scentShortcutSection .scent-circle{width:64px!important;height:64px!important}
+}
 </style></head><body>${sheet.outerHTML}<script>window.onload=function(){setTimeout(function(){window.print()},400)};<\/script></body></html>`);popup.document.close()
 }
 

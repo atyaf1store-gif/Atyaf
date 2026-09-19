@@ -1359,6 +1359,68 @@ html,body{max-width:100%;overflow-x:hidden}
 .scent-circle i{font-family:'Aref Ruqaa',serif!important;font-size:28px!important;font-weight:700!important}
 .scent-shortcut strong{font-size:12px!important;font-weight:800!important;color:#20301c!important}
 @media(max-width:768px){.header-icon-action .lux-icon,.header-icon-action .lux-icon svg{width:21px;height:21px}.scent-circle{width:64px!important;height:64px!important}.scent-shortcut{flex-basis:72px!important}.scent-shortcut-track{gap:13px!important;padding-inline:14px!important}}
+
+
+/* ===== REAL PAGE FIX: SCENTS ARE A SEPARATE TRANSPARENT SECTION ===== */
+#scentShortcutSection.scent-shortcut-section{
+  display:none;
+  position:relative!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:18px 0 26px!important;
+  padding:18px 0 14px!important;
+  background:transparent!important;
+  background-color:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+  clear:both!important;
+}
+#scentShortcutSection.scent-shortcut-section::before,
+#scentShortcutSection.scent-shortcut-section::after{display:none!important;content:none!important}
+#scentShortcutSection .scent-fade{display:none!important;background:transparent!important}
+#scentShortcutSection .scent-shortcut-track{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:flex-start!important;
+  gap:24px!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0 clamp(24px,5vw,80px) 8px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  direction:ltr!important;
+  scrollbar-width:none!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#scentShortcutSection .scent-shortcut-track::-webkit-scrollbar{display:none!important}
+#scentShortcutSection .scent-shortcut{
+  flex:0 0 92px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#scentShortcutSection .scent-circle{
+  width:78px!important;height:78px!important;border-radius:50%!important;
+  overflow:hidden!important;background:transparent!important;
+  border:1px solid rgba(166,119,56,.22)!important;
+  box-shadow:none!important;
+}
+#scentShortcutSection .scent-circle img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}
+/* advertisement ends before scents; no shared card/background */
+#adSection.ad-section{margin-bottom:0!important}
+#adSection + #scentShortcutSection{margin-top:18px!important}
+@media(max-width:768px){
+ #scentShortcutSection.scent-shortcut-section{margin:12px 0 20px!important;padding:12px 0 10px!important}
+ #scentShortcutSection .scent-shortcut-track{gap:14px!important;padding:0 14px 6px!important}
+ #scentShortcutSection .scent-shortcut{flex-basis:72px!important}
+ #scentShortcutSection .scent-circle{width:64px!important;height:64px!important}
+}
 </style>
 </head>
 

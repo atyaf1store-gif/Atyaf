@@ -437,6 +437,31 @@ body{color:#20231f}
 .search input{color:#20231f!important}
 .search input::placeholder{color:#737873!important;opacity:1}
 
+
+/* ===== POLICY / INFORMATION MODAL ===== */
+.policy-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:10050;
+  display:none;align-items:center;justify-content:center;padding:22px;
+}
+.policy-overlay.open{display:flex}
+.policy-dialog{
+  width:min(680px,92vw);max-height:76vh;overflow:auto;background:#fff;
+  border-radius:14px;padding:30px 30px 26px;position:relative;
+  box-shadow:0 22px 70px rgba(0,0,0,.24);direction:rtl;text-align:right;
+}
+.policy-close{
+  position:absolute;left:16px;top:13px;width:38px;height:38px;border:0;
+  border-radius:50%;background:#f3f3f1;color:#222!important;font-size:25px;line-height:1;
+}
+.policy-dialog h2{margin:0 0 20px;padding-left:45px;font-size:25px;color:#20231f}
+.policy-content{font-size:15px;line-height:2.05;color:#3f4540;white-space:pre-wrap}
+.policy-content:empty::after{content:"سيتم إضافة التفاصيل قريباً.";color:#777}
+@media(max-width:600px){
+  .policy-dialog{width:94vw;max-height:80vh;padding:25px 20px 22px}
+  .policy-dialog h2{font-size:21px}
+  .policy-content{font-size:14px}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -601,17 +626,17 @@ body{color:#20231f}
     </div>
     <div>
       <h3>روابط مهمة</h3>
-      <a href="#">من نحن</a>
-      <a href="#">سياسة الخصوصية</a>
-      <a href="#">الشروط والأحكام</a>
-      <a href="#">الشحن والاسترجاع</a>
+      <a href="javascript:void(0)" onclick="openPolicy('about','من نحن')">من نحن</a>
+      <a href="javascript:void(0)" onclick="openPolicy('privacy','سياسة الخصوصية')">سياسة الخصوصية</a>
+      <a href="javascript:void(0)" onclick="openPolicy('terms','الشروط والأحكام')">الشروط والأحكام</a>
+      <a href="javascript:void(0)" onclick="openPolicy('returns','سياسة الاستبدال والاسترجاع')">الشحن والاسترجاع</a>
     </div>
     <div>
       <h3>خدمة العملاء</h3>
-      <a href="#">تتبع الطلب</a>
-      <a href="#">الأسئلة الشائعة</a>
-      <a href="#">تواصل معنا</a>
-      <a href="#">واتساب</a>
+      <a href="javascript:void(0)" onclick="openPolicy('customerService','خدمة العملاء')">خدمة العملاء</a>
+      <a href="javascript:void(0)" onclick="openPolicy('discounts','سياسة التخفيضات')">سياسة التخفيضات</a>
+      <a href="javascript:void(0)" onclick="openPolicy('wholesale','مبيعات الجملة')">مبيعات الجملة</a>
+      <a href="javascript:void(0)" onclick="openPolicy('branches','فروعنا')">فروعنا</a>
     </div>
     <div>
       <h3>تواصل معنا</h3>
@@ -637,6 +662,14 @@ body{color:#20231f}
     <input id="coupon" placeholder="أدخل كود الخصم">
     <button onclick="applyCoupon()" style="margin:8px 0;width:100%;padding:10px;border:1px solid #b9934b;background:#fff;color:#876b36">تطبيق الكود</button>
     <button class="checkout" onclick="checkout()">إتمام الطلب</button>
+  </div>
+</div>
+
+<div class="policy-overlay" id="policyOverlay" onclick="closePolicy(event)">
+  <div class="policy-dialog" onclick="event.stopPropagation()">
+    <button class="policy-close" type="button" onclick="closePolicy()">×</button>
+    <h2 id="policyTitle"></h2>
+    <div id="policyContent" class="policy-content"></div>
   </div>
 </div>
 
@@ -689,6 +722,22 @@ async function loadAnnouncementBars(){
 }
 loadAnnouncementBars();
 
+
+
+let atyafFooterPolicies={};
+function openPolicy(key,title){
+  const text=atyafFooterPolicies?.[key]||"";
+  document.getElementById("policyTitle").textContent=title||"التفاصيل";
+  document.getElementById("policyContent").textContent=text;
+  document.getElementById("policyOverlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closePolicy(event){
+  if(event && event.target!==document.getElementById("policyOverlay"))return;
+  document.getElementById("policyOverlay")?.classList.remove("open");
+  document.body.style.overflow="";
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closePolicy()});
 
 /* ================= ATYAF MANAGED HOMEPAGE ================= */
 function atyafEsc(v){
@@ -816,6 +865,7 @@ function applyManagedDesign(d={}){
   });
 }
 function applyManagedFooter(g={},f={}){
+  atyafFooterPolicies=f?.policies||{};
   const footer=document.getElementById("contact"); if(!footer)return;
   const cols=footer.querySelectorAll(".footer-grid>div");
   if(cols[0]){

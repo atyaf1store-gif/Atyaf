@@ -541,6 +541,42 @@ body{color:#20231f}
  .checkout-sheet h2{font-size:21px}
 }
 
+
+/* ===== CART CENTERED LIKE REFERENCE ===== */
+.drawer{
+  position:fixed!important;inset:0!important;z-index:10020!important;
+  background:rgba(0,0,0,.48)!important;
+  display:none!important;align-items:center!important;justify-content:center!important;
+  padding:18px!important;
+}
+.drawer.open{display:flex!important}
+.drawer .cart{
+  position:relative!important;inset:auto!important;transform:none!important;
+  width:min(610px,94vw)!important;max-width:610px!important;
+  max-height:90vh!important;overflow:auto!important;
+  background:#fff!important;border-radius:22px!important;
+  padding:26px!important;box-shadow:0 22px 70px rgba(0,0,0,.22)!important;
+}
+.drawer .cart .close{position:absolute!important;left:18px!important;top:16px!important}
+.drawer .cart h2{font-size:24px!important;margin:0 0 22px!important;padding-bottom:14px!important}
+.drawer .cart-item{padding:12px 0!important}
+.drawer .cart-item img{width:72px!important;height:72px!important;border-radius:9px!important}
+.drawer .cart-total{
+  background:#f7f6f2!important;border-radius:12px!important;padding:14px!important;
+  margin:16px 0!important;font-size:16px!important
+}
+.drawer #coupon{
+  width:100%!important;box-sizing:border-box!important;padding:13px 14px!important;
+  border:1px solid #d9d9d6!important;border-radius:12px!important
+}
+.drawer .checkout{
+  background:#111!important;color:#fff!important;border-radius:12px!important;
+  padding:14px!important;font-weight:900!important;margin-top:10px!important
+}
+@media(max-width:600px){
+ .drawer .cart{padding:20px 16px!important;border-radius:18px!important}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1540,7 +1576,7 @@ function renderCart(){
     </div>`).join("");
  }
  document.getElementById("cartTotal").textContent=
- cart.reduce((a,b)=>a+b.price,0)+" ر.س";
+ cart.reduce((a,b)=>a+(Number(b.price||0)*Number(b.qty||1)),0)+" ر.س";
 }
 
 function removeCart(i){
@@ -1548,12 +1584,11 @@ function removeCart(i){
 }
 
 function applyCoupon(){
- let code=document.getElementById("coupon").value.trim();
- if(code==="FIRST15"){
-   showMessage("تم تطبيق خصم 15% على طلبك");
- }else{
-   showMessage("كود الخصم غير صحيح");
- }
+ const code=document.getElementById("coupon")?.value.trim()||"";
+ if(!code)return showMessage("أدخل كود الخصم");
+ window.atyafPendingCoupon=code;
+ if(code.toUpperCase()==="FIRST15") showMessage("تم قبول الكود وسيظهر في إتمام الطلب");
+ else showMessage("سيتم التحقق من الكود عند تأكيد الطلب");
 }
 
 function atyafMoney(n){
@@ -1576,7 +1611,7 @@ function checkout(){
       <div class="checkout-field">
        <label>كود الخصم</label>
        <div class="coupon-row">
-        <input id="coCoupon" placeholder="أدخل كود الخصم">
+        <input id="coCoupon" placeholder="أدخل كود الخصم" value="${window.atyafPendingCoupon||""}">
         <button type="button" onclick="applyCheckoutCoupon()">تطبيق</button>
        </div>
       </div>

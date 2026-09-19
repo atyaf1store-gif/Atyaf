@@ -577,6 +577,58 @@ body{color:#20231f}
  .drawer .cart{padding:20px 16px!important;border-radius:18px!important}
 }
 
+
+/* ===== PRODUCT CARDS EXACTER REFERENCE + FAVORITES ===== */
+.products-grid{align-items:stretch}
+.product{
+  position:relative!important;background:#fff!important;border:0!important;
+  box-shadow:none!important;overflow:visible!important;
+}
+.product-image{
+  height:315px!important;background:#fff!important;border:1px solid #f3f0e9!important;
+  position:relative!important;overflow:hidden!important;
+}
+.product-image img{width:100%!important;height:100%!important;object-fit:contain!important;padding:12px!important}
+.sale{
+  position:absolute!important;right:auto!important;left:10px!important;top:10px!important;
+  background:#050505!important;color:#fff!important;border-radius:14px!important;
+  padding:5px 10px!important;font-size:9px!important;font-weight:800!important;
+}
+.heart{
+  position:absolute!important;right:10px!important;top:10px!important;z-index:8!important;
+  width:34px!important;height:34px!important;border-radius:50%!important;
+  border:1px solid #ddd8ce!important;background:rgba(255,255,255,.96)!important;
+  color:#292929!important;font-size:20px!important;line-height:30px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  cursor:pointer!important;
+}
+.heart.active{background:#111!important;color:#fff!important;border-color:#111!important}
+.product-info{padding:12px 0 0!important;text-align:center!important}
+.product-info h3{
+  font-size:13px!important;line-height:1.75!important;font-weight:800!important;
+  min-height:42px!important;margin:0 4px 7px!important;color:#171717!important
+}
+.product-info .stars{display:none!important}
+.product-info .price{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:8px!important;color:#9d342b!important;font-weight:900!important;margin:0 4px 13px!important
+}
+.product-actions{gap:6px!important}
+.product-actions button{
+  width:100%!important;min-height:43px!important;border-radius:0!important;
+  font-size:11px!important;font-weight:800!important
+}
+.product-actions button:first-child{
+  background:#050505!important;border:1px solid #050505!important;color:#fff!important
+}
+.product-actions button:last-child{
+  background:#fff!important;border:1px solid #d8d4cb!important;color:#171717!important
+}
+@media(max-width:600px){
+ .product-image{height:235px!important}
+ .product-info h3{font-size:12px!important}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -604,8 +656,8 @@ body{color:#20231f}
     </div>
 
     <div class="header-tools">
-      <button class="tool" id="accountButton" onclick="openAccount()">♙<small id="accountLabel">الحساب</small></button>
-      <button class="tool" onclick="showMessage('تم فتح المفضلة')">♡<small>المفضلة</small></button>
+      <button class="tool" onclick="openFavorites()">♙<small id="accountLabel">الحساب</small></button>
+      <button class="tool" onclick="showMessage('تم فتح المفضلة')">♡<small>المفضلة <span id="favoritesCount"></span></small></button>
       <button class="tool" onclick="openCart()">🛒<span class="badge" id="cartCount">0</span></button>
     </div>
   </div>
@@ -1148,14 +1200,17 @@ async function loadProductsFromSupabase(){
 }
 
 let cart=JSON.parse(localStorage.getItem("cart")||"[]");
+let favorites=JSON.parse(localStorage.getItem("atyaf_favorites")||"[]").map(String);
 let activeFilter="";
 let currentSlide=0;
 
 function productCard(p){
+ const pid=String(p.id);
+ const fav=favorites.includes(pid);
  return `
- <div class="product">
+ <div class="product" data-product-id="${pid}">
    ${p.sale?'<span class="sale">خصم</span>':''}
-   <button class="heart" onclick="addFavorite()">♡</button>
+   <button class="heart ${fav?'active':''}" aria-label="المفضلة" onclick='event.stopPropagation();toggleFavorite(${JSON.stringify(pid)},this)'>${fav?'♥':'♡'}</button>
    <div class="product-image" onclick='showProduct(${JSON.stringify(p.id)})'>
      <img src="${p.image||""}" alt="${p.name}" onerror="this.style.visibility='hidden'">
    </div>
@@ -1163,7 +1218,7 @@ function productCard(p){
      <h3 onclick='showProduct(${JSON.stringify(p.id)})'>${p.name}</h3>
      <div class="stars">★★★★★</div>
      <div class="price">
-       ${p.price} ر.س
+       <strong>${p.price} ر.س</strong>
        ${p.old?`<span class="old">${p.old} ر.س</span>`:""}
      </div>
      <div class="product-actions">
@@ -1744,8 +1799,37 @@ function showProduct(id){
  document.getElementById("modal").classList.add("open");
 }
 
-function addFavorite(){
- showMessage("تمت إضافة المنتج إلى المفضلة");
+function saveFavorites(){
+ localStorage.setItem("atyaf_favorites",JSON.stringify(favorites));
+}
+function toggleFavorite(id,button){
+ id=String(id);
+ const i=favorites.indexOf(id);
+ if(i>=0)favorites.splice(i,1);else favorites.push(id);
+ saveFavorites();
+ document.querySelectorAll(`.product[data-product-id="${CSS.escape(id)}"] .heart`).forEach(btn=>{
+   const on=favorites.includes(id);
+   btn.classList.toggle("active",on);
+   btn.textContent=on?"♥":"♡";
+ });
+ updateFavoritesCount();
+}
+function updateFavoritesCount(){
+ const el=document.getElementById("favoritesCount");
+ if(el)el.textContent=favorites.length?favorites.length:"";
+}
+function openFavorites(){
+ const list=products.filter(p=>favorites.includes(String(p.id)));
+ document.getElementById("modalContent").innerHTML=`
+  <div style="padding:5px">
+   <h2 style="margin:0 0 18px">المفضلة</h2>
+   ${list.length?`<div class="grid">${list.map(productCard).join("")}</div>`:
+   `<div style="text-align:center;padding:45px 15px"><div style="font-size:42px">♡</div><h3>المفضلة فارغة</h3><p>اضغط على ♡ في أي منتج لإضافته هنا.</p></div>`}
+  </div>`;
+ document.getElementById("modal").classList.add("open");
+}
+function addFavorite(id){
+ if(id!=null)toggleFavorite(id);
 }
 
 function showMessage(text){
@@ -1776,6 +1860,7 @@ function slideTo(n){
 
 saveCart();
 loadProductsFromSupabase();
+updateFavoritesCount();
 loadManagedStoreSettings();
 loadTopAds();
 loadBottomAds();

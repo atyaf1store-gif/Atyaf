@@ -629,6 +629,33 @@ body{color:#20231f}
  .product-info h3{font-size:12px!important}
 }
 
+
+/* ===== INDEPENDENT FAVORITES WINDOW ===== */
+.favorites-overlay{
+ position:fixed;inset:0;z-index:12000;background:rgba(0,0,0,.48);
+ display:none;align-items:center;justify-content:center;padding:20px;
+}
+.favorites-overlay.open{display:flex}
+.favorites-dialog{
+ width:min(1100px,95vw);max-height:88vh;overflow:auto;background:#fff;
+ border-radius:18px;padding:28px;position:relative;direction:rtl;
+}
+.favorites-dialog>h2{text-align:center;margin:0 0 26px;font-size:25px;color:#171717}
+.favorites-close{
+ position:absolute;left:18px;top:14px;border:0;background:transparent;
+ color:#111!important;font-size:28px;cursor:pointer;z-index:3
+}
+.favorites-dialog .grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px
+}
+.favorites-empty{text-align:center;padding:55px 15px;color:#333}
+.favorites-empty .ico{font-size:48px;margin-bottom:10px}
+@media(max-width:900px){.favorites-dialog .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){
+ .favorites-dialog{padding:22px 13px}
+ .favorites-dialog .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -657,7 +684,7 @@ body{color:#20231f}
 
     <div class="header-tools">
       <button class="tool" onclick="openFavorites()">♙<small id="accountLabel">الحساب</small></button>
-      <button class="tool" onclick="showMessage('تم فتح المفضلة')">♡<small>المفضلة <span id="favoritesCount"></span></small></button>
+      <button class="tool" onclick="openFavorites()">♡<small>المفضلة <span id="favoritesCount"></span></small></button>
       <button class="tool" onclick="openCart()">🛒<span class="badge" id="cartCount">0</span></button>
     </div>
   </div>
@@ -834,6 +861,15 @@ body{color:#20231f}
     <button class="policy-close" type="button" onclick="closePolicy()">×</button>
     <h2 id="policyTitle"></h2>
     <div id="policyContent" class="policy-content"></div>
+  </div>
+</div>
+
+
+<div id="favoritesOverlay" class="favorites-overlay" onclick="closeFavorites(event)">
+  <div class="favorites-dialog" onclick="event.stopPropagation()">
+    <button type="button" class="favorites-close" onclick="closeFavorites()">×</button>
+    <h2>منتجات قد تعجبك</h2>
+    <div id="favoritesContent"></div>
   </div>
 </div>
 
@@ -1813,6 +1849,8 @@ function toggleFavorite(id,button){
    btn.textContent=on?"♥":"♡";
  });
  updateFavoritesCount();
+ const favOverlay=document.getElementById("favoritesOverlay");
+ if(favOverlay?.classList.contains("open")) openFavorites();
 }
 function updateFavoritesCount(){
  const el=document.getElementById("favoritesCount");
@@ -1820,13 +1858,19 @@ function updateFavoritesCount(){
 }
 function openFavorites(){
  const list=products.filter(p=>favorites.includes(String(p.id)));
- document.getElementById("modalContent").innerHTML=`
-  <div style="padding:5px">
-   <h2 style="margin:0 0 18px">المفضلة</h2>
-   ${list.length?`<div class="grid">${list.map(productCard).join("")}</div>`:
-   `<div style="text-align:center;padding:45px 15px"><div style="font-size:42px">♡</div><h3>المفضلة فارغة</h3><p>اضغط على ♡ في أي منتج لإضافته هنا.</p></div>`}
-  </div>`;
- document.getElementById("modal").classList.add("open");
+ const content=document.getElementById("favoritesContent");
+ if(!content)return;
+ content.innerHTML=list.length
+   ? `<div class="grid">${list.map(productCard).join("")}</div>`
+   : `<div class="favorites-empty"><div class="ico">♡</div><h3>المفضلة فارغة</h3><p>اضغط على القلب في أي منتج لإضافته إلى المفضلة.</p></div>`;
+ document.getElementById("favoritesOverlay").classList.add("open");
+ document.body.style.overflow="hidden";
+}
+function closeFavorites(event){
+ const overlay=document.getElementById("favoritesOverlay");
+ if(event && event.target!==overlay)return;
+ overlay?.classList.remove("open");
+ document.body.style.overflow="";
 }
 function addFavorite(id){
  if(id!=null)toggleFavorite(id);

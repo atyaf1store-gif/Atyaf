@@ -3562,6 +3562,35 @@ function printInvoice(){
 #bottomAdSection #bottomAdWrap .ad-slide.active{opacity:1;visibility:visible}
 @media(max-width:1100px){#bottomAdSection{padding:0 18px}#bottomAdSection #bottomAdWrap{height:var(--bottom-ad-tablet-h,320px)}}
 @media(max-width:700px){#bottomAdSection{padding:0 10px;margin-top:20px}#bottomAdSection #bottomAdWrap{height:var(--bottom-ad-mobile-h,220px);border-radius:12px}}
+
+/* ===== ATYAF BOTTOM AD — TRUE EDGE TO EDGE ===== */
+#bottomAdSection{
+  width:100vw!important;
+  max-width:none!important;
+  margin:28px calc(50% - 50vw) 0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+}
+#bottomAdSection #bottomAdLink{width:100%!important;display:block!important}
+#bottomAdSection #bottomAdWrap{
+  width:100%!important;
+  border-radius:0!important;
+  border:0!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+#bottomAdSection #bottomAdWrap img,
+#bottomAdSection #bottomAdWrap video{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  border-radius:0!important;
+}
+@media(max-width:1100px){#bottomAdSection{padding:0!important}}
+@media(max-width:700px){
+  #bottomAdSection{width:100vw!important;margin:20px calc(50% - 50vw) 0!important;padding:0!important}
+  #bottomAdSection #bottomAdWrap{border-radius:0!important}
+}
 </style></head><body>${sheet.outerHTML}<script>window.onload=function(){setTimeout(function(){window.print()},400)};<\/script></body></html>`);popup.document.close()
 }
 

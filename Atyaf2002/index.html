@@ -484,6 +484,7 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
     <label>رابط الإعلان عند الضغط عليه</label><input id="bottomAdLinkInput" placeholder="https://example.com">
     <label>إضافة صور / فيديو</label><input id="bottomAdFiles" type="file" accept="image/*,video/*" multiple onchange="previewSelectedBottomAdFiles()">
     <div id="bottomAdExistingMedia" class="media-preview-grid"></div><div id="newBottomAdFilesPreview" class="media-preview-grid"></div>
+    <div id="bottomAdUploadStatus" class="upload-status"></div>
     <div class="actions"><button id="saveBottomAdsButton" class="btn gold" onclick="saveBottomAds()">حفظ الإعلان السفلي</button><button class="btn red" onclick="clearBottomAdMedia()">حذف جميع وسائط الإعلان السفلي</button></div>
   </div>
 </section>
@@ -840,48 +841,57 @@ function statusText(s){return({pending:"قيد الانتظار",confirmed:"تم
 function randomName(file){let e=String(file.name||"file").split(".").pop().toLowerCase().replace(/[^a-z0-9]/g,"")||"bin";return Date.now()+"_"+Math.random().toString(36).slice(2,12)+"."+e}
 function setUploadStatus(id,text,show=true){const e=$(id);if(!e)return;e.textContent=text;e.classList.toggle("show",show)}
 
-async function uploadMediaFile(file,folder){
- const path=folder+"/"+randomName(file);
- const {error}=await db.storage.from(STORAGE_BUCKET).upload(path,file,{upsert:false,cacheControl:"3600",contentType:file.type});
- if(error)throw error;
- return db.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl;
-}
-async function imageFileToDataUrl(file,maxWidth=1800,quality=.86){
+async function compressImageForUpload(file,maxWidth=1600,quality=.82){
+ if(!file||!String(file.type||"").startsWith("image/"))return file;
+ // Small images are already cheap to upload; avoid unnecessary processing.
+ if(file.size<=350*1024)return file;
  return new Promise((resolve,reject)=>{
-  if(!file){reject(new Error("لم يتم اختيار صورة"));return}
   const objectUrl=URL.createObjectURL(file);
   const img=new Image();
   const cleanup=()=>{try{URL.revokeObjectURL(objectUrl)}catch(_){}};
-  img.onerror=()=>{cleanup();reject(new Error("تعذر تجهيز الصورة على هذا الجهاز"))};
+  img.onerror=()=>{cleanup();reject(new Error("تعذر ضغط الصورة على هذا الجهاز"))};
   img.onload=()=>{
    try{
-    const scale=Math.min(1,maxWidth/Math.max(1,img.naturalWidth||img.width));
-    const w=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));
-    const h=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+    const srcW=img.naturalWidth||img.width,srcH=img.naturalHeight||img.height;
+    const scale=Math.min(1,maxWidth/Math.max(1,srcW));
+    const w=Math.max(1,Math.round(srcW*scale)),h=Math.max(1,Math.round(srcH*scale));
     const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
     const ctx=canvas.getContext("2d",{alpha:false});
-    if(!ctx)throw new Error("تعذر إنشاء معاينة الصورة");
+    if(!ctx)throw new Error("تعذر تجهيز الصورة");
     ctx.drawImage(img,0,0,w,h);
-    const data=canvas.toDataURL("image/jpeg",quality);
-    cleanup();resolve(data);
+    canvas.toBlob(blob=>{
+     cleanup();
+     if(!blob){reject(new Error("تعذر ضغط الصورة"));return}
+     // Keep the original only when compression did not actually reduce size.
+     if(blob.size>=file.size){resolve(file);return}
+     resolve(new File([blob],String(file.name||"image").replace(/\.[^.]+$/,"_")+"optimized.jpg",{type:"image/jpeg",lastModified:Date.now()}));
+    },"image/jpeg",quality);
    }catch(e){cleanup();reject(e)}
   };
   img.src=objectUrl;
  });
 }
+async function uploadMediaFile(file,folder,statusId=""){
+ let uploadFile=file;
+ if(String(file?.type||"").startsWith("image/")){
+  setUploadStatus(statusId,"جارِ تحسين وضغط الصورة…");
+  try{uploadFile=await compressImageForUpload(file,1600,.82)}catch(e){console.warn("Image compression skipped",e);uploadFile=file}
+ }
+ setUploadStatus(statusId,"جارِ رفع الملف إلى المتجر…");
+ const path=folder+"/"+randomName(uploadFile);
+ const {error}=await db.storage.from(STORAGE_BUCKET).upload(path,uploadFile,{upsert:false,cacheControl:"31536000",contentType:uploadFile.type||file.type});
+ if(error)throw error;
+ setUploadStatus(statusId,"اكتمل الرفع ✓");
+ return db.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl;
+}
 async function uploadMultipleFiles(list,folder,statusId){
  const files=Array.from(list||[]),out=[];
  for(let i=0;i<files.length;i++){
-  const file=files[i];setUploadStatus(statusId,`جارِ رفع ${i+1} من ${files.length}`);
-  try{out.push(await uploadMediaFile(file,folder))}
-  catch(err){
-   console.warn("Storage upload failed; using image fallback",err);
-   if(String(file.type||"").startsWith("image/")){
-    setUploadStatus(statusId,`تعذر الرفع المباشر، جارِ حفظ الصورة بالطريقة البديلة…`);
-    out.push(await imageFileToDataUrl(file));
-   }else throw new Error("تعذر رفع الفيديو إلى التخزين. جرّب صورة أو تحقق من صلاحيات Storage. "+(err?.message||err));
-  }
+  const file=files[i];
+  setUploadStatus(statusId,`تجهيز ${i+1} من ${files.length}…`);
+  out.push(await uploadMediaFile(file,folder,statusId));
  }
+ setUploadStatus(statusId,files.length?"تم رفع الوسائط بنجاح ✓":"",!!files.length);
  return out;
 }
 function localFileHTML(file){const u=URL.createObjectURL(file);return `<div class="media-preview">${file.type.startsWith("video/")?`<video src="${u}" controls muted></video>`:`<img src="${u}" alt="">`}</div>`}
@@ -1676,17 +1686,17 @@ function renderExistingBottomAdMedia(){const media=Array.isArray(bottomAdSetting
 function removeBottomAdMedia(index){const media=Array.isArray(bottomAdSettings.media)?[...bottomAdSettings.media]:[];media.splice(index,1);bottomAdSettings={...bottomAdSettings,media};renderExistingBottomAdMedia()}
 function clearBottomAdMedia(){if(!confirm("حذف جميع صور وفيديوهات الإعلان السفلي؟"))return;bottomAdSettings={...bottomAdSettings,media:[]};renderExistingBottomAdMedia();toast("تم حذف الوسائط مؤقتاً، اضغط حفظ الإعلان السفلي")}
 async function saveBottomAds(){
- const button=$("saveBottomAdsButton");button.disabled=true;
+ const button=$("saveBottomAdsButton");button.disabled=true;button.textContent="جارِ الحفظ…";setUploadStatus("bottomAdUploadStatus","جارِ تجهيز الإعلان…");
  try{
   const files=Array.from($("bottomAdFiles").files||[]);
-  const uploaded=files.length?await uploadMultipleFiles(files,"ads-bottom",""):[];
+  const uploaded=files.length?await uploadMultipleFiles(files,"ads-bottom","bottomAdUploadStatus"):[];
   const oldMedia=Array.isArray(bottomAdSettings.media)?bottomAdSettings.media.filter(Boolean):[];
   const media=[...oldMedia,...uploaded].filter(Boolean);
   if(!media.length)throw new Error("أضف صورة أو فيديو للإعلان السفلي أولاً");
   const next={...bottomAdSettings,enabled:true,type:$("bottomAdType").value,fit:$("bottomAdFit").value,position:$("bottomAdPosition").value,radius:Number($("bottomAdRadius").value||18),interval:Number($("bottomAdInterval").value||3500),heightDesktop:Number($("bottomAdHeightDesktop").value||420),heightTablet:Number($("bottomAdHeightTablet").value||320),heightMobile:Number($("bottomAdHeightMobile").value||220),link:$("bottomAdLinkInput").value.trim(),media};
   await saveSetting("bottom_ads",next);
   bottomAdSettings=next;$("bottomAdEnabledSelect").value="true";$("bottomAdFiles").value="";$("newBottomAdFilesPreview").innerHTML="";renderExistingBottomAdMedia();toast("تم حفظ وتفعيل الإعلان السفلي ✓");
- }catch(e){alert("تعذر حفظ الإعلان السفلي:\n"+(e.message||e))}finally{button.disabled=false}
+ }catch(e){setUploadStatus("bottomAdUploadStatus","تعذر الحفظ: "+(e.message||e));alert("تعذر حفظ الإعلان السفلي:\n"+(e.message||e))}finally{button.disabled=false;button.textContent="حفظ الإعلان السفلي"}
 }
 
 /* ================= DESIGN ================= */

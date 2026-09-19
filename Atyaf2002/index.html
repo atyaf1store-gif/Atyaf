@@ -489,6 +489,23 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
   </div>
 </section>
 
+<section id="scentsManager" class="page hidden">
+<div class="card">
+<h2>إدارة أيقونات الروائح</h2>
+<p class="note">هذه الأيقونات تظهر مباشرة أسفل شاشة الإعلان العلوية. أضف صورة واسمًا لكل رائحة، ثم رتّبها أو عدّلها أو احذفها.</p>
+<input id="scentItemId" type="hidden">
+<div class="grid4">
+<div><label>اسم الرائحة</label><input id="scentItemName" placeholder="مثال: مسك"></div>
+<div><label>عبارة البحث عند الضغط</label><input id="scentItemSearch" placeholder="مثال: مسك"></div>
+<div><label>الترتيب</label><input id="scentItemSort" type="number" value="0"></div>
+<div><label>الصورة الدائرية</label><input id="scentItemFile" type="file" accept="image/*"></div>
+</div>
+<div class="check-row"><input id="scentItemEnabled" type="checkbox" checked><label for="scentItemEnabled">إظهار الأيقونة في المتجر</label></div>
+<div class="actions"><button id="saveScentItemButton" class="btn gold" type="button" onclick="saveScentItem()">إضافة الرائحة</button><button class="btn out" type="button" onclick="resetScentItemForm()">جديد</button></div>
+<div id="scentItemsAdminList" style="margin-top:16px"></div>
+</div>
+</section>
+
 <section id="design" class="page hidden">
   <div class="card">
     <h2>🎨 التصميم والخطوط</h2>
@@ -791,7 +808,8 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
       <div class="check-row"><input id="setFeatureReviews" type="checkbox" checked><label for="setFeatureReviews">إظهار التقييمات</label></div>
     </div>
 
-<h3>🌸 أيقونات الروائح أسفل الإعلان العلوي</h3><p class="note">أضف صورة واسم الرائحة، وعدّلها أو احذفها ورتبها من هنا.</p><input id="scentItemId" type="hidden"><div class="grid4"><div><label>اسم الرائحة</label><input id="scentItemName" placeholder="مسك"></div><div><label>البحث عند الضغط</label><input id="scentItemSearch" placeholder="مسك"></div><div><label>الترتيب</label><input id="scentItemSort" type="number" value="0"></div><div><label>صورة دائرية</label><input id="scentItemFile" type="file" accept="image/*"></div></div><div class="check-row"><input id="scentItemEnabled" type="checkbox" checked><label>إظهار في المتجر</label></div><div class="actions"><button id="saveScentItemButton" class="btn gold" type="button" onclick="saveScentItem()">إضافة الرائحة</button><button class="btn out" type="button" onclick="resetScentItemForm()">جديد</button></div><div id="scentItemsAdminList" style="margin-top:14px"></div>    <div class="actions">
+<div class="note" style="margin-top:16px">إدارة أيقونات الروائح أصبحت في قسم <b>الروائح</b> المستقل من الشريط العلوي للوحة الإدارة.</div>
+    <div class="actions">
       <button id="saveGeneralButton" class="btn gold" onclick="saveGeneralSettings()">حفظ جميع إعدادات المتجر</button>
     </div>
   </div>
@@ -828,7 +846,7 @@ let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottom
 let editingProductImages=[],currentInvoiceHTML="";
 
 const tabs=[
-["dashboard","الرئيسية"],["productManager","المنتجات"],["categories","الأقسام"],["products","الخيارات"],["bundles","العروض"],["gifts","الهدايا"],["coupons","الكوبونات"],["customers","العملاء"],["orders","الطلبات"],["reviews","التقييمات"],["recommend","الاقتراحات"],["ads","الإعلانات"],["design","التصميم والخطوط"],["payment","الدفع والبنوك"],["footer","السياسات"],["settings","إعدادات المتجر"]
+["dashboard","الرئيسية"],["productManager","المنتجات"],["categories","الأقسام"],["products","الخيارات"],["bundles","العروض"],["gifts","الهدايا"],["coupons","الكوبونات"],["customers","العملاء"],["orders","الطلبات"],["reviews","التقييمات"],["recommend","الاقتراحات"],["ads","الإعلانات"],["scentsManager","الروائح"],["design","التصميم والخطوط"],["payment","الدفع والبنوك"],["footer","السياسات"],["settings","إعدادات المتجر"]
 ];
 const policies=[["about","من نحن"],["returns","سياسة الاستبدال والاسترجاع"],["privacy","سياسة الخصوصية"],["terms","الشروط والأحكام"],["discounts","سياسة التخفيضات"],["customerService","خدمة العملاء"],["hr","الموارد البشرية"],["wholesale","مبيعات الجملة"],["branches","فروعنا"]];
 
@@ -954,7 +972,7 @@ async function loadAll(){
  parseSettings();renderStats(stats||{});fillProductCategories();fillProducts();renderAdminProducts();renderCategories();renderVariants();renderBundles();renderGifts();renderCoupons();renderCustomers();renderOrders();renderReviews();renderRelations();renderPoliciesEditor();fillSimpleSettings();
 }
 function settingData(name){const row=settingsRows.find(x=>String(x.key||x.id||"")===name);const v=row?.value??row?.data??{};if(typeof v==="string"){try{return JSON.parse(v)}catch(e){return {}}}return v&&typeof v==="object"?v:{}}
-function parseSettings(){generalSettings=settingData("general");paymentSettings=settingData("payment");designSettings=settingData("design");adSettings=settingData("ads");bottomAdSettings=settingData("bottom_ads");footerSettings=settingData("footer");scentSettings=settingData("scents")}
+function parseSettings(){generalSettings=settingData("general");paymentSettings=settingData("payment");designSettings=settingData("design");adSettings=settingData("ads");bottomAdSettings=settingData("bottom_ads");footerSettings=settingData("footer");scentSettings=settingData("scent_shortcuts");if(!scentSettings||!Object.keys(scentSettings).length)scentSettings=settingData("scents")}
 async function saveSetting(key,value){const now=new Date().toISOString();const {data:found,error:findError}=await db.from("settings").select("id").eq("key",key).order("id",{ascending:true}).limit(1).maybeSingle();if(findError)throw findError;if(found?.id!=null){const{error}=await db.from("settings").update({value,updated_at:now}).eq("id",found.id);if(error)throw error;return}const{data:last,error:lastError}=await db.from("settings").select("id").order("id",{ascending:false}).limit(1).maybeSingle();if(lastError)throw lastError;const nextId=Number(last?.id||0)+1;const{error}=await db.from("settings").insert({id:nextId,key,value,created_at:now,updated_at:now});if(error)throw error}
 function renderStats(s){$("stats").innerHTML=[["المنتجات",s.products??products.length],["الأقسام",categories.length],["الباقات",s.active_bundles??bundles.length],["الطلبات",s.orders??orders.length],["العملاء",s.customers??customers.length],["التقييمات",reviews.length],["الكوبونات",coupons.length],["الخيارات",variants.length]].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]??0}</b></div>`).join("")}
 
@@ -2186,11 +2204,11 @@ function fillSimpleSettings(){
 }
 
 function getScentItemsAdmin(){return Array.isArray(scentSettings?.items)?scentSettings.items:[]}
-function renderScentItemsAdmin(){const b=$("scentItemsAdminList");if(!b)return;const a=[...getScentItemsAdmin()].sort((x,y)=>Number(x.sortOrder||0)-Number(y.sortOrder||0));b.innerHTML=a.map(x=>`<div class="scent-admin-row"><div class="scent-admin-thumb">${x.imageUrl?`<img src="${esc(x.imageUrl)}">`:'🌸'}</div><div><b>${esc(x.name||'')}</b><small>${x.enabled===false?'مخفي':'ظاهر'} · ترتيب ${Number(x.sortOrder||0)}</small></div><div class="actions"><button class="btn sm" onclick="editScentItem('${esc(x.id)}')">تعديل</button><button class="btn red sm" onclick="deleteScentItem('${esc(x.id)}')">حذف</button></div></div>`).join('')||'<div class="note">لا توجد روائح بعد.</div>'}
+function renderScentItemsAdmin(){const b=$("scentItemsAdminList");if(!b)return;const a=[...getScentItemsAdmin()].sort((x,y)=>Number(x.sortOrder||0)-Number(y.sortOrder||0));b.innerHTML=a.map(x=>`<div class="scent-admin-row"><div class="scent-admin-thumb">${x.imageUrl?`<img src="${esc(x.imageUrl)}">`:'<span style="font-family:Aref Ruqaa;font-weight:700;color:#20301c">عطر</span>'}</div><div><b>${esc(x.name||'')}</b><small>${x.enabled===false?'مخفي':'ظاهر'} · ترتيب ${Number(x.sortOrder||0)}</small></div><div class="actions"><button class="btn sm" onclick="editScentItem('${esc(x.id)}')">تعديل</button><button class="btn red sm" onclick="deleteScentItem('${esc(x.id)}')">حذف</button></div></div>`).join('')||'<div class="note">لا توجد روائح بعد.</div>'}
 function resetScentItemForm(){$("scentItemId").value="";$("scentItemName").value="";$("scentItemSearch").value="";$("scentItemSort").value=String(getScentItemsAdmin().length);$("scentItemFile").value="";$("scentItemEnabled").checked=true;$("saveScentItemButton").textContent="إضافة الرائحة"}
 function editScentItem(id){const x=getScentItemsAdmin().find(v=>String(v.id)===String(id));if(!x)return;$("scentItemId").value=x.id||"";$("scentItemName").value=x.name||"";$("scentItemSearch").value=x.search||x.name||"";$("scentItemSort").value=Number(x.sortOrder||0);$("scentItemEnabled").checked=x.enabled!==false;$("saveScentItemButton").textContent="حفظ تعديل الرائحة"}
-async function saveScentItem(){const btn=$("saveScentItemButton"),id=$("scentItemId").value,name=$("scentItemName").value.trim();if(!name)return toast("اكتب اسم الرائحة");btn.disabled=true;try{const list=JSON.parse(JSON.stringify(getScentItemsAdmin())),old=list.find(x=>String(x.id)===String(id));let imageUrl=old?.imageUrl||"";const file=$("scentItemFile").files?.[0];if(file)imageUrl=await uploadMediaFile(file,"scents");const row={id:id||"scent_"+Date.now(),name,search:$("scentItemSearch").value.trim()||name,imageUrl,sortOrder:Number($("scentItemSort").value||0),enabled:$("scentItemEnabled").checked},i=list.findIndex(x=>String(x.id)===String(id));if(i>=0)list[i]={...list[i],...row};else list.push(row);const next={...scentSettings,items:list};await saveSetting("scents",next);scentSettings=next;renderScentItemsAdmin();resetScentItemForm();toast("تم حفظ الرائحة ✓")}catch(e){alert("تعذر حفظ الرائحة:\n"+(e.message||e))}finally{btn.disabled=false}}
-async function deleteScentItem(id){if(!confirm("حذف أيقونة الرائحة؟"))return;const next={...scentSettings,items:getScentItemsAdmin().filter(x=>String(x.id)!==String(id))};try{await saveSetting("scents",next);scentSettings=next;renderScentItemsAdmin();resetScentItemForm();toast("تم حذف الرائحة")}catch(e){alert(e.message||e)}}
+async function saveScentItem(){const btn=$("saveScentItemButton"),id=$("scentItemId").value,name=$("scentItemName").value.trim();if(!name)return toast("اكتب اسم الرائحة");btn.disabled=true;try{const list=JSON.parse(JSON.stringify(getScentItemsAdmin())),old=list.find(x=>String(x.id)===String(id));let imageUrl=old?.imageUrl||"";const file=$("scentItemFile").files?.[0];if(file)imageUrl=await uploadMediaFile(file,"scents");const row={id:id||"scent_"+Date.now(),name,search:$("scentItemSearch").value.trim()||name,imageUrl,sortOrder:Number($("scentItemSort").value||0),enabled:$("scentItemEnabled").checked},i=list.findIndex(x=>String(x.id)===String(id));if(i>=0)list[i]={...list[i],...row};else list.push(row);const next={...scentSettings,items:list};await saveSetting("scent_shortcuts",next);scentSettings=next;renderScentItemsAdmin();resetScentItemForm();toast("تم حفظ الرائحة ✓")}catch(e){alert("تعذر حفظ الرائحة:\n"+(e.message||e))}finally{btn.disabled=false}}
+async function deleteScentItem(id){if(!confirm("حذف أيقونة الرائحة؟"))return;const next={...scentSettings,items:getScentItemsAdmin().filter(x=>String(x.id)!==String(id))};try{await saveSetting("scent_shortcuts",next);scentSettings=next;renderScentItemsAdmin();resetScentItemForm();toast("تم حذف الرائحة")}catch(e){alert(e.message||e)}}
 async function saveGeneralSettings(){
   const button=$("saveGeneralButton");
   button.disabled=true;

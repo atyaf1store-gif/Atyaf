@@ -310,6 +310,15 @@ a{text-decoration:none;color:inherit}
   background:var(--gold);border:0;color:#fff;
   margin-top:15px
 }
+
+.gift-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.gift-form .full{grid-column:1/-1}
+.gift-form input,.gift-form textarea,.gift-form select{width:100%;border:1px solid #ddd;padding:11px 12px;font-family:inherit;background:#fff;outline:none}
+.gift-form textarea{min-height:90px;resize:vertical}
+.gift-summary{background:var(--cream);border:1px solid var(--line);padding:12px;margin-top:14px;font-size:12px;line-height:2}
+.gift-submit{width:100%;border:0;background:var(--gold);color:#fff;padding:13px;margin-top:14px;font-weight:700}
+@media(max-width:600px){.gift-form{grid-template-columns:1fr}}
+
 @media(max-width:900px){
   .products{grid-template-columns:repeat(3,1fr)}
   .brands{grid-template-columns:repeat(3,1fr)}
@@ -466,12 +475,12 @@ a{text-decoration:none;color:inherit}
       </div>
     </section>
 
-    <div class="banner">
-      <img src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1500&q=85">
+    <div class="banner gift-prep-banner">
+      <img src="https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=1500&q=85" alt="تجهيز الهدية">
       <div class="banner-text">
-        <h2>مجموعة العود الملكية</h2>
-        <p>روائح أصيلة تدوم طويلاً</p>
-        <button onclick="filterCategory('عود')">تسوق المجموعة</button>
+        <h2>جهّز هديتك بكل حب</h2>
+        <p>اختر الهدية وأدخل بيانات المستلم ورسالتك الخاصة</p>
+        <button onclick="openGiftPreparation()">تجهيز الهدية</button>
       </div>
     </div>
 
@@ -736,7 +745,13 @@ function addToCart(id){
 
 function gift(id){
  let p=products.find(x=>x.id===id);
- cart.push({...p,gift:true});
+ let giftPreparation=null;
+ try{giftPreparation=JSON.parse(localStorage.getItem("atyafGiftPreparation")||"null")}catch(e){}
+ if(!giftPreparation){
+   openGiftPreparation();
+   return;
+ }
+ cart.push({...p,gift:true,giftPreparation});
  saveCart();
  openCart();
 }
@@ -767,7 +782,7 @@ function renderCart(){
       <div class="cart-item-info">
         <b>${p.name}</b><br>
         <span>${p.price} ر.س</span>
-        ${p.gift?"<br><small>🎁 شراء كهدية</small>":""}
+        ${p.gift?`<br><small>🎁 هدية${p.giftPreparation?.recipient?" إلى "+p.giftPreparation.recipient:""}</small>`:""}
       </div>
       <button onclick="removeCart(${i})">حذف</button>
     </div>`).join("");
@@ -811,6 +826,48 @@ function finishOrder(){
  let number="AT-"+Math.floor(100000+Math.random()*900000);
  cart=[];saveCart();closeModal();
  showMessage("تم إنشاء طلبك بنجاح — رقم الطلب: "+number);
+}
+
+function openGiftPreparation(){
+ document.getElementById("modalContent").innerHTML=`
+  <h2 style="margin-top:0">تجهيز الهدية</h2>
+  <p style="color:#777;font-size:13px">أدخل بيانات الهدية وسيتم حفظها مع طلبك.</p>
+  <div class="gift-form">
+   <input id="giftSender" placeholder="اسم المرسل *">
+   <input id="giftSenderPhone" placeholder="رقم المرسل *" inputmode="tel">
+   <input id="giftRecipient" placeholder="اسم المستلم *">
+   <input id="giftRecipientPhone" placeholder="رقم المستلم *" inputmode="tel">
+   <textarea id="giftMessage" class="full" placeholder="اكتب رسالة الإهداء"></textarea>
+   <select id="giftWrap">
+    <option value="تغليف أطياف الفاخر">تغليف أطياف الفاخر</option>
+    <option value="تغليف مناسب للمناسبة">تغليف مناسب للمناسبة</option>
+   </select>
+   <input id="giftDate" type="date" aria-label="تاريخ التسليم">
+   <textarea id="giftAddress" class="full" placeholder="عنوان المستلم بالتفصيل *"></textarea>
+  </div>
+  <div class="gift-summary">بعد حفظ البيانات اختر المنتج الذي تريد إهداءه من المتجر واضغط زر <b>هدية</b>. ستبقى بيانات التجهيز محفوظة مع طلب الهدية.</div>
+  <button class="gift-submit" onclick="saveGiftPreparation()">حفظ بيانات الهدية والبدء بالتسوق</button>`;
+ document.getElementById("modal").classList.add("open");
+}
+
+function saveGiftPreparation(){
+ const data={
+  sender:document.getElementById("giftSender").value.trim(),
+  senderPhone:document.getElementById("giftSenderPhone").value.trim(),
+  recipient:document.getElementById("giftRecipient").value.trim(),
+  recipientPhone:document.getElementById("giftRecipientPhone").value.trim(),
+  message:document.getElementById("giftMessage").value.trim(),
+  wrap:document.getElementById("giftWrap").value,
+  date:document.getElementById("giftDate").value,
+  address:document.getElementById("giftAddress").value.trim()
+ };
+ if(!data.sender||!data.senderPhone||!data.recipient||!data.recipientPhone||!data.address){
+  showMessage("أكمل اسم ورقم المرسل والمستلم وعنوان المستلم");return;
+ }
+ localStorage.setItem("atyafGiftPreparation",JSON.stringify(data));
+ closeModal();
+ document.getElementById("best").scrollIntoView({behavior:"smooth"});
+ setTimeout(()=>showMessage("تم حفظ بيانات الهدية — اختر المنتج واضغط هدية"),350);
 }
 
 function showProduct(id){

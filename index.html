@@ -1901,7 +1901,7 @@ function renderAdvertisement(){
       slides[c].classList.remove("active");
       c=(c+1)%slides.length;
       slides[c].classList.add("active");
-    },3500);
+    },4000);
     return;
   }
 
@@ -1940,7 +1940,7 @@ function renderBottomAdvertisement(){
   if(type.includes("video")){wrap.innerHTML=`<video src="${escapeHTML(media[0])}" autoplay muted loop playsinline controls preload="metadata" style="object-fit:${fit};object-position:${position}"></video>`;return;}
   if(type.includes("slider")||media.length>1){
     wrap.innerHTML=media.map((u,i)=>`<img class="ad-slide ${i===0?"active":""}" src="${escapeHTML(u)}" alt="إعلان متجر أطياف" style="object-fit:${fit};object-position:${position}">`).join("");
-    let c=0;bottomAdTimer=setInterval(()=>{const slides=wrap.querySelectorAll(".ad-slide");if(slides.length<2)return;slides[c].classList.remove("active");c=(c+1)%slides.length;slides[c].classList.add("active");},Math.max(1200,Number(s.interval||3500)));return;
+    let c=0;bottomAdTimer=setInterval(()=>{const slides=wrap.querySelectorAll(".ad-slide");if(slides.length<2)return;slides[c].classList.remove("active");c=(c+1)%slides.length;slides[c].classList.add("active");},4000);return;
   }
   wrap.innerHTML=`<img src="${escapeHTML(media[0])}" alt="إعلان متجر أطياف" style="object-fit:${fit};object-position:${position}">`;
 }
@@ -3626,6 +3626,23 @@ function printInvoice(){
   #bottomAdSection{width:100vw!important;margin:20px calc(50% - 50vw) 0!important;padding:0!important}
   #bottomAdSection #bottomAdWrap{border-radius:0!important}
 }
+
+/* ===== ATYAF ADS SLIDER FIX — TOP + BOTTOM / 4 SECONDS ===== */
+#adWrap,#bottomAdWrap{position:relative!important;overflow:hidden!important}
+#adWrap .ad-slide,#bottomAdWrap .ad-slide{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  display:block!important;opacity:0!important;visibility:hidden!important;
+  transform:translateX(2%)!important;transition:opacity .65s ease,transform .65s ease!important;
+  object-fit:cover!important;pointer-events:none!important;z-index:1!important
+}
+#adWrap .ad-slide.active,#bottomAdWrap .ad-slide.active{
+  opacity:1!important;visibility:visible!important;transform:translateX(0)!important;
+  pointer-events:auto!important;z-index:2!important
+}
+#adWrap{min-height:clamp(260px,42vw,650px)!important}
+#adWrap>img:not(.ad-slide),#adWrap>video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important;object-fit:cover!important}
+#bottomAdWrap>img:not(.ad-slide),#bottomAdWrap>video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important}
+@media(max-width:700px){#adWrap{min-height:clamp(190px,52vw,310px)!important}}
 </style></head><body>${sheet.outerHTML}<script>window.onload=function(){setTimeout(function(){window.print()},400)};<\/script></body></html>`);popup.document.close()
 }
 

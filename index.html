@@ -504,6 +504,43 @@ body{color:#20231f}
 }
 
 .auth-tabs{display:flex;gap:8px;margin-bottom:18px}.auth-tabs button{flex:1;padding:11px;border:1px solid #ddd;background:#fff;color:#222!important;font-weight:800}.auth-tabs button.active,.auth-action{background:#173629;color:#fff!important}.auth-form{display:grid;gap:10px}.auth-form input{width:100%;padding:12px;border:1px solid #ddd;font:inherit}.auth-action{width:100%;padding:12px;border:0;font-weight:800}.auth-link{border:0;background:transparent;color:#765b27!important;text-decoration:underline}.account-card{text-align:center;padding:10px}.account-email{direction:ltr;color:#555;margin:8px 0 18px}
+
+/* ===== ATYAF CHECKOUT PRO ===== */
+.checkout-sheet{
+  width:min(610px,94vw);max-height:90vh;overflow:auto;
+  background:#fff;border-radius:22px;padding:26px 26px 22px;
+  direction:rtl;text-align:right;
+}
+.checkout-sheet h2{margin:0 0 20px;font-size:24px;color:#1d211e}
+.checkout-grid{display:grid;gap:14px}
+.checkout-field label{display:block;font-size:13px;font-weight:800;margin:0 0 7px;color:#30342f}
+.checkout-field input,.checkout-field textarea,.checkout-field select{
+  width:100%;box-sizing:border-box;border:1px solid #d9d9d6;border-radius:12px;
+  padding:13px 14px;background:#fff;color:#222;font:inherit;outline:none;
+}
+.checkout-field textarea{min-height:82px;resize:vertical}
+.checkout-field input:focus,.checkout-field textarea:focus,.checkout-field select:focus{border-color:#9b7a3f}
+.coupon-row{display:flex;gap:8px;align-items:stretch}
+.coupon-row input{flex:1}
+.coupon-row button{min-width:76px;border:0;border-radius:12px;background:#111;color:#fff!important;font-weight:800}
+.payment-info{
+  border:1px dashed #777;border-radius:14px;padding:15px;margin-top:2px;
+  line-height:1.9;font-size:13px;color:#333;background:#fff;
+}
+.checkout-summary{
+  margin-top:4px;padding:13px 15px;border-radius:12px;background:#f7f6f2;
+  display:flex;justify-content:space-between;gap:15px;font-weight:900;
+}
+.checkout-confirm,.checkout-cancel{
+  width:100%;padding:14px;border-radius:12px;font:inherit;font-weight:900;margin-top:10px
+}
+.checkout-confirm{border:0;background:#111;color:#fff!important}
+.checkout-cancel{border:1px solid #222;background:#fff;color:#222!important}
+@media(max-width:600px){
+ .checkout-sheet{padding:20px 16px;border-radius:18px}
+ .checkout-sheet h2{font-size:21px}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1519,28 +1556,97 @@ function applyCoupon(){
  }
 }
 
-function checkout(){
- if(!cart.length){showMessage("أضف منتجاً إلى السلة أولاً");return}
- document.getElementById("drawer").classList.remove("open");
- document.getElementById("modalContent").innerHTML=`
-  <h2>إتمام الطلب</h2>
-  <input placeholder="الاسم الكامل">
-  <input placeholder="رقم الجوال">
-  <input placeholder="البريد الإلكتروني">
-  <textarea placeholder="العنوان بالتفصيل" style="width:100%;height:80px;padding:10px"></textarea>
-  <select style="width:100%;padding:11px;margin-top:8px">
-   <option>الدفع عند الاستلام</option>
-   <option>بطاقة بنكية</option>
-   <option>Apple Pay</option>
-  </select>
-  <button style="width:100%;padding:13px;background:#b9934b;color:white;border:0;margin-top:15px" onclick="finishOrder()">تأكيد الطلب</button>`;
- document.getElementById("modal").classList.add("open");
+function atyafMoney(n){
+  return Number(n||0).toLocaleString("ar")+" ر.س";
 }
+function checkout(){
+  if(!cart.length){showMessage("أضف منتجاً إلى السلة أولاً");return}
+  document.getElementById("drawer").classList.remove("open");
 
-function finishOrder(){
- let number="AT-"+Math.floor(100000+Math.random()*900000);
- cart=[];saveCart();closeModal();
- showMessage("تم إنشاء طلبك بنجاح — رقم الطلب: "+number);
+  const subtotal=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
+  document.getElementById("modalContent").innerHTML=`
+   <div class="checkout-sheet">
+    <h2>إتمام الطلب</h2>
+    <div class="checkout-grid">
+      <div class="checkout-field"><label>الاسم الكامل</label><input id="coName" autocomplete="name"></div>
+      <div class="checkout-field"><label>رقم الهاتف</label><input id="coPhone" inputmode="tel" placeholder="مثال: 776881748"></div>
+      <div class="checkout-field"><label>العنوان</label><input id="coAddress" autocomplete="street-address"></div>
+      <div class="checkout-field"><label>ملاحظات</label><textarea id="coNotes"></textarea></div>
+
+      <div class="checkout-field">
+       <label>كود الخصم</label>
+       <div class="coupon-row">
+        <input id="coCoupon" placeholder="أدخل كود الخصم">
+        <button type="button" onclick="applyCheckoutCoupon()">تطبيق</button>
+       </div>
+      </div>
+
+      <div class="checkout-field">
+       <label>طريقة الدفع</label>
+       <select id="coPayment" onchange="updateCheckoutPaymentInfo()">
+        <option value="cod">الدفع عند الاستلام</option>
+        <option value="qatibi">إيداع قطبي (جميع العملات)</option>
+        <option value="bank">تحويل / إيداع بنكي</option>
+       </select>
+      </div>
+
+      <div class="payment-info" id="coPaymentInfo">الدفع نقداً عند استلام الطلب.</div>
+      <div class="checkout-summary"><span>المبلغ المطلوب</span><strong id="coTotal">${atyafMoney(subtotal)}</strong></div>
+    </div>
+    <button class="checkout-confirm" onclick="finishOrder()">تأكيد الطلب</button>
+    <button class="checkout-cancel" onclick="closeModal()">إلغاء</button>
+   </div>`;
+  document.getElementById("modal").classList.add("open");
+}
+function updateCheckoutPaymentInfo(){
+  const method=document.getElementById("coPayment")?.value;
+  const box=document.getElementById("coPaymentInfo"); if(!box)return;
+  if(method==="qatibi"){
+    box.innerHTML="<b>طريقة الدفع: إيداع قطبي (جميع العملات)</b><br>بعد تأكيد الطلب سيتم التواصل معك وإرسال بيانات الإيداع المعتمدة.";
+  }else if(method==="bank"){
+    box.innerHTML="<b>طريقة الدفع: تحويل / إيداع بنكي</b><br>سيتم تزويدك ببيانات الحساب المعتمدة لإكمال عملية الدفع.";
+  }else{
+    box.innerHTML="<b>الدفع عند الاستلام</b><br>ادفع قيمة الطلب عند وصوله إليك.";
+  }
+}
+function applyCheckoutCoupon(){
+  const code=document.getElementById("coCoupon")?.value.trim();
+  if(!code)return showMessage("أدخل كود الخصم");
+  showMessage("سيتم التحقق من كود الخصم عند تأكيد الطلب");
+}
+async function finishOrder(){
+  const name=document.getElementById("coName")?.value.trim();
+  const phone=document.getElementById("coPhone")?.value.trim();
+  const address=document.getElementById("coAddress")?.value.trim();
+  const notes=document.getElementById("coNotes")?.value.trim()||"";
+  const payment=document.getElementById("coPayment")?.value||"cod";
+  const coupon=document.getElementById("coCoupon")?.value.trim()||"";
+  if(!name||!phone||!address)return showMessage("أدخل الاسم ورقم الهاتف والعنوان");
+
+  const number="AT-"+Math.floor(100000+Math.random()*900000);
+  const total=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
+  const orderLines=cart.map(x=>`• ${x.name} × ${x.qty||1} — ${atyafMoney(Number(x.price||0)*Number(x.qty||1))}`).join("\n");
+  const paymentName=payment==="qatibi"?"إيداع قطبي":payment==="bank"?"تحويل بنكي":"الدفع عند الاستلام";
+
+  const wa=normalizeWhatsAppNumber(atyafGeneralSettings.whatsapp||atyafGeneralSettings.whatsappNumber||atyafGeneralSettings.phone||"");
+  const text=`طلب جديد من متجر أطياف
+رقم الطلب: ${number}
+الاسم: ${name}
+الهاتف: ${phone}
+العنوان: ${address}
+طريقة الدفع: ${paymentName}
+${coupon?`كود الخصم: ${coupon}\n`:""}${notes?`ملاحظات: ${notes}\n`:""}
+المنتجات:
+${orderLines}
+الإجمالي: ${atyafMoney(total)}`;
+
+  cart=[];saveCart();closeModal();
+  if(wa){
+    window.open("https://wa.me/"+wa+"?text="+encodeURIComponent(text),"_blank","noopener");
+    showMessage("تم تجهيز الطلب وسيتم فتح واتساب لإرساله");
+  }else{
+    showMessage("تم إنشاء الطلب — رقم الطلب: "+number);
+  }
 }
 
 function openGiftPreparation(){

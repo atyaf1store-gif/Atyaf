@@ -769,9 +769,6 @@ function renderAll(){
  render(list,"allProducts");
 }
 
-function searchProducts(){
- activeFilter="";
- 
 let bottomAdTimer=null;
 function renderBottomAds(s={}){
  const section=document.getElementById("afterProductsAd"); if(!section)return;
@@ -785,10 +782,12 @@ function renderBottomAds(s={}){
  window.bottomAdIndex=0;clearInterval(bottomAdTimer);if(media.length>1)bottomAdTimer=setInterval(()=>bottomAdTo((window.bottomAdIndex||0)+1),Number(s.interval||4000));
 }
 function bottomAdTo(n){const section=document.getElementById("afterProductsAd"),slides=[...section.querySelectorAll('.after-ad-slide')],dots=[...section.querySelectorAll('.after-ad-dot')];if(!slides.length)return;window.bottomAdIndex=(n+slides.length)%slides.length;slides.forEach((x,i)=>x.classList.toggle('active',i===window.bottomAdIndex));dots.forEach((x,i)=>x.classList.toggle('active',i===window.bottomAdIndex))}
-async function loadBottomAds(){try{const url="https://zgvkiqoxmtifuvgcmrqc.supabase.co/rest/v1/settings?key=eq.bottom_ads&select=value&limit=1",key="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";const r=await fetch(url,{headers:{apikey:key,Authorization:"Bearer "+key}});if(!r.ok)throw new Error("settings");const rows=await r.json();renderBottomAds(rows?.[0]?.value||{})}catch(e){console.warn("Bottom ads:",e);renderBottomAds({enabled:false})}}
-loadBottomAds();
+async function loadBottomAds(){try{const url="https://zgvkiqoxmtifuvgcmrqc.supabase.co/rest/v1/settings?key=eq.bottom_ads&select=id,key,value&order=id.desc&limit=1",key="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";const r=await fetch(url,{headers:{apikey:key,Authorization:"Bearer "+key}});if(!r.ok)throw new Error("settings");const rows=await r.json();renderBottomAds(rows?.[0]?.value||{})}catch(e){console.warn("Bottom ads:",e);renderBottomAds({enabled:false})}}
 
-renderAll();
+
+function searchProducts(){
+ activeFilter="";
+ renderAll();
 }
 
 function filterCategory(value){
@@ -982,6 +981,7 @@ setInterval(()=>{
 
 renderAll();
 saveCart();
+loadBottomAds();
 </script>
 
 </body>

@@ -462,6 +462,47 @@ body{color:#20231f}
   .policy-content{font-size:14px}
 }
 
+
+/* ===== ATYAF HEADER PRO ===== */
+.header .logo{
+  display:flex!important;align-items:center;gap:10px;
+  font-weight:900!important;letter-spacing:.2px;
+  color:#171b18!important;
+}
+.header .logo small{
+  display:block;font-weight:700!important;letter-spacing:2.2px;
+  color:#4d534f!important;opacity:1!important;
+}
+.nav a{
+  font-weight:800!important;
+  color:#242824!important;
+  opacity:1!important;
+  font-size:14px;
+}
+.header-actions,.header-actions a,.header-actions button,
+.account,.favorite,.cart-btn{
+  font-weight:800!important;
+  color:#242824!important;
+  opacity:1!important;
+}
+.search input{font-weight:600!important;color:#242824!important}
+.store-profile-icon{
+  width:38px;height:38px;min-width:38px;border-radius:50%;
+  border:1px solid rgba(23,54,41,.18);
+  display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;
+}
+.store-profile-icon svg{
+  width:23px;height:23px;fill:none;stroke:currentColor;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+  color:#173629;
+}
+@media(max-width:700px){
+  .store-profile-icon{width:32px;height:32px;min-width:32px}
+  .store-profile-icon svg{width:20px;height:20px}
+  .nav a{font-size:13px}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -472,7 +513,13 @@ body{color:#20231f}
 
 <header class="header">
   <div class="header-main">
-    <div class="logo">
+    <div class="logo"><span class="store-profile-icon" aria-label="ملف المتجر">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+  <circle cx="12" cy="8" r="3.2"></circle>
+  <path d="M5.5 19c.7-4 3-6 6.5-6s5.8 2 6.5 6"></path>
+  <circle cx="12" cy="12" r="10"></circle>
+</svg>
+</span>
       أطياف <span>✦</span>
       <small>ATYAF STORE</small>
     </div>
@@ -572,16 +619,7 @@ body{color:#20231f}
       <div class="products" id="newProducts"></div>
     </section>
 
-    <div class="banner" id="offers">
-      <img src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=1500&q=85">
-      <div class="banner-text">
-        <h2>عروض محدودة</h2>
-        <p>خصومات مميزة على منتجات مختارة</p>
-        <button onclick="filterCategory('عرض')">شاهد العروض</button>
-      </div>
-    </div>
-
-    <section class="section" id="scents">
+<section class="section" id="scents">
       <div class="section-title">
         <h2>اكتشف الروائح</h2>
         <p>اختر الرائحة التي تناسب ذوقك</p>
@@ -817,9 +855,21 @@ function applyManagedGeneral(g={}){
   const logo=document.querySelector(".logo");
   if(logo){
     if(g.logoUrl){
-      logo.innerHTML=`<img src="${atyafEsc(g.logoUrl)}" alt="${atyafEsc(g.storeName||"أطياف")}" style="max-height:58px;max-width:150px;object-fit:contain">`;
+      logo.innerHTML=`<span class="store-profile-icon" aria-label="ملف المتجر">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+  <circle cx="12" cy="8" r="3.2"></circle>
+  <path d="M5.5 19c.7-4 3-6 6.5-6s5.8 2 6.5 6"></path>
+  <circle cx="12" cy="12" r="10"></circle>
+</svg>
+</span><img src="${atyafEsc(g.logoUrl)}" alt="${atyafEsc(g.storeName||"أطياف")}" style="max-height:58px;max-width:150px;object-fit:contain">`;
     }else{
-      logo.innerHTML=`${atyafEsc(g.storeName||"أطياف")} <span>✦</span><small>${atyafEsc(g.storeNameEn||"ATYAF STORE")}</small>`;
+      logo.innerHTML=`<span class="store-profile-icon" aria-label="ملف المتجر">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+  <circle cx="12" cy="8" r="3.2"></circle>
+  <path d="M5.5 19c.7-4 3-6 6.5-6s5.8 2 6.5 6"></path>
+  <circle cx="12" cy="12" r="10"></circle>
+</svg>
+</span>${atyafEsc(g.storeName||"أطياف")} <span>✦</span><small>${atyafEsc(g.storeNameEn||"ATYAF STORE")}</small>`;
     }
   }
   const search=document.getElementById("search");

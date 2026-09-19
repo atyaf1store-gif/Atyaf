@@ -656,6 +656,55 @@ body{color:#20231f}
  .favorites-dialog .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 }
 
+
+/* ===== FIX: STORE PROFILE IMAGE + STORE NAME ===== */
+.header .logo{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:11px!important;
+  min-width:190px!important;
+  text-align:right!important;
+}
+.store-profile-icon{
+  overflow:hidden!important;
+  flex:0 0 auto!important;
+}
+.store-profile-icon.store-profile-photo img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  display:block!important;
+  padding:0!important;
+  border-radius:50%!important;
+}
+.store-brand-text{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+}
+.store-brand-text strong{
+  display:block!important;
+  color:#171b18!important;
+  font-size:24px!important;
+  font-weight:900!important;
+}
+.store-brand-text small{
+  display:block!important;
+  margin-top:5px!important;
+  color:#4d534f!important;
+  font:700 10px Cairo,Tahoma,sans-serif!important;
+  letter-spacing:2.2px!important;
+}
+@media(max-width:700px){
+  .header .logo{min-width:auto!important;gap:8px!important}
+  .store-brand-text strong{font-size:20px!important}
+  .store-brand-text small{font-size:8px!important;letter-spacing:1.5px!important}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1077,6 +1126,26 @@ function renderManagedHomepage(cfg={}){
   }
 }
 function applyManagedGeneral(g={}){
+  atyafGeneralSettings=g||{};
+  const logo=document.querySelector(".logo");
+  if(logo){
+    const storeName=atyafEsc(g.storeName||g.name||"أطياف");
+    const storeNameEn=atyafEsc(g.storeNameEn||g.nameEn||"ATYAF STORE");
+    const profileImage=String(g.profileImageUrl||g.profile_image_url||g.profileUrl||g.avatarUrl||g.logoUrl||"").trim();
+
+    const profileHtml=profileImage
+      ? `<span class="store-profile-icon store-profile-photo" aria-label="صورة المتجر"><img src="${atyafEsc(profileImage)}" alt="${storeName}"></span>`
+      : `<span class="store-profile-icon" aria-label="ملف المتجر">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.2"></circle>
+            <path d="M5.5 19c.7-4 3-6 6.5-6s5.8 2 6.5 6"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+        </span>`;
+
+    logo.innerHTML=`${profileHtml}<span class="store-brand-text"><strong>${storeName}</strong><small>${storeNameEn}</small></span>`;
+  }
+}){
   atyafGeneralSettings=g||{};
   const logo=document.querySelector(".logo");
   if(logo){

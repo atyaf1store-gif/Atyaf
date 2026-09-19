@@ -94,8 +94,8 @@ a{text-decoration:none;color:inherit}
   transition:opacity .7s
 }
 .slide.active{opacity:1}
-.slide img{
-  width:100%;height:100%;object-fit:cover
+.slide img,.slide video{
+  width:100%;height:100%;object-fit:cover;display:block
 }
 .hero-info{
   position:absolute;right:8%;top:31%;
@@ -415,6 +415,15 @@ a{text-decoration:none;color:inherit}
 .notice-icon{color:#b9934b;font-size:14px}
 @media(max-width:600px){.topbar{height:34px}.topbar-track{font-size:11px;gap:36px}.notice{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:9px 5px}.notice-item{padding:2px 13px}.notice-item+.notice-item{border-right:1px solid #d9d2c5}}
 
+
+/* Admin-controlled hero advertisement heights */
+@media(max-width:900px){
+  #heroAds{height:var(--atyaf-ad-tablet,520px)!important}
+}
+@media(max-width:600px){
+  #heroAds{height:var(--atyaf-ad-mobile,360px)!important}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -455,7 +464,7 @@ a{text-decoration:none;color:inherit}
 
 <main id="home">
 
-  <section class="hero">
+  <section class="hero" id="heroAds">
     <div class="slide active">
       <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1800&q=85">
       <div class="hero-info">
@@ -769,6 +778,137 @@ function renderAll(){
  render(list,"allProducts");
 }
 
+
+/* ================= ATYAF TOP ADS — SUPABASE SYNC ================= */
+let topAdTimer=null;
+
+function normalizeTopAdSettings(raw){
+  let s=raw;
+  if(typeof s==="string"){
+    try{s=JSON.parse(s)}catch(e){s={}}
+  }
+  if(!s || typeof s!=="object")s={};
+
+  let media=s.media ?? s.medias ?? s.slides ?? s.images ?? s.files ?? [];
+  if(typeof media==="string"){
+    try{
+      const p=JSON.parse(media);
+      media=Array.isArray(p)?p:[media];
+    }catch(e){
+      media=media.split(/\r?\n|,/).map(x=>x.trim()).filter(Boolean);
+    }
+  }
+  if(!Array.isArray(media))media=[media];
+
+  media=media.map(item=>{
+    if(typeof item==="string")return item.trim();
+    if(item && typeof item==="object"){
+      return String(item.url||item.src||item.publicUrl||item.public_url||item.image||item.image_url||item.video||item.video_url||"").trim();
+    }
+    return "";
+  }).filter(Boolean);
+
+  return {
+    enabled: s.enabled!==false,
+    media,
+    type:s.type||"slider",
+    fit:s.fit||"cover",
+    position:s.position||"center",
+    radius:Number(s.radius||0),
+    interval:Number(s.interval||3500),
+    heightDesktop:Number(s.heightDesktop||650),
+    heightTablet:Number(s.heightTablet||520),
+    heightMobile:Number(s.heightMobile||360),
+    link:String(s.link||"").trim()
+  };
+}
+
+function renderTopAds(raw={}){
+  const hero=document.getElementById("heroAds");
+  if(!hero)return;
+
+  const s=normalizeTopAdSettings(raw);
+  clearInterval(topAdTimer);
+  topAdTimer=null;
+
+  /* إذا حفظ المدير الإعلان متوقفاً نخفي الشاشة فعلياً */
+  if(!s.enabled){
+    hero.innerHTML="";
+    hero.style.display="none";
+    return;
+  }
+
+  /* إذا لم توجد وسائط محفوظة، لا نرجع إلى الصور التجريبية القديمة */
+  if(!s.media.length){
+    hero.innerHTML="";
+    hero.style.display="none";
+    return;
+  }
+
+  hero.style.display="block";
+  hero.style.height=s.heightDesktop+"px";
+  hero.style.borderRadius=s.radius+"px";
+  hero.style.setProperty("--atyaf-ad-tablet",s.heightTablet+"px");
+  hero.style.setProperty("--atyaf-ad-mobile",s.heightMobile+"px");
+
+  const slides=s.media.map((url,i)=>{
+    const isVideo=/\.(mp4|webm|ogg)(?:\?|#|$)/i.test(url);
+    const mediaEl=isVideo
+      ? `<video src="${url}" muted playsinline autoplay loop preload="metadata" style="object-fit:${s.fit};object-position:${s.position}"></video>`
+      : `<img src="${url}" alt="إعلان أطياف" loading="${i===0?'eager':'lazy'}" style="object-fit:${s.fit};object-position:${s.position}">`;
+    return `<div class="slide ${i===0?'active':''}" data-atyaf-ad-index="${i}">${mediaEl}</div>`;
+  }).join("");
+
+  const dots=s.media.length>1
+    ? `<div class="hero-dots">${s.media.map((_,i)=>`<button class="dot ${i===0?'active':''}" type="button" onclick="slideTo(${i})"></button>`).join("")}</div>`
+    : "";
+
+  hero.innerHTML=slides+dots;
+  currentSlide=0;
+
+  if(s.link){
+    hero.querySelectorAll(".slide").forEach(el=>{
+      el.style.cursor="pointer";
+      el.addEventListener("click",()=>window.open(s.link,"_blank","noopener"));
+    });
+  }
+
+  if(s.media.length>1){
+    topAdTimer=setInterval(()=>{
+      slideTo((currentSlide+1)%s.media.length);
+    },Math.max(1500,s.interval||3500));
+  }
+}
+
+async function loadTopAds(){
+  try{
+    if(!atyafDb)throw new Error("Supabase client is not available");
+
+    /* لوحة الإدارة تحفظ الإعلان العلوي تحديداً بالمفتاح ads */
+    const {data,error}=await atyafDb
+      .from("settings")
+      .select("id,key,value,updated_at")
+      .eq("key","ads")
+      .order("updated_at",{ascending:false,nullsFirst:false})
+      .order("id",{ascending:false})
+      .limit(1);
+
+    if(error)throw error;
+
+    const row=Array.isArray(data)?data[0]:null;
+    if(!row){
+      renderTopAds({enabled:false,media:[]});
+      console.warn("ATYAF: settings/ads not found");
+      return;
+    }
+
+    renderTopAds(row.value||{});
+    console.info("ATYAF top ad loaded:",row.id);
+  }catch(e){
+    console.warn("ATYAF top ads:",e);
+  }
+}
+
 let bottomAdTimer=null;
 
 function atyafMediaUrl(item){
@@ -942,9 +1082,15 @@ async function loadBottomAds(){
 }
 
 /* تحديث الإعلان فور رجوع المستخدم للصفحة أو بعد تعديل الإدارة */
-window.addEventListener("focus",()=>loadBottomAds());
+window.addEventListener("focus",()=>{
+  loadTopAds();
+  loadBottomAds();
+});
 document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="visible")loadBottomAds();
+  if(document.visibilityState==="visible"){
+    loadTopAds();
+    loadBottomAds();
+  }
 });
 
 
@@ -1131,19 +1277,20 @@ function closeModal(){
 }
 
 function slideTo(n){
- document.querySelectorAll(".slide").forEach((x,i)=>x.classList.toggle("active",i===n));
- document.querySelectorAll(".dot").forEach((x,i)=>x.classList.toggle("active",i===n));
- currentSlide=n;
+ const hero=document.getElementById("heroAds");
+ if(!hero)return;
+ const slides=[...hero.querySelectorAll(".slide")];
+ const dots=[...hero.querySelectorAll(".dot")];
+ if(!slides.length)return;
+ currentSlide=(Number(n)+slides.length)%slides.length;
+ slides.forEach((x,i)=>x.classList.toggle("active",i===currentSlide));
+ dots.forEach((x,i)=>x.classList.toggle("active",i===currentSlide));
 }
-
-setInterval(()=>{
- currentSlide=currentSlide?0:1;
- slideTo(currentSlide);
-},5000);
 
 
 renderAll();
 saveCart();
+loadTopAds();
 loadBottomAds();
 /* ATYAF ADS SYNC FIX 2026-09-19 */
 </script>

@@ -776,6 +776,32 @@ main#home{position:relative}
   #atyafLogoSplash .atyaf-splash-logo{animation:none;opacity:1;transform:none}
 }
 
+
+/* ===== ATYAF SPLASH — VIDEO STYLE ===== */
+#atyafLogoSplash{
+  position:fixed; inset:0; z-index:999999;
+  background:#fbf6ee;
+  display:flex; align-items:center; justify-content:center;
+  opacity:1; visibility:visible;
+  transition:opacity .38s ease,visibility .38s ease;
+}
+#atyafSplashLogo{
+  width:min(520px,72vw);
+  max-height:220px;
+  object-fit:contain;
+  display:block;
+  transform:translate3d(0,0,0) scale(1);
+  transform-origin:center center;
+  filter:drop-shadow(0 12px 28px rgba(93,53,19,.08));
+  will-change:transform,opacity;
+}
+#atyafLogoSplash.atyaf-fade{
+  opacity:0; visibility:hidden; pointer-events:none;
+}
+@media(max-width:700px){
+  #atyafSplashLogo{width:min(390px,82vw);max-height:170px}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -2025,61 +2051,68 @@ setTimeout(()=>applyManagedDesign(atyafCurrentDesign),900);
 </script>
 
 <script>
-/* ===== ATYAF SPLASH FINAL REPAIR: NEVER BLOCKS STORE ===== */
+/* ===== ATYAF SPLASH MOTION MATCHED TO REFERENCE VIDEO ===== */
 (function(){
-  function closeSplash(){
-    const s=document.getElementById('atyafLogoSplash');
-    if(!s) return;
-    s.style.opacity='0';
-    s.style.visibility='hidden';
-    s.style.pointerEvents='none';
-    setTimeout(()=>s.remove(),450);
+  let finished=false;
+
+  function finish(){
+    if(finished) return;
+    finished=true;
+    const splash=document.getElementById("atyafLogoSplash");
+    if(!splash) return;
+    splash.classList.add("atyaf-fade");
+    setTimeout(()=>splash.remove(),430);
   }
 
-  function runSplash(){
-    const s=document.getElementById('atyafLogoSplash');
-    const l=document.getElementById('atyafSplashLogo');
-    if(!s || !l) return;
+  function start(){
+    const splash=document.getElementById("atyafLogoSplash");
+    const logo=document.getElementById("atyafSplashLogo");
+    if(!splash || !logo) return;
 
-    /* Do not wait for Supabase or any network request. */
+    /* Reference: logo stays centered briefly, then shrinks and flies upward
+       while the real header appears underneath. */
     setTimeout(()=>{
-      const r=l.getBoundingClientRect();
-      const target=document.querySelector('.header .atyaf-hero-logo');
+      const from=logo.getBoundingClientRect();
+      const target =
+        document.querySelector("[data-atyaf-header-logo]") ||
+        document.querySelector(".atyaf-hero-logo") ||
+        document.querySelector(".brand-logo img") ||
+        document.querySelector("header img");
 
-      let tx=(window.innerWidth/2)-(r.left+r.width/2);
-      let ty=54-(r.top+r.height/2);
-      let scale=Math.min(1,220/Math.max(r.width,1));
+      let targetX=window.innerWidth/2;
+      let targetY=88;
+      let targetW=150;
+      let targetH=54;
 
       if(target){
-        const t=target.getBoundingClientRect();
-        if(t.width>20 && t.height>10){
-          tx=(t.left+t.width/2)-(r.left+r.width/2);
-          ty=(t.top+t.height/2)-(r.top+r.height/2);
-          scale=Math.min(t.width/Math.max(r.width,1),t.height/Math.max(r.height,1));
+        const r=target.getBoundingClientRect();
+        if(r.width>10 && r.height>10){
+          targetX=r.left+r.width/2;
+          targetY=r.top+r.height/2;
+          targetW=r.width;
+          targetH=r.height;
         }
       }
 
-      l.style.animation='none';
-      l.style.transition='transform .85s cubic-bezier(.2,.82,.2,1),opacity .18s ease .78s';
-      l.style.transformOrigin='center center';
-      l.style.transform=`translate3d(${tx}px,${ty}px,0) scale(${Math.max(.08,scale)})`;
+      const fromX=from.left+from.width/2;
+      const fromY=from.top+from.height/2;
+      const scale=Math.max(.12,Math.min(targetW/from.width,targetH/from.height));
 
-      setTimeout(()=>{
-        l.style.opacity='0';
-        closeSplash();
-      },900);
-    },1150);
+      logo.style.transition=
+        "transform 1.05s cubic-bezier(.22,.75,.18,1), opacity .20s ease .88s";
+      logo.style.transform=
+        `translate3d(${targetX-fromX}px,${targetY-fromY}px,0) scale(${scale})`;
 
-    /* Absolute safety: splash can never remain on screen. */
-    setTimeout(closeSplash,2600);
+      setTimeout(()=>{ logo.style.opacity="0"; },880);
+      setTimeout(finish,1060);
+    },900);
+
+    setTimeout(finish,2800);
   }
 
-  /* Run whether DOMContentLoaded already happened or not. */
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',runSplash,{once:true});
-  }else{
-    runSplash();
-  }
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",start,{once:true});
+  }else start();
 })();
 </script>
 

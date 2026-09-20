@@ -683,6 +683,73 @@ main#home{position:relative}
 .logo .atyaf-brand-name strong{display:block;font-family:"Playfair Display",serif;font-size:31px;letter-spacing:.5px}
 .logo .atyaf-brand-name small{display:block;margin-top:6px;color:#fff!important;font:10px Cairo,sans-serif;letter-spacing:3px}
 @media(max-width:800px){.logo .atyaf-brand-name strong{font-size:23px}.logo .atyaf-brand-name small{font-size:8px;letter-spacing:2px}}
+
+
+/* ===== ATYAF PREMIUM PRODUCT CARD POLISH — SAFE VISUAL OVERRIDE ONLY ===== */
+.product{
+  border:1px solid #eeeae2!important;
+  border-radius:16px!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  box-shadow:0 4px 18px rgba(20,25,22,.045)!important;
+  transition:transform .25s ease,box-shadow .25s ease!important;
+}
+.product:hover{transform:translateY(-5px)!important;box-shadow:0 14px 34px rgba(20,25,22,.10)!important}
+.product-image{
+  height:310px!important;
+  background:linear-gradient(180deg,#fff 0%,#fbfaf7 100%)!important;
+  border:0!important;border-bottom:1px solid #f0ede7!important;
+  overflow:hidden!important;
+}
+.product-image img{
+  width:100%!important;height:100%!important;object-fit:contain!important;
+  padding:22px!important;transition:transform .35s ease!important;
+}
+.product:hover .product-image img{transform:scale(1.045)!important}
+.heart{
+  width:38px!important;height:38px!important;top:13px!important;right:13px!important;
+  border:1px solid rgba(25,25,25,.10)!important;background:rgba(255,255,255,.94)!important;
+  color:#171717!important;font-size:19px!important;box-shadow:0 3px 12px rgba(0,0,0,.08)!important;
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+}
+.heart:hover,.heart.active{background:#111!important;color:#fff!important;border-color:#111!important;transform:scale(1.05)}
+.sale{
+  top:14px!important;left:13px!important;padding:6px 11px!important;border-radius:999px!important;
+  background:#171717!important;color:#fff!important;font-size:9px!important;letter-spacing:.2px!important;
+  box-shadow:0 3px 10px rgba(0,0,0,.10)!important;
+}
+.product-info{padding:15px 14px 14px!important;text-align:right!important}
+.product-info h3{
+  margin:0 0 7px!important;min-height:auto!important;font-size:13px!important;font-weight:700!important;
+  line-height:1.75!important;color:#171a18!important;text-align:right!important;
+}
+.product-info .price{
+  justify-content:flex-start!important;margin:0 0 14px!important;color:#b3261e!important;
+  font-size:14px!important;font-weight:800!important;text-align:right!important;
+}
+.product-actions{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:auto!important}
+.product-actions button{
+  min-height:44px!important;border-radius:9px!important;font-size:11px!important;font-weight:700!important;
+  transition:transform .18s ease,background .18s ease,border-color .18s ease!important;
+}
+.product-actions button:first-child{
+  background:#111!important;border:1px solid #111!important;color:#fff!important;
+}
+.product-actions button:first-child:hover{background:#263a31!important;border-color:#263a31!important;transform:translateY(-1px)}
+.product-actions button:last-child{
+  background:#fff!important;border:1px solid #dcd7ce!important;color:#1c211e!important;
+}
+.product-actions button:last-child:hover{background:#f8f6f1!important;border-color:#b9ad98!important;transform:translateY(-1px)}
+@media(max-width:600px){
+  .product{border-radius:12px!important}
+  .product-image{height:230px!important}
+  .product-image img{padding:15px!important}
+  .product-info{padding:12px 10px 11px!important}
+  .heart{width:34px!important;height:34px!important;top:10px!important;right:10px!important}
+  .sale{top:11px!important;left:10px!important}
+  .product-actions button{min-height:41px!important;border-radius:7px!important;font-size:10px!important}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>

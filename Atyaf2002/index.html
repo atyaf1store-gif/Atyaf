@@ -1003,14 +1003,21 @@ async function getSession(){const{data,error}=await db.auth.getSession();if(erro
 async function isAdmin(){
  const s=await getSession();
  if(!s?.user)return false;
- if(String(s.user.email||"").trim().toLowerCase()!==ADMIN_EMAIL.toLowerCase())return false;
- const {data,error}=await db.rpc("is_store_admin");
- if(error)throw error;
- return data===true;
+ const sameEmail=String(s.user.email||"").trim().toLowerCase()===ADMIN_EMAIL.toLowerCase();
+ if(!sameEmail)return false;
+ try{
+  const {data,error}=await db.rpc("is_store_admin");
+  if(!error && data===false)return false;
+ }catch(e){
+  console.warn("Optional is_store_admin check unavailable:",e);
+ }
+ return true;
 }
 async function login(){
  const msg=$("msg"), b=$("loginButton"), password=$("password").value;
+ if(b.dataset.busy==="1")return;
  if(!password){msg.textContent="أدخل كلمة المرور";return}
+ b.dataset.busy="1";
  if(!db){msg.textContent="تعذر تحميل اتصال Supabase. حدّث الصفحة أو جرّب شبكة أخرى.";return}
  b.disabled=true;b.textContent="جارِ التحقق...";msg.textContent="";
  try{
@@ -1025,7 +1032,7 @@ async function login(){
   let t=e?.message||"تعذر تسجيل الدخول";
   t=t.replace("Invalid login credentials","البريد أو كلمة المرور غير صحيحة");
   msg.textContent=t;
- }finally{b.disabled=false;b.textContent="دخول"}
+ }finally{b.dataset.busy="0";b.disabled=false;b.textContent="دخول"}
 }
 async function logout(){try{await db.auth.signOut({scope:"local"})}catch{};$("app").classList.add("hidden");$("login").classList.remove("hidden");$("password").value=""}
 function renderNav(){$("nav").innerHTML=tabs.map((t,i)=>`<button class="${i===0?"active":""}" onclick="tab('${t[0]}',this)">${t[1]}</button>`).join("")}
@@ -2241,8 +2248,20 @@ function renderSectionManager(){
 }
 function hideManagedSection(id){const row=document.querySelector(`[data-section-row="${id}"]`);if(row){const c=row.querySelector('[data-f="enabled"]');if(c)c.checked=false}toast("سيتم إخفاء القسم بعد الحفظ") }
 function collectSectionRows(){const out={};document.querySelectorAll('[data-section-row]').forEach((row,i)=>{out[row.dataset.sectionRow]={title:row.querySelector('[data-f="title"]')?.value.trim()||"",subtitle:row.querySelector('[data-f="subtitle"]')?.value.trim()||"",order:Number(row.querySelector('[data-f="order"]')?.value||i+1),enabled:!!row.querySelector('[data-f="enabled"]')?.checked}});return out}
-async function saveSectionManager(){try{const next={...sectionManagerSettings,sections:collectSectionRows(),custom:Array.isArray(sectionManagerSettings.custom)?sectionManagerSettings.custom:[]};await saveSetting("section_manager",next);sectionManagerSettings=next;toast("تم حفظ إعدادات الأقسام ✓")}catch(e){alert("تعذر الحفظ:
-"+(e.message||e))}}
+async function saveSectionManager(){
+ try{
+  const next={
+   ...sectionManagerSettings,
+   sections:collectSectionRows(),
+   custom:Array.isArray(sectionManagerSettings.custom)?sectionManagerSettings.custom:[]
+  };
+  await saveSetting("section_manager",next);
+  sectionManagerSettings=next;
+  toast("تم حفظ إعدادات الأقسام ✓");
+ }catch(e){
+  alert("تعذر الحفظ:\n"+(e.message||e));
+ }
+}
 function addCustomSection(){const title=prompt("اسم القسم الجديد");if(!title?.trim())return;const custom=[...(Array.isArray(sectionManagerSettings.custom)?sectionManagerSettings.custom:[])];custom.push({id:"custom_"+Date.now(),title:title.trim(),subtitle:"",content:"",enabled:true,order:100+custom.length});sectionManagerSettings={...sectionManagerSettings,custom};renderCustomSections()}
 function renderCustomSections(){const box=$("customSectionsList");if(!box)return;const arr=Array.isArray(sectionManagerSettings.custom)?sectionManagerSettings.custom:[];box.innerHTML=arr.length?arr.map((x,i)=>`<div class="card"><div class="grid3"><input value="${esc(x.title||"")}" onchange="updateCustomSection(${i},'title',this.value)" placeholder="العنوان"><input value="${esc(x.subtitle||"")}" onchange="updateCustomSection(${i},'subtitle',this.value)" placeholder="الوصف"><input type="number" value="${Number(x.order||100+i)}" onchange="updateCustomSection(${i},'order',Number(this.value))"></div><textarea onchange="updateCustomSection(${i},'content',this.value)" placeholder="محتوى القسم">${esc(x.content||"")}</textarea><div class="actions"><label class="check-row"><input type="checkbox" ${x.enabled===false?'':'checked'} onchange="updateCustomSection(${i},'enabled',this.checked)"> إظهار</label><button class="btn red sm" onclick="deleteCustomSection(${i})">حذف</button></div></div>`).join(""):"<p class='note'>لا توجد أقسام مخصصة.</p>"}
 function updateCustomSection(i,k,v){const arr=[...(sectionManagerSettings.custom||[])];if(!arr[i])return;arr[i]={...arr[i],[k]:v};sectionManagerSettings={...sectionManagerSettings,custom:arr}}

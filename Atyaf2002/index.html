@@ -596,121 +596,6 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
       <div><label>النص الثانوي</label><input id="colorMutedText" type="color" value="#555b56"></div>
     </div>
 
-    <h3>📐 حجم بطاقات المنتجات</h3>
-    <p class="note">
-      حرّك المؤشر لتكبير أو تصغير بطاقة المنتج لكل جهاز بشكل مستقل.
-    </p>
-
-    <div class="grid3">
-      <div>
-        <label>كمبيوتر</label>
-        <input
-          id="designCardDesktop"
-          type="range"
-          min="130"
-          max="420"
-          step="5"
-          value="180"
-          oninput="updateProductSizePreview()"
-        >
-        <div class="note">
-          الحجم:
-          <strong id="designCardDesktopValue">180px</strong>
-        </div>
-      </div>
-
-      <div>
-        <label>تابلت</label>
-        <input
-          id="designCardTablet"
-          type="range"
-          min="140"
-          max="420"
-          step="5"
-          value="220"
-          oninput="updateProductSizePreview()"
-        >
-        <div class="note">
-          الحجم:
-          <strong id="designCardTabletValue">220px</strong>
-        </div>
-      </div>
-
-      <div>
-        <label>جوال</label>
-        <input
-          id="designCardMobile"
-          type="range"
-          min="150"
-          max="360"
-          step="5"
-          value="280"
-          oninput="updateProductSizePreview()"
-        >
-        <div class="note">
-          الحجم:
-          <strong id="designCardMobileValue">280px</strong>
-        </div>
-      </div>
-    </div>
-
-    <div
-      id="productSizePreviewBox"
-      style="
-        margin:16px 0;
-        padding:18px;
-        border:1px dashed var(--gold);
-        border-radius:16px;
-        background:var(--cream);
-        overflow:auto;
-      "
-    >
-      <div class="note" style="margin-bottom:10px">
-        معاينة حجم بطاقة المنتج
-      </div>
-
-      <div
-        id="productSizePreviewCard"
-        style="
-          width:180px;
-          max-width:100%;
-          margin:auto;
-          background:#fff;
-          border:1px solid var(--line);
-          border-radius:18px;
-          padding:12px;
-          text-align:center;
-          transition:width .2s ease;
-        "
-      >
-        <div
-          style="
-            aspect-ratio:1/1;
-            border-radius:14px;
-            background:var(--cream2);
-            display:grid;
-            place-items:center;
-            font-size:42px;
-          "
-        >🛍️</div>
-
-        <strong style="display:block;margin-top:10px">
-          نموذج منتج
-        </strong>
-
-        <div class="note">100.00 ر.س</div>
-
-        <button
-          type="button"
-          class="btn"
-          style="width:100%;margin-top:8px"
-        >
-          أضف للسلة
-        </button>
-      </div>
-    </div>
-
-
     <h3>الخلفية</h3>
     <div class="grid2">
       <div>
@@ -1893,51 +1778,6 @@ function fillFontSelects(){
 }
 
 
-function updateProductSizePreview(){
-
-  const desktop=
-    Number(
-      $("designCardDesktop").value
-      ||180
-    );
-
-  const tablet=
-    Number(
-      $("designCardTablet").value
-      ||220
-    );
-
-  const mobile=
-    Number(
-      $("designCardMobile").value
-      ||280
-    );
-
-  $("designCardDesktopValue").textContent=
-    desktop+"px";
-
-  $("designCardTabletValue").textContent=
-    tablet+"px";
-
-  $("designCardMobileValue").textContent=
-    mobile+"px";
-
-  /*
-    المعاينة تستخدم الحجم المناسب لعرض شاشة الإدارة الحالي.
-  */
-  let previewWidth=desktop;
-
-  if(window.innerWidth<=768){
-    previewWidth=mobile;
-  }
-  else if(window.innerWidth<=1100){
-    previewWidth=tablet;
-  }
-
-  $("productSizePreviewCard").style.width=
-    previewWidth+"px";
-}
-
 async function saveDesignSettings(){
   const button=$("saveDesignButton");
   button.disabled=true;
@@ -1967,19 +1807,6 @@ async function saveDesignSettings(){
         ink:$("designInk").value,
         gold:$("designGold").value
       },
-
-      cardWidth:Number($("designCardDesktop").value||180),
-
-      cards:{
-        ...(designSettings.cards||{}),
-        desktopWidth:Number($("designCardDesktop").value||180),
-        tabletWidth:Number($("designCardTablet").value||220),
-        mobileWidth:Number($("designCardMobile").value||280)
-      },
-
-      cardWidthDesktop:Number($("designCardDesktop").value||180),
-      cardWidthTablet:Number($("designCardTablet").value||220),
-      cardWidthMobile:Number($("designCardMobile").value||280),
 
       productCard:{...(designSettings.productCard||{})},
       productFont:$("fontProductNames").value,
@@ -2463,22 +2290,6 @@ function fillSimpleSettings(){
   $("designInk").value=colors.ink||"#20301C";
   $("designGold").value=colors.gold||"#A9793C";
 
-  $("designCardDesktop").value=Number(
-    designSettings.cards?.desktopWidth
-    || designSettings.cardWidth
-    || 180
-  );
-
-  $("designCardTablet").value=Number(
-    designSettings.cards?.tabletWidth
-    || 220
-  );
-
-  $("designCardMobile").value=Number(
-    designSettings.cards?.mobileWidth
-    || 280
-  );
-
   $("designBackgroundUrl").value=designSettings.backgroundUrl||"";
   const pc=designSettings.productCard||{};
   fillProductCardDesign(pc);
@@ -2505,7 +2316,7 @@ function fillSimpleSettings(){
   fillFontSelects();
   renderExistingAdMedia();
   renderPaymentSettings();
-  updateProductSizePreview();
+
 }
 
 
@@ -2706,15 +2517,6 @@ async function saveGeneralSettings(){
 }
 
 
-window.addEventListener(
-  "resize",
-  ()=>{
-    if($("productSizePreviewCard")){
-      updateProductSizePreview();
-    }
-  },
-  {passive:true}
-);
 
 async function removeRow(table,id){if(!confirm("تأكيد الحذف؟"))return;const{error}=await db.from(table).delete().eq("id",id);if(error)return alert(error.message);toast("تم الحذف");await loadAll()}
 
@@ -2758,4 +2560,4 @@ window.addEventListener("unhandledrejection",function(event){
 startAdmin();
 </script>
 </body>
-</html>
+</html></html>

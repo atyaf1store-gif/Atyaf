@@ -710,6 +710,27 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
       </div>
     </div>
 
+    <h3>🛍️ تصميم أيقونة / بطاقة المنتج بالتفصيل</h3>
+    <p class="note">تحكم مستقل في شكل بطاقات المنتجات فقط، بدون التأثير على بقية المتجر.</p>
+    <div class="grid4">
+      <div><label>لون خلفية البطاقة</label><input id="pcBackground" type="color" value="#ffffff"></div>
+      <div><label>لون حدود البطاقة</label><input id="pcBorderColor" type="color" value="#eeeae2"></div>
+      <div><label>سُمك الحدود px</label><input id="pcBorderWidth" type="number" min="0" max="10" value="1"></div>
+      <div><label>استدارة البطاقة px</label><input id="pcRadius" type="number" min="0" max="60" value="18"></div>
+      <div><label>ارتفاع صورة المنتج px</label><input id="pcImageHeight" type="number" min="120" max="650" value="315"></div>
+      <div><label>حجم اسم المنتج px</label><input id="pcNameSize" type="number" min="9" max="40" value="13"></div>
+      <div><label>حجم السعر px</label><input id="pcPriceSize" type="number" min="9" max="40" value="14"></div>
+      <div><label>حجم قلب المفضلة px</label><input id="pcHeartSize" type="number" min="24" max="70" value="34"></div>
+      <div><label>لون زر السلة</label><input id="pcCartBg" type="color" value="#050505"></div>
+      <div><label>لون نص زر السلة</label><input id="pcCartText" type="color" value="#ffffff"></div>
+      <div><label>لون زر الهدية</label><input id="pcGiftBg" type="color" value="#ffffff"></div>
+      <div><label>لون نص زر الهدية</label><input id="pcGiftText" type="color" value="#171717"></div>
+      <div><label>ارتفاع الأزرار px</label><input id="pcButtonHeight" type="number" min="30" max="90" value="43"></div>
+      <div><label>ظل البطاقة</label><select id="pcShadow"><option value="none">بدون ظل</option><option value="soft">خفيف</option><option value="medium">متوسط</option><option value="strong">واضح</option></select></div>
+      <div><label>محاذاة النص</label><select id="pcTextAlign"><option value="center">وسط</option><option value="right">يمين</option><option value="left">يسار</option></select></div>
+      <div><label>شكل الصورة</label><select id="pcImageFit"><option value="contain">كاملة Contain</option><option value="cover">تغطية Cover</option></select></div>
+    </div>
+
     <h3>الخلفية</h3>
     <div class="grid2">
       <div>
@@ -745,6 +766,18 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
     <div class="actions">
       <button id="saveDesignButton" class="btn gold" onclick="saveDesignSettings()">حفظ التصميم والخطوط</button>
     </div>
+  </div>
+</section>
+
+<section id="sectionManager" class="page hidden">
+  <div class="card">
+    <h2>🧩 إدارة أقسام واجهة المتجر</h2>
+    <p class="note">لكل قسم: تعديل الاسم والوصف، إظهار/إخفاء، وترتيب. الحذف هنا يخفي القسم بأمان ولا يحذف بياناته من قاعدة البيانات.</p>
+    <div id="sectionManagerList"></div>
+    <div class="actions"><button class="btn gold" onclick="saveSectionManager()">حفظ إعدادات الأقسام</button><button class="btn out" onclick="addCustomSection()">إضافة قسم مخصص</button></div>
+  </div>
+  <div class="card">
+    <h3>الأقسام المخصصة</h3><div id="customSectionsList"></div>
   </div>
 </section>
 
@@ -935,11 +968,11 @@ const db=window.supabase?.createClient ? window.supabase.createClient(SUPABASE_U
 const $=id=>document.getElementById(id);
 
 let products=[],categories=[],variants=[],bundles=[],gifts=[],coupons=[],orders=[],reviews=[],relations=[],customers=[],settingsRows=[];
-let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={},announcementBarsSettings={},homepageSettings={};
+let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={},announcementBarsSettings={},homepageSettings={},sectionManagerSettings={};
 let editingProductImages=[],currentInvoiceHTML="";
 
 const tabs=[
-["dashboard","الرئيسية"],["productManager","المنتجات"],["categories","الأقسام"],["products","الخيارات"],["bundles","العروض"],["gifts","الهدايا"],["coupons","الكوبونات"],["customers","العملاء"],["orders","الطلبات"],["reviews","التقييمات"],["recommend","الاقتراحات"],["ads","الإعلانات"],["bottomAds","الإعلان السفلي"],["homepage","واجهة المتجر"],["design","التصميم والخطوط"],["payment","الدفع والبنوك"],["footer","السياسات"],["settings","إعدادات المتجر"]
+["dashboard","الرئيسية"],["productManager","المنتجات"],["categories","الأقسام"],["products","الخيارات"],["bundles","العروض"],["gifts","الهدايا"],["coupons","الكوبونات"],["customers","العملاء"],["orders","الطلبات"],["reviews","التقييمات"],["recommend","الاقتراحات"],["ads","الإعلانات"],["bottomAds","الإعلان السفلي"],["homepage","واجهة المتجر"],["sectionManager","إدارة الأقسام"],["design","التصميم والخطوط"],["payment","الدفع والبنوك"],["footer","السياسات"],["settings","إعدادات المتجر"]
 ];
 const policies=[["about","من نحن"],["returns","سياسة الاستبدال والاسترجاع"],["privacy","سياسة الخصوصية"],["terms","الشروط والأحكام"],["discounts","سياسة التخفيضات"],["customerService","خدمة العملاء"],["hr","الموارد البشرية"],["wholesale","مبيعات الجملة"],["branches","فروعنا"]];
 
@@ -1887,6 +1920,9 @@ async function saveDesignSettings(){
       cardWidthTablet:Number($("designCardTablet").value||220),
       cardWidthMobile:Number($("designCardMobile").value||280),
 
+      productCard:{
+        background:$("pcBackground").value,borderColor:$("pcBorderColor").value,borderWidth:Number($("pcBorderWidth").value||0),radius:Number($("pcRadius").value||0),imageHeight:Number($("pcImageHeight").value||315),nameSize:Number($("pcNameSize").value||13),priceSize:Number($("pcPriceSize").value||14),heartSize:Number($("pcHeartSize").value||34),cartBg:$("pcCartBg").value,cartText:$("pcCartText").value,giftBg:$("pcGiftBg").value,giftText:$("pcGiftText").value,buttonHeight:Number($("pcButtonHeight").value||43),shadow:$("pcShadow").value,textAlign:$("pcTextAlign").value,imageFit:$("pcImageFit").value
+      },
       productFont:$("fontProductNames").value,
       backgroundUrl,
       fonts,
@@ -2194,6 +2230,24 @@ async function saveFooterSettings(){
   }
 }
 
+/* ================= SECTION MANAGER ================= */
+const MANAGED_SECTIONS=[
+ ["brands","الماركات","تسوق حسب الماركة","اختر ماركتك المفضلة"],["best","الأكثر مبيعاً","الأكثر مبيعاً",""] ,["new","وصل حديثاً","وصل حديثاً",""] ,["scents","الروائح","تسوق حسب الروائح",""] ,["featuredSection","منتجات مميزة","منتجات مميزة","منتجات اخترناها لك"],["allProductsSection","جميع المنتجات","منتجات قد تعجبك",""] ,["afterProductsAd","الإعلان السفلي","",""]
+];
+function sectionRows(){return (sectionManagerSettings.sections&&typeof sectionManagerSettings.sections==="object")?sectionManagerSettings.sections:{}}
+function renderSectionManager(){
+ const box=$("sectionManagerList"); if(!box)return; const rows=sectionRows();
+ box.innerHTML=MANAGED_SECTIONS.map((x,i)=>{const v=rows[x[0]]||{};return `<div class="card" data-section-row="${x[0]}"><div class="grid4"><div><label>القسم</label><strong>${x[1]}</strong></div><div><label>العنوان</label><input data-f="title" value="${esc(v.title??x[2])}"></div><div><label>الوصف</label><input data-f="subtitle" value="${esc(v.subtitle??x[3])}"></div><div><label>الترتيب</label><input data-f="order" type="number" value="${Number(v.order??i+1)}"></div></div><div class="actions"><label class="check-row"><input data-f="enabled" type="checkbox" ${v.enabled===false?'':'checked'}> إظهار القسم</label><button class="btn red sm" type="button" onclick="hideManagedSection('${x[0]}')">حذف/إخفاء</button></div></div>`}).join(""); renderCustomSections();
+}
+function hideManagedSection(id){const row=document.querySelector(`[data-section-row="${id}"]`);if(row){const c=row.querySelector('[data-f="enabled"]');if(c)c.checked=false}toast("سيتم إخفاء القسم بعد الحفظ") }
+function collectSectionRows(){const out={};document.querySelectorAll('[data-section-row]').forEach((row,i)=>{out[row.dataset.sectionRow]={title:row.querySelector('[data-f="title"]')?.value.trim()||"",subtitle:row.querySelector('[data-f="subtitle"]')?.value.trim()||"",order:Number(row.querySelector('[data-f="order"]')?.value||i+1),enabled:!!row.querySelector('[data-f="enabled"]')?.checked}});return out}
+async function saveSectionManager(){try{const next={...sectionManagerSettings,sections:collectSectionRows(),custom:Array.isArray(sectionManagerSettings.custom)?sectionManagerSettings.custom:[]};await saveSetting("section_manager",next);sectionManagerSettings=next;toast("تم حفظ إعدادات الأقسام ✓")}catch(e){alert("تعذر الحفظ:
+"+(e.message||e))}}
+function addCustomSection(){const title=prompt("اسم القسم الجديد");if(!title?.trim())return;const custom=[...(Array.isArray(sectionManagerSettings.custom)?sectionManagerSettings.custom:[])];custom.push({id:"custom_"+Date.now(),title:title.trim(),subtitle:"",content:"",enabled:true,order:100+custom.length});sectionManagerSettings={...sectionManagerSettings,custom};renderCustomSections()}
+function renderCustomSections(){const box=$("customSectionsList");if(!box)return;const arr=Array.isArray(sectionManagerSettings.custom)?sectionManagerSettings.custom:[];box.innerHTML=arr.length?arr.map((x,i)=>`<div class="card"><div class="grid3"><input value="${esc(x.title||"")}" onchange="updateCustomSection(${i},'title',this.value)" placeholder="العنوان"><input value="${esc(x.subtitle||"")}" onchange="updateCustomSection(${i},'subtitle',this.value)" placeholder="الوصف"><input type="number" value="${Number(x.order||100+i)}" onchange="updateCustomSection(${i},'order',Number(this.value))"></div><textarea onchange="updateCustomSection(${i},'content',this.value)" placeholder="محتوى القسم">${esc(x.content||"")}</textarea><div class="actions"><label class="check-row"><input type="checkbox" ${x.enabled===false?'':'checked'} onchange="updateCustomSection(${i},'enabled',this.checked)"> إظهار</label><button class="btn red sm" onclick="deleteCustomSection(${i})">حذف</button></div></div>`).join(""):"<p class='note'>لا توجد أقسام مخصصة.</p>"}
+function updateCustomSection(i,k,v){const arr=[...(sectionManagerSettings.custom||[])];if(!arr[i])return;arr[i]={...arr[i],[k]:v};sectionManagerSettings={...sectionManagerSettings,custom:arr}}
+function deleteCustomSection(i){if(!confirm("حذف هذا القسم المخصص؟"))return;const arr=[...(sectionManagerSettings.custom||[])];arr.splice(i,1);sectionManagerSettings={...sectionManagerSettings,custom:arr};renderCustomSections()}
+
 /* ================= GENERAL SETTINGS ================= */
 
 function fillSimpleSettings(){
@@ -2314,6 +2368,9 @@ function fillSimpleSettings(){
   );
 
   $("designBackgroundUrl").value=designSettings.backgroundUrl||"";
+  const pc=designSettings.productCard||{};
+  $("pcBackground").value=pc.background||"#ffffff"; $("pcBorderColor").value=pc.borderColor||"#eeeae2"; $("pcBorderWidth").value=pc.borderWidth??1; $("pcRadius").value=pc.radius??18; $("pcImageHeight").value=pc.imageHeight||315; $("pcNameSize").value=pc.nameSize||13; $("pcPriceSize").value=pc.priceSize||14; $("pcHeartSize").value=pc.heartSize||34; $("pcCartBg").value=pc.cartBg||"#050505"; $("pcCartText").value=pc.cartText||"#ffffff"; $("pcGiftBg").value=pc.giftBg||"#ffffff"; $("pcGiftText").value=pc.giftText||"#171717"; $("pcButtonHeight").value=pc.buttonHeight||43; $("pcShadow").value=pc.shadow||"none"; $("pcTextAlign").value=pc.textAlign||"center"; $("pcImageFit").value=pc.imageFit||"contain";
+  renderSectionManager();
 
   const tc=designSettings.textColors||{};
   $("colorBodyText").value=tc.body||"#20231f";

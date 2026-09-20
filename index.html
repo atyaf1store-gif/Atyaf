@@ -750,6 +750,16 @@ main#home{position:relative}
   .product-actions button{min-height:41px!important;border-radius:7px!important;font-size:10px!important}
 }
 
+
+/* ATYAF ADMIN-MANAGED PRODUCT CARD */
+.product{background:var(--pc-bg,#fff)!important;border:var(--pc-border-w,1px) solid var(--pc-border,#eeeae2)!important;border-radius:var(--pc-radius,18px)!important;box-shadow:var(--pc-shadow,none)!important;overflow:hidden!important}
+.product-image{height:var(--pc-img-h,315px)!important;border:0!important}
+.product-image img{object-fit:var(--pc-fit,contain)!important}
+.product-info{text-align:var(--pc-align,center)!important;padding:12px!important}
+.product-info h3{font-size:var(--pc-name-size,13px)!important}.product-info .price{font-size:var(--pc-price-size,14px)!important}
+.heart{width:var(--pc-heart-size,34px)!important;height:var(--pc-heart-size,34px)!important}
+.product-actions button{min-height:var(--pc-btn-h,43px)!important}.product-actions button:first-child{background:var(--pc-cart-bg,#050505)!important;color:var(--pc-cart-text,#fff)!important;border-color:var(--pc-cart-bg,#050505)!important}.product-actions button:last-child{background:var(--pc-gift-bg,#fff)!important;color:var(--pc-gift-text,#171717)!important}
+.custom-managed-section{padding:42px 0}.custom-managed-section .custom-content{white-space:pre-wrap;text-align:center;line-height:2;color:#555}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1244,6 +1254,10 @@ function applyManagedDesign(d={}){
     if(!color)return;
     document.querySelectorAll(sel).forEach(el=>el.style.setProperty("color",color,"important"));
   });
+  const pc=d.productCard||{}; const root=document.documentElement;
+  const set=(k,v)=>{if(v!==undefined&&v!==null&&v!=="")root.style.setProperty(k,String(v))};
+  set("--pc-bg",pc.background||"#fff");set("--pc-border",pc.borderColor||"#eeeae2");set("--pc-border-w",(pc.borderWidth??1)+"px");set("--pc-radius",(pc.radius??18)+"px");set("--pc-img-h",(pc.imageHeight||315)+"px");set("--pc-name-size",(pc.nameSize||13)+"px");set("--pc-price-size",(pc.priceSize||14)+"px");set("--pc-heart-size",(pc.heartSize||34)+"px");set("--pc-cart-bg",pc.cartBg||"#050505");set("--pc-cart-text",pc.cartText||"#fff");set("--pc-gift-bg",pc.giftBg||"#fff");set("--pc-gift-text",pc.giftText||"#171717");set("--pc-btn-h",(pc.buttonHeight||43)+"px");set("--pc-align",pc.textAlign||"center");set("--pc-fit",pc.imageFit||"contain");
+  const shadows={none:"none",soft:"0 5px 18px rgba(0,0,0,.06)",medium:"0 10px 28px rgba(0,0,0,.11)",strong:"0 14px 36px rgba(0,0,0,.18)"};set("--pc-shadow",shadows[pc.shadow]||"none");
 }
 function applyManagedFooter(g={},f={}){
   atyafFooterPolicies=f?.policies||{};
@@ -1261,16 +1275,24 @@ function applyManagedFooter(g={},f={}){
       ${g.whatsapp?`<p>واتساب: ${atyafEsc(g.whatsapp)}</p>`:""}`;
   }
 }
+function applySectionManager(cfg={}){
+  const rows=(cfg.sections&&typeof cfg.sections==="object")?cfg.sections:{};
+  Object.entries(rows).forEach(([id,v])=>{const el=document.getElementById(id);if(!el)return;el.style.display=v?.enabled===false?"none":"";const h=el.querySelector(".section-title h2");const p=el.querySelector(".section-title p");if(h&&v?.title!==undefined)h.textContent=v.title;if(p&&v?.subtitle!==undefined)p.textContent=v.subtitle||"";el.dataset.managedOrder=String(Number(v?.order||50))});
+  const custom=Array.isArray(cfg.custom)?cfg.custom:[];let host=document.getElementById("atyafCustomSections");if(!host){host=document.createElement("div");host.id="atyafCustomSections";const before=document.getElementById("afterProductsAd")||document.querySelector(".footer");before?.parentNode?.insertBefore(host,before)}
+  if(host)host.innerHTML=custom.filter(x=>x&&x.enabled!==false).sort((a,b)=>Number(a.order||100)-Number(b.order||100)).map(x=>`<section class="custom-managed-section"><div class="container"><div class="section-title"><h2>${atyafEsc(x.title||"")}</h2><p>${atyafEsc(x.subtitle||"")}</p></div><div class="custom-content">${atyafEsc(x.content||"")}</div></div></section>`).join("");
+}
+
 async function loadManagedStoreSettings(){
   try{
-    const [home,general,design,footer]=await Promise.all([
+    const [home,general,design,footer,sectionManager]=await Promise.all([
       atyafGetSetting("homepage"),atyafGetSetting("general"),
-      atyafGetSetting("design"),atyafGetSetting("footer")
+      atyafGetSetting("design"),atyafGetSetting("footer"),atyafGetSetting("section_manager")
     ]);
     renderManagedHomepage(home);
     applyManagedGeneral(general);
     applyManagedDesign(design);
     applyManagedFooter(general,footer);
+    applySectionManager(sectionManager);
   }catch(e){console.warn("ATYAF managed settings:",e)}
 }
 

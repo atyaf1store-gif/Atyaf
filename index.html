@@ -752,7 +752,7 @@ main#home{position:relative}
 
 
 /* ATYAF ADMIN-MANAGED PRODUCT CARD */
-.product{background:var(--pc-bg,#fff)!important;border:var(--pc-border-w,1px) solid var(--pc-border,#eeeae2)!important;border-radius:var(--pc-radius,18px)!important;box-shadow:var(--pc-shadow,none)!important;overflow:hidden!important;font-family:var(--pc-font,Cairo),sans-serif!important}
+.product{background:var(--pc-bg,#fff)!important;border:var(--pc-border-w,1px) solid var(--pc-border,#eeeae2)!important;border-radius:var(--pc-radius,18px)!important;box-shadow:var(--pc-shadow,none)!important;overflow:hidden!important;font-family:var(--pc-font,Cairo),sans-serif!important}\n.product .product-info,.product .product-info h3,.product .product-info .price,.product .product-actions button{font-family:var(--pc-font,Cairo),sans-serif!important}
 .product-image{height:var(--pc-img-h,315px)!important;background:var(--pc-img-bg,#fff)!important;border:0!important}
 .product-image img{object-fit:var(--pc-fit,contain)!important;padding:var(--pc-img-pad,12px)!important}
 .product-info{text-align:var(--pc-align,center)!important;padding:var(--pc-info-pad,12px)!important}
@@ -760,6 +760,9 @@ main#home{position:relative}
 .heart{width:var(--pc-heart-size,34px)!important;height:var(--pc-heart-size,34px)!important;background:var(--pc-heart-bg,#fff)!important;color:var(--pc-heart-color,#292929)!important;border-color:var(--pc-heart-border,#ddd8ce)!important}.heart.active{background:var(--pc-heart-active,#111)!important;border-color:var(--pc-heart-active,#111)!important;color:#fff!important}
 .sale{background:var(--pc-badge-bg,#050505)!important;color:var(--pc-badge-text,#fff)!important;border-radius:var(--pc-badge-radius,14px)!important}
 .product-actions button{min-height:var(--pc-btn-h,43px)!important;border-radius:var(--pc-btn-radius,0px)!important;font-size:var(--pc-btn-font,11px)!important}.product-actions button:first-child{background:var(--pc-cart-bg,#050505)!important;color:var(--pc-cart-text,#fff)!important;border-color:var(--pc-cart-bg,#050505)!important}.product-actions button:last-child{background:var(--pc-gift-bg,#fff)!important;color:var(--pc-gift-text,#171717)!important;border-color:var(--pc-gift-border,#d8d4cb)!important}
+.product-actions button:first-child:hover{background:var(--pc-cart-bg,#050505)!important;border-color:var(--pc-cart-bg,#050505)!important;color:var(--pc-cart-text,#fff)!important}
+.product-actions button:last-child:hover{background:var(--pc-gift-bg,#fff)!important;border-color:var(--pc-gift-border,#d8d4cb)!important;color:var(--pc-gift-text,#171717)!important}
+.heart:hover{background:var(--pc-heart-active,#111)!important;border-color:var(--pc-heart-active,#111)!important;color:#fff!important}
 .product.pc-no-hover:hover{transform:none!important}
 .custom-managed-section{padding:42px 0}.custom-managed-section .custom-content{white-space:pre-wrap;text-align:center;line-height:2;color:#555}
 </style>
@@ -1231,7 +1234,7 @@ function applyManagedDesign(d={}){
   const fonts=d.fonts||{};
   if(fonts.body)document.body.style.fontFamily=fonts.body+", Cairo, sans-serif";
   if(fonts.sectionTitles)document.querySelectorAll(".section-title h2").forEach(x=>x.style.fontFamily=fonts.sectionTitles);
-  if(fonts.productNames)document.querySelectorAll(".product-info h3").forEach(x=>x.style.fontFamily=fonts.productNames);
+  /* خط بطاقة المنتج يدار من إعداد بطاقة المنتج المستقل */
 
   const t=d.textColors||{};
   const rules=[
@@ -1242,10 +1245,8 @@ function applyManagedDesign(d={}){
     [".section-title h2,.banner-text h2",t.sectionTitle],
     [".section-title p,.banner-text p",t.sectionDesc],
     [".brand b,.round b",t.category],
-    [".product-info h3",t.productName],
-    [".price,.product-info .price",t.price],
-    [".old",t.oldPrice],
-    ["button,.btn,.add-cart,.gift-btn",t.button],
+    /* ألوان بطاقة المنتج يديرها قسم "بطاقات المنتجات" حصراً */
+    [".btn,.add-cart,.gift-btn",t.button],
     [".footer,.footer p,.footer a",t.footer],
     [".footer h3",t.footerTitle],
     [".modal,.modal *,.cart,.cart *",t.modal],

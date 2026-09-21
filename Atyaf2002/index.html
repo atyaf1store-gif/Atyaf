@@ -754,12 +754,15 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
     </div>
 
     
-    <h3>📐 حجم بطاقة المنتج كاملة</h3>
-    <p class="note">هذا الخيار يغيّر عرض بطاقة المنتج كاملة، وليس حجم صورة المنتج وحدها.</p>
+    <h3>📐 حجم بطاقة المنتج كاملة — الطول والعرض</h3>
+    <p class="note">تحكم مستقل في عرض وطول بطاقة المنتج كاملة لكل جهاز.</p>
     <div class="grid3">
       <div><label>كمبيوتر — عرض البطاقة px</label><input id="pcCardWidthDesktop" type="number" min="140" max="600" step="5" value="300"></div>
       <div><label>تابلت — عرض البطاقة px</label><input id="pcCardWidthTablet" type="number" min="140" max="600" step="5" value="260"></div>
       <div><label>جوال — عرض البطاقة px</label><input id="pcCardWidthMobile" type="number" min="120" max="500" step="5" value="220"></div>
+      <div><label>كمبيوتر — طول البطاقة px</label><input id="pcCardHeightDesktop" type="number" min="250" max="1000" step="5" value="520"></div>
+      <div><label>تابلت — طول البطاقة px</label><input id="pcCardHeightTablet" type="number" min="250" max="1000" step="5" value="480"></div>
+      <div><label>جوال — طول البطاقة px</label><input id="pcCardHeightMobile" type="number" min="220" max="900" step="5" value="400"></div>
     </div>
 
 <h3>معاينة مباشرة</h3>
@@ -2083,12 +2086,13 @@ const PRODUCT_CARD_DEFAULTS={
  priceSize:14,priceColor:"#9d342b",oldPriceColor:"#747874",heartSize:34,heartBg:"#ffffff",heartColor:"#292929",heartBorder:"#ddd8ce",heartActive:"#111111",
  badgeBg:"#050505",badgeText:"#ffffff",badgeRadius:14,cartBg:"#050505",cartText:"#ffffff",giftBg:"#ffffff",giftText:"#171717",giftBorder:"#d8d4cb",
  buttonHeight:43,buttonRadius:0,buttonFontSize:11,
- cardWidthDesktop:300,cardWidthTablet:260,cardWidthMobile:220
+ cardWidthDesktop:300,cardWidthTablet:260,cardWidthMobile:220,
+ cardHeightDesktop:520,cardHeightTablet:480,cardHeightMobile:400
 };
 function pcSet(id,value){const el=$(id);if(el&&value!==undefined&&value!==null)el.value=value}
 function fillProductCardDesign(saved={}){
  const p={...PRODUCT_CARD_DEFAULTS,...(saved||{})};
- Object.entries({pcBackground:p.background,pcBorderColor:p.borderColor,pcBorderWidth:p.borderWidth,pcRadius:p.radius,pcImageBg:p.imageBg,pcImageHeight:p.imageHeight,pcImagePadding:p.imagePadding,pcImageFit:p.imageFit,pcInfoPadding:p.infoPadding,pcShadow:p.shadow,pcHover:p.hover,pcTextAlign:p.textAlign,pcFontFamily:p.fontFamily,pcNameSize:p.nameSize,pcNameColor:p.nameColor,pcNameWeight:p.nameWeight,pcNameLineHeight:p.nameLineHeight,pcPriceSize:p.priceSize,pcPriceColor:p.priceColor,pcOldPriceColor:p.oldPriceColor,pcHeartSize:p.heartSize,pcHeartBg:p.heartBg,pcHeartColor:p.heartColor,pcHeartBorder:p.heartBorder,pcHeartActive:p.heartActive,pcBadgeBg:p.badgeBg,pcBadgeText:p.badgeText,pcBadgeRadius:p.badgeRadius,pcCartBg:p.cartBg,pcCartText:p.cartText,pcGiftBg:p.giftBg,pcGiftText:p.giftText,pcGiftBorder:p.giftBorder,pcButtonHeight:p.buttonHeight,pcButtonRadius:p.buttonRadius,pcButtonFontSize:p.buttonFontSize,pcCardWidthDesktop:p.cardWidthDesktop,pcCardWidthTablet:p.cardWidthTablet,pcCardWidthMobile:p.cardWidthMobile}).forEach(([id,v])=>pcSet(id,v));
+ Object.entries({pcBackground:p.background,pcBorderColor:p.borderColor,pcBorderWidth:p.borderWidth,pcRadius:p.radius,pcImageBg:p.imageBg,pcImageHeight:p.imageHeight,pcImagePadding:p.imagePadding,pcImageFit:p.imageFit,pcInfoPadding:p.infoPadding,pcShadow:p.shadow,pcHover:p.hover,pcTextAlign:p.textAlign,pcFontFamily:p.fontFamily,pcNameSize:p.nameSize,pcNameColor:p.nameColor,pcNameWeight:p.nameWeight,pcNameLineHeight:p.nameLineHeight,pcPriceSize:p.priceSize,pcPriceColor:p.priceColor,pcOldPriceColor:p.oldPriceColor,pcHeartSize:p.heartSize,pcHeartBg:p.heartBg,pcHeartColor:p.heartColor,pcHeartBorder:p.heartBorder,pcHeartActive:p.heartActive,pcBadgeBg:p.badgeBg,pcBadgeText:p.badgeText,pcBadgeRadius:p.badgeRadius,pcCartBg:p.cartBg,pcCartText:p.cartText,pcGiftBg:p.giftBg,pcGiftText:p.giftText,pcGiftBorder:p.giftBorder,pcButtonHeight:p.buttonHeight,pcButtonRadius:p.buttonRadius,pcButtonFontSize:p.buttonFontSize,pcCardWidthDesktop:p.cardWidthDesktop,pcCardWidthTablet:p.cardWidthTablet,pcCardWidthMobile:p.cardWidthMobile,pcCardHeightDesktop:p.cardHeightDesktop,pcCardHeightTablet:p.cardHeightTablet,pcCardHeightMobile:p.cardHeightMobile}).forEach(([id,v])=>pcSet(id,v));
  updateProductCardPreview();
 }
 function collectProductCardDesign(){return {
@@ -2098,13 +2102,16 @@ function collectProductCardDesign(){return {
  priceSize:Number($("pcPriceSize").value||14),priceColor:$("pcPriceColor").value,oldPriceColor:$("pcOldPriceColor").value,heartSize:Number($("pcHeartSize").value||34),heartBg:$("pcHeartBg").value,heartColor:$("pcHeartColor").value,heartBorder:$("pcHeartBorder").value,heartActive:$("pcHeartActive").value,
  badgeBg:$("pcBadgeBg").value,badgeText:$("pcBadgeText").value,badgeRadius:Number($("pcBadgeRadius").value||0),cartBg:$("pcCartBg").value,cartText:$("pcCartText").value,giftBg:$("pcGiftBg").value,giftText:$("pcGiftText").value,giftBorder:$("pcGiftBorder").value,
  buttonHeight:Number($("pcButtonHeight").value||43),buttonRadius:Number($("pcButtonRadius").value||0),buttonFontSize:Number($("pcButtonFontSize").value||11),
- cardWidthDesktop:Number($("pcCardWidthDesktop").value||300),cardWidthTablet:Number($("pcCardWidthTablet").value||260),cardWidthMobile:Number($("pcCardWidthMobile").value||220)
+ cardWidthDesktop:Number($("pcCardWidthDesktop").value||300),cardWidthTablet:Number($("pcCardWidthTablet").value||260),cardWidthMobile:Number($("pcCardWidthMobile").value||220),
+ cardHeightDesktop:Number($("pcCardHeightDesktop").value||520),cardHeightTablet:Number($("pcCardHeightTablet").value||480),cardHeightMobile:Number($("pcCardHeightMobile").value||400)
 }}
 function updateProductCardPreview(){
  if(!$("pcPreviewCard"))return; const p=collectProductCardDesign(); const shadows={none:"none",soft:"0 5px 18px rgba(0,0,0,.06)",medium:"0 10px 28px rgba(0,0,0,.11)",strong:"0 14px 36px rgba(0,0,0,.18)"};
  const vw=window.innerWidth||1200;
  const previewWidth=vw<=700?p.cardWidthMobile:(vw<=1024?p.cardWidthTablet:p.cardWidthDesktop);
+ const previewHeight=vw<=700?p.cardHeightMobile:(vw<=1024?p.cardHeightTablet:p.cardHeightDesktop);
  $("pcPreviewCard").style.width=Math.max(120,Math.min(600,Number(previewWidth||280)))+"px";
+ $("pcPreviewCard").style.height=Math.max(220,Math.min(1000,Number(previewHeight||520)))+"px";
  Object.assign($("pcPreviewCard").style,{background:p.background,border:`${p.borderWidth}px solid ${p.borderColor}`,borderRadius:p.radius+"px",boxShadow:shadows[p.shadow]||"none",overflow:"hidden",fontFamily:`${p.fontFamily},sans-serif`});
  Object.assign($("pcPreviewImage").style,{height:p.imageHeight+"px",background:p.imageBg,padding:p.imagePadding+"px"});
  Object.assign($("pcPreviewInfo").style,{padding:p.infoPadding+"px",textAlign:p.textAlign});
@@ -2783,4 +2790,5 @@ window.addEventListener("unhandledrejection",function(event){
 startAdmin();
 </script>
 </body>
+</html></body>
 </html>

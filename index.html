@@ -2113,6 +2113,28 @@ function atyafCategorySectionId(id){
  return "atyafCategory_"+String(id||"").replace(/[^a-zA-Z0-9_-]/g,"_");
 }
 
+function atyafNormalizeCategoryKey(v){
+ return String(v||"").trim().toLowerCase()
+   .replace(/[أإآ]/g,"ا")
+   .replace(/ة/g,"ه")
+   .replace(/ى/g,"ي")
+   .replace(/\s+/g," ");
+}
+
+function atyafResolveProductCategoryId(p){
+ const direct=String(p.categoryId||"").trim();
+ if(direct && atyafCategories.some(c=>String(c.id)===direct))return direct;
+
+ const productName=atyafNormalizeCategoryKey(p.category);
+ if(!productName)return "";
+
+ const found=atyafCategories.find(c=>{
+   const names=[c.name_ar,c.name,c.name_en].map(atyafNormalizeCategoryKey).filter(Boolean);
+   return names.includes(productName);
+ });
+ return found ? String(found.id) : "";
+}
+
 function renderDynamicCategorySections(list){
  const host=document.getElementById("dynamicCategorySections");
  if(!host)return;
@@ -2121,7 +2143,7 @@ function renderDynamicCategorySections(list){
    .map(c=>{
      const id=String(c.id);
      const name=String(c.name_ar || c.name || c.name_en || "").trim();
-     const items=list.filter(p=>String(p.categoryId||"")===id);
+     const items=list.filter(p=>atyafResolveProductCategoryId(p)===id);
      return {id,name,items};
    })
    .filter(c=>c.name && c.items.length);
@@ -2147,21 +2169,18 @@ function renderAll(){
  render(list.filter(p=>p.new),"newProducts");
  render(list.filter(p=>p.featured),"featuredProducts");
 
- /* كل تصنيف حقيقي في Supabase يظهر كقسم مستقل مثل "إبراق". */
+ /* كل قسم يضاف من الإدارة يُنشأ له قسم مستقل تلقائياً،
+    والمنتج يذهب مباشرة للقسم المحدد له سواء كان الربط محفوظاً بالـ UUID
+    أو باسم القسم في البيانات القديمة. */
  renderDynamicCategorySections(list);
 
- /* "قد تعجبك" للمنتجات غير المرتبطة بتصنيف فقط، حتى لا تتكرر منتجات إبراق هنا. */
- const categoryIds=new Set(atyafCategories.map(c=>String(c.id)));
- const uncategorized=list.filter(p=>{
-   const id=String(p.categoryId||"").trim();
-   return !id || !categoryIds.has(id);
- });
+ /* قد تعجبك = فقط المنتجات التي لا يمكن ربطها بأي قسم حقيقي. */
+ const uncategorized=list.filter(p=>!atyafResolveProductCategoryId(p));
  render(uncategorized,"allProducts");
 
  const allSection=document.getElementById("allProductsSection");
  if(allSection)allSection.style.display=uncategorized.length ? "" : "none";
 }
-
 
 /* ================= ATYAF TOP ADS — SUPABASE SYNC ================= */
 let topAdTimer=null;

@@ -1802,7 +1802,10 @@ function renderManagedHomepage(cfg={}){
     scents.style.display=cfg.scentsEnabled===false?"none":"";
     atyafSetSectionText("scents",cfg.scentsTitle||"اكتشف الروائح",cfg.scentsSubtitle??"اختر الرائحة التي تناسب ذوقك");
     const box=scents.querySelector(".rounds");
-    const items=atyafItems(cfg.scents);
+    const items=atyafItems(cfg.scents)
+      .map((x,i)=>({...x,enabled:x?.enabled!==false,sortOrder:Number.isFinite(Number(x?.sortOrder))?Number(x.sortOrder):i}))
+      .filter(x=>x.enabled!==false)
+      .sort((a,b)=>a.sortOrder-b.sortOrder);
     if(box)box.innerHTML=items.map(x=>`<div class="round" onclick="filterCategory(${JSON.stringify(String(x.name))})">${x.image?`<img src="${atyafEsc(x.image)}" alt="${atyafEsc(x.name)}">`:""}<b>${atyafEsc(x.name)}</b></div>`).join("");
   }
 }

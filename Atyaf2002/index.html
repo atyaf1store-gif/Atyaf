@@ -1253,6 +1253,23 @@ function renderCategories(){
 /* المنتجات */
 function fillProducts(){const h=products.map(p=>`<option value="${p.id}">${esc(p.name||p.name_ar||"")}${Number(p.stock||0)<=0?" — نفدت الكمية":""}</option>`).join("");["varProduct","relFrom","relTo"].forEach(id=>$(id).innerHTML=h);$("bundleProducts").innerHTML=h}
 function renderExistingProductImages(){$("existingProductImages").innerHTML=editingProductImages.map((u,i)=>`<div class="media-preview"><img src="${esc(u)}"><button class="media-remove" onclick="editingProductImages.splice(${i},1);renderExistingProductImages()">×</button></div>`).join("")}
+
+/* ===== SAFE GEMINI RESULT RESET ===== */
+function clearGeminiResult(){
+  const result=document.getElementById("geminiResult");
+  const status=document.getElementById("geminiStatus");
+  const prompt=document.getElementById("geminiCustomPrompt");
+  if(result){
+    result.innerHTML="";
+    result.classList.add("hidden");
+  }
+  if(status){
+    status.textContent="";
+    status.classList.remove("show");
+  }
+  if(prompt) prompt.value="";
+}
+
 async function saveProduct(){
  const id=$("productId").value,name=$("productName").value.trim(),category=$("productCategory").value;if(!name||!category){toast(!name?"اكتب اسم المنتج":"اختر القسم");return}
  const b=$("saveProductButton");b.disabled=true;

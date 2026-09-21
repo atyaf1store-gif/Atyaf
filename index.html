@@ -163,6 +163,19 @@ a{text-decoration:none;color:inherit}
   background:var(--gold);color:#fff;
   border:0;padding:9px 22px;margin-top:8px
 }
+.gift-prep-banner{
+  height:var(--gift-h,225px)!important;background:var(--gift-bg,#fff)!important;
+  border:var(--gift-border-w,0px) solid var(--gift-border,#e5e5e5)!important;
+  border-radius:var(--gift-radius,8px)!important;box-shadow:var(--gift-shadow,none)!important;
+  font-family:var(--gift-font,Cairo),sans-serif!important
+}
+.gift-prep-banner img{object-fit:var(--gift-fit,cover)!important}
+.gift-prep-banner::after{content:"";position:absolute;inset:0;background:var(--gift-overlay,#000);opacity:var(--gift-overlay-opacity,0);pointer-events:none}
+.gift-prep-banner .banner-text{z-index:2;color:var(--gift-text,#fff)!important;text-align:var(--gift-align,right)!important}
+.gift-prep-banner .banner-text h2{color:var(--gift-title,#fff)!important;font-size:var(--gift-title-size,28px)!important;font-family:inherit!important}
+.gift-prep-banner .banner-text p{color:var(--gift-text,#fff)!important;font-size:var(--gift-text-size,14px)!important;font-family:inherit!important}
+.gift-prep-banner .banner-text button{background:var(--gift-btn-bg,#b58a4a)!important;color:var(--gift-btn-text,#fff)!important;font-size:var(--gift-btn-size,13px)!important;border-radius:var(--gift-btn-radius,0px)!important;font-family:inherit!important}
+
 .tabs{
   display:flex;justify-content:center;gap:10px;
   margin-bottom:22px;flex-wrap:wrap
@@ -1286,17 +1299,42 @@ function applySectionManager(cfg={}){
   if(host)host.innerHTML=custom.filter(x=>x&&x.enabled!==false).sort((a,b)=>Number(a.order||100)-Number(b.order||100)).map(x=>`<section class="custom-managed-section"><div class="container"><div class="section-title"><h2>${atyafEsc(x.title||"")}</h2><p>${atyafEsc(x.subtitle||"")}</p></div><div class="custom-content">${atyafEsc(x.content||"")}</div></div></section>`).join("");
 }
 
+
+function applyGiftSectionDesign(cfg={}){
+ const d={enabled:true,title:"جهّز هديتك بكل حب",text:"اختر الهدية وأدخل بيانات المستلم ورسالتك الخاصة",button:"تجهيز الهدية",
+ height:225,radius:8,borderWidth:0,borderColor:"#e5e5e5",background:"#ffffff",titleColor:"#ffffff",textColor:"#ffffff",
+ buttonBg:"#b58a4a",buttonText:"#ffffff",titleSize:28,textSize:14,buttonSize:13,buttonRadius:0,overlay:0,
+ overlayColor:"#000000",align:"right",fit:"cover",font:"Cairo",shadow:"none",...cfg};
+ const gift=document.getElementById("giftHomeBanner");if(!gift)return;
+ gift.style.display=d.enabled===false?"none":"";
+ const img=gift.querySelector("img");if(img&&d.image)img.src=d.image;
+ const h=gift.querySelector("h2");if(h)h.textContent=d.title||"";
+ const p=gift.querySelector("p");if(p)p.textContent=d.text||"";
+ const b=gift.querySelector("button");if(b)b.textContent=d.button||"";
+ const root=document.documentElement,sv=(k,v)=>root.style.setProperty(k,v);
+ sv("--gift-h",Math.max(100,Number(d.height||225))+"px");sv("--gift-radius",Math.max(0,Number(d.radius||0))+"px");
+ sv("--gift-border-w",Math.max(0,Number(d.borderWidth||0))+"px");sv("--gift-border",d.borderColor||"#e5e5e5");
+ sv("--gift-bg",d.background||"#fff");sv("--gift-title",d.titleColor||"#fff");sv("--gift-text",d.textColor||"#fff");
+ sv("--gift-btn-bg",d.buttonBg||"#b58a4a");sv("--gift-btn-text",d.buttonText||"#fff");
+ sv("--gift-title-size",Math.max(12,Number(d.titleSize||28))+"px");sv("--gift-text-size",Math.max(10,Number(d.textSize||14))+"px");
+ sv("--gift-btn-size",Math.max(9,Number(d.buttonSize||13))+"px");sv("--gift-btn-radius",Math.max(0,Number(d.buttonRadius||0))+"px");
+ sv("--gift-overlay",d.overlayColor||"#000");sv("--gift-overlay-opacity",String(Math.max(0,Math.min(90,Number(d.overlay||0)))/100));
+ sv("--gift-align",["right","center","left"].includes(d.align)?d.align:"right");sv("--gift-fit",d.fit==="contain"?"contain":"cover");
+ sv("--gift-font",d.font||"Cairo");sv("--gift-shadow",d.shadow||"none");
+}
 async function loadManagedStoreSettings(){
   try{
-    const [home,general,design,footer,sectionManager]=await Promise.all([
+    const [home,general,design,footer,sectionManager,giftSection]=await Promise.all([
       atyafGetSetting("homepage"),atyafGetSetting("general"),
-      atyafGetSetting("design"),atyafGetSetting("footer"),atyafGetSetting("section_manager")
+      atyafGetSetting("design"),atyafGetSetting("footer"),atyafGetSetting("section_manager"),
+      atyafGetSetting("gift_section_design")
     ]);
     renderManagedHomepage(home);
     applyManagedGeneral(general);
     applyManagedDesign(design);
     applyManagedFooter(general,footer);
     applySectionManager(sectionManager);
+    applyGiftSectionDesign(giftSection);
   }catch(e){console.warn("ATYAF managed settings:",e)}
 }
 
@@ -2145,4 +2183,4 @@ if(document.readyState==="loading"){
 </script>
 
 </body>
-</html>
+</html></html>

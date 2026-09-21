@@ -1261,7 +1261,7 @@ async function saveProduct(){
   const row={
     name,
     name_ar:name,
-    slug:(name.toLowerCase().trim().replace(/\s+/g,"-").replace(/[^\u0600-\u06FFa-z0-9-]/gi,"").replace(/-+/g,"-").replace(/^-|-$/g,"")||("product-"+Date.now())),
+    slug:((name.toLowerCase().trim().replace(/\s+/g,"-").replace(/[^\u0600-\u06FFa-z0-9-]/gi,"").replace(/-+/g,"-").replace(/^-|-$/g,"")||"product")+"-"+Date.now()+"-"+Math.random().toString(36).slice(2,7)),
     category,
     description:$("productDescription").value.trim()||null,
     price:Number($("productPrice").value||0),

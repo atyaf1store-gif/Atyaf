@@ -1106,8 +1106,19 @@ main#home{position:relative}
   .gift-prep-banner .banner-text button{font-size:9px!important;min-height:30px!important;padding:6px 12px!important}
 
   /* Product cards remain responsive and centered */
-  .products,.products-grid{width:100%!important;margin-inline:auto!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
-  .product{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important}
+  .products,.products-grid{
+    width:100%!important;
+    margin-inline:auto!important;
+    grid-template-columns:repeat(auto-fit,minmax(min(var(--pc-card-width,220px),100%),min(var(--pc-card-width,220px),100%)))!important;
+    justify-content:center!important;
+    gap:10px!important;
+  }
+  .product{
+    width:min(var(--pc-card-width,220px),100%)!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin-inline:auto!important;
+  }
 }
 
 /* very narrow phones */

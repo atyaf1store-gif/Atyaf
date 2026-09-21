@@ -377,12 +377,84 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
 <div id="bundleList" class="card"></div>
 </section>
 
+
 <section id="gifts" class="page hidden">
-<div class="card"><h2>🎁 خيارات التغليف</h2>
-<div class="grid2"><div><label>اسم التغليف</label><input id="giftName"></div><div><label>السعر</label><input id="giftPrice" type="number"></div></div>
-<label>الوصف</label><textarea id="giftDesc"></textarea>
-<input id="giftImageFile" type="file" accept="image/*" onchange="previewGiftImage()"><div id="giftImagePreview" class="media-preview-grid"></div>
-<button class="btn" onclick="saveGift()">إضافة التغليف</button></div><div id="giftList" class="card"></div>
+  <div class="card">
+    <h2>🎁 إدارة قسم الهدايا</h2>
+    <p class="note">قسم مستقل للتحكم في واجهة تجهيز الهدية وخيارات التغليف. لا يؤثر على المنتجات أو الإعلانات.</p>
+
+    <h3>واجهة قسم الهدية في المتجر</h3>
+    <div class="check-row"><input id="giftSectionEnabled" type="checkbox" checked><label>إظهار قسم تجهيز الهدية</label></div>
+    <div class="grid3">
+      <div><label>العنوان</label><input id="giftSectionTitle"></div>
+      <div><label>الوصف</label><input id="giftSectionText"></div>
+      <div><label>نص الزر</label><input id="giftSectionButton"></div>
+    </div>
+
+    <label>صورة القسم</label>
+    <input id="giftSectionImage" type="hidden">
+    <input id="giftSectionImageFile" type="file" accept="image/*" onchange="previewGiftSectionImage()">
+    <div id="giftSectionImagePreview" class="media-preview-grid"></div>
+
+    <h3>التصميم والحواف والألوان</h3>
+    <div class="grid4">
+      <div><label>ارتفاع القسم px</label><input id="giftSectionHeight" type="number" min="100" max="700"></div>
+      <div><label>استدارة الحواف px</label><input id="giftSectionRadius" type="number" min="0" max="100"></div>
+      <div><label>سُمك الحدود px</label><input id="giftSectionBorderWidth" type="number" min="0" max="12"></div>
+      <div><label>لون الحدود</label><input id="giftSectionBorderColor" type="color"></div>
+      <div><label>لون الخلفية</label><input id="giftSectionBg" type="color"></div>
+      <div><label>لون العنوان</label><input id="giftSectionTitleColor" type="color"></div>
+      <div><label>لون الوصف</label><input id="giftSectionTextColor" type="color"></div>
+      <div><label>لون الزر</label><input id="giftSectionButtonBg" type="color"></div>
+      <div><label>لون نص الزر</label><input id="giftSectionButtonText" type="color"></div>
+      <div><label>حجم العنوان px</label><input id="giftSectionTitleSize" type="number" min="12" max="70"></div>
+      <div><label>حجم الوصف px</label><input id="giftSectionTextSize" type="number" min="10" max="40"></div>
+      <div><label>حجم نص الزر px</label><input id="giftSectionButtonSize" type="number" min="9" max="32"></div>
+      <div><label>استدارة الزر px</label><input id="giftSectionButtonRadius" type="number" min="0" max="60"></div>
+      <div><label>شفافية طبقة الصورة %</label><input id="giftSectionOverlay" type="number" min="0" max="90"></div>
+      <div><label>لون طبقة الصورة</label><input id="giftSectionOverlayColor" type="color"></div>
+      <div><label>المحاذاة</label><select id="giftSectionAlign"><option value="right">يمين</option><option value="center">وسط</option><option value="left">يسار</option></select></div>
+      <div><label>طريقة عرض الصورة</label><select id="giftSectionFit"><option value="cover">ملء Cover</option><option value="contain">كاملة Contain</option></select></div>
+      <div><label>نوع الخط</label><select id="giftSectionFont"><option value="Cairo">Cairo</option><option value="Tajawal">Tajawal</option><option value="Amiri">Amiri</option><option value="Aref Ruqaa">Aref Ruqaa</option><option value="Markazi Text">Markazi Text</option></select></div>
+      <div><label>الظل</label><select id="giftSectionShadow"><option value="none">بدون</option><option value="0 8px 28px rgba(0,0,0,.12)">خفيف</option><option value="0 14px 38px rgba(0,0,0,.20)">واضح</option></select></div>
+    </div>
+
+    <h3>معاينة مباشرة</h3>
+    <div id="giftSectionPreview" style="position:relative;overflow:hidden;min-height:220px;border:1px solid #ddd;margin:12px 0;background:#eee">
+      <img id="giftSectionPreviewImg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <div id="giftSectionPreviewOverlay" style="position:absolute;inset:0"></div>
+      <div id="giftSectionPreviewText" style="position:relative;z-index:2;padding:40px">
+        <h2 id="giftSectionPreviewTitle" style="margin:0">جهّز هديتك بكل حب</h2>
+        <p id="giftSectionPreviewDesc">اختر الهدية وأدخل بيانات المستلم ورسالتك الخاصة</p>
+        <button id="giftSectionPreviewButton" type="button">تجهيز الهدية</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn gold" type="button" onclick="saveGiftSectionDesign()">حفظ تصميم قسم الهدية</button>
+      <button class="btn out" type="button" onclick="resetGiftSectionDesign()">استعادة الشكل الافتراضي</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎀 خيارات التغليف</h2>
+    <input id="giftId" type="hidden">
+    <input id="giftExistingImage" type="hidden">
+    <div class="grid3">
+      <div><label>اسم التغليف</label><input id="giftName"></div>
+      <div><label>السعر</label><input id="giftPrice" type="number"></div>
+      <div><label>الترتيب</label><input id="giftSort" type="number" value="0"></div>
+    </div>
+    <label>الوصف</label><textarea id="giftDesc"></textarea>
+    <label>الصورة</label>
+    <input id="giftImageFile" type="file" accept="image/*" onchange="previewGiftImage()">
+    <div id="giftImagePreview" class="media-preview-grid"></div>
+    <div class="check-row"><input id="giftActive" type="checkbox" checked><label>مفعّل</label></div>
+    <div class="actions">
+      <button class="btn" type="button" onclick="saveGift()">حفظ / إضافة</button>
+      <button class="btn out" type="button" onclick="resetGiftEditor()">جديد</button>
+    </div>
+  </div>
+  <div id="giftList" class="card"></div>
 </section>
 
 <section id="coupons" class="page hidden">
@@ -511,17 +583,7 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
     </div>
     <button type="button" class="btn" onclick="addHomepageMediaItem('brand')">رفع وإضافة الماركة</button>
     <div id="homeBrandsManagedList" class="media-preview-grid"></div>
-
-    <h3>قسم تجهيز الهدية</h3>
-    <div class="check-row"><input id="homeGiftEnabled" type="checkbox" checked><label>إظهار تجهيز الهدية</label></div>
-    <div class="grid2"><div><label>العنوان</label><input id="homeGiftTitle"></div><div><label>نص الزر</label><input id="homeGiftButton"></div></div>
-    <label>الوصف</label><input id="homeGiftText">
-    <label>صورة قسم الهدية</label>
-    <input id="homeGiftImage" type="hidden">
-    <input id="homeGiftImageFile" type="file" accept="image/*">
-    <div id="homeGiftImagePreview" class="media-preview-grid"></div>
-
-    <h3>الأكثر مبيعاً</h3>
+<h3>الأكثر مبيعاً</h3>
     <div class="check-row"><input id="homeBestEnabled" type="checkbox" checked><label>إظهار القسم</label></div>
     <div class="grid2"><input id="homeBestTitle" placeholder="العنوان"><input id="homeBestSubtitle" placeholder="الوصف"></div>
 
@@ -907,7 +969,7 @@ const db=window.supabase?.createClient ? window.supabase.createClient(SUPABASE_U
 const $=id=>document.getElementById(id);
 
 let products=[],categories=[],variants=[],bundles=[],gifts=[],coupons=[],orders=[],reviews=[],relations=[],customers=[],settingsRows=[];
-let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={},announcementBarsSettings={},homepageSettings={},sectionManagerSettings={};
+let generalSettings={},paymentSettings={},designSettings={},adSettings={},bottomAdSettings={},footerSettings={},announcementBarsSettings={},homepageSettings={},sectionManagerSettings={},giftSectionSettings={};
 let editingProductImages=[],currentInvoiceHTML="";
 
 const tabs=[
@@ -995,10 +1057,10 @@ async function loadAll(){
   safe(db.from("settings").select("*"))
  ]);
  products=p||[];categories=cat||[];variants=v||[];bundles=b||[];gifts=g||[];coupons=c||[];orders=o||[];reviews=r||[];relations=rel||[];customers=customerReport||[];settingsRows=settings||[];
- parseSettings();renderStats(stats||{});fillProductCategories();fillProducts();renderAdminProducts();renderCategories();renderVariants();renderBundles();renderGifts();renderCoupons();renderCustomers();renderOrders();renderReviews();renderRelations();renderPoliciesEditor();fillSimpleSettings();
+ parseSettings();renderStats(stats||{});fillProductCategories();fillProducts();renderAdminProducts();renderCategories();renderVariants();renderBundles();renderGifts();renderCoupons();renderCustomers();renderOrders();renderReviews();renderRelations();renderPoliciesEditor();fillSimpleSettings();loadGiftSectionEditor();
 }
 function settingValue(key){const row=settingsRows.find(x=>x.key===key||String(x.id)===key);return row?.value??row?.data??{}}
-function parseSettings(){generalSettings=settingValue("general");paymentSettings=settingValue("payment");designSettings=settingValue("design");adSettings=settingValue("ads");bottomAdSettings=settingValue("bottom_ads");footerSettings=settingValue("footer");announcementBarsSettings=settingValue("announcement_bars");homepageSettings=settingValue("homepage");sectionManagerSettings=settingValue("section_manager")}
+function parseSettings(){generalSettings=settingValue("general");paymentSettings=settingValue("payment");designSettings=settingValue("design");adSettings=settingValue("ads");bottomAdSettings=settingValue("bottom_ads");footerSettings=settingValue("footer");announcementBarsSettings=settingValue("announcement_bars");homepageSettings=settingValue("homepage");sectionManagerSettings=settingValue("section_manager");giftSectionSettings=settingValue("gift_section_design")}
 async function saveSetting(key,value){
   const now=new Date().toISOString();
   const found=settingsRows.find(x=>x.key===key);
@@ -1168,8 +1230,52 @@ function renderVariants(){$("variantsBody").innerHTML=variants.map(v=>`<tr><td>$
 async function saveBundle(){let id=$("bundleId").value;try{let image_url=$("bundleExistingImage").value||null;const f=$("bundleImageFile").files?.[0];if(f)image_url=await uploadMediaFile(f,"bundles");const row={name:$("bundleName").value.trim(),regular_price:Number($("bundleRegular").value||0),offer_price:Number($("bundleOffer").value||0),stock:Number($("bundleStock").value||0),image_url,description:$("bundleDesc").value.trim()||null,ends_at:$("bundleEnd").value?new Date($("bundleEnd").value).toISOString():null,is_active:true};if(!row.name)throw new Error("اكتب اسم الباقة");const r=id?await db.from("bundles").update(row).eq("id",id).select().single():await db.from("bundles").insert(row).select().single();if(r.error)throw r.error;id=r.data.id;await db.from("bundle_items").delete().eq("bundle_id",id);const items=[...$("bundleProducts").selectedOptions].map(o=>({bundle_id:id,product_id:o.value,quantity:1}));if(items.length){const x=await db.from("bundle_items").insert(items);if(x.error)throw x.error}resetBundle();await loadAll();toast("تم حفظ الباقة")}catch(e){alert(e.message)}}
 function resetBundle(){["bundleId","bundleName","bundleRegular","bundleOffer","bundleStock","bundleDesc","bundleEnd","bundleExistingImage"].forEach(id=>$(id).value="");$("bundleImageFile").value="";$("bundleImagePreview").innerHTML="";[...$("bundleProducts").options].forEach(x=>x.selected=false)}
 function renderBundles(){$("bundleList").innerHTML=bundles.map(b=>`<div class="order-card"><strong>🔥 ${esc(b.name)}</strong><div class="note">${money(b.offer_price,b.currency)} · المخزون: ${Number(b.stock||0)}</div><button class="btn red sm" onclick="removeRow('bundles','${b.id}')">حذف</button></div>`).join("")||"لا توجد باقات."}
-async function saveGift(){const name=$("giftName").value.trim();if(!name)return toast("اكتب اسم التغليف");let image_url=null;const f=$("giftImageFile").files?.[0];if(f)image_url=await uploadMediaFile(f,"gifts");const{error}=await db.from("gift_options").insert({name,price:Number($("giftPrice").value||0),image_url,description:$("giftDesc").value.trim()||null,is_active:true});if(error)return alert(error.message);await loadAll()}
-function renderGifts(){$("giftList").innerHTML=gifts.map(g=>`<div class="order-card"><strong>🎁 ${esc(g.name)}</strong> · ${money(g.price,g.currency)} <button class="btn red sm" onclick="removeRow('gift_options','${g.id}')">حذف</button></div>`).join("")||"لا توجد خيارات تغليف."}
+async function saveGift(){
+ const id=$("giftId").value;
+ const name=$("giftName").value.trim();
+ if(!name)return toast("اكتب اسم التغليف");
+ try{
+  let image_url=$("giftExistingImage").value||null;
+  const f=$("giftImageFile").files?.[0];
+  if(f)image_url=await uploadMediaFile(f,"gifts");
+  const payload={
+   name,
+   price:Number($("giftPrice").value||0),
+   image_url,
+   description:$("giftDesc").value.trim()||null,
+   is_active:$("giftActive").checked,
+   sort_order:Number($("giftSort").value||0)
+  };
+  const q=id?db.from("gift_options").update(payload).eq("id",id):db.from("gift_options").insert(payload);
+  const {error}=await q;if(error)throw error;
+  resetGiftEditor();await loadAll();toast(id?"تم تعديل خيار التغليف ✓":"تمت إضافة خيار التغليف ✓");
+ }catch(e){alert("تعذر حفظ خيار التغليف:\n"+(e.message||e))}
+}
+function editGift(id){
+ const g=gifts.find(x=>String(x.id)===String(id));if(!g)return;
+ $("giftId").value=g.id||"";$("giftExistingImage").value=g.image_url||"";
+ $("giftName").value=g.name||"";$("giftPrice").value=Number(g.price||0);
+ $("giftDesc").value=g.description||"";$("giftSort").value=Number(g.sort_order||0);
+ $("giftActive").checked=g.is_active!==false;
+ $("giftImagePreview").innerHTML=g.image_url?`<div class="media-preview"><img src="${esc(g.image_url)}"></div>`:"";
+ window.scrollTo({top:$("gifts").offsetTop,behavior:"smooth"});
+}
+function resetGiftEditor(){
+ ["giftId","giftExistingImage","giftName","giftPrice","giftDesc"].forEach(id=>$(id).value="");
+ $("giftSort").value=0;$("giftActive").checked=true;$("giftImageFile").value="";$("giftImagePreview").innerHTML="";
+}
+async function deleteGift(id){
+ if(!confirm("حذف خيار التغليف؟"))return;
+ const {error}=await db.from("gift_options").delete().eq("id",id);
+ if(error)return alert(error.message);await loadAll();toast("تم الحذف ✓");
+}
+function renderGifts(){
+ $("giftList").innerHTML=gifts.map(g=>`<div class="order-card">
+   <strong>🎁 ${esc(g.name)}</strong> · ${money(g.price,g.currency)}
+   ${g.is_active===false?'<span class="badge">مخفي</span>':''}
+   <div class="actions"><button class="btn sm" onclick="editGift('${g.id}')">تعديل</button><button class="btn red sm" onclick="deleteGift('${g.id}')">حذف</button></div>
+ </div>`).join("")||"لا توجد خيارات تغليف.";
+}
 async function saveCoupon(){const row={code:$("cpCode").value.trim().toUpperCase(),discount_type:$("cpType").value,value:Number($("cpValue").value||0),min_order:Number($("cpMin").value||0),max_discount:$("cpMax").value?Number($("cpMax").value):null,expires_at:$("cpExpiry").value||null,first_order_only:$("cpFirst").checked,is_active:true};if(!row.code)return toast("اكتب الكود");const{error}=await db.from("coupons").insert(row);if(error)return alert(error.message);await loadAll()}
 function renderCoupons(){$("couponList").innerHTML=coupons.map(c=>`<div class="order-card"><strong>${esc(c.code)}</strong> · ${c.discount_type==="percentage"?c.value+"%":money(c.value)} <button class="btn red sm" onclick="removeRow('coupons','${c.id}')">حذف</button></div>`).join("")||"لا توجد كوبونات."}
 function renderCustomers(){$("customersBody").innerHTML=customers.map(c=>`<tr><td>${esc(c.name||"عميل")}</td><td>${esc(c.phone||"")}</td><td>${Number(c.total_orders||0)}</td><td>${Number(c.purchase_count||0)}</td><td>${money(c.lifetime_value)}</td><td>${formatDate(c.last_order_at)}</td></tr>`).join("")}
@@ -1845,6 +1951,74 @@ async function saveDesignSettings(){
 }
 
 
+
+const GIFT_SECTION_DEFAULTS={
+ enabled:true,title:"جهّز هديتك بكل حب",text:"اختر الهدية وأدخل بيانات المستلم ورسالتك الخاصة",button:"تجهيز الهدية",
+ image:"",height:225,radius:8,borderWidth:0,borderColor:"#e5e5e5",background:"#ffffff",
+ titleColor:"#ffffff",textColor:"#ffffff",buttonBg:"#b58a4a",buttonText:"#ffffff",
+ titleSize:28,textSize:14,buttonSize:13,buttonRadius:0,overlay:0,overlayColor:"#000000",
+ align:"right",fit:"cover",font:"Cairo",shadow:"none"
+};
+function giftDesignValues(){
+ const d={...GIFT_SECTION_DEFAULTS,...giftSectionSettings};
+ return {
+  ...d,enabled:$("giftSectionEnabled").checked,title:$("giftSectionTitle").value.trim(),text:$("giftSectionText").value.trim(),
+  button:$("giftSectionButton").value.trim(),image:$("giftSectionImage").value.trim(),height:Number($("giftSectionHeight").value||225),
+  radius:Number($("giftSectionRadius").value||0),borderWidth:Number($("giftSectionBorderWidth").value||0),
+  borderColor:$("giftSectionBorderColor").value,background:$("giftSectionBg").value,titleColor:$("giftSectionTitleColor").value,
+  textColor:$("giftSectionTextColor").value,buttonBg:$("giftSectionButtonBg").value,buttonText:$("giftSectionButtonText").value,
+  titleSize:Number($("giftSectionTitleSize").value||28),textSize:Number($("giftSectionTextSize").value||14),
+  buttonSize:Number($("giftSectionButtonSize").value||13),buttonRadius:Number($("giftSectionButtonRadius").value||0),
+  overlay:Number($("giftSectionOverlay").value||0),overlayColor:$("giftSectionOverlayColor").value,
+  align:$("giftSectionAlign").value,fit:$("giftSectionFit").value,font:$("giftSectionFont").value,shadow:$("giftSectionShadow").value
+ };
+}
+function loadGiftSectionEditor(){
+ const d={...GIFT_SECTION_DEFAULTS,...giftSectionSettings};
+ const vals={giftSectionEnabled:d.enabled!==false,giftSectionTitle:d.title,giftSectionText:d.text,giftSectionButton:d.button,
+ giftSectionImage:d.image,giftSectionHeight:d.height,giftSectionRadius:d.radius,giftSectionBorderWidth:d.borderWidth,
+ giftSectionBorderColor:d.borderColor,giftSectionBg:d.background,giftSectionTitleColor:d.titleColor,giftSectionTextColor:d.textColor,
+ giftSectionButtonBg:d.buttonBg,giftSectionButtonText:d.buttonText,giftSectionTitleSize:d.titleSize,giftSectionTextSize:d.textSize,
+ giftSectionButtonSize:d.buttonSize,giftSectionButtonRadius:d.buttonRadius,giftSectionOverlay:d.overlay,
+ giftSectionOverlayColor:d.overlayColor,giftSectionAlign:d.align,giftSectionFit:d.fit,giftSectionFont:d.font,giftSectionShadow:d.shadow};
+ Object.entries(vals).forEach(([id,v])=>{const el=$(id);if(!el)return;if(el.type==="checkbox")el.checked=!!v;else el.value=v??""});
+ $("giftSectionImagePreview").innerHTML=d.image?`<div class="media-preview"><img src="${esc(d.image)}"></div>`:"";
+ updateGiftSectionPreview();
+}
+function previewGiftSectionImage(){
+ const f=$("giftSectionImageFile").files?.[0];if(!f)return;
+ const u=URL.createObjectURL(f);$("giftSectionPreviewImg").src=u;
+ $("giftSectionImagePreview").innerHTML=`<div class="media-preview"><img src="${u}"></div>`;updateGiftSectionPreview();
+}
+function updateGiftSectionPreview(){
+ const d=giftDesignValues(),box=$("giftSectionPreview"),img=$("giftSectionPreviewImg"),ov=$("giftSectionPreviewOverlay"),
+ txt=$("giftSectionPreviewText"),h=$("giftSectionPreviewTitle"),p=$("giftSectionPreviewDesc"),b=$("giftSectionPreviewButton");
+ Object.assign(box.style,{height:d.height+"px",borderRadius:d.radius+"px",border:d.borderWidth+"px solid "+d.borderColor,
+ background:d.background,boxShadow:d.shadow,fontFamily:d.font+",sans-serif"});
+ if(!$("giftSectionImageFile").files?.[0])img.src=d.image||"";
+ img.style.objectFit=d.fit;ov.style.background=d.overlayColor;ov.style.opacity=String(Math.max(0,Math.min(90,d.overlay))/100);
+ txt.style.textAlign=d.align;h.textContent=d.title;h.style.color=d.titleColor;h.style.fontSize=d.titleSize+"px";
+ p.textContent=d.text;p.style.color=d.textColor;p.style.fontSize=d.textSize+"px";
+ b.textContent=d.button;b.style.background=d.buttonBg;b.style.color=d.buttonText;b.style.fontSize=d.buttonSize+"px";
+ b.style.borderRadius=d.buttonRadius+"px";b.style.border="0";b.style.padding="10px 22px";
+}
+async function saveGiftSectionDesign(){
+ try{
+  let d=giftDesignValues(),f=$("giftSectionImageFile").files?.[0];
+  if(f)d.image=await uploadMediaFile(f,"homepage/gift");
+  await saveSetting("gift_section_design",d);giftSectionSettings=d;
+  $("giftSectionImage").value=d.image||"";$("giftSectionImageFile").value="";
+  loadGiftSectionEditor();toast("تم حفظ قسم الهدايا ✓");
+ }catch(e){alert("تعذر حفظ قسم الهدايا:\n"+(e.message||e))}
+}
+async function resetGiftSectionDesign(){
+ if(!confirm("استعادة تصميم قسم الهدايا الافتراضي؟"))return;
+ await saveSetting("gift_section_design",{...GIFT_SECTION_DEFAULTS});giftSectionSettings={...GIFT_SECTION_DEFAULTS};
+ loadGiftSectionEditor();toast("تمت استعادة الشكل الافتراضي ✓");
+}
+document.addEventListener("input",e=>{if(e.target?.id?.startsWith("giftSection"))updateGiftSectionPreview()});
+document.addEventListener("change",e=>{if(e.target?.id?.startsWith("giftSection"))updateGiftSectionPreview()});
+
 const PRODUCT_CARD_DEFAULTS={
  background:"#ffffff",borderColor:"#eeeae2",borderWidth:1,radius:18,imageBg:"#ffffff",imageHeight:315,imagePadding:12,imageFit:"contain",infoPadding:12,
  shadow:"none",hover:"lift",textAlign:"center",fontFamily:"Cairo",nameSize:13,nameColor:"#171717",nameWeight:"800",nameLineHeight:1.75,
@@ -2256,11 +2430,6 @@ function fillSimpleSettings(){
   $("homeBrandsTitle").value=hp.brandsTitle||"تسوق حسب الماركة";
   $("homeBrandsSubtitle").value=hp.brandsSubtitle||"اختر ماركتك المفضلة";
   $("homeBrandsItems").value=lineItems(hp.brands);
-  $("homeGiftEnabled").checked=hp.giftEnabled!==false;
-  $("homeGiftTitle").value=hp.giftTitle||"جهّز هديتك بكل حب";
-  $("homeGiftText").value=hp.giftText||"اختر الهدية وأدخل بيانات المستلم ورسالتك الخاصة";
-  $("homeGiftButton").value=hp.giftButton||"تجهيز الهدية";
-  $("homeGiftImage").value=hp.giftImage||"";
   $("homeBestEnabled").checked=hp.bestEnabled!==false;
   $("homeBestTitle").value=hp.bestTitle||"الأكثر مبيعاً";
   $("homeBestSubtitle").value=hp.bestSubtitle||"اختيارات عملائنا المفضلة";
@@ -2340,8 +2509,6 @@ function renderHomepageManagedLists(){
   };
   render("homeBrandsManagedList",hp.brands,"brand");
   render("homeScentsManagedList",hp.scents,"scent");
-
-  $("homeGiftImagePreview").innerHTML=hp.giftImage?`<div class="media-preview"><img src="${esc(hp.giftImage)}"></div>`:"";
   $("homeOfferImagePreview").innerHTML=hp.offerImage?`<div class="media-preview"><img src="${esc(hp.offerImage)}"></div>`:"";
 }
 async function addHomepageMediaItem(type){
@@ -2380,11 +2547,9 @@ function parseHomepageItems(id){
 }
 async function saveHomepageSettings(){
   try{
-    let giftImage=homepageSettings.giftImage||$("homeGiftImage").value||"";
+    let giftImage=homepageSettings.giftImage||"";
     let offerImage=homepageSettings.offerImage||$("homeOfferImage").value||"";
-    const giftFile=$("homeGiftImageFile").files?.[0];
     const offerFile=$("homeOfferImageFile").files?.[0];
-    if(giftFile)giftImage=await uploadMediaFile(giftFile,"homepage/gift");
     if(offerFile)offerImage=await uploadMediaFile(offerFile,"homepage/offers");
     const next={
       ...homepageSettings,
@@ -2392,11 +2557,7 @@ async function saveHomepageSettings(){
       brandsTitle:$("homeBrandsTitle").value.trim(),
       brandsSubtitle:$("homeBrandsSubtitle").value.trim(),
       brands:Array.isArray(homepageSettings.brands)?homepageSettings.brands:[],
-      giftEnabled:$("homeGiftEnabled").checked,
-      giftTitle:$("homeGiftTitle").value.trim(),
-      giftText:$("homeGiftText").value.trim(),
-      giftButton:$("homeGiftButton").value.trim(),
-      giftImage,
+      giftEnabled:homepageSettings.giftEnabled!==false,giftTitle:homepageSettings.giftTitle||"جهّز هديتك بكل حب",giftText:homepageSettings.giftText||"اختر الهدية وأدخل بيانات المستلم ورسالتك الخاصة",giftButton:homepageSettings.giftButton||"تجهيز الهدية",giftImage,
       bestEnabled:$("homeBestEnabled").checked,
       bestTitle:$("homeBestTitle").value.trim(),
       bestSubtitle:$("homeBestSubtitle").value.trim(),
@@ -2421,7 +2582,6 @@ async function saveHomepageSettings(){
     };
     await saveSetting("homepage",next);
     homepageSettings=next;
-    $("homeGiftImage").value=giftImage;
     $("homeOfferImage").value=offerImage;
     $("homeGiftImageFile").value="";
     $("homeOfferImageFile").value="";
@@ -2560,4 +2720,4 @@ window.addEventListener("unhandledrejection",function(event){
 startAdmin();
 </script>
 </body>
-</html></html>
+</html>

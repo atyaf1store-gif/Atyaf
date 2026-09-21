@@ -753,7 +753,16 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
       <div><label>حجم خط الأزرار px</label><input id="pcButtonFontSize" type="number" min="8" max="25" value="11"></div>
     </div>
 
-    <h3>معاينة مباشرة</h3>
+    
+    <h3>📐 حجم بطاقة المنتج كاملة</h3>
+    <p class="note">هذا الخيار يغيّر عرض بطاقة المنتج كاملة، وليس حجم صورة المنتج وحدها.</p>
+    <div class="grid3">
+      <div><label>كمبيوتر — عرض البطاقة px</label><input id="pcCardWidthDesktop" type="number" min="140" max="600" step="5" value="300"></div>
+      <div><label>تابلت — عرض البطاقة px</label><input id="pcCardWidthTablet" type="number" min="140" max="600" step="5" value="260"></div>
+      <div><label>جوال — عرض البطاقة px</label><input id="pcCardWidthMobile" type="number" min="120" max="500" step="5" value="220"></div>
+    </div>
+
+<h3>معاينة مباشرة</h3>
     <div id="pcPreviewWrap" style="background:#f5f3ed;padding:20px;border-radius:16px;overflow:auto">
       <div id="pcPreviewCard" style="width:min(280px,100%);margin:auto;position:relative">
         <div id="pcPreviewImage" style="display:grid;place-items:center;font-size:60px">🧴</div>
@@ -2073,12 +2082,13 @@ const PRODUCT_CARD_DEFAULTS={
  shadow:"none",hover:"lift",textAlign:"center",fontFamily:"Cairo",nameSize:13,nameColor:"#171717",nameWeight:"800",nameLineHeight:1.75,
  priceSize:14,priceColor:"#9d342b",oldPriceColor:"#747874",heartSize:34,heartBg:"#ffffff",heartColor:"#292929",heartBorder:"#ddd8ce",heartActive:"#111111",
  badgeBg:"#050505",badgeText:"#ffffff",badgeRadius:14,cartBg:"#050505",cartText:"#ffffff",giftBg:"#ffffff",giftText:"#171717",giftBorder:"#d8d4cb",
- buttonHeight:43,buttonRadius:0,buttonFontSize:11
+ buttonHeight:43,buttonRadius:0,buttonFontSize:11,
+ cardWidthDesktop:300,cardWidthTablet:260,cardWidthMobile:220
 };
 function pcSet(id,value){const el=$(id);if(el&&value!==undefined&&value!==null)el.value=value}
 function fillProductCardDesign(saved={}){
  const p={...PRODUCT_CARD_DEFAULTS,...(saved||{})};
- Object.entries({pcBackground:p.background,pcBorderColor:p.borderColor,pcBorderWidth:p.borderWidth,pcRadius:p.radius,pcImageBg:p.imageBg,pcImageHeight:p.imageHeight,pcImagePadding:p.imagePadding,pcImageFit:p.imageFit,pcInfoPadding:p.infoPadding,pcShadow:p.shadow,pcHover:p.hover,pcTextAlign:p.textAlign,pcFontFamily:p.fontFamily,pcNameSize:p.nameSize,pcNameColor:p.nameColor,pcNameWeight:p.nameWeight,pcNameLineHeight:p.nameLineHeight,pcPriceSize:p.priceSize,pcPriceColor:p.priceColor,pcOldPriceColor:p.oldPriceColor,pcHeartSize:p.heartSize,pcHeartBg:p.heartBg,pcHeartColor:p.heartColor,pcHeartBorder:p.heartBorder,pcHeartActive:p.heartActive,pcBadgeBg:p.badgeBg,pcBadgeText:p.badgeText,pcBadgeRadius:p.badgeRadius,pcCartBg:p.cartBg,pcCartText:p.cartText,pcGiftBg:p.giftBg,pcGiftText:p.giftText,pcGiftBorder:p.giftBorder,pcButtonHeight:p.buttonHeight,pcButtonRadius:p.buttonRadius,pcButtonFontSize:p.buttonFontSize}).forEach(([id,v])=>pcSet(id,v));
+ Object.entries({pcBackground:p.background,pcBorderColor:p.borderColor,pcBorderWidth:p.borderWidth,pcRadius:p.radius,pcImageBg:p.imageBg,pcImageHeight:p.imageHeight,pcImagePadding:p.imagePadding,pcImageFit:p.imageFit,pcInfoPadding:p.infoPadding,pcShadow:p.shadow,pcHover:p.hover,pcTextAlign:p.textAlign,pcFontFamily:p.fontFamily,pcNameSize:p.nameSize,pcNameColor:p.nameColor,pcNameWeight:p.nameWeight,pcNameLineHeight:p.nameLineHeight,pcPriceSize:p.priceSize,pcPriceColor:p.priceColor,pcOldPriceColor:p.oldPriceColor,pcHeartSize:p.heartSize,pcHeartBg:p.heartBg,pcHeartColor:p.heartColor,pcHeartBorder:p.heartBorder,pcHeartActive:p.heartActive,pcBadgeBg:p.badgeBg,pcBadgeText:p.badgeText,pcBadgeRadius:p.badgeRadius,pcCartBg:p.cartBg,pcCartText:p.cartText,pcGiftBg:p.giftBg,pcGiftText:p.giftText,pcGiftBorder:p.giftBorder,pcButtonHeight:p.buttonHeight,pcButtonRadius:p.buttonRadius,pcButtonFontSize:p.buttonFontSize,pcCardWidthDesktop:p.cardWidthDesktop,pcCardWidthTablet:p.cardWidthTablet,pcCardWidthMobile:p.cardWidthMobile}).forEach(([id,v])=>pcSet(id,v));
  updateProductCardPreview();
 }
 function collectProductCardDesign(){return {
@@ -2087,10 +2097,14 @@ function collectProductCardDesign(){return {
  shadow:$("pcShadow").value,hover:$("pcHover").value,textAlign:$("pcTextAlign").value,fontFamily:$("pcFontFamily").value,nameSize:Number($("pcNameSize").value||13),nameColor:$("pcNameColor").value,nameWeight:$("pcNameWeight").value,nameLineHeight:Number($("pcNameLineHeight").value||1.75),
  priceSize:Number($("pcPriceSize").value||14),priceColor:$("pcPriceColor").value,oldPriceColor:$("pcOldPriceColor").value,heartSize:Number($("pcHeartSize").value||34),heartBg:$("pcHeartBg").value,heartColor:$("pcHeartColor").value,heartBorder:$("pcHeartBorder").value,heartActive:$("pcHeartActive").value,
  badgeBg:$("pcBadgeBg").value,badgeText:$("pcBadgeText").value,badgeRadius:Number($("pcBadgeRadius").value||0),cartBg:$("pcCartBg").value,cartText:$("pcCartText").value,giftBg:$("pcGiftBg").value,giftText:$("pcGiftText").value,giftBorder:$("pcGiftBorder").value,
- buttonHeight:Number($("pcButtonHeight").value||43),buttonRadius:Number($("pcButtonRadius").value||0),buttonFontSize:Number($("pcButtonFontSize").value||11)
+ buttonHeight:Number($("pcButtonHeight").value||43),buttonRadius:Number($("pcButtonRadius").value||0),buttonFontSize:Number($("pcButtonFontSize").value||11),
+ cardWidthDesktop:Number($("pcCardWidthDesktop").value||300),cardWidthTablet:Number($("pcCardWidthTablet").value||260),cardWidthMobile:Number($("pcCardWidthMobile").value||220)
 }}
 function updateProductCardPreview(){
  if(!$("pcPreviewCard"))return; const p=collectProductCardDesign(); const shadows={none:"none",soft:"0 5px 18px rgba(0,0,0,.06)",medium:"0 10px 28px rgba(0,0,0,.11)",strong:"0 14px 36px rgba(0,0,0,.18)"};
+ const vw=window.innerWidth||1200;
+ const previewWidth=vw<=700?p.cardWidthMobile:(vw<=1024?p.cardWidthTablet:p.cardWidthDesktop);
+ $("pcPreviewCard").style.width=Math.max(120,Math.min(600,Number(previewWidth||280)))+"px";
  Object.assign($("pcPreviewCard").style,{background:p.background,border:`${p.borderWidth}px solid ${p.borderColor}`,borderRadius:p.radius+"px",boxShadow:shadows[p.shadow]||"none",overflow:"hidden",fontFamily:`${p.fontFamily},sans-serif`});
  Object.assign($("pcPreviewImage").style,{height:p.imageHeight+"px",background:p.imageBg,padding:p.imagePadding+"px"});
  Object.assign($("pcPreviewInfo").style,{padding:p.infoPadding+"px",textAlign:p.textAlign});
@@ -2769,4 +2783,4 @@ window.addEventListener("unhandledrejection",function(event){
 startAdmin();
 </script>
 </body>
-</html></html>
+</html>

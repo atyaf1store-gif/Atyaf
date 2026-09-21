@@ -1345,6 +1345,48 @@ main#home{position:relative}
  .products,.products-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important;max-width:100%!important;gap:10px!important;align-items:stretch!important;justify-content:stretch!important}
  .products .product,.products-grid .product{width:100%!important;max-width:100%!important;min-width:0!important;height:var(--pc-card-height-mobile,400px)!important;margin:0!important}
 }
+
+/* ===== ATYAF COMPACT PRODUCT CARDS — REMOVE EMPTY VERTICAL SPACE ===== */
+/* Keep the admin width controls, but let card height follow its real content. */
+.product{
+  height:auto!important;
+  min-height:0!important;
+}
+.product-info{
+  flex:0 0 auto!important;
+}
+.product-actions{
+  margin-top:0!important;
+}
+
+/* Keep exactly two balanced cards per row on phones. */
+@media (max-width:700px){
+  .products,.products-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    align-items:start!important;
+  }
+  .products .product,.products-grid .product{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    align-self:start!important;
+  }
+  .product-image{
+    height:clamp(150px,43vw,var(--pc-img-h,230px))!important;
+  }
+  .product-info{
+    padding:9px 8px!important;
+    flex:0 0 auto!important;
+  }
+  .product-actions{
+    margin-top:0!important;
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>

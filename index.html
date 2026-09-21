@@ -1522,6 +1522,9 @@ main#home{position:relative}
       <div class="products" id="featuredProducts"></div>
     </section>
 
+    <!-- أقسام المنتجات حسب التصنيفات في Supabase -->
+    <div id="dynamicCategorySections"></div>
+
     <section class="section" id="allProductsSection">
       <div class="section-title">
         <h2>منتجات قد تعجبك</h2>
@@ -1956,6 +1959,7 @@ async function loadManagedStoreSettings(){
 }
 
 let products=[];
+let atyafCategories=[];
 
 function atyafProductImage(row){
   let images=row?.images;
@@ -1997,11 +2001,16 @@ async function loadProductsFromSupabase(){
   try{
     if(!atyafDb)throw new Error("Supabase client is not available");
 
-    let {data,error}=await atyafDb
-      .from("products")
-      .select("*")
-      .order("sort_order",{ascending:true})
-      .order("created_at",{ascending:false});
+    const [productsResult,categoriesResult]=await Promise.all([
+      atyafDb.from("products").select("*")
+        .order("sort_order",{ascending:true})
+        .order("created_at",{ascending:false}),
+      atyafDb.from("categories").select("*")
+        .order("sort_order",{ascending:true})
+    ]);
+
+    let data=productsResult.data;
+    let error=productsResult.error;
 
     if(error){
       const retry=await atyafDb.from("products").select("*");
@@ -2010,11 +2019,33 @@ async function loadProductsFromSupabase(){
     }
     if(error)throw error;
 
+    if(categoriesResult.error){
+      console.warn("ATYAF categories:",categoriesResult.error);
+      atyafCategories=[];
+    }else{
+      atyafCategories=(Array.isArray(categoriesResult.data)?categoriesResult.data:[])
+        .filter(c=>c && c.is_active!==false && c.active!==false);
+    }
+
+    const categoryById=new Map(
+      atyafCategories.map(c=>[
+        String(c.id),
+        String(c.name_ar || c.name || c.name_en || "").trim()
+      ])
+    );
+
     products=(Array.isArray(data)?data:[])
       .filter(row => row && row.is_active!==false && row.active!==false)
       .map(row=>{
-        try{return normalizeAtyafProduct(row)}
-        catch(e){console.warn("ATYAF skipped malformed product",row?.id,e);return null}
+        try{
+          const p=normalizeAtyafProduct(row);
+          const resolved=categoryById.get(String(p.categoryId||""));
+          if(resolved)p.category=resolved;
+          return p;
+        }catch(e){
+          console.warn("ATYAF skipped malformed product",row?.id,e);
+          return null;
+        }
       })
       .filter(Boolean);
 
@@ -2023,6 +2054,7 @@ async function loadProductsFromSupabase(){
   }catch(e){
     console.warn("ATYAF products:",e);
     products=[];
+    atyafCategories=[];
     ids.forEach(id=>{
       const el=document.getElementById(id);
       if(el)el.innerHTML="<p>تعذر تحميل المنتجات حالياً</p>";
@@ -2074,12 +2106,57 @@ function filtered(){
  });
 }
 
+function atyafCategorySectionId(id){
+ return "atyafCategory_"+String(id||"").replace(/[^a-zA-Z0-9_-]/g,"_");
+}
+
+function renderDynamicCategorySections(list){
+ const host=document.getElementById("dynamicCategorySections");
+ if(!host)return;
+
+ const categoriesWithProducts=atyafCategories
+   .map(c=>{
+     const id=String(c.id);
+     const name=String(c.name_ar || c.name || c.name_en || "").trim();
+     const items=list.filter(p=>String(p.categoryId||"")===id);
+     return {id,name,items};
+   })
+   .filter(c=>c.name && c.items.length);
+
+ host.innerHTML=categoriesWithProducts.map(c=>`
+   <section class="section atyaf-category-section" data-category-id="${c.id}">
+     <div class="section-title">
+       <h2>${c.name}</h2>
+     </div>
+     <div class="products" id="${atyafCategorySectionId(c.id)}"></div>
+   </section>
+ `).join("");
+
+ categoriesWithProducts.forEach(c=>{
+   render(c.items,atyafCategorySectionId(c.id));
+ });
+}
+
 function renderAll(){
  let list=filtered();
+
  render(list.filter(p=>p.best),"bestProducts");
  render(list.filter(p=>p.new),"newProducts");
  render(list.filter(p=>p.featured),"featuredProducts");
- render(list,"allProducts");
+
+ /* كل تصنيف حقيقي في Supabase يظهر كقسم مستقل مثل "إبراق". */
+ renderDynamicCategorySections(list);
+
+ /* "قد تعجبك" للمنتجات غير المرتبطة بتصنيف فقط، حتى لا تتكرر منتجات إبراق هنا. */
+ const categoryIds=new Set(atyafCategories.map(c=>String(c.id)));
+ const uncategorized=list.filter(p=>{
+   const id=String(p.categoryId||"").trim();
+   return !id || !categoryIds.has(id);
+ });
+ render(uncategorized,"allProducts");
+
+ const allSection=document.getElementById("allProductsSection");
+ if(allSection)allSection.style.display=uncategorized.length ? "" : "none";
 }
 
 

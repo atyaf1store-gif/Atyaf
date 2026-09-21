@@ -1062,13 +1062,43 @@ async function loadAll(){
 function settingValue(key){const row=settingsRows.find(x=>x.key===key||String(x.id)===key);return row?.value??row?.data??{}}
 function parseSettings(){generalSettings=settingValue("general");paymentSettings=settingValue("payment");designSettings=settingValue("design");adSettings=settingValue("ads");bottomAdSettings=settingValue("bottom_ads");footerSettings=settingValue("footer");announcementBarsSettings=settingValue("announcement_bars");homepageSettings=settingValue("homepage");sectionManagerSettings=settingValue("section_manager");giftSectionSettings=settingValue("gift_section_design")}
 async function saveSetting(key,value){
-  const now=new Date().toISOString();
-  const found=settingsRows.find(x=>x.key===key);
-  if(found?.id!=null){const r=await db.from("settings").update({value,updated_at:now}).eq("id",found.id);if(r.error)throw r.error;found.value=value;return}
-  const last=await db.from("settings").select("id").order("id",{ascending:false}).limit(1).maybeSingle();if(last.error)throw last.error;
-  const nextId=Number(last.data?.id||0)+1;
-  const r=await db.from("settings").insert({id:nextId,key,value,created_at:now,updated_at:now}).select().single();if(r.error)throw r.error;
-  settingsRows.push(r.data);
+ const now=new Date().toISOString();
+
+ const {data:existing,error:findError}=await db
+  .from("settings")
+  .select("id")
+  .eq("key",key)
+  .order("updated_at",{ascending:false})
+  .order("id",{ascending:false})
+  .limit(1)
+  .maybeSingle();
+ if(findError)throw findError;
+
+ if(existing?.id!=null){
+  const {error}=await db.from("settings")
+   .update({value,updated_at:now})
+   .eq("id",existing.id);
+  if(error)throw error;
+  return;
+ }
+
+ const {data:last,error:lastError}=await db
+  .from("settings")
+  .select("id")
+  .order("id",{ascending:false})
+  .limit(1)
+  .maybeSingle();
+ if(lastError)throw lastError;
+
+ const nextId=Number(last?.id||0)+1;
+ const {error}=await db.from("settings").insert({
+  id:nextId,
+  key,
+  value,
+  created_at:now,
+  updated_at:now
+ });
+ if(error)throw error;
 }
 function renderStats(s){$("stats").innerHTML=[["المنتجات",s.products??products.length],["الأقسام",categories.length],["الباقات",s.active_bundles??bundles.length],["الطلبات",s.orders??orders.length],["العملاء",s.customers??customers.length],["التقييمات",reviews.length],["الكوبونات",coupons.length],["الخيارات",variants.length]].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]??0}</b></div>`).join("")}
 
@@ -2003,13 +2033,32 @@ function updateGiftSectionPreview(){
  b.style.borderRadius=d.buttonRadius+"px";b.style.border="0";b.style.padding="10px 22px";
 }
 async function saveGiftSectionDesign(){
+ const btn=document.querySelector('button[onclick="saveGiftSectionDesign()"]');
+ if(btn?.dataset.busy==="1")return;
+ if(btn){btn.dataset.busy="1";btn.disabled=true;btn.textContent="جارِ الحفظ...";}
  try{
-  let d=giftDesignValues(),f=$("giftSectionImageFile").files?.[0];
-  if(f)d.image=await uploadMediaFile(f,"homepage/gift");
-  await saveSetting("gift_section_design",d);giftSectionSettings=d;
-  $("giftSectionImage").value=d.image||"";$("giftSectionImageFile").value="";
-  loadGiftSectionEditor();toast("تم حفظ قسم الهدايا ✓");
- }catch(e){alert("تعذر حفظ قسم الهدايا:\n"+(e.message||e))}
+  let d=giftDesignValues();
+  const f=$("giftSectionImageFile")?.files?.[0];
+
+  if(f){
+   d.image=await uploadMediaFile(f,"homepage/gift");
+  }else{
+   d.image=$("giftSectionImage")?.value||giftSectionSettings.image||d.image||"";
+  }
+
+  await saveSetting("gift_section_design",d);
+  giftSectionSettings={...d};
+
+  if($("giftSectionImage"))$("giftSectionImage").value=d.image||"";
+  if($("giftSectionImageFile"))$("giftSectionImageFile").value="";
+  loadGiftSectionEditor();
+  toast("تم حفظ تعديل الهدية ✓");
+ }catch(e){
+  console.error("Gift section save:",e);
+  alert("تعذر حفظ تعديل الهدية:\n"+(e?.message||e));
+ }finally{
+  if(btn){btn.dataset.busy="0";btn.disabled=false;btn.textContent="حفظ تصميم قسم الهدية";}
+ }
 }
 async function resetGiftSectionDesign(){
  if(!confirm("استعادة تصميم قسم الهدايا الافتراضي؟"))return;

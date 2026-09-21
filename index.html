@@ -164,17 +164,103 @@ a{text-decoration:none;color:inherit}
   border:0;padding:9px 22px;margin-top:8px
 }
 .gift-prep-banner{
-  height:var(--gift-h,225px)!important;background:var(--gift-bg,#fff)!important;
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  height:var(--gift-h,225px)!important;
+  min-height:var(--gift-h,225px)!important;
+  background:var(--gift-bg,#fff)!important;
   border:var(--gift-border-w,0px) solid var(--gift-border,#e5e5e5)!important;
-  border-radius:var(--gift-radius,8px)!important;box-shadow:var(--gift-shadow,none)!important;
-  font-family:var(--gift-font,Cairo),sans-serif!important
+  border-radius:var(--gift-radius,8px)!important;
+  box-shadow:var(--gift-shadow,none)!important;
+  overflow:hidden!important;
+  font-family:var(--gift-font,Cairo),sans-serif!important;
 }
-.gift-prep-banner img{object-fit:var(--gift-fit,cover)!important}
-.gift-prep-banner::after{content:"";position:absolute;inset:0;background:var(--gift-overlay,#000);opacity:var(--gift-overlay-opacity,0);pointer-events:none}
-.gift-prep-banner .banner-text{z-index:2;color:var(--gift-text,#fff)!important;text-align:var(--gift-align,right)!important}
-.gift-prep-banner .banner-text h2{color:var(--gift-title,#fff)!important;font-size:var(--gift-title-size,28px)!important;font-family:inherit!important}
-.gift-prep-banner .banner-text p{color:var(--gift-text,#fff)!important;font-size:var(--gift-text-size,14px)!important;font-family:inherit!important}
-.gift-prep-banner .banner-text button{background:var(--gift-btn-bg,#b58a4a)!important;color:var(--gift-btn-text,#fff)!important;font-size:var(--gift-btn-size,13px)!important;border-radius:var(--gift-btn-radius,0px)!important;font-family:inherit!important}
+.gift-prep-banner img{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:var(--gift-fit,cover)!important;
+  object-position:center!important;
+  display:block!important;
+  z-index:0!important;
+}
+.gift-prep-banner::after{
+  content:"";
+  position:absolute!important;
+  inset:0!important;
+  background:var(--gift-overlay,#000)!important;
+  opacity:var(--gift-overlay-opacity,0)!important;
+  pointer-events:none!important;
+  z-index:1!important;
+}
+.gift-prep-banner .banner-text{
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:var(--gift-items,flex-start)!important;
+  gap:10px!important;
+  width:auto!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:clamp(18px,4vw,54px)!important;
+  transform:none!important;
+  background:transparent!important;
+  color:var(--gift-text,#fff)!important;
+  text-align:var(--gift-align,right)!important;
+  box-sizing:border-box!important;
+}
+.gift-prep-banner .banner-text h2{
+  position:static!important;
+  margin:0!important;
+  padding:0!important;
+  max-width:48%!important;
+  color:var(--gift-title,#fff)!important;
+  font-size:var(--gift-title-size,28px)!important;
+  line-height:1.35!important;
+  font-family:inherit!important;
+  transform:none!important;
+}
+.gift-prep-banner .banner-text p{
+  position:static!important;
+  margin:0!important;
+  padding:0!important;
+  max-width:48%!important;
+  color:var(--gift-text,#fff)!important;
+  font-size:var(--gift-text-size,14px)!important;
+  line-height:1.7!important;
+  font-family:inherit!important;
+  transform:none!important;
+}
+.gift-prep-banner .banner-text button{
+  position:static!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:auto!important;
+  min-width:110px!important;
+  min-height:40px!important;
+  margin:2px 0 0!important;
+  padding:9px 22px!important;
+  transform:none!important;
+  background:var(--gift-btn-bg,#b58a4a)!important;
+  color:var(--gift-btn-text,#fff)!important;
+  font-size:var(--gift-btn-size,13px)!important;
+  border:0!important;
+  border-radius:var(--gift-btn-radius,0px)!important;
+  font-family:inherit!important;
+  line-height:1.3!important;
+}
+@media(max-width:700px){
+ .gift-prep-banner .banner-text{padding:18px!important}
+ .gift-prep-banner .banner-text h2,
+ .gift-prep-banner .banner-text p{max-width:58%!important}
+}
+
 
 .tabs{
   display:flex;justify-content:center;gap:10px;
@@ -765,7 +851,7 @@ main#home{position:relative}
 
 
 /* ATYAF ADMIN-MANAGED PRODUCT CARD */
-.product{background:var(--pc-bg,#fff)!important;border:var(--pc-border-w,1px) solid var(--pc-border,#eeeae2)!important;border-radius:var(--pc-radius,18px)!important;box-shadow:var(--pc-shadow,none)!important;overflow:hidden!important;font-family:var(--pc-font,Cairo),sans-serif!important}\n.product .product-info,.product .product-info h3,.product .product-info .price,.product .product-actions button{font-family:var(--pc-font,Cairo),sans-serif!important}
+.product{width:var(--pc-whole-width,300px)!important;max-width:100%!important;background:var(--pc-bg,#fff)!important;border:var(--pc-border-w,1px) solid var(--pc-border,#eeeae2)!important;border-radius:var(--pc-radius,18px)!important;box-shadow:var(--pc-shadow,none)!important;overflow:hidden!important;font-family:var(--pc-font,Cairo),sans-serif!important}\n.product .product-info,.product .product-info h3,.product .product-info .price,.product .product-actions button{font-family:var(--pc-font,Cairo),sans-serif!important}
 .product-image{height:var(--pc-img-h,315px)!important;background:var(--pc-img-bg,#fff)!important;border:0!important}
 .product-image img{object-fit:var(--pc-fit,contain)!important;padding:var(--pc-img-pad,12px)!important}
 .product-info{text-align:var(--pc-align,center)!important;padding:var(--pc-info-pad,12px)!important}
@@ -776,6 +862,9 @@ main#home{position:relative}
 .product-actions button:first-child:hover{background:var(--pc-cart-bg,#050505)!important;border-color:var(--pc-cart-bg,#050505)!important;color:var(--pc-cart-text,#fff)!important}
 .product-actions button:last-child:hover{background:var(--pc-gift-bg,#fff)!important;border-color:var(--pc-gift-border,#d8d4cb)!important;color:var(--pc-gift-text,#171717)!important}
 .heart:hover{background:var(--pc-heart-active,#111)!important;border-color:var(--pc-heart-active,#111)!important;color:#fff!important}
+@media(min-width:1025px){:root{--pc-whole-width:var(--pc-whole-desktop,300px)}}
+@media(min-width:701px) and (max-width:1024px){:root{--pc-whole-width:var(--pc-whole-tablet,260px)}}
+@media(max-width:700px){:root{--pc-whole-width:var(--pc-whole-mobile,220px)}}
 .product.pc-no-hover:hover{transform:none!important}
 .custom-managed-section{padding:42px 0}.custom-managed-section .custom-content{white-space:pre-wrap;text-align:center;line-height:2;color:#555}
 </style>
@@ -1319,8 +1408,20 @@ function applyGiftSectionDesign(cfg={}){
  sv("--gift-title-size",Math.max(12,Number(d.titleSize||28))+"px");sv("--gift-text-size",Math.max(10,Number(d.textSize||14))+"px");
  sv("--gift-btn-size",Math.max(9,Number(d.buttonSize||13))+"px");sv("--gift-btn-radius",Math.max(0,Number(d.buttonRadius||0))+"px");
  sv("--gift-overlay",d.overlayColor||"#000");sv("--gift-overlay-opacity",String(Math.max(0,Math.min(90,Number(d.overlay||0)))/100));
- sv("--gift-align",["right","center","left"].includes(d.align)?d.align:"right");sv("--gift-fit",d.fit==="contain"?"contain":"cover");
+ const align=["right","center","left"].includes(d.align)?d.align:"right";
+ sv("--gift-align",align);sv("--gift-items",align==="center"?"center":(align==="left"?"flex-end":"flex-start"));
+ sv("--gift-fit",d.fit==="contain"?"contain":"cover");
  sv("--gift-font",d.font||"Cairo");sv("--gift-shadow",d.shadow||"none");
+}
+async function loadWholeProductCardSize(){
+ try{
+  const d=await atyafGetSetting("design")||{};
+  const r=document.documentElement;
+  const c=(v,min,max,def)=>Math.max(min,Math.min(max,Number(v||def)));
+  r.style.setProperty("--pc-whole-desktop",c(d.wholeWidthDesktop,140,600,300)+"px");
+  r.style.setProperty("--pc-whole-tablet",c(d.wholeWidthTablet,140,600,260)+"px");
+  r.style.setProperty("--pc-whole-mobile",c(d.wholeWidthMobile,120,500,220)+"px");
+ }catch(e){console.warn("Product card size:",e)}
 }
 async function loadManagedStoreSettings(){
   try{
@@ -1611,576 +1712,3 @@ function atyafMediaUrl(item){
   }
   return "";
 }
-
-function normalizeBottomAdSettings(raw){
-  let s=raw;
-  if(typeof s==="string"){
-    try{s=JSON.parse(s)}catch(e){s={}}
-  }
-  if(!s || typeof s!=="object")s={};
-
-  /* دعم جميع أسماء الحقول التي قد تحفظها لوحة الإدارة */
-  if(s.bottom_ads && typeof s.bottom_ads==="object")s=s.bottom_ads;
-  if(s.bottomAds && typeof s.bottomAds==="object")s=s.bottomAds;
-  if(s.lower_ad && typeof s.lower_ad==="object")s=s.lower_ad;
-  if(s.lowerAd && typeof s.lowerAd==="object")s=s.lowerAd;
-
-  let rawMedia =
-    s.media ?? s.medias ?? s.slides ?? s.images ?? s.files ??
-    s.items ?? s.urls ?? s.ad_media ?? [];
-
-  if(typeof rawMedia==="string"){
-    try{
-      const parsed=JSON.parse(rawMedia);
-      rawMedia=Array.isArray(parsed)?parsed:[rawMedia];
-    }catch(e){
-      rawMedia=rawMedia.split(/\r?\n|,/).map(x=>x.trim()).filter(Boolean);
-    }
-  }
-  if(!Array.isArray(rawMedia))rawMedia=[rawMedia];
-
-  const media=rawMedia.map(atyafMediaUrl).filter(Boolean);
-
-  return {
-    enabled: !(s.enabled===false || s.active===false || s.is_active===false || s.show===false),
-    media,
-    fit: s.fit || s.objectFit || s.mediaFit || "cover",
-    position: s.position || s.objectPosition || s.mediaPosition || "center",
-    link: s.link || s.href || s.url_link || "",
-    heightDesktop: Number(s.heightDesktop || s.desktopHeight || s.height_desktop || 320),
-    heightTablet: Number(s.heightTablet || s.tabletHeight || s.height_tablet || 260),
-    heightMobile: Number(s.heightMobile || s.mobileHeight || s.height_mobile || 190),
-    radius: Number(s.radius || s.borderRadius || s.border_radius || 0),
-    interval: Number(s.interval || s.slideInterval || s.interval_ms || 4000)
-  };
-}
-
-function renderBottomAds(raw={}){
-  const section=document.getElementById("afterProductsAd");
-  if(!section)return;
-
-  const s=normalizeBottomAdSettings(raw);
-  const media=s.media;
-
-  clearInterval(bottomAdTimer);
-  bottomAdTimer=null;
-
-  if(!s.enabled || !media.length){
-    section.style.display="none";
-    section.innerHTML="";
-    return;
-  }
-
-  section.style.display="block";
-  section.style.setProperty("--bad-desktop",s.heightDesktop+"px");
-  section.style.setProperty("--bad-tablet",s.heightTablet+"px");
-  section.style.setProperty("--bad-mobile",s.heightMobile+"px");
-  section.style.borderRadius=s.radius+"px";
-
-  const safeLink=String(s.link||"").trim();
-
-  section.innerHTML=media.map((url,i)=>{
-    const video=/\.(mp4|webm|ogg)(?:\?|#|$)/i.test(url);
-    const el=video
-      ? `<video src="${url}" muted playsinline autoplay loop preload="metadata" style="object-fit:${s.fit};object-position:${s.position}"></video>`
-      : `<img src="${url}" alt="إعلان أطياف" loading="${i===0?'eager':'lazy'}" style="object-fit:${s.fit};object-position:${s.position}">`;
-    return `<div class="after-ad-slide ${i===0?'active':''}">${el}</div>`;
-  }).join("")+
-  (media.length>1
-    ? `<div class="after-ad-dots">${media.map((_,i)=>`<button class="after-ad-dot ${i===0?'active':''}" type="button" onclick="bottomAdTo(${i})"></button>`).join("")}</div>`
-    : "");
-
-  if(safeLink){
-    section.querySelectorAll(".after-ad-slide").forEach(x=>{
-      x.style.cursor="pointer";
-      x.addEventListener("click",()=>window.open(safeLink,"_blank","noopener"));
-    });
-  }
-
-  window.bottomAdIndex=0;
-  if(media.length>1){
-    bottomAdTimer=setInterval(
-      ()=>bottomAdTo((window.bottomAdIndex||0)+1),
-      Math.max(1500,s.interval||4000)
-    );
-  }
-}
-
-function bottomAdTo(n){
-  const section=document.getElementById("afterProductsAd");
-  if(!section)return;
-  const slides=[...section.querySelectorAll(".after-ad-slide")];
-  const dots=[...section.querySelectorAll(".after-ad-dot")];
-  if(!slides.length)return;
-  window.bottomAdIndex=(Number(n)+slides.length)%slides.length;
-  slides.forEach((x,i)=>x.classList.toggle("active",i===window.bottomAdIndex));
-  dots.forEach((x,i)=>x.classList.toggle("active",i===window.bottomAdIndex));
-}
-
-/* قراءة أحدث إعداد محفوظ، مع دعم أسماء المفاتيح القديمة والجديدة */
-async function loadBottomAds(){
-  const section=document.getElementById("afterProductsAd");
-  try{
-    if(!atyafDb)throw new Error("Supabase client is not available");
-
-    const keys=[
-      "bottom_ads",
-      "bottom_ad",
-      "lower_ads",
-      "lower_ad",
-      "after_products_ad",
-      "after_products_ads"
-    ];
-
-    const {data,error}=await atyafDb
-      .from("settings")
-      .select("id,key,value,updated_at")
-      .in("key",keys)
-      .order("updated_at",{ascending:false,nullsFirst:false})
-      .order("id",{ascending:false})
-      .limit(20);
-
-    if(error)throw error;
-
-    const rows=Array.isArray(data)?data:[];
-    let chosen=null;
-
-    for(const key of keys){
-      const row=rows.find(r=>r.key===key && r.value!=null);
-      if(row){chosen=row;break}
-    }
-
-    if(!chosen && rows.length)chosen=rows[0];
-
-    if(!chosen){
-      renderBottomAds({enabled:false});
-      console.warn("ATYAF: no lower advertisement setting was found");
-      return;
-    }
-
-    renderBottomAds(chosen.value);
-    console.info("ATYAF lower ad loaded:",chosen.key,chosen.id);
-  }catch(e){
-    console.warn("ATYAF lower ads:",e);
-    if(section){
-      section.style.display="none";
-      section.innerHTML="";
-    }
-  }
-}
-
-/* تحديث الإعلان فور رجوع المستخدم للصفحة أو بعد تعديل الإدارة */
-window.addEventListener("focus",()=>{
-  loadTopAds();
-  loadBottomAds();
-});
-document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="visible"){
-    loadTopAds();
-    loadBottomAds();
-  }
-});
-
-
-function searchProducts(){
- activeFilter="";
- renderAll();
-}
-
-function filterCategory(value){
- activeFilter=value;
- document.getElementById("search").value="";
- renderAll();
- document.getElementById("allProducts").scrollIntoView({behavior:"smooth"});
-}
-
-function addToCart(id){
- let p=products.find(x=>String(x.id)===String(id));
- cart.push(p);
- saveCart();
- showMessage("تمت إضافة المنتج إلى السلة");
-}
-
-function gift(id){
- let p=products.find(x=>String(x.id)===String(id));
- let giftPreparation=null;
- try{giftPreparation=JSON.parse(localStorage.getItem("atyafGiftPreparation")||"null")}catch(e){}
- if(!giftPreparation){
-   openGiftPreparation();
-   return;
- }
- cart.push({...p,gift:true,giftPreparation});
- saveCart();
- openCart();
-}
-
-function saveCart(){
- localStorage.setItem("cart",JSON.stringify(cart));
- document.getElementById("cartCount").textContent=cart.length;
-}
-
-function openCart(){
- renderCart();
- document.getElementById("drawer").classList.add("open");
-}
-
-function closeCart(e){
- if(!e||e.target.id==="drawer")
- document.getElementById("drawer").classList.remove("open");
-}
-
-function renderCart(){
- let box=document.getElementById("cartItems");
- if(!cart.length){
-   box.innerHTML="<p style='text-align:center;color:#888'>السلة فارغة حالياً</p>";
- }else{
-   box.innerHTML=cart.map((p,i)=>`
-    <div class="cart-item">
-      <img src="${p.image||""}" onerror="this.style.visibility='hidden'">
-      <div class="cart-item-info">
-        <b>${p.name}</b><br>
-        <span>${p.price} ر.س</span>
-        ${p.gift?`<br><small>🎁 هدية${p.giftPreparation?.recipient?" إلى "+p.giftPreparation.recipient:""}</small>`:""}
-      </div>
-      <button onclick="removeCart(${i})">حذف</button>
-    </div>`).join("");
- }
- document.getElementById("cartTotal").textContent=
- cart.reduce((a,b)=>a+(Number(b.price||0)*Number(b.qty||1)),0)+" ر.س";
-}
-
-function removeCart(i){
- cart.splice(i,1);saveCart();renderCart();
-}
-
-function applyCoupon(){
- const code=document.getElementById("coupon")?.value.trim()||"";
- if(!code)return showMessage("أدخل كود الخصم");
- window.atyafPendingCoupon=code;
- if(code.toUpperCase()==="FIRST15") showMessage("تم قبول الكود وسيظهر في إتمام الطلب");
- else showMessage("سيتم التحقق من الكود عند تأكيد الطلب");
-}
-
-function atyafMoney(n){
-  return Number(n||0).toLocaleString("ar")+" ر.س";
-}
-function checkout(){
-  if(!cart.length){showMessage("أضف منتجاً إلى السلة أولاً");return}
-  document.getElementById("drawer").classList.remove("open");
-
-  const subtotal=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
-  document.getElementById("modalContent").innerHTML=`
-   <div class="checkout-sheet">
-    <h2>إتمام الطلب</h2>
-    <div class="checkout-grid">
-      <div class="checkout-field"><label>الاسم الكامل</label><input id="coName" autocomplete="name"></div>
-      <div class="checkout-field"><label>رقم الهاتف</label><input id="coPhone" inputmode="tel" placeholder="مثال: 776881748"></div>
-      <div class="checkout-field"><label>العنوان</label><input id="coAddress" autocomplete="street-address"></div>
-      <div class="checkout-field"><label>ملاحظات</label><textarea id="coNotes"></textarea></div>
-
-      <div class="checkout-field">
-       <label>كود الخصم</label>
-       <div class="coupon-row">
-        <input id="coCoupon" placeholder="أدخل كود الخصم" value="${window.atyafPendingCoupon||""}">
-        <button type="button" onclick="applyCheckoutCoupon()">تطبيق</button>
-       </div>
-      </div>
-
-      <div class="checkout-field">
-       <label>طريقة الدفع</label>
-       <select id="coPayment" onchange="updateCheckoutPaymentInfo()">
-        <option value="cod">الدفع عند الاستلام</option>
-        <option value="qatibi">إيداع قطبي (جميع العملات)</option>
-        <option value="bank">تحويل / إيداع بنكي</option>
-       </select>
-      </div>
-
-      <div class="payment-info" id="coPaymentInfo">الدفع نقداً عند استلام الطلب.</div>
-      <div class="checkout-summary"><span>المبلغ المطلوب</span><strong id="coTotal">${atyafMoney(subtotal)}</strong></div>
-    </div>
-    <button class="checkout-confirm" onclick="finishOrder()">تأكيد الطلب</button>
-    <button class="checkout-cancel" onclick="closeModal()">إلغاء</button>
-   </div>`;
-  document.getElementById("modal").classList.add("open");
-}
-function updateCheckoutPaymentInfo(){
-  const method=document.getElementById("coPayment")?.value;
-  const box=document.getElementById("coPaymentInfo"); if(!box)return;
-  if(method==="qatibi"){
-    box.innerHTML="<b>طريقة الدفع: إيداع قطبي (جميع العملات)</b><br>بعد تأكيد الطلب سيتم التواصل معك وإرسال بيانات الإيداع المعتمدة.";
-  }else if(method==="bank"){
-    box.innerHTML="<b>طريقة الدفع: تحويل / إيداع بنكي</b><br>سيتم تزويدك ببيانات الحساب المعتمدة لإكمال عملية الدفع.";
-  }else{
-    box.innerHTML="<b>الدفع عند الاستلام</b><br>ادفع قيمة الطلب عند وصوله إليك.";
-  }
-}
-function applyCheckoutCoupon(){
-  const code=document.getElementById("coCoupon")?.value.trim();
-  if(!code)return showMessage("أدخل كود الخصم");
-  showMessage("سيتم التحقق من كود الخصم عند تأكيد الطلب");
-}
-async function finishOrder(){
-  const name=document.getElementById("coName")?.value.trim();
-  const phone=document.getElementById("coPhone")?.value.trim();
-  const address=document.getElementById("coAddress")?.value.trim();
-  const notes=document.getElementById("coNotes")?.value.trim()||"";
-  const payment=document.getElementById("coPayment")?.value||"cod";
-  const coupon=document.getElementById("coCoupon")?.value.trim()||"";
-  if(!name||!phone||!address)return showMessage("أدخل الاسم ورقم الهاتف والعنوان");
-
-  const number="AT-"+Math.floor(100000+Math.random()*900000);
-  const total=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
-  const orderLines=cart.map(x=>`• ${x.name} × ${x.qty||1} — ${atyafMoney(Number(x.price||0)*Number(x.qty||1))}`).join("\n");
-  const paymentName=payment==="qatibi"?"إيداع قطبي":payment==="bank"?"تحويل بنكي":"الدفع عند الاستلام";
-
-  const wa=normalizeWhatsAppNumber(atyafGeneralSettings.whatsapp||atyafGeneralSettings.whatsappNumber||atyafGeneralSettings.phone||"");
-  const text=`طلب جديد من متجر أطياف
-رقم الطلب: ${number}
-الاسم: ${name}
-الهاتف: ${phone}
-العنوان: ${address}
-طريقة الدفع: ${paymentName}
-${coupon?`كود الخصم: ${coupon}\n`:""}${notes?`ملاحظات: ${notes}\n`:""}
-المنتجات:
-${orderLines}
-الإجمالي: ${atyafMoney(total)}`;
-
-  cart=[];saveCart();closeModal();
-  if(wa){
-    window.open("https://wa.me/"+wa+"?text="+encodeURIComponent(text),"_blank","noopener");
-    showMessage("تم تجهيز الطلب وسيتم فتح واتساب لإرساله");
-  }else{
-    showMessage("تم إنشاء الطلب — رقم الطلب: "+number);
-  }
-}
-
-function openGiftPreparation(){
- document.getElementById("modalContent").innerHTML=`
-  <h2 style="margin-top:0">تجهيز الهدية</h2>
-  <p style="color:#777;font-size:13px">أدخل بيانات الهدية وسيتم حفظها مع طلبك.</p>
-  <div class="gift-form">
-   <input id="giftSender" placeholder="اسم المرسل *">
-   <input id="giftSenderPhone" placeholder="رقم المرسل *" inputmode="tel">
-   <input id="giftRecipient" placeholder="اسم المستلم *">
-   <input id="giftRecipientPhone" placeholder="رقم المستلم *" inputmode="tel">
-   <textarea id="giftMessage" class="full" placeholder="اكتب رسالة الإهداء"></textarea>
-   <select id="giftWrap">
-    <option value="تغليف أطياف الفاخر">تغليف أطياف الفاخر</option>
-    <option value="تغليف مناسب للمناسبة">تغليف مناسب للمناسبة</option>
-   </select>
-   <input id="giftDate" type="date" aria-label="تاريخ التسليم">
-   <textarea id="giftAddress" class="full" placeholder="عنوان المستلم بالتفصيل *"></textarea>
-  </div>
-  <div class="gift-summary">بعد حفظ البيانات اختر المنتج الذي تريد إهداءه من المتجر واضغط زر <b>هدية</b>. ستبقى بيانات التجهيز محفوظة مع طلب الهدية.</div>
-  <button class="gift-submit" onclick="saveGiftPreparation()">حفظ بيانات الهدية والبدء بالتسوق</button>`;
- document.getElementById("modal").classList.add("open");
-}
-
-function saveGiftPreparation(){
- const data={
-  sender:document.getElementById("giftSender").value.trim(),
-  senderPhone:document.getElementById("giftSenderPhone").value.trim(),
-  recipient:document.getElementById("giftRecipient").value.trim(),
-  recipientPhone:document.getElementById("giftRecipientPhone").value.trim(),
-  message:document.getElementById("giftMessage").value.trim(),
-  wrap:document.getElementById("giftWrap").value,
-  date:document.getElementById("giftDate").value,
-  address:document.getElementById("giftAddress").value.trim()
- };
- if(!data.sender||!data.senderPhone||!data.recipient||!data.recipientPhone||!data.address){
-  showMessage("أكمل اسم ورقم المرسل والمستلم وعنوان المستلم");return;
- }
- localStorage.setItem("atyafGiftPreparation",JSON.stringify(data));
- closeModal();
- document.getElementById("best").scrollIntoView({behavior:"smooth"});
- setTimeout(()=>showMessage("تم حفظ بيانات الهدية — اختر المنتج واضغط هدية"),350);
-}
-
-function showProduct(id){
- let p=products.find(x=>String(x.id)===String(id));
- document.getElementById("modalContent").innerHTML=`
-  <div class="detail">
-   <img src="${p.image||""}" onerror="this.style.visibility='hidden'">
-   <div>
-    <h2>${p.name}</h2>
-    <div class="stars">★★★★★</div>
-    <p style="color:#777">${p.description||""}</p>
-    <h2 style="color:#b33128">${p.price} ر.س</h2>
-    <p>التوفر: <span style="color:green">متوفر</span></p>
-    <button onclick="addToCart(${p.id});closeModal()">إضافة إلى السلة</button>
-    <button style="background:#222" onclick="gift(${p.id});closeModal()">شراء كهدية</button>
-   </div>
-  </div>`;
- document.getElementById("modal").classList.add("open");
-}
-
-function saveFavorites(){
- localStorage.setItem("atyaf_favorites",JSON.stringify(favorites));
-}
-function toggleFavorite(id,button){
- id=String(id);
- const i=favorites.indexOf(id);
- if(i>=0)favorites.splice(i,1);else favorites.push(id);
- saveFavorites();
- document.querySelectorAll(`.product[data-product-id="${CSS.escape(id)}"] .heart`).forEach(btn=>{
-   const on=favorites.includes(id);
-   btn.classList.toggle("active",on);
-   btn.textContent=on?"♥":"♡";
- });
- updateFavoritesCount();
- const favOverlay=document.getElementById("favoritesOverlay");
- if(favOverlay?.classList.contains("open")) openFavorites();
-}
-function updateFavoritesCount(){
- const el=document.getElementById("favoritesCount");
- if(el)el.textContent=favorites.length?favorites.length:"";
-}
-function openFavorites(){
- const list=products.filter(p=>favorites.includes(String(p.id)));
- const content=document.getElementById("favoritesContent");
- if(!content)return;
- content.innerHTML=list.length
-   ? `<div class="grid">${list.map(productCard).join("")}</div>`
-   : `<div class="favorites-empty"><div class="ico">♡</div><h3>المفضلة فارغة</h3><p>اضغط على القلب في أي منتج لإضافته إلى المفضلة.</p></div>`;
- document.getElementById("favoritesOverlay").classList.add("open");
- document.body.style.overflow="hidden";
-}
-function closeFavorites(event){
- const overlay=document.getElementById("favoritesOverlay");
- if(event && event.target!==overlay)return;
- overlay?.classList.remove("open");
- document.body.style.overflow="";
-}
-function addFavorite(id){
- if(id!=null)toggleFavorite(id);
-}
-
-function showMessage(text){
- document.getElementById("modalContent").innerHTML=
- `<div style="text-align:center;padding:35px">
-  <div style="font-size:42px;color:#b9934b">✓</div>
-  <h3>${text}</h3>
-  <button onclick="closeModal()" style="padding:10px 40px;background:#b9934b;color:#fff;border:0">حسناً</button>
- </div>`;
- document.getElementById("modal").classList.add("open");
-}
-
-function closeModal(){
- document.getElementById("modal").classList.remove("open");
-}
-
-function slideTo(n){
- const hero=document.getElementById("heroAds");
- if(!hero)return;
- const slides=[...hero.querySelectorAll(".slide")];
- const dots=[...hero.querySelectorAll(".dot")];
- if(!slides.length)return;
- currentSlide=(Number(n)+slides.length)%slides.length;
- slides.forEach((x,i)=>x.classList.toggle("active",i===currentSlide));
- dots.forEach((x,i)=>x.classList.toggle("active",i===currentSlide));
-}
-
-
-async function atyafBootStore(){
-  saveCart();
-  updateFavoritesCount();
-
-  await Promise.allSettled([
-    loadProductsFromSupabase(),
-    loadManagedStoreSettings(),
-    loadTopAds(),
-    loadBottomAds()
-  ]);
-
-  setTimeout(()=>applyManagedDesign(atyafCurrentDesign),250);
-}
-
-if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded",atyafBootStore,{once:true});
-}else{
-  atyafBootStore();
-}
-/* ATYAF SAFE BOOT FIX 2026-09-20 */
-</script>
-
-
-<script>
-(function(){
- document.addEventListener('click',function(e){
-   const b=e.target.closest('.search button'); if(!b)return;
-   const box=b.closest('.search'), input=box&&box.querySelector('input');
-   if(!input)return;
-   if(box.classList.contains('hero-search-open')){ input.focus(); return; }
-   box.classList.add('hero-search-open'); input.style.cssText='position:fixed!important;top:150px!important;left:50%!important;transform:translateX(-50%)!important;width:min(520px,86vw)!important;height:46px!important;opacity:1!important;pointer-events:auto!important;z-index:10000!important;background:#fff!important;border:1px solid #ddd!important;border-radius:3px!important;padding:0 15px!important;color:#111!important'; input.focus();
- });
-})();
-</script>
-
-<script>
-/* ===== ATYAF SPLASH MOTION MATCHED TO REFERENCE VIDEO ===== */
-(function(){
-  let finished=false;
-
-  function finish(){
-    if(finished) return;
-    finished=true;
-    const splash=document.getElementById("atyafLogoSplash");
-    if(!splash) return;
-    splash.classList.add("atyaf-fade");
-    setTimeout(()=>splash.remove(),430);
-  }
-
-  function start(){
-    const splash=document.getElementById("atyafLogoSplash");
-    const logo=document.getElementById("atyafSplashLogo");
-    if(!splash || !logo) return;
-
-    /* Reference: logo stays centered briefly, then shrinks and flies upward
-       while the real header appears underneath. */
-    setTimeout(()=>{
-      const from=logo.getBoundingClientRect();
-      const target =
-        document.querySelector("[data-atyaf-header-logo]") ||
-        document.querySelector(".atyaf-hero-logo") ||
-        document.querySelector(".brand-logo img") ||
-        document.querySelector("header img");
-
-      let targetX=window.innerWidth/2;
-      let targetY=88;
-      let targetW=150;
-      let targetH=54;
-
-      if(target){
-        const r=target.getBoundingClientRect();
-        if(r.width>10 && r.height>10){
-          targetX=r.left+r.width/2;
-          targetY=r.top+r.height/2;
-          targetW=r.width;
-          targetH=r.height;
-        }
-      }
-
-      const fromX=from.left+from.width/2;
-      const fromY=from.top+from.height/2;
-      const scale=Math.max(.12,Math.min(targetW/from.width,targetH/from.height));
-
-      logo.style.transition=
-        "transform 1.05s cubic-bezier(.22,.75,.18,1), opacity .20s ease .88s";
-      logo.style.transform=
-        `translate3d(${targetX-fromX}px,${targetY-fromY}px,0) scale(${scale})`;
-
-      setTimeout(()=>{ logo.style.opacity="0"; },880);
-      setTimeout(finish,1060);
-    },900);
-
-    setTimeout(finish,2800);
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",start,{once:true});
-  }else start();
-})();
-</script>
-
-</body>
-</html></html>

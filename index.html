@@ -867,6 +867,104 @@ main#home{position:relative}
 @media(max-width:700px){:root{--pc-card-width:var(--pc-card-width-mobile,220px)}}
 .product.pc-no-hover:hover{transform:none!important}
 .custom-managed-section{padding:42px 0}.custom-managed-section .custom-content{white-space:pre-wrap;text-align:center;line-height:2;color:#555}
+
+/* ===== ATYAF MOBILE PROFESSIONAL BALANCE — SAFE OVERRIDE ===== */
+@media (max-width:600px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden!important}
+  .container{width:calc(100% - 28px)!important;max-width:none!important}
+
+  /* compact, balanced header over hero */
+  .topbar{height:30px!important;min-height:30px!important;font-size:10px!important;padding:0 10px!important}
+  .header{top:30px!important;width:100%!important}
+  .header-main{
+    height:70px!important;min-height:70px!important;
+    padding:6px 12px!important;
+    grid-template-columns:72px 1fr 72px!important;
+    gap:4px!important;
+  }
+  .logo{min-width:0!important;width:100%!important;overflow:visible!important}
+  .logo .atyaf-hero-logo{width:min(170px,46vw)!important;max-width:100%!important;max-height:54px!important}
+  .logo .atyaf-brand-name strong{font-size:20px!important}
+  .logo .atyaf-brand-name small{font-size:7px!important;margin-top:3px!important}
+  .header-tools{gap:5px!important;max-width:72px!important;overflow:hidden!important}
+  .tool{font-size:17px!important;padding:5px!important}
+  .search{width:34px!important;height:34px!important;max-width:34px!important}
+  .search button{width:34px!important;height:34px!important;font-size:19px!important}
+
+  .nav{
+    height:40px!important;min-height:40px!important;
+    gap:20px!important;padding:0 12px!important;
+    font-size:11px!important;
+    scrollbar-width:none!important;
+  }
+  .nav::-webkit-scrollbar{display:none}
+
+  /* hero/ad: phone-like proportion instead of an oversized tall screen */
+  .hero,#heroAds{
+    height:clamp(250px,76vw,330px)!important;
+    min-height:250px!important;
+    max-height:330px!important;
+  }
+  .slide img,.slide video{object-fit:cover!important}
+  .hero-info{right:18px!important;left:18px!important;top:auto!important;bottom:42px!important}
+  .hero-info h1{font-size:25px!important;line-height:1.35!important}
+  .hero-info p{font-size:12px!important;margin:6px 0!important}
+
+  .notice{font-size:10px!important;padding:10px 8px!important}
+  .section{padding-top:30px!important}
+  .section-title{margin-bottom:20px!important}
+  .section-title h2{font-size:22px!important;line-height:1.45!important}
+  .section-title p{font-size:11px!important}
+
+  /* brands/scents stay inside viewport */
+  .brands{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+  .brand{min-width:0!important;width:100%!important}
+
+  /* gift banner */
+  .gift-prep-banner{
+    width:100%!important;
+    height:clamp(170px,48vw,210px)!important;
+    min-height:170px!important;
+    margin-inline:auto!important;
+  }
+  .gift-prep-banner .banner-text{padding:14px!important;gap:5px!important}
+  .gift-prep-banner .banner-text h2{max-width:55%!important;font-size:min(var(--gift-title-size,28px),20px)!important;line-height:1.35!important}
+  .gift-prep-banner .banner-text p{max-width:55%!important;font-size:min(var(--gift-text-size,14px),10px)!important;line-height:1.55!important}
+  .gift-prep-banner .banner-text button{min-width:88px!important;min-height:32px!important;padding:7px 13px!important;font-size:min(var(--gift-btn-size,13px),10px)!important}
+
+  /* products: two balanced columns; admin width remains effective but cannot break viewport */
+  .products,.products-grid{
+    width:100%!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    align-items:stretch!important;
+  }
+  .product{
+    width:min(var(--pc-card-width,220px),100%)!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin-inline:auto!important;
+    border-radius:min(var(--pc-radius,18px),14px)!important;
+  }
+  .product-image{
+    height:clamp(150px,43vw,var(--pc-img-h,230px))!important;
+    min-height:150px!important;
+  }
+  .product-image img{max-width:100%!important;max-height:100%!important;padding:min(var(--pc-img-pad,12px),10px)!important}
+  .product-info{padding:9px 8px!important}
+  .product-info h3{font-size:min(var(--pc-name-size,13px),12px)!important;min-height:0!important;margin-bottom:4px!important}
+  .product-info .price{font-size:min(var(--pc-price-size,14px),13px)!important}
+  .heart{width:min(var(--pc-heart-size,34px),31px)!important;height:min(var(--pc-heart-size,34px),31px)!important}
+  .product-actions{padding:0 7px 7px!important;gap:6px!important}
+  .product-actions button{min-height:min(var(--pc-btn-h,43px),38px)!important;font-size:min(var(--pc-btn-font,11px),9px)!important}
+
+  /* lower ad/footer/modals */
+  .after-products-ad{margin-top:30px!important}
+  .after-products-ad .after-ad-slide{height:clamp(170px,48vw,220px)!important}
+  .footer-grid{grid-template-columns:1fr!important;gap:22px!important}
+  .modal,.dialog,.favorites-dialog{max-width:calc(100vw - 24px)!important;margin-inline:auto!important}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>

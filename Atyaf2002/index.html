@@ -1226,12 +1226,47 @@ function renderCategories(){
 /* المنتجات */
 function fillProducts(){const h=products.map(p=>`<option value="${p.id}">${esc(p.name)}${Number(p.stock||0)<=0?" — نفدت الكمية":""}</option>`).join("");["varProduct","relFrom","relTo"].forEach(id=>$(id).innerHTML=h);$("bundleProducts").innerHTML=h}
 function renderExistingProductImages(){$("existingProductImages").innerHTML=editingProductImages.map((u,i)=>`<div class="media-preview"><img src="${esc(u)}"><button class="media-remove" onclick="editingProductImages.splice(${i},1);renderExistingProductImages()">×</button></div>`).join("")}
+function clearGeminiResult(){
+  const result=document.getElementById("geminiResult");
+  const status=document.getElementById("geminiStatus");
+  if(result)result.innerHTML="";
+  if(status)status.textContent="";
+}
+
 async function saveProduct(){
  const id=$("productId").value,name=$("productName").value.trim(),category=$("productCategory").value;if(!name||!category){toast(!name?"اكتب اسم المنتج":"اختر القسم");return}
  const b=$("saveProductButton");b.disabled=true;
  try{
   const uploaded=$("productImageFiles").files.length?await uploadMultipleFiles($("productImageFiles").files,"products","productUploadStatus"):[];
-  const row={name,category,description:$("productDescription").value.trim()||null,price:Number($("productPrice").value||0),discount:Number($("productDiscount").value||0),stock:Number($("productStock").value||0),currency:$("productCurrency").value.trim()||"ر.ي",images:[...editingProductImages,...uploaded],colors:parseLines($("productColors").value),sizes:parseLines($("productSizes").value),is_active:$("productActive").checked,is_new:$("productNew").checked,sort_order:Number($("productSortOrder").value||0)};
+  const categoryValue=String(category||"").trim();
+  const categoryRow=(Array.isArray(categoriesCache)?categoriesCache:[]).find(c=>
+    String(c.id)===categoryValue ||
+    String(c.name_ar||c.name||"").trim()===categoryValue
+  );
+  const baseSlug=(name.toLowerCase().trim().replace(/\s+/g,"-").replace(/[^\u0600-\u06FFa-z0-9-]/gi,"").replace(/-+/g,"-").replace(/^-|-$/g,"")||"product");
+  const uniqueSlug=baseSlug+"-"+Date.now()+"-"+Math.random().toString(36).slice(2,7);
+  const allImages=[...editingProductImages,...uploaded];
+  const row={
+    name,
+    name_ar:name,
+    slug:uniqueSlug,
+    category:categoryRow ? String(categoryRow.name_ar||categoryRow.name||categoryValue) : categoryValue,
+    category_id:categoryRow?.id || null,
+    description:$("productDescription").value.trim()||null,
+    price:Number($("productPrice").value||0),
+    discount:Number($("productDiscount").value||0),
+    discount_percent:Number($("productDiscount").value||0),
+    stock:Number($("productStock").value||0),
+    currency:$("productCurrency").value.trim()||"ر.ي",
+    images:allImages,
+    main_image_url:allImages[0]||null,
+    colors:parseLines($("productColors").value),
+    sizes:parseLines($("productSizes").value),
+    is_active:$("productActive").checked,
+    active:$("productActive").checked,
+    is_new:$("productNew").checked,
+    sort_order:Number($("productSortOrder").value||0)
+  };
   const r=id?await db.from("products").update(row).eq("id",id):await db.from("products").insert(row);if(r.error)throw r.error;toast(id?"تم تعديل المنتج ✓":"تمت إضافة المنتج ✓");resetProductForm();await loadAll();
  }catch(e){alert("تعذر حفظ المنتج:\n"+e.message)}finally{b.disabled=false;setUploadStatus("productUploadStatus","",false)}
 }
@@ -2779,4 +2814,4 @@ window.addEventListener("unhandledrejection",function(event){
 startAdmin();
 </script>
 </body>
-</html> 
+</html>

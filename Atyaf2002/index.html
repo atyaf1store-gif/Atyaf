@@ -753,14 +753,7 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
       <div><label>حجم خط الأزرار px</label><input id="pcButtonFontSize" type="number" min="8" max="25" value="11"></div>
     </div>
 
-    <h3>📐 حجم بطاقة المنتج كاملة</h3>
-<p class="note">يكبّر أو يصغّر بطاقة المنتج كاملة حسب الجهاز، وليس صورة المنتج وحدها.</p>
-<div class="grid3">
-<div><label>كمبيوتر — عرض البطاقة px</label><input id="pcWholeWidthDesktop" type="number" min="140" max="600" step="5" value="300"></div>
-<div><label>تابلت — عرض البطاقة px</label><input id="pcWholeWidthTablet" type="number" min="140" max="600" step="5" value="260"></div>
-<div><label>جوال — عرض البطاقة px</label><input id="pcWholeWidthMobile" type="number" min="120" max="500" step="5" value="220"></div>
-</div>
-<h3>معاينة مباشرة</h3>
+    <h3>معاينة مباشرة</h3>
     <div id="pcPreviewWrap" style="background:#f5f3ed;padding:20px;border-radius:16px;overflow:auto">
       <div id="pcPreviewCard" style="width:min(280px,100%);margin:auto;position:relative">
         <div id="pcPreviewImage" style="display:grid;place-items:center;font-size:60px">🧴</div>
@@ -2080,19 +2073,15 @@ const PRODUCT_CARD_DEFAULTS={
  shadow:"none",hover:"lift",textAlign:"center",fontFamily:"Cairo",nameSize:13,nameColor:"#171717",nameWeight:"800",nameLineHeight:1.75,
  priceSize:14,priceColor:"#9d342b",oldPriceColor:"#747874",heartSize:34,heartBg:"#ffffff",heartColor:"#292929",heartBorder:"#ddd8ce",heartActive:"#111111",
  badgeBg:"#050505",badgeText:"#ffffff",badgeRadius:14,cartBg:"#050505",cartText:"#ffffff",giftBg:"#ffffff",giftText:"#171717",giftBorder:"#d8d4cb",
- buttonHeight:43,buttonRadius:0,buttonFontSize:11,wholeWidthDesktop:300,wholeWidthTablet:260,wholeWidthMobile:220};
+ buttonHeight:43,buttonRadius:0,buttonFontSize:11
+};
 function pcSet(id,value){const el=$(id);if(el&&value!==undefined&&value!==null)el.value=value}
 function fillProductCardDesign(saved={}){
  const p={...PRODUCT_CARD_DEFAULTS,...(saved||{})};
  Object.entries({pcBackground:p.background,pcBorderColor:p.borderColor,pcBorderWidth:p.borderWidth,pcRadius:p.radius,pcImageBg:p.imageBg,pcImageHeight:p.imageHeight,pcImagePadding:p.imagePadding,pcImageFit:p.imageFit,pcInfoPadding:p.infoPadding,pcShadow:p.shadow,pcHover:p.hover,pcTextAlign:p.textAlign,pcFontFamily:p.fontFamily,pcNameSize:p.nameSize,pcNameColor:p.nameColor,pcNameWeight:p.nameWeight,pcNameLineHeight:p.nameLineHeight,pcPriceSize:p.priceSize,pcPriceColor:p.priceColor,pcOldPriceColor:p.oldPriceColor,pcHeartSize:p.heartSize,pcHeartBg:p.heartBg,pcHeartColor:p.heartColor,pcHeartBorder:p.heartBorder,pcHeartActive:p.heartActive,pcBadgeBg:p.badgeBg,pcBadgeText:p.badgeText,pcBadgeRadius:p.badgeRadius,pcCartBg:p.cartBg,pcCartText:p.cartText,pcGiftBg:p.giftBg,pcGiftText:p.giftText,pcGiftBorder:p.giftBorder,pcButtonHeight:p.buttonHeight,pcButtonRadius:p.buttonRadius,pcButtonFontSize:p.buttonFontSize}).forEach(([id,v])=>pcSet(id,v));
  updateProductCardPreview();
- $("pcWholeWidthDesktop").value=Number(saved.wholeWidthDesktop||300);
- $("pcWholeWidthTablet").value=Number(saved.wholeWidthTablet||260);
- $("pcWholeWidthMobile").value=Number(saved.wholeWidthMobile||220);
 }
-function collectProductCardDesign(){return {wholeWidthDesktop:Number($("pcWholeWidthDesktop").value||300),
- wholeWidthTablet:Number($("pcWholeWidthTablet").value||260),
- wholeWidthMobile:Number($("pcWholeWidthMobile").value||220),
+function collectProductCardDesign(){return {
  background:$("pcBackground").value,borderColor:$("pcBorderColor").value,borderWidth:Number($("pcBorderWidth").value||0),radius:Number($("pcRadius").value||0),
  imageBg:$("pcImageBg").value,imageHeight:Number($("pcImageHeight").value||315),imagePadding:Number($("pcImagePadding").value||0),imageFit:$("pcImageFit").value,infoPadding:Number($("pcInfoPadding").value||0),
  shadow:$("pcShadow").value,hover:$("pcHover").value,textAlign:$("pcTextAlign").value,fontFamily:$("pcFontFamily").value,nameSize:Number($("pcNameSize").value||13),nameColor:$("pcNameColor").value,nameWeight:$("pcNameWeight").value,nameLineHeight:Number($("pcNameLineHeight").value||1.75),
@@ -2780,4 +2769,4 @@ window.addEventListener("unhandledrejection",function(event){
 startAdmin();
 </script>
 </body>
-</html>
+</html></html>

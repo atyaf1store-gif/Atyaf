@@ -749,31 +749,62 @@ main#home{position:relative}
 }
 
 
-/* ===== ATYAF CURRENT SPLASH — ONLY ACTIVE DESIGN ===== *//* ===== ATYAF SPLASH — VIDEO STYLE ===== */
+/* ===== ATYAF SPLASH — CLEAN PROFESSIONAL BASE =====
+   Editable variables only. No dependency on Supabase / fonts / store boot.
+====================================================== */
+:root{
+  --atyaf-splash-bg:#fbf6ee;
+  --atyaf-splash-logo-width:min(520px,72vw);
+  --atyaf-splash-logo-max-height:220px;
+  --atyaf-splash-hold:650ms;
+  --atyaf-splash-move:900ms;
+  --atyaf-splash-fade:260ms;
+}
 #atyafLogoSplash{
-  position:fixed; inset:0; z-index:999999;
-  background:#fbf6ee;
-  display:flex; align-items:center; justify-content:center;
-  opacity:1; visibility:visible;
-  transition:opacity .38s ease,visibility .38s ease;
+  position:fixed;
+  inset:0;
+  z-index:2147483000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--atyaf-splash-bg);
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  overflow:hidden;
+  transition:
+    opacity var(--atyaf-splash-fade) ease,
+    visibility var(--atyaf-splash-fade) ease;
 }
 #atyafSplashLogo{
-  width:min(520px,72vw);
-  max-height:220px;
-  object-fit:contain;
+  position:relative;
+  width:var(--atyaf-splash-logo-width);
+  max-height:var(--atyaf-splash-logo-max-height);
+  height:auto;
   display:block;
+  object-fit:contain;
+  margin:0;
+  opacity:1;
   transform:translate3d(0,0,0) scale(1);
   transform-origin:center center;
   filter:drop-shadow(0 12px 28px rgba(93,53,19,.08));
   will-change:transform,opacity;
+  backface-visibility:hidden;
 }
-#atyafLogoSplash.atyaf-fade{
-  opacity:0; visibility:hidden; pointer-events:none;
+#atyafLogoSplash.atyaf-splash-out{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
 }
 @media(max-width:700px){
-  #atyafSplashLogo{width:min(390px,82vw);max-height:170px}
+  :root{
+    --atyaf-splash-logo-width:min(390px,82vw);
+    --atyaf-splash-logo-max-height:170px;
+  }
 }
-
+@media(prefers-reduced-motion:reduce){
+  #atyafLogoSplash,#atyafSplashLogo{transition-duration:.01ms!important}
+}
 
 /* ===== ATYAF EDITABLE TRANSPARENT BRAND — HEADER ONLY ===== */
 .logo,.logo .atyaf-hero-logo{background:transparent!important}
@@ -1129,53 +1160,6 @@ main#home{position:relative}
   .nav{gap:18px!important;padding-inline:10px!important}
   .hero,#heroAds{height:270px!important;min-height:270px!important;max-height:270px!important}
   .gift-prep-banner{height:175px!important;min-height:175px!important}
-}
-
-
-/* ===== MOBILE V3 — SPLASH FINAL POSITION FIX ONLY ===== */
-@media (max-width:600px){
-  /* During opening animation, never let the header constraints clip the flying logo */
-  body.splashing .logo,
-  body.splashing .logo img,
-  body.splashing .logo .atyaf-hero-logo,
-  .splash-active .logo,
-  .splash-active .logo img,
-  .splash-active .logo .atyaf-hero-logo{
-    overflow:visible!important;
-  }
-
-  /* Once the existing splash is finished, restore a compact professional header logo */
-  body:not(.splashing) .header .logo,
-  body:not(.splash-active) .header .logo{
-    position:static!important;
-    transform:none!important;
-    width:100%!important;
-    height:54px!important;
-    max-height:54px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    overflow:hidden!important;
-  }
-  body:not(.splashing) .header .logo img,
-  body:not(.splashing) .header .logo .atyaf-hero-logo,
-  body:not(.splash-active) .header .logo img,
-  body:not(.splash-active) .header .logo .atyaf-hero-logo{
-    position:static!important;
-    inset:auto!important;
-    transform:none!important;
-    width:auto!important;
-    height:auto!important;
-    max-width:150px!important;
-    max-height:48px!important;
-    object-fit:contain!important;
-    margin:auto!important;
-  }
-
-  /* Splash overlay itself must remain above the mobile header while it is active */
-  #splash,.splash,.splash-screen,#splashScreen{
-    z-index:99999!important;
-  }
 }
 
 
@@ -2463,4 +2447,598 @@ function normalizeBottomAdSettings(raw){
   const media=rawMedia.map(atyafMediaUrl).filter(Boolean);
 
   return {
-    enable
+    enabled: !(s.enabled===false || s.active===false || s.is_active===false || s.show===false),
+    media,
+    fit: s.fit || s.objectFit || s.mediaFit || "cover",
+    position: s.position || s.objectPosition || s.mediaPosition || "center",
+    link: s.link || s.href || s.url_link || "",
+    heightDesktop: Number(s.heightDesktop || s.desktopHeight || s.height_desktop || 320),
+    heightTablet: Number(s.heightTablet || s.tabletHeight || s.height_tablet || 260),
+    heightMobile: Number(s.heightMobile || s.mobileHeight || s.height_mobile || 190),
+    radius: Number(s.radius || s.borderRadius || s.border_radius || 0),
+    interval: Number(s.interval || s.slideInterval || s.interval_ms || 4000)
+  };
+}
+
+function renderBottomAds(raw={}){
+  const section=document.getElementById("afterProductsAd");
+  if(!section)return;
+
+  const s=normalizeBottomAdSettings(raw);
+  const media=s.media;
+
+  clearInterval(bottomAdTimer);
+  bottomAdTimer=null;
+
+  if(!s.enabled || !media.length){
+    section.style.display="none";
+    section.innerHTML="";
+    return;
+  }
+
+  section.style.display="block";
+  section.style.setProperty("--bad-desktop",s.heightDesktop+"px");
+  section.style.setProperty("--bad-tablet",s.heightTablet+"px");
+  section.style.setProperty("--bad-mobile",s.heightMobile+"px");
+  section.style.borderRadius=s.radius+"px";
+
+  const safeLink=String(s.link||"").trim();
+
+  section.innerHTML=media.map((url,i)=>{
+    const video=/\.(mp4|webm|ogg)(?:\?|#|$)/i.test(url);
+    const el=video
+      ? `<video src="${url}" muted playsinline autoplay loop preload="metadata" style="object-fit:${s.fit};object-position:${s.position}"></video>`
+      : `<img src="${url}" alt="إعلان أطياف" loading="${i===0?'eager':'lazy'}" style="object-fit:${s.fit};object-position:${s.position}">`;
+    return `<div class="after-ad-slide ${i===0?'active':''}">${el}</div>`;
+  }).join("")+
+  (media.length>1
+    ? `<div class="after-ad-dots">${media.map((_,i)=>`<button class="after-ad-dot ${i===0?'active':''}" type="button" onclick="bottomAdTo(${i})"></button>`).join("")}</div>`
+    : "");
+
+  if(safeLink){
+    section.querySelectorAll(".after-ad-slide").forEach(x=>{
+      x.style.cursor="pointer";
+      x.addEventListener("click",()=>window.open(safeLink,"_blank","noopener"));
+    });
+  }
+
+  window.bottomAdIndex=0;
+  if(media.length>1){
+    bottomAdTimer=setInterval(
+      ()=>bottomAdTo((window.bottomAdIndex||0)+1),
+      Math.max(1500,s.interval||4000)
+    );
+  }
+}
+
+function bottomAdTo(n){
+  const section=document.getElementById("afterProductsAd");
+  if(!section)return;
+  const slides=[...section.querySelectorAll(".after-ad-slide")];
+  const dots=[...section.querySelectorAll(".after-ad-dot")];
+  if(!slides.length)return;
+  window.bottomAdIndex=(Number(n)+slides.length)%slides.length;
+  slides.forEach((x,i)=>x.classList.toggle("active",i===window.bottomAdIndex));
+  dots.forEach((x,i)=>x.classList.toggle("active",i===window.bottomAdIndex));
+}
+
+/* قراءة أحدث إعداد محفوظ، مع دعم أسماء المفاتيح القديمة والجديدة */
+async function loadBottomAds(){
+  const section=document.getElementById("afterProductsAd");
+  try{
+    if(!atyafDb)throw new Error("Supabase client is not available");
+
+    const keys=[
+      "bottom_ads",
+      "bottom_ad",
+      "lower_ads",
+      "lower_ad",
+      "after_products_ad",
+      "after_products_ads"
+    ];
+
+    const {data,error}=await atyafDb
+      .from("settings")
+      .select("id,key,value,updated_at")
+      .in("key",keys)
+      .order("updated_at",{ascending:false,nullsFirst:false})
+      .order("id",{ascending:false})
+      .limit(20);
+
+    if(error)throw error;
+
+    const rows=Array.isArray(data)?data:[];
+    let chosen=null;
+
+    for(const key of keys){
+      const row=rows.find(r=>r.key===key && r.value!=null);
+      if(row){chosen=row;break}
+    }
+
+    if(!chosen && rows.length)chosen=rows[0];
+
+    if(!chosen){
+      renderBottomAds({enabled:false});
+      console.warn("ATYAF: no lower advertisement setting was found");
+      return;
+    }
+
+    renderBottomAds(chosen.value);
+    console.info("ATYAF lower ad loaded:",chosen.key,chosen.id);
+  }catch(e){
+    console.warn("ATYAF lower ads:",e);
+    if(section){
+      section.style.display="none";
+      section.innerHTML="";
+    }
+  }
+}
+
+/* تحديث الإعلان فور رجوع المستخدم للصفحة أو بعد تعديل الإدارة */
+window.addEventListener("focus",()=>{
+  loadTopAds();
+  loadBottomAds();
+});
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible"){
+    loadTopAds();
+    loadBottomAds();
+  }
+});
+
+
+function searchProducts(){
+ activeFilter="";
+ renderAll();
+}
+
+function filterCategory(value){
+ activeFilter=value;
+ document.getElementById("search").value="";
+ renderAll();
+ document.getElementById("allProducts").scrollIntoView({behavior:"smooth"});
+}
+
+function addToCart(id){
+ let p=products.find(x=>String(x.id)===String(id));
+ cart.push(p);
+ saveCart();
+ showMessage("تمت إضافة المنتج إلى السلة");
+}
+
+function gift(id){
+ let p=products.find(x=>String(x.id)===String(id));
+ let giftPreparation=null;
+ try{giftPreparation=JSON.parse(localStorage.getItem("atyafGiftPreparation")||"null")}catch(e){}
+ if(!giftPreparation){
+   openGiftPreparation();
+   return;
+ }
+ cart.push({...p,gift:true,giftPreparation});
+ saveCart();
+ openCart();
+}
+
+function saveCart(){
+ localStorage.setItem("cart",JSON.stringify(cart));
+ document.getElementById("cartCount").textContent=cart.length;
+}
+
+function openCart(){
+ renderCart();
+ document.getElementById("drawer").classList.add("open");
+}
+
+function closeCart(e){
+ if(!e||e.target.id==="drawer")
+ document.getElementById("drawer").classList.remove("open");
+}
+
+function renderCart(){
+ let box=document.getElementById("cartItems");
+ if(!cart.length){
+   box.innerHTML="<p style='text-align:center;color:#888'>السلة فارغة حالياً</p>";
+ }else{
+   box.innerHTML=cart.map((p,i)=>`
+    <div class="cart-item">
+      <img src="${p.image||""}" onerror="this.style.visibility='hidden'">
+      <div class="cart-item-info">
+        <b>${p.name}</b><br>
+        <span>${p.price} ر.س</span>
+        ${p.gift?`<br><small>🎁 هدية${p.giftPreparation?.recipient?" إلى "+p.giftPreparation.recipient:""}</small>`:""}
+      </div>
+      <button onclick="removeCart(${i})">حذف</button>
+    </div>`).join("");
+ }
+ document.getElementById("cartTotal").textContent=
+ cart.reduce((a,b)=>a+(Number(b.price||0)*Number(b.qty||1)),0)+" ر.س";
+}
+
+function removeCart(i){
+ cart.splice(i,1);saveCart();renderCart();
+}
+
+function applyCoupon(){
+ const code=document.getElementById("coupon")?.value.trim()||"";
+ if(!code)return showMessage("أدخل كود الخصم");
+ window.atyafPendingCoupon=code;
+ if(code.toUpperCase()==="FIRST15") showMessage("تم قبول الكود وسيظهر في إتمام الطلب");
+ else showMessage("سيتم التحقق من الكود عند تأكيد الطلب");
+}
+
+function atyafMoney(n){
+  return Number(n||0).toLocaleString("ar")+" ر.س";
+}
+function checkout(){
+  if(!cart.length){showMessage("أضف منتجاً إلى السلة أولاً");return}
+  document.getElementById("drawer").classList.remove("open");
+
+  const subtotal=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
+  document.getElementById("modalContent").innerHTML=`
+   <div class="checkout-sheet">
+    <h2>إتمام الطلب</h2>
+    <div class="checkout-grid">
+      <div class="checkout-field"><label>الاسم الكامل</label><input id="coName" autocomplete="name"></div>
+      <div class="checkout-field"><label>رقم الهاتف</label><input id="coPhone" inputmode="tel" placeholder="مثال: 776881748"></div>
+      <div class="checkout-field"><label>العنوان</label><input id="coAddress" autocomplete="street-address"></div>
+      <div class="checkout-field"><label>ملاحظات</label><textarea id="coNotes"></textarea></div>
+
+      <div class="checkout-field">
+       <label>كود الخصم</label>
+       <div class="coupon-row">
+        <input id="coCoupon" placeholder="أدخل كود الخصم" value="${window.atyafPendingCoupon||""}">
+        <button type="button" onclick="applyCheckoutCoupon()">تطبيق</button>
+       </div>
+      </div>
+
+      <div class="checkout-field">
+       <label>طريقة الدفع</label>
+       <select id="coPayment" onchange="updateCheckoutPaymentInfo()">
+        <option value="cod">الدفع عند الاستلام</option>
+        <option value="qatibi">إيداع قطبي (جميع العملات)</option>
+        <option value="bank">تحويل / إيداع بنكي</option>
+       </select>
+      </div>
+
+      <div class="payment-info" id="coPaymentInfo">الدفع نقداً عند استلام الطلب.</div>
+      <div class="checkout-summary"><span>المبلغ المطلوب</span><strong id="coTotal">${atyafMoney(subtotal)}</strong></div>
+    </div>
+    <button class="checkout-confirm" onclick="finishOrder()">تأكيد الطلب</button>
+    <button class="checkout-cancel" onclick="closeModal()">إلغاء</button>
+   </div>`;
+  document.getElementById("modal").classList.add("open");
+}
+function updateCheckoutPaymentInfo(){
+  const method=document.getElementById("coPayment")?.value;
+  const box=document.getElementById("coPaymentInfo"); if(!box)return;
+  if(method==="qatibi"){
+    box.innerHTML="<b>طريقة الدفع: إيداع قطبي (جميع العملات)</b><br>بعد تأكيد الطلب سيتم التواصل معك وإرسال بيانات الإيداع المعتمدة.";
+  }else if(method==="bank"){
+    box.innerHTML="<b>طريقة الدفع: تحويل / إيداع بنكي</b><br>سيتم تزويدك ببيانات الحساب المعتمدة لإكمال عملية الدفع.";
+  }else{
+    box.innerHTML="<b>الدفع عند الاستلام</b><br>ادفع قيمة الطلب عند وصوله إليك.";
+  }
+}
+function applyCheckoutCoupon(){
+  const code=document.getElementById("coCoupon")?.value.trim();
+  if(!code)return showMessage("أدخل كود الخصم");
+  showMessage("سيتم التحقق من كود الخصم عند تأكيد الطلب");
+}
+async function finishOrder(){
+  const name=document.getElementById("coName")?.value.trim();
+  const phone=document.getElementById("coPhone")?.value.trim();
+  const address=document.getElementById("coAddress")?.value.trim();
+  const notes=document.getElementById("coNotes")?.value.trim()||"";
+  const payment=document.getElementById("coPayment")?.value||"cod";
+  const coupon=document.getElementById("coCoupon")?.value.trim()||"";
+  if(!name||!phone||!address)return showMessage("أدخل الاسم ورقم الهاتف والعنوان");
+
+  const number="AT-"+Math.floor(100000+Math.random()*900000);
+  const total=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
+  const items=cart.map(x=>({id:x.id||null,name:x.name||"منتج",quantity:Number(x.qty||1),price:Number(x.price||0),image:x.image||""}));
+  const paymentName=payment==="qatibi"?"إيداع قطبي":payment==="bank"?"تحويل بنكي":"الدفع عند الاستلام";
+  const order={
+    order_number:number,
+    customer_name:name,
+    phone,
+    address,
+    notes,
+    payment_method:paymentName,
+    payment_code:payment,
+    coupon,
+    total,
+    status:"pending",
+    created_at:new Date().toISOString(),
+    items
+  };
+
+  /* حفظ نسخة كاملة من الطلب على جهاز العميل فور إتمامه.
+     هذا يجعل التتبع يُعبّأ تلقائياً حتى لو لم يكن جدول orders مهيأ بعد. */
+  localStorage.setItem("atyaf_last_order",JSON.stringify(order));
+  const history=(()=>{try{return JSON.parse(localStorage.getItem("atyaf_order_history")||"[]")}catch(e){return []}})();
+  history.unshift(order);
+  localStorage.setItem("atyaf_order_history",JSON.stringify(history.slice(0,20)));
+
+  const orderLines=items.map(x=>`• ${x.name} × ${x.quantity} — ${atyafMoney(x.price*x.quantity)}`).join("\\n");
+  const wa=normalizeWhatsAppNumber(atyafGeneralSettings.whatsapp||atyafGeneralSettings.whatsappNumber||atyafGeneralSettings.phone||"");
+  const waText=`طلب جديد من متجر أطياف
+رقم الطلب: ${number}
+الاسم: ${name}
+الهاتف: ${phone}
+العنوان: ${address}
+طريقة الدفع: ${paymentName}
+${coupon?`كود الخصم: ${coupon}\\n`:""}${notes?`ملاحظات: ${notes}\\n`:""}
+المنتجات:
+${orderLines}
+الإجمالي: ${atyafMoney(total)}`;
+
+  cart=[];saveCart();
+
+  document.getElementById("modalContent").innerHTML=`
+   <div class="order-success-pro">
+    <div class="order-success-check">✓</div>
+    <div class="order-success-title">تم استلام طلبك بنجاح</div>
+    <p>احتفظ برقم الطلب، ويمكنك متابعة حالته من أيقونة <b>تتبع الطلب</b>.</p>
+    <div class="order-success-number"><small>رقم الطلب</small><strong>${atyafEsc(number)}</strong></div>
+    <div class="order-success-grid">
+      <div><small>الاسم</small><b>${atyafEsc(name)}</b></div>
+      <div><small>الهاتف</small><b>${atyafEsc(phone)}</b></div>
+      <div><small>طريقة الدفع</small><b>${atyafEsc(paymentName)}</b></div>
+      <div><small>الإجمالي</small><b>${atyafEsc(atyafMoney(total))}</b></div>
+      <div class="wide"><small>العنوان</small><b>${atyafEsc(address)}</b></div>
+    </div>
+    <div class="order-success-items">
+      <h4>تفاصيل الطلب</h4>
+      ${items.map(x=>`<div><span>${atyafEsc(x.name)} × ${x.quantity}</span><b>${atyafEsc(atyafMoney(x.price*x.quantity))}</b></div>`).join("")}
+    </div>
+    <div class="order-success-actions">
+      <button class="checkout-confirm" onclick="closeModal();openOrderTracking()">تتبع الطلب الآن</button><button class="checkout-confirm invoice-print-btn" onclick="printAtyafInvoice()">🧾 عرض وطباعة الفاتورة</button>
+      ${wa?`<button class="checkout-cancel" onclick='window.open("https://wa.me/${wa}?text="+encodeURIComponent(${JSON.stringify(waText)}),"_blank","noopener")'>إرسال الطلب عبر واتساب</button>`:""}
+    </div>
+   </div>`;
+  document.getElementById("modal").classList.add("open");
+}
+function openGiftPreparation(){
+ document.getElementById("modalContent").innerHTML=`
+  <h2 style="margin-top:0">تجهيز الهدية</h2>
+  <p style="color:#777;font-size:13px">أدخل بيانات الهدية وسيتم حفظها مع طلبك.</p>
+  <div class="gift-form">
+   <input id="giftSender" placeholder="اسم المرسل *">
+   <input id="giftSenderPhone" placeholder="رقم المرسل *" inputmode="tel">
+   <input id="giftRecipient" placeholder="اسم المستلم *">
+   <input id="giftRecipientPhone" placeholder="رقم المستلم *" inputmode="tel">
+   <textarea id="giftMessage" class="full" placeholder="اكتب رسالة الإهداء"></textarea>
+   <select id="giftWrap">
+    <option value="تغليف أطياف الفاخر">تغليف أطياف الفاخر</option>
+    <option value="تغليف مناسب للمناسبة">تغليف مناسب للمناسبة</option>
+   </select>
+   <input id="giftDate" type="date" aria-label="تاريخ التسليم">
+   <textarea id="giftAddress" class="full" placeholder="عنوان المستلم بالتفصيل *"></textarea>
+  </div>
+  <div class="gift-summary">بعد حفظ البيانات اختر المنتج الذي تريد إهداءه من المتجر واضغط زر <b>هدية</b>. ستبقى بيانات التجهيز محفوظة مع طلب الهدية.</div>
+  <button class="gift-submit" onclick="saveGiftPreparation()">حفظ بيانات الهدية والبدء بالتسوق</button>`;
+ document.getElementById("modal").classList.add("open");
+}
+
+function saveGiftPreparation(){
+ const data={
+  sender:document.getElementById("giftSender").value.trim(),
+  senderPhone:document.getElementById("giftSenderPhone").value.trim(),
+  recipient:document.getElementById("giftRecipient").value.trim(),
+  recipientPhone:document.getElementById("giftRecipientPhone").value.trim(),
+  message:document.getElementById("giftMessage").value.trim(),
+  wrap:document.getElementById("giftWrap").value,
+  date:document.getElementById("giftDate").value,
+  address:document.getElementById("giftAddress").value.trim()
+ };
+ if(!data.sender||!data.senderPhone||!data.recipient||!data.recipientPhone||!data.address){
+  showMessage("أكمل اسم ورقم المرسل والمستلم وعنوان المستلم");return;
+ }
+ localStorage.setItem("atyafGiftPreparation",JSON.stringify(data));
+ closeModal();
+ document.getElementById("best").scrollIntoView({behavior:"smooth"});
+ setTimeout(()=>showMessage("تم حفظ بيانات الهدية — اختر المنتج واضغط هدية"),350);
+}
+
+function showProduct(id){
+ let p=products.find(x=>String(x.id)===String(id));
+ document.getElementById("modalContent").innerHTML=`
+  <div class="detail">
+   <img src="${p.image||""}" onerror="this.style.visibility='hidden'">
+   <div>
+    <h2>${p.name}</h2>
+    <div class="stars">★★★★★</div>
+    <p style="color:#777">${p.description||""}</p>
+    <h2 style="color:#b33128">${p.price} ر.س</h2>
+    <p>التوفر: <span style="color:green">متوفر</span></p>
+    <button onclick="addToCart(${p.id});closeModal()">إضافة إلى السلة</button>
+    <button style="background:#222" onclick="gift(${p.id});closeModal()">شراء كهدية</button>
+   </div>
+  </div>`;
+ document.getElementById("modal").classList.add("open");
+}
+
+function saveFavorites(){
+ localStorage.setItem("atyaf_favorites",JSON.stringify(favorites));
+}
+function toggleFavorite(id,button){
+ id=String(id);
+ const i=favorites.indexOf(id);
+ if(i>=0)favorites.splice(i,1);else favorites.push(id);
+ saveFavorites();
+ document.querySelectorAll(`.product[data-product-id="${CSS.escape(id)}"] .heart`).forEach(btn=>{
+   const on=favorites.includes(id);
+   btn.classList.toggle("active",on);
+   btn.textContent=on?"♥":"♡";
+ });
+ updateFavoritesCount();
+ const favOverlay=document.getElementById("favoritesOverlay");
+ if(favOverlay?.classList.contains("open")) openFavorites();
+}
+function updateFavoritesCount(){
+ const el=document.getElementById("favoritesCount");
+ if(el)el.textContent=favorites.length?favorites.length:"";
+}
+function openFavorites(){
+ const list=products.filter(p=>favorites.includes(String(p.id)));
+ const content=document.getElementById("favoritesContent");
+ if(!content)return;
+ content.innerHTML=list.length
+   ? `<div class="grid">${list.map(productCard).join("")}</div>`
+   : `<div class="favorites-empty"><div class="ico">♡</div><h3>المفضلة فارغة</h3><p>اضغط على القلب في أي منتج لإضافته إلى المفضلة.</p></div>`;
+ document.getElementById("favoritesOverlay").classList.add("open");
+ document.body.style.overflow="hidden";
+}
+function closeFavorites(event){
+ const overlay=document.getElementById("favoritesOverlay");
+ if(event && event.target!==overlay)return;
+ overlay?.classList.remove("open");
+ document.body.style.overflow="";
+}
+function addFavorite(id){
+ if(id!=null)toggleFavorite(id);
+}
+
+function showMessage(text){
+ document.getElementById("modalContent").innerHTML=
+ `<div style="text-align:center;padding:35px">
+  <div style="font-size:42px;color:#b9934b">✓</div>
+  <h3>${text}</h3>
+  <button onclick="closeModal()" style="padding:10px 40px;background:#b9934b;color:#fff;border:0">حسناً</button>
+ </div>`;
+ document.getElementById("modal").classList.add("open");
+}
+
+function closeModal(){
+ document.getElementById("modal").classList.remove("open");
+}
+
+function slideTo(n){
+ const hero=document.getElementById("heroAds");
+ if(!hero)return;
+ const slides=[...hero.querySelectorAll(".slide")];
+ const dots=[...hero.querySelectorAll(".dot")];
+ if(!slides.length)return;
+ currentSlide=(Number(n)+slides.length)%slides.length;
+ slides.forEach((x,i)=>x.classList.toggle("active",i===currentSlide));
+ dots.forEach((x,i)=>x.classList.toggle("active",i===currentSlide));
+}
+
+
+async function atyafBootStore(){
+  saveCart();
+  updateFavoritesCount();
+
+  await Promise.allSettled([
+    loadProductsFromSupabase(),
+    loadManagedStoreSettings(),
+    loadTopAds(),
+    loadBottomAds()
+  ]);
+
+  setTimeout(()=>applyManagedDesign(atyafCurrentDesign),250);
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",atyafBootStore,{once:true});
+}else{
+  atyafBootStore();
+}
+/* ATYAF SAFE BOOT FIX 2026-09-20 */
+</script>
+
+
+<script>
+(function(){
+ document.addEventListener('click',function(e){
+   const b=e.target.closest('.search button'); if(!b)return;
+   const box=b.closest('.search'), input=box&&box.querySelector('input');
+   if(!input)return;
+   if(box.classList.contains('hero-search-open')){ input.focus(); return; }
+   box.classList.add('hero-search-open'); input.style.cssText='position:fixed!important;top:150px!important;left:50%!important;transform:translateX(-50%)!important;width:min(520px,86vw)!important;height:46px!important;opacity:1!important;pointer-events:auto!important;z-index:10000!important;background:#fff!important;border:1px solid #ddd!important;border-radius:3px!important;padding:0 15px!important;color:#111!important'; input.focus();
+ });
+})();
+</script>
+
+<script>
+/* ===== ATYAF SPLASH — SINGLE ROBUST CONTROLLER ===== */
+(function(){
+  "use strict";
+  const splash=document.getElementById("atyafLogoSplash");
+  const logo=document.getElementById("atyafSplashLogo");
+  if(!splash || !logo) return;
+
+  let ended=false;
+  let moveTimer=0;
+  let hardStopTimer=0;
+
+  function removeSplash(){
+    if(ended) return;
+    ended=true;
+    clearTimeout(moveTimer);
+    clearTimeout(hardStopTimer);
+    splash.classList.add("atyaf-splash-out");
+    document.documentElement.classList.remove("atyaf-splash-running");
+    setTimeout(()=>{
+      if(splash && splash.parentNode) splash.parentNode.removeChild(splash);
+    },320);
+  }
+
+  function getTarget(){
+    return document.querySelector("[data-atyaf-header-logo]") ||
+           document.querySelector(".logo .atyaf-hero-logo") ||
+           document.querySelector(".logo img");
+  }
+
+  function animateHome(){
+    if(ended) return;
+    const from=logo.getBoundingClientRect();
+    const target=getTarget();
+
+    /* If layout is not ready, fade safely instead of freezing. */
+    if(!from.width || !from.height || !target){
+      removeSplash();
+      return;
+    }
+
+    const r=target.getBoundingClientRect();
+    if(r.width < 8 || r.height < 8){
+      removeSplash();
+      return;
+    }
+
+    const fromX=from.left+from.width/2;
+    const fromY=from.top+from.height/2;
+    const targetX=r.left+r.width/2;
+    const targetY=r.top+r.height/2;
+    const scale=Math.max(.10,Math.min(1,r.width/from.width,r.height/from.height));
+
+    logo.style.transition="transform 900ms cubic-bezier(.22,.78,.18,1), opacity 180ms ease 720ms";
+    requestAnimationFrame(()=>{
+      logo.style.transform=`translate3d(${targetX-fromX}px,${targetY-fromY}px,0) scale(${scale})`;
+      logo.style.opacity="0";
+    });
+    setTimeout(removeSplash,930);
+  }
+
+  document.documentElement.classList.add("atyaf-splash-running");
+
+  /* Start independently from store boot, Supabase, fonts and external images. */
+  moveTimer=setTimeout(animateHome,650);
+
+  /* Hard safety: splash can NEVER remain stuck. */
+  hardStopTimer=setTimeout(removeSplash,1900);
+
+  /* Safari may suspend timers while switching tabs; close immediately on return. */
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden && !ended) removeSplash();
+  },{passive:true});
+
+  window.addEventListener("pageshow",e=>{
+    if(e.persisted && !ended) removeSplash();
+  },{passive:true});
+})();
+</script>
+
+</body>
+</html>

@@ -147,6 +147,11 @@ a{text-decoration:none;color:inherit}
   transition:.25s
 }
 .brand:hover{box-shadow:0 5px 18px #0001;transform:translateY(-3px)}
+.brand[role="button"]{cursor:pointer}
+.brand[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.atyaf-category-section{scroll-margin-top:24px}
+.atyaf-category-section.atyaf-brand-target{animation:atyafBrandTarget .9s ease}
+@keyframes atyafBrandTarget{0%,100%{filter:none}45%{filter:drop-shadow(0 0 12px rgba(185,147,75,.28))}}
 .brand img{width:75px;height:58px;object-fit:contain}
 .brand b{font-size:11px;font-weight:500}
 .banner{
@@ -1513,12 +1518,12 @@ main#home{position:relative}
       </div>
 
       <div class="brands">
-        <div class="brand"><img src="https://dummyimage.com/160x100/fff/111&text=IBRAQ"><b>إبراق</b></div>
-        <div class="brand"><img src="https://dummyimage.com/160x100/fff/111&text=AHMED"><b>أحمد المغري</b></div>
-        <div class="brand"><img src="https://dummyimage.com/160x100/fff/111&text=Lavern"><b>لافيرن</b></div>
-        <div class="brand"><img src="https://dummyimage.com/160x100/fff/111&text=ALMAJED"><b>الماجد للعود</b></div>
-        <div class="brand"><img src="https://dummyimage.com/160x100/fff/111&text=DKHONI"><b>دخون</b></div>
-        <div class="brand"><img src="https://dummyimage.com/160x100/fff/111&text=ESSENCE"><b>إسينس</b></div>
+        <div class="brand" role="button" tabindex="0" data-brand-name="إبراق" onclick="goToBrandSection('إبراق')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToBrandSection('إبراق')}"><img src="https://dummyimage.com/160x100/fff/111&text=IBRAQ"><b>إبراق</b></div>
+        <div class="brand" role="button" tabindex="0" data-brand-name="أحمد المغري" onclick="goToBrandSection('أحمد المغري')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToBrandSection('أحمد المغري')}"><img src="https://dummyimage.com/160x100/fff/111&text=AHMED"><b>أحمد المغري</b></div>
+        <div class="brand" role="button" tabindex="0" data-brand-name="لافيرن" onclick="goToBrandSection('لافيرن')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToBrandSection('لافيرن')}"><img src="https://dummyimage.com/160x100/fff/111&text=Lavern"><b>لافيرن</b></div>
+        <div class="brand" role="button" tabindex="0" data-brand-name="الماجد للعود" onclick="goToBrandSection('الماجد للعود')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToBrandSection('الماجد للعود')}"><img src="https://dummyimage.com/160x100/fff/111&text=ALMAJED"><b>الماجد للعود</b></div>
+        <div class="brand" role="button" tabindex="0" data-brand-name="دخون" onclick="goToBrandSection('دخون')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToBrandSection('دخون')}"><img src="https://dummyimage.com/160x100/fff/111&text=DKHONI"><b>دخون</b></div>
+        <div class="brand" role="button" tabindex="0" data-brand-name="إسينس" onclick="goToBrandSection('إسينس')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToBrandSection('إسينس')}"><img src="https://dummyimage.com/160x100/fff/111&text=ESSENCE"><b>إسينس</b></div>
       </div>
     </section>
 
@@ -2436,6 +2441,40 @@ function renderDynamicCategorySections(list){
  categoriesWithProducts.forEach(c=>{
    render(c.items,atyafCategorySectionId(c.id));
  });
+}
+
+function goToBrandSection(brandName){
+ const wanted=atyafNormalizeCategoryKey(brandName);
+ if(!wanted)return;
+
+ const category=atyafCategories.find(c=>{
+   const names=[c.name_ar,c.name,c.name_en]
+     .map(atyafNormalizeCategoryKey)
+     .filter(Boolean);
+   return names.includes(wanted);
+ });
+
+ if(!category){
+   console.warn("ATYAF brand category not found:",brandName);
+   return;
+ }
+
+ const sectionId=atyafCategorySectionId(category.id);
+ let target=document.getElementById(sectionId);
+
+ /* إذا كانت الأقسام لم تُرسم بعد، ارسمها من البيانات الحالية ثم حاول مجدداً. */
+ if(!target){
+   renderDynamicCategorySections(filtered());
+   target=document.getElementById(sectionId);
+ }
+ if(!target)return;
+
+ const section=target.closest(".atyaf-category-section") || target;
+ section.scrollIntoView({behavior:"smooth",block:"start"});
+
+ /* إبراز خفيف للقسم المقصود بدون تغيير التصميم الدائم. */
+ section.classList.add("atyaf-brand-target");
+ window.setTimeout(()=>section.classList.remove("atyaf-brand-target"),900);
 }
 
 function renderAll(){

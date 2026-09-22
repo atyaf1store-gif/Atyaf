@@ -146,7 +146,7 @@ a{text-decoration:none;color:inherit}
   align-items:center;justify-content:center;
   transition:.25s
 }
-.brand:hover{box-shadow:0 5px 18px #0001;transform:translateY(-3px)}
+.brand{cursor:pointer}.brand:hover{box-shadow:0 5px 18px #0001;transform:translateY(-3px)}
 .brand[role="button"]{cursor:pointer}
 .brand[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .atyaf-category-section{scroll-margin-top:24px}
@@ -2447,36 +2447,53 @@ function goToBrandSection(brandName){
  const wanted=atyafNormalizeCategoryKey(brandName);
  if(!wanted)return;
 
- const category=atyafCategories.find(c=>{
-   const names=[c.name_ar,c.name,c.name_en]
-     .map(atyafNormalizeCategoryKey)
-     .filter(Boolean);
-   return names.includes(wanted);
+ /* 1) ابحث أولاً عن القسم المرسوم فعلياً في الصفحة بالاسم */
+ const drawnSections=[...document.querySelectorAll(".atyaf-category-section")];
+ let section=drawnSections.find(sec=>{
+   const title=sec.querySelector(".section-title h2");
+   return title && atyafNormalizeCategoryKey(title.textContent)===wanted;
  });
 
- if(!category){
-   console.warn("ATYAF brand category not found:",brandName);
+ /* 2) إن لم يكن مرسوماً، طابق الماركة مع جدول الأقسام ثم ارسم الأقسام */
+ if(!section){
+   const category=atyafCategories.find(c=>{
+     const names=[c.name_ar,c.name,c.name_en]
+       .map(atyafNormalizeCategoryKey)
+       .filter(Boolean);
+     return names.includes(wanted);
+   });
+
+   if(category){
+     renderDynamicCategorySections(filtered());
+     const target=document.getElementById(atyafCategorySectionId(category.id));
+     if(target)section=target.closest(".atyaf-category-section") || target;
+   }
+ }
+
+ /* 3) توافق مع البيانات القديمة: طابق اسم الماركة مع category داخل المنتجات */
+ if(!section){
+   const matching=products.filter(p=>atyafNormalizeCategoryKey(p.category)===wanted);
+   if(matching.length){
+     const categoryId=atyafResolveProductCategoryId(matching[0]);
+     if(categoryId){
+       renderDynamicCategorySections(filtered());
+       const target=document.getElementById(atyafCategorySectionId(categoryId));
+       if(target)section=target.closest(".atyaf-category-section") || target;
+     }
+   }
+ }
+
+ if(section){
+   const y=section.getBoundingClientRect().top + window.pageYOffset - 24;
+   window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+   section.classList.add("atyaf-brand-target");
+   window.setTimeout(()=>section.classList.remove("atyaf-brand-target"),900);
    return;
  }
 
- const sectionId=atyafCategorySectionId(category.id);
- let target=document.getElementById(sectionId);
-
- /* إذا كانت الأقسام لم تُرسم بعد، ارسمها من البيانات الحالية ثم حاول مجدداً. */
- if(!target){
-   renderDynamicCategorySections(filtered());
-   target=document.getElementById(sectionId);
- }
- if(!target)return;
-
- const section=target.closest(".atyaf-category-section") || target;
- section.scrollIntoView({behavior:"smooth",block:"start"});
-
- /* إبراز خفيف للقسم المقصود بدون تغيير التصميم الدائم. */
- section.classList.add("atyaf-brand-target");
- window.setTimeout(()=>section.classList.remove("atyaf-brand-target"),900);
+ /* لا نرسل المستخدم إلى "قد تعجبك". إذا لم نجد القسم لا نغيّر الصفحة. */
+ console.warn("ATYAF: لم يتم العثور على قسم مطابق للماركة:",brandName);
 }
-
 function renderAll(){
  let list=filtered();
 

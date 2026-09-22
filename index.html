@@ -2447,53 +2447,71 @@ function goToBrandSection(brandName){
  const wanted=atyafNormalizeCategoryKey(brandName);
  if(!wanted)return;
 
- /* 1) ابحث أولاً عن القسم المرسوم فعلياً في الصفحة بالاسم */
- const drawnSections=[...document.querySelectorAll(".atyaf-category-section")];
- let section=drawnSections.find(sec=>{
-   const title=sec.querySelector(".section-title h2");
-   return title && atyafNormalizeCategoryKey(title.textContent)===wanted;
+ /* اربط الماركة مباشرة بالمنتجات، ولا تعتمد على وجود القسم مسبقاً */
+ const category=atyafCategories.find(c=>{
+   return [c.name_ar,c.name,c.name_en]
+     .map(atyafNormalizeCategoryKey)
+     .filter(Boolean)
+     .includes(wanted);
  });
 
- /* 2) إن لم يكن مرسوماً، طابق الماركة مع جدول الأقسام ثم ارسم الأقسام */
- if(!section){
-   const category=atyafCategories.find(c=>{
-     const names=[c.name_ar,c.name,c.name_en]
-       .map(atyafNormalizeCategoryKey)
-       .filter(Boolean);
-     return names.includes(wanted);
-   });
+ const categoryId=category ? String(category.id) : "";
 
-   if(category){
-     renderDynamicCategorySections(filtered());
-     const target=document.getElementById(atyafCategorySectionId(category.id));
-     if(target)section=target.closest(".atyaf-category-section") || target;
-   }
- }
+ const brandProducts=products.filter(p=>{
+   const byId=categoryId && String(atyafResolveProductCategoryId(p))===categoryId;
+   const byName=atyafNormalizeCategoryKey(p.category)===wanted;
+   return byId || byName;
+ });
 
- /* 3) توافق مع البيانات القديمة: طابق اسم الماركة مع category داخل المنتجات */
- if(!section){
-   const matching=products.filter(p=>atyafNormalizeCategoryKey(p.category)===wanted);
-   if(matching.length){
-     const categoryId=atyafResolveProductCategoryId(matching[0]);
-     if(categoryId){
-       renderDynamicCategorySections(filtered());
-       const target=document.getElementById(atyafCategorySectionId(categoryId));
-       if(target)section=target.closest(".atyaf-category-section") || target;
-     }
-   }
- }
-
- if(section){
-   const y=section.getBoundingClientRect().top + window.pageYOffset - 24;
-   window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
-   section.classList.add("atyaf-brand-target");
-   window.setTimeout(()=>section.classList.remove("atyaf-brand-target"),900);
+ if(!brandProducts.length){
+   console.warn("ATYAF: لا توجد منتجات مرتبطة بهذه الماركة:",brandName);
    return;
  }
 
- /* لا نرسل المستخدم إلى "قد تعجبك". إذا لم نجد القسم لا نغيّر الصفحة. */
- console.warn("ATYAF: لم يتم العثور على قسم مطابق للماركة:",brandName);
+ /* أنشئ/حدّث قسم الماركة المطلوب نفسه ثم انتقل إليه */
+ let section=document.getElementById("atyafDirectBrandSection");
+ if(!section){
+   section=document.createElement("section");
+   section.id="atyafDirectBrandSection";
+   section.className="section atyaf-direct-brand-section";
+   section.innerHTML=`
+     <div class="section-title"><h2 id="atyafDirectBrandTitle"></h2></div>
+     <div class="products" id="atyafDirectBrandProducts"></div>
+   `;
+   const host=document.getElementById("dynamicCategorySections");
+   if(host && host.parentNode){
+     host.parentNode.insertBefore(section,host);
+   }else{
+     document.body.appendChild(section);
+   }
+ }
+
+ const title=document.getElementById("atyafDirectBrandTitle");
+ if(title)title.textContent=String(brandName||"");
+
+ render(brandProducts,"atyafDirectBrandProducts");
+ section.style.display="";
+
+ requestAnimationFrame(()=>{
+   const y=section.getBoundingClientRect().top + window.pageYOffset - 20;
+   window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+ });
 }
+
+/* ربط مضمون لبطاقات الماركات حتى بعد إعادة بنائها من إعدادات الإدارة */
+if(!window.__atyafBrandDelegationInstalled){
+ window.__atyafBrandDelegationInstalled=true;
+ document.addEventListener("click",function(event){
+   const card=event.target.closest(".brands .brand");
+   if(!card)return;
+   const name=String(card.dataset.brandName || card.querySelector("b")?.textContent || "").trim();
+   if(!name)return;
+   event.preventDefault();
+   event.stopPropagation();
+   goToBrandSection(name);
+ },true);
+}
+
 function renderAll(){
  let list=filtered();
 

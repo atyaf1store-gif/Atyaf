@@ -2044,7 +2044,7 @@ function renderManagedHomepage(cfg={}){
     atyafSetSectionText("brands",cfg.brandsTitle||"تسوق حسب الماركة",cfg.brandsSubtitle??"اختر ماركتك المفضلة");
     const box=brandsSec.querySelector(".brands");
     const items=atyafItems(cfg.brands);
-    if(box)box.innerHTML=items.map(x=>`<div class="brand" onclick="filterCategory(${JSON.stringify(String(x.name))})">${x.image?`<img src="${atyafEsc(x.image)}" alt="${atyafEsc(x.name)}">`:""}<b>${atyafEsc(x.name)}</b></div>`).join("");
+    if(box)box.innerHTML=items.map(x=>`<div class="brand" role="button" tabindex="0" data-brand-name="${atyafEsc(x.name)}" onclick="goToBrandSection(${JSON.stringify(String(x.name))})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goToBrandSection(${JSON.stringify(String(x.name))})}">${x.image?`<img src="${atyafEsc(x.image)}" alt="${atyafEsc(x.name)}">`:""}<b>${atyafEsc(x.name)}</b></div>`).join("");
   }
 
   // Gift preparation banner

@@ -1,0 +1,12 @@
+{
+  "name": "متجر أطياف",
+  "short_name": "أطياف",
+  "description": "متجر أطياف",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F8EACB",
+  "theme_color": "#20301C"
+}

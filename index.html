@@ -1400,6 +1400,12 @@ main#home{position:relative}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style id="atyaf-no-legacy-hero-guard">
+/* Old hard-coded advertisement design is permanently disabled.
+   The hero becomes visible only when saved admin advertisement media is loaded. */
+#heroAds:empty{display:none!important}
+</style>
 </head>
 
 <body>
@@ -1494,30 +1500,7 @@ main#home{position:relative}
 
 <main id="home">
 
-  <section class="hero" id="heroAds">
-    <div class="slide active">
-      <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1800&q=85">
-      <div class="hero-info">
-        <h1>عطور تليق بك</h1>
-        <p>اكتشف مجموعتنا الجديدة من العطور الفاخرة</p>
-        <button onclick="document.querySelector('#best').scrollIntoView()">تسوق الآن</button>
-      </div>
-    </div>
-
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1800&q=85">
-      <div class="hero-info">
-        <h1>أناقة لا تُنسى</h1>
-        <p>روائح شرقية بلمسة عصرية</p>
-        <button onclick="document.querySelector('#offers').scrollIntoView()">اكتشف العروض</button>
-      </div>
-    </div>
-
-    <div class="hero-dots">
-      <button class="dot active" onclick="slideTo(0)"></button>
-      <button class="dot" onclick="slideTo(1)"></button>
-    </div>
-  </section>
+  <section class="hero" id="heroAds" aria-label="إعلانات المتجر" style="display:none"></section>
 
   <div class="notice" id="serviceNoticeBar"></div>
 
@@ -1785,6 +1768,9 @@ function printAtyafInvoice(orderData){
 .atyaf-inline-go{font-size:24px!important;color:#999!important}.atyaf-inline-empty{padding:20px!important;text-align:center!important;color:#666!important}
 @media(max-width:600px){.atyaf-inline-search-results{position:fixed!important;top:115px!important;right:12px!important;left:12px!important;width:auto!important;max-height:55vh!important}}
 
+
+/* ===== LEGACY HERO CONTENT PERMANENTLY REMOVED ===== */
+#heroAds .hero-info{display:none!important}
 </style></head><body><div class="invoice">
  <div class="head"><div class="brand"><h1>متجر أطياف</h1><p>ATYAF STORE</p></div><div class="num"><small>فاتورة / طلب</small><strong>${atyafEsc(o.order_number||"")}</strong><small>${atyafEsc(date)}</small></div></div>
  <div class="info">
@@ -2592,7 +2578,9 @@ async function loadTopAds(){
     const row=rows.find(r=>r && r.value!=null) || null;
 
     if(!row){
-      console.warn("ATYAF: no saved top advertisement found; keeping fallback hero");
+      console.warn("ATYAF: no saved top advertisement found; hero remains hidden");
+      const hero=document.getElementById("heroAds");
+      if(hero){hero.innerHTML="";hero.style.display="none";}
       return;
     }
 

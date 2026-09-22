@@ -1765,21 +1765,25 @@ function printAtyafInvoice(orderData){
 @media(max-width:600px){.invoice-header-tool small{font-size:9px!important}}
 
 
-/* ===== ATYAF REAL PRODUCT SEARCH UI ===== */
-.atyaf-search-panel{direction:rtl;text-align:right;max-width:680px;margin:auto}
-.atyaf-search-title{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.atyaf-search-title>span{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#f6efe5;color:#8d6031;font-size:27px}
-.atyaf-search-title h2{margin:0;font-size:22px}.atyaf-search-title p{margin:3px 0 0;color:#777;font-size:12px}
-.atyaf-search-field{position:relative}.atyaf-search-field input{width:100%;height:50px;border:1px solid #ddd;border-radius:14px;padding:0 45px 0 14px;font:inherit;font-size:14px;outline:none;background:#fff}
-.atyaf-search-field input:focus{border-color:#a9793c;box-shadow:0 0 0 3px rgba(169,121,60,.10)}
-.atyaf-search-field>span{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:22px;color:#8d6031}
-.atyaf-search-results{margin-top:10px;max-height:min(58vh,520px);overflow:auto;border-radius:14px}
-.atyaf-search-result{width:100%;border:0;border-bottom:1px solid #eee;background:#fff;display:grid;grid-template-columns:58px 1fr 24px;align-items:center;gap:11px;padding:10px;cursor:pointer;text-align:right;color:inherit}
-.atyaf-search-result:first-of-type{border-radius:14px 14px 0 0}.atyaf-search-result:last-child{border-bottom:0;border-radius:0 0 14px 14px}
-.atyaf-search-result:hover{background:#fbf8f2}.atyaf-search-thumb{width:58px;height:58px;border-radius:10px;background:#f7f7f7;display:grid;place-items:center;overflow:hidden}
-.atyaf-search-thumb img{width:100%;height:100%;object-fit:contain}.atyaf-search-meta{display:flex;flex-direction:column;gap:5px}.atyaf-search-meta strong{font-size:14px}.atyaf-search-meta small{color:#9a5b42;font-weight:700}
-.atyaf-search-arrow{font-size:25px;color:#999}.atyaf-search-count{padding:8px 10px;color:#777;font-size:11px}.atyaf-search-hint,.atyaf-search-empty{padding:30px 12px;text-align:center;color:#777;background:#fafafa;border-radius:12px}
-@media(max-width:600px){.atyaf-search-panel{width:100%}.atyaf-search-results{max-height:55vh}}
+
+/* ===== ATYAF INLINE SEARCH RESULTS ===== */
+.search.atyaf-real-search{overflow:visible!important;z-index:120!important}
+.search.atyaf-real-search input{pointer-events:auto!important;cursor:text!important}
+.atyaf-inline-search-results{
+ position:absolute!important;top:calc(100% + 8px)!important;right:0!important;
+ width:min(430px,88vw)!important;max-height:420px!important;overflow:auto!important;
+ background:#fff!important;border:1px solid rgba(0,0,0,.10)!important;border-radius:14px!important;
+ box-shadow:0 18px 45px rgba(0,0,0,.18)!important;display:none!important;z-index:999999!important;
+ direction:rtl!important;text-align:right!important;
+}
+.atyaf-inline-search-results.show{display:block!important}
+.atyaf-inline-result{width:100%!important;display:grid!important;grid-template-columns:52px 1fr 22px!important;align-items:center!important;gap:10px!important;padding:9px 10px!important;background:#fff!important;border:0!important;border-bottom:1px solid #eee!important;color:#171717!important;text-align:right!important}
+.atyaf-inline-result:last-child{border-bottom:0!important}
+.atyaf-inline-thumb{width:52px!important;height:52px!important;border-radius:9px!important;background:#f7f7f7!important;overflow:hidden!important;display:grid!important;place-items:center!important}
+.atyaf-inline-thumb img{width:100%!important;height:100%!important;object-fit:contain!important}
+.atyaf-inline-info{display:flex!important;flex-direction:column!important;gap:4px!important}.atyaf-inline-info strong{font-size:13px!important}.atyaf-inline-info small{font-size:11px!important;color:#9a5b42!important;font-weight:700!important}
+.atyaf-inline-go{font-size:24px!important;color:#999!important}.atyaf-inline-empty{padding:20px!important;text-align:center!important;color:#666!important}
+@media(max-width:600px){.atyaf-inline-search-results{position:fixed!important;top:115px!important;right:12px!important;left:12px!important;width:auto!important;max-height:55vh!important}}
 
 </style></head><body><div class="invoice">
  <div class="head"><div class="brand"><h1>متجر أطياف</h1><p>ATYAF STORE</p></div><div class="num"><small>فاتورة / طلب</small><strong>${atyafEsc(o.order_number||"")}</strong><small>${atyafEsc(date)}</small></div></div>
@@ -1803,99 +1807,115 @@ function printAtyafInvoice(orderData){
 }
 
 
-/* ===== ATYAF REAL PRODUCT SEARCH ===== */
+/* ===== ATYAF REAL INLINE PRODUCT SEARCH ===== */
 function atyafNormalizeSearch(v){
-  return String(v||"")
-    .toLowerCase()
-    .trim()
-    .replace(/[أإآ]/g,"ا")
-    .replace(/ة/g,"ه")
-    .replace(/ى/g,"ي")
-    .replace(/ؤ/g,"و")
-    .replace(/ئ/g,"ي")
+  return String(v||"").toLowerCase().trim()
+    .replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي")
+    .replace(/ؤ/g,"و").replace(/ئ/g,"ي")
     .replace(/[\u064B-\u065F\u0670]/g,"");
 }
 function atyafSearchProducts(query){
   const q=atyafNormalizeSearch(query);
   if(!q) return [];
   return (Array.isArray(products)?products:[]).filter(p=>{
-    if(p && (p.is_active===false || p.active===false)) return false;
-    const hay=atyafNormalizeSearch([
-      p?.name_ar,p?.name,p?.name_en,p?.category,p?.description,p?.short_description,p?.sku
+    if(!p || p.is_active===false || p.active===false) return false;
+    const text=atyafNormalizeSearch([
+      p.name_ar,p.name,p.name_en,p.sku,p.category,p.description,p.short_description
     ].filter(Boolean).join(" "));
-    return hay.includes(q);
-  }).slice(0,24);
+    return text.includes(q);
+  }).slice(0,12);
 }
 function atyafSearchImage(p){
   if(p?.main_image_url) return p.main_image_url;
-  if(Array.isArray(p?.images) && p.images.length){
+  if(Array.isArray(p?.images)&&p.images.length){
     const x=p.images[0];
     return typeof x==="string"?x:(x?.url||x?.src||"");
   }
   return p?.image||"";
 }
-function renderAtyafSearchResults(query){
-  const box=document.getElementById("atyafLiveSearchResults");
+function closeAtyafInlineSearch(){
+  const box=document.getElementById("atyafInlineSearchResults");
+  if(box) box.classList.remove("show");
+}
+function renderAtyafInlineSearch(query){
+  const box=document.getElementById("atyafInlineSearchResults");
   if(!box) return;
   const q=String(query||"").trim();
-  if(!q){box.innerHTML='<div class="atyaf-search-hint">اكتب اسم المنتج للبحث</div>';return}
+  if(!q){box.innerHTML="";box.classList.remove("show");return}
   const found=atyafSearchProducts(q);
+  box.classList.add("show");
   if(!found.length){
-    box.innerHTML='<div class="atyaf-search-empty">لا توجد منتجات مطابقة لـ <b>'+atyafEsc(q)+'</b></div>';
+    box.innerHTML=`<div class="atyaf-inline-empty">لا يوجد منتج باسم <b>${atyafEsc(q)}</b></div>`;
     return;
   }
-  box.innerHTML='<div class="atyaf-search-count">تم العثور على '+found.length+' منتج</div>'+
-    found.map(p=>{
-      const img=atyafSearchImage(p);
-      const name=p.name_ar||p.name||p.name_en||"منتج";
-      const price=Number(p.price||0);
-      return `<button type="button" class="atyaf-search-result" onclick="openAtyafSearchProduct('${String(p.id).replace(/'/g,"\\'")}')">
-        <span class="atyaf-search-thumb">${img?`<img src="${atyafEsc(img)}" alt="${atyafEsc(name)}">`:""}</span>
-        <span class="atyaf-search-meta"><strong>${atyafEsc(name)}</strong><small>${atyafEsc(atyafMoney(price))}</small></span>
-        <span class="atyaf-search-arrow">‹</span>
-      </button>`;
-    }).join("");
+  box.innerHTML=found.map(p=>{
+    const name=p.name_ar||p.name||p.name_en||"منتج";
+    const img=atyafSearchImage(p);
+    return `<button type="button" class="atyaf-inline-result" data-search-product="${atyafEsc(String(p.id))}">
+      <span class="atyaf-inline-thumb">${img?`<img src="${atyafEsc(img)}" alt="">`:""}</span>
+      <span class="atyaf-inline-info"><strong>${atyafEsc(name)}</strong><small>${atyafEsc(atyafMoney(Number(p.price||0)))}</small></span>
+      <span class="atyaf-inline-go">‹</span>
+    </button>`;
+  }).join("");
 }
 function openAtyafSearchProduct(id){
-  closeModal();
   const p=(Array.isArray(products)?products:[]).find(x=>String(x.id)===String(id));
   if(!p) return;
-  /* Use the store's existing product opener if present. */
+  closeAtyafInlineSearch();
+  const input=document.querySelector(".search input");
+  if(input) input.value=p.name_ar||p.name||p.name_en||"";
   if(typeof openProduct==="function"){openProduct(p.id);return}
   if(typeof openProductModal==="function"){openProductModal(p.id);return}
   if(typeof showProduct==="function"){showProduct(p.id);return}
-  /* Safe fallback: scroll to the product card already rendered on the page. */
-  const el=document.querySelector(`[data-product-id="${CSS.escape(String(p.id))}"]`) ||
-           document.getElementById("product-"+String(p.id));
-  if(el){el.scrollIntoView({behavior:"smooth",block:"center"});return}
-}
-function openAtyafProductSearch(){
-  document.getElementById("modalContent").innerHTML=`
-    <div class="atyaf-search-panel">
-      <div class="atyaf-search-title"><span>⌕</span><div><h2>البحث عن المنتجات</h2><p>ابحث باسم المنتج مباشرة</p></div></div>
-      <div class="atyaf-search-field">
-        <input id="atyafProductSearchInput" type="search" inputmode="search" autocomplete="off" placeholder="اكتب اسم المنتج..." oninput="renderAtyafSearchResults(this.value)" onkeydown="if(event.key==='Enter')renderAtyafSearchResults(this.value)">
-        <span>⌕</span>
-      </div>
-      <div id="atyafLiveSearchResults" class="atyaf-search-results"><div class="atyaf-search-hint">اكتب اسم المنتج للبحث</div></div>
-    </div>`;
-  document.getElementById("modal").classList.add("open");
-  setTimeout(()=>document.getElementById("atyafProductSearchInput")?.focus(),80);
+  const cards=[...document.querySelectorAll(".product")];
+  const card=cards.find(el=>{
+    const txt=atyafNormalizeSearch(el.textContent);
+    return txt.includes(atyafNormalizeSearch(p.name_ar||p.name||p.name_en||""));
+  });
+  if(card){
+    card.scrollIntoView({behavior:"smooth",block:"center"});
+    card.animate([{outline:"3px solid rgba(169,121,60,.75)"},{outline:"0 solid transparent"}],{duration:1300});
+  }
 }
 function wireAtyafHeaderSearch(){
   const search=document.querySelector(".search");
-  if(!search || search.dataset.atyafRealSearch==="1") return;
-  search.dataset.atyafRealSearch="1";
+  if(!search || search.dataset.atyafInlineSearch==="1") return;
+  search.dataset.atyafInlineSearch="1";
+  search.classList.add("atyaf-real-search");
+
   const input=search.querySelector("input");
-  if(input){
-    input.placeholder="ابحث عن منتج...";
-    input.removeAttribute("disabled");
-    input.addEventListener("focus",openAtyafProductSearch);
-    input.addEventListener("click",openAtyafProductSearch);
+  if(!input) return;
+  input.placeholder="ابحث عن منتج...";
+  input.removeAttribute("disabled");
+  input.setAttribute("autocomplete","off");
+  input.setAttribute("inputmode","search");
+
+  let box=document.getElementById("atyafInlineSearchResults");
+  if(!box){
+    box=document.createElement("div");
+    box.id="atyafInlineSearchResults";
+    box.className="atyaf-inline-search-results";
+    search.appendChild(box);
   }
-  search.addEventListener("click",function(e){
-    e.preventDefault();
-    openAtyafProductSearch();
+
+  input.addEventListener("input",function(){renderAtyafInlineSearch(this.value)});
+  input.addEventListener("focus",function(){if(this.value.trim())renderAtyafInlineSearch(this.value)});
+  input.addEventListener("keydown",function(e){
+    if(e.key==="Escape") closeAtyafInlineSearch();
+    if(e.key==="Enter"){
+      e.preventDefault();
+      const first=box.querySelector("[data-search-product]");
+      if(first) openAtyafSearchProduct(first.dataset.searchProduct);
+    }
+  });
+
+  box.addEventListener("click",function(e){
+    const row=e.target.closest("[data-search-product]");
+    if(row) openAtyafSearchProduct(row.dataset.searchProduct);
+  });
+
+  document.addEventListener("pointerdown",function(e){
+    if(!search.contains(e.target)) closeAtyafInlineSearch();
   });
 }
 if(document.readyState==="loading"){
@@ -1903,6 +1923,8 @@ if(document.readyState==="loading"){
 }else{
   wireAtyafHeaderSearch();
 }
+/* Re-wire after async store initialization if the header was rebuilt. */
+window.addEventListener("load",wireAtyafHeaderSearch,{once:true});
 
 /* ===== END ORDER TRACKING ===== */
 
@@ -2557,4 +2579,589 @@ async function loadTopAds(){
 
     const keys=["ads","hero_ads","hero_ad","top_ads","top_ad"];
     const {data,error}=await atyafDb
-      .from("sett
+      .from("settings")
+      .select("id,key,value,updated_at")
+      .in("key",keys)
+      .order("updated_at",{ascending:false,nullsFirst:false})
+      .order("id",{ascending:false})
+      .limit(30);
+
+    if(error)throw error;
+
+    const rows=Array.isArray(data)?data:[];
+    const row=rows.find(r=>r && r.value!=null) || null;
+
+    if(!row){
+      console.warn("ATYAF: no saved top advertisement found; keeping fallback hero");
+      return;
+    }
+
+    renderTopAds(row.value||{});
+    console.info("ATYAF top ad loaded:",row.key,row.id);
+  }catch(e){
+    console.warn("ATYAF top ads:",e);
+  }
+}
+
+let bottomAdTimer=null;
+
+function atyafMediaUrl(item){
+  if(!item)return "";
+  if(typeof item==="string")return item.trim();
+  if(typeof item==="object"){
+    return String(
+      item.url || item.src || item.publicUrl || item.public_url ||
+      item.image || item.image_url || item.video || item.video_url ||
+      item.path || item.file || ""
+    ).trim();
+  }
+  return "";
+}
+
+function normalizeBottomAdSettings(raw){
+  let s=raw;
+  if(typeof s==="string"){
+    try{s=JSON.parse(s)}catch(e){s={}}
+  }
+  if(!s || typeof s!=="object")s={};
+
+  /* دعم جميع أسماء الحقول التي قد تحفظها لوحة الإدارة */
+  if(s.bottom_ads && typeof s.bottom_ads==="object")s=s.bottom_ads;
+  if(s.bottomAds && typeof s.bottomAds==="object")s=s.bottomAds;
+  if(s.lower_ad && typeof s.lower_ad==="object")s=s.lower_ad;
+  if(s.lowerAd && typeof s.lowerAd==="object")s=s.lowerAd;
+
+  let rawMedia =
+    s.media ?? s.medias ?? s.slides ?? s.images ?? s.files ??
+    s.items ?? s.urls ?? s.ad_media ?? [];
+
+  if(typeof rawMedia==="string"){
+    try{
+      const parsed=JSON.parse(rawMedia);
+      rawMedia=Array.isArray(parsed)?parsed:[rawMedia];
+    }catch(e){
+      rawMedia=rawMedia.split(/\r?\n|,/).map(x=>x.trim()).filter(Boolean);
+    }
+  }
+  if(!Array.isArray(rawMedia))rawMedia=[rawMedia];
+
+  const media=rawMedia.map(atyafMediaUrl).filter(Boolean);
+
+  return {
+    enabled: !(s.enabled===false || s.active===false || s.is_active===false || s.show===false),
+    media,
+    fit: s.fit || s.objectFit || s.mediaFit || "cover",
+    position: s.position || s.objectPosition || s.mediaPosition || "center",
+    link: s.link || s.href || s.url_link || "",
+    heightDesktop: Number(s.heightDesktop || s.desktopHeight || s.height_desktop || 320),
+    heightTablet: Number(s.heightTablet || s.tabletHeight || s.height_tablet || 260),
+    heightMobile: Number(s.heightMobile || s.mobileHeight || s.height_mobile || 190),
+    radius: Number(s.radius || s.borderRadius || s.border_radius || 0),
+    interval: Number(s.interval || s.slideInterval || s.interval_ms || 4000)
+  };
+}
+
+function renderBottomAds(raw={}){
+  const section=document.getElementById("afterProductsAd");
+  if(!section)return;
+
+  const s=normalizeBottomAdSettings(raw);
+  const media=s.media;
+
+  clearInterval(bottomAdTimer);
+  bottomAdTimer=null;
+
+  if(!s.enabled || !media.length){
+    section.style.display="none";
+    section.innerHTML="";
+    return;
+  }
+
+  section.style.display="block";
+  section.style.setProperty("--bad-desktop",s.heightDesktop+"px");
+  section.style.setProperty("--bad-tablet",s.heightTablet+"px");
+  section.style.setProperty("--bad-mobile",s.heightMobile+"px");
+  section.style.borderRadius=s.radius+"px";
+
+  const safeLink=String(s.link||"").trim();
+
+  section.innerHTML=media.map((url,i)=>{
+    const video=/\.(mp4|webm|ogg)(?:\?|#|$)/i.test(url);
+    const el=video
+      ? `<video src="${url}" muted playsinline autoplay loop preload="metadata" style="object-fit:${s.fit};object-position:${s.position}"></video>`
+      : `<img src="${url}" alt="إعلان أطياف" loading="${i===0?'eager':'lazy'}" style="object-fit:${s.fit};object-position:${s.position}">`;
+    return `<div class="after-ad-slide ${i===0?'active':''}">${el}</div>`;
+  }).join("")+
+  (media.length>1
+    ? `<div class="after-ad-dots">${media.map((_,i)=>`<button class="after-ad-dot ${i===0?'active':''}" type="button" onclick="bottomAdTo(${i})"></button>`).join("")}</div>`
+    : "");
+
+  if(safeLink){
+    section.querySelectorAll(".after-ad-slide").forEach(x=>{
+      x.style.cursor="pointer";
+      x.addEventListener("click",()=>window.open(safeLink,"_blank","noopener"));
+    });
+  }
+
+  window.bottomAdIndex=0;
+  if(media.length>1){
+    bottomAdTimer=setInterval(
+      ()=>bottomAdTo((window.bottomAdIndex||0)+1),
+      Math.max(1500,s.interval||4000)
+    );
+  }
+}
+
+function bottomAdTo(n){
+  const section=document.getElementById("afterProductsAd");
+  if(!section)return;
+  const slides=[...section.querySelectorAll(".after-ad-slide")];
+  const dots=[...section.querySelectorAll(".after-ad-dot")];
+  if(!slides.length)return;
+  window.bottomAdIndex=(Number(n)+slides.length)%slides.length;
+  slides.forEach((x,i)=>x.classList.toggle("active",i===window.bottomAdIndex));
+  dots.forEach((x,i)=>x.classList.toggle("active",i===window.bottomAdIndex));
+}
+
+/* قراءة أحدث إعداد محفوظ، مع دعم أسماء المفاتيح القديمة والجديدة */
+async function loadBottomAds(){
+  const section=document.getElementById("afterProductsAd");
+  try{
+    if(!atyafDb)throw new Error("Supabase client is not available");
+
+    const keys=[
+      "bottom_ads",
+      "bottom_ad",
+      "lower_ads",
+      "lower_ad",
+      "after_products_ad",
+      "after_products_ads"
+    ];
+
+    const {data,error}=await atyafDb
+      .from("settings")
+      .select("id,key,value,updated_at")
+      .in("key",keys)
+      .order("updated_at",{ascending:false,nullsFirst:false})
+      .order("id",{ascending:false})
+      .limit(20);
+
+    if(error)throw error;
+
+    const rows=Array.isArray(data)?data:[];
+    let chosen=null;
+
+    for(const key of keys){
+      const row=rows.find(r=>r.key===key && r.value!=null);
+      if(row){chosen=row;break}
+    }
+
+    if(!chosen && rows.length)chosen=rows[0];
+
+    if(!chosen){
+      renderBottomAds({enabled:false});
+      console.warn("ATYAF: no lower advertisement setting was found");
+      return;
+    }
+
+    renderBottomAds(chosen.value);
+    console.info("ATYAF lower ad loaded:",chosen.key,chosen.id);
+  }catch(e){
+    console.warn("ATYAF lower ads:",e);
+    if(section){
+      section.style.display="none";
+      section.innerHTML="";
+    }
+  }
+}
+
+/* تحديث الإعلان فور رجوع المستخدم للصفحة أو بعد تعديل الإدارة */
+window.addEventListener("focus",()=>{
+  loadTopAds();
+  loadBottomAds();
+});
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible"){
+    loadTopAds();
+    loadBottomAds();
+  }
+});
+
+
+function searchProducts(){
+ activeFilter="";
+ renderAll();
+}
+
+function filterCategory(value){
+ activeFilter=value;
+ document.getElementById("search").value="";
+ renderAll();
+ document.getElementById("allProducts").scrollIntoView({behavior:"smooth"});
+}
+
+function addToCart(id){
+ let p=products.find(x=>String(x.id)===String(id));
+ cart.push(p);
+ saveCart();
+ showMessage("تمت إضافة المنتج إلى السلة");
+}
+
+function gift(id){
+ let p=products.find(x=>String(x.id)===String(id));
+ let giftPreparation=null;
+ try{giftPreparation=JSON.parse(localStorage.getItem("atyafGiftPreparation")||"null")}catch(e){}
+ if(!giftPreparation){
+   openGiftPreparation();
+   return;
+ }
+ cart.push({...p,gift:true,giftPreparation});
+ saveCart();
+ openCart();
+}
+
+function saveCart(){
+ localStorage.setItem("cart",JSON.stringify(cart));
+ document.getElementById("cartCount").textContent=cart.length;
+}
+
+function openCart(){
+ renderCart();
+ document.getElementById("drawer").classList.add("open");
+}
+
+function closeCart(e){
+ if(!e||e.target.id==="drawer")
+ document.getElementById("drawer").classList.remove("open");
+}
+
+function renderCart(){
+ let box=document.getElementById("cartItems");
+ if(!cart.length){
+   box.innerHTML="<p style='text-align:center;color:#888'>السلة فارغة حالياً</p>";
+ }else{
+   box.innerHTML=cart.map((p,i)=>`
+    <div class="cart-item">
+      <img src="${p.image||""}" onerror="this.style.visibility='hidden'">
+      <div class="cart-item-info">
+        <b>${p.name}</b><br>
+        <span>${p.price} ر.س</span>
+        ${p.gift?`<br><small>🎁 هدية${p.giftPreparation?.recipient?" إلى "+p.giftPreparation.recipient:""}</small>`:""}
+      </div>
+      <button onclick="removeCart(${i})">حذف</button>
+    </div>`).join("");
+ }
+ document.getElementById("cartTotal").textContent=
+ cart.reduce((a,b)=>a+(Number(b.price||0)*Number(b.qty||1)),0)+" ر.س";
+}
+
+function removeCart(i){
+ cart.splice(i,1);saveCart();renderCart();
+}
+
+function applyCoupon(){
+ const code=document.getElementById("coupon")?.value.trim()||"";
+ if(!code)return showMessage("أدخل كود الخصم");
+ window.atyafPendingCoupon=code;
+ if(code.toUpperCase()==="FIRST15") showMessage("تم قبول الكود وسيظهر في إتمام الطلب");
+ else showMessage("سيتم التحقق من الكود عند تأكيد الطلب");
+}
+
+function atyafMoney(n){
+  return Number(n||0).toLocaleString("ar")+" ر.س";
+}
+function checkout(){
+  if(!cart.length){showMessage("أضف منتجاً إلى السلة أولاً");return}
+  document.getElementById("drawer").classList.remove("open");
+
+  const subtotal=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
+  document.getElementById("modalContent").innerHTML=`
+   <div class="checkout-sheet">
+    <h2>إتمام الطلب</h2>
+    <div class="checkout-grid">
+      <div class="checkout-field"><label>الاسم الكامل</label><input id="coName" autocomplete="name"></div>
+      <div class="checkout-field"><label>رقم الهاتف</label><input id="coPhone" inputmode="tel" placeholder="مثال: 776881748"></div>
+      <div class="checkout-field"><label>العنوان</label><input id="coAddress" autocomplete="street-address"></div>
+      <div class="checkout-field"><label>ملاحظات</label><textarea id="coNotes"></textarea></div>
+
+      <div class="checkout-field">
+       <label>كود الخصم</label>
+       <div class="coupon-row">
+        <input id="coCoupon" placeholder="أدخل كود الخصم" value="${window.atyafPendingCoupon||""}">
+        <button type="button" onclick="applyCheckoutCoupon()">تطبيق</button>
+       </div>
+      </div>
+
+      <div class="checkout-field">
+       <label>طريقة الدفع</label>
+       <select id="coPayment" onchange="updateCheckoutPaymentInfo()">
+        <option value="cod">الدفع عند الاستلام</option>
+        <option value="qatibi">إيداع قطبي (جميع العملات)</option>
+        <option value="bank">تحويل / إيداع بنكي</option>
+       </select>
+      </div>
+
+      <div class="payment-info" id="coPaymentInfo">الدفع نقداً عند استلام الطلب.</div>
+      <div class="checkout-summary"><span>المبلغ المطلوب</span><strong id="coTotal">${atyafMoney(subtotal)}</strong></div>
+    </div>
+    <button class="checkout-confirm" onclick="finishOrder()">تأكيد الطلب</button>
+    <button class="checkout-cancel" onclick="closeModal()">إلغاء</button>
+   </div>`;
+  document.getElementById("modal").classList.add("open");
+}
+function updateCheckoutPaymentInfo(){
+  const method=document.getElementById("coPayment")?.value;
+  const box=document.getElementById("coPaymentInfo"); if(!box)return;
+  if(method==="qatibi"){
+    box.innerHTML="<b>طريقة الدفع: إيداع قطبي (جميع العملات)</b><br>بعد تأكيد الطلب سيتم التواصل معك وإرسال بيانات الإيداع المعتمدة.";
+  }else if(method==="bank"){
+    box.innerHTML="<b>طريقة الدفع: تحويل / إيداع بنكي</b><br>سيتم تزويدك ببيانات الحساب المعتمدة لإكمال عملية الدفع.";
+  }else{
+    box.innerHTML="<b>الدفع عند الاستلام</b><br>ادفع قيمة الطلب عند وصوله إليك.";
+  }
+}
+function applyCheckoutCoupon(){
+  const code=document.getElementById("coCoupon")?.value.trim();
+  if(!code)return showMessage("أدخل كود الخصم");
+  showMessage("سيتم التحقق من كود الخصم عند تأكيد الطلب");
+}
+async function finishOrder(){
+  const name=document.getElementById("coName")?.value.trim();
+  const phone=document.getElementById("coPhone")?.value.trim();
+  const address=document.getElementById("coAddress")?.value.trim();
+  const notes=document.getElementById("coNotes")?.value.trim()||"";
+  const payment=document.getElementById("coPayment")?.value||"cod";
+  const coupon=document.getElementById("coCoupon")?.value.trim()||"";
+  if(!name||!phone||!address)return showMessage("أدخل الاسم ورقم الهاتف والعنوان");
+
+  const number="AT-"+Math.floor(100000+Math.random()*900000);
+  const total=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
+  const items=cart.map(x=>({id:x.id||null,name:x.name||"منتج",quantity:Number(x.qty||1),price:Number(x.price||0),image:x.image||""}));
+  const paymentName=payment==="qatibi"?"إيداع قطبي":payment==="bank"?"تحويل بنكي":"الدفع عند الاستلام";
+  const order={
+    order_number:number,
+    customer_name:name,
+    phone,
+    address,
+    notes,
+    payment_method:paymentName,
+    payment_code:payment,
+    coupon,
+    total,
+    status:"pending",
+    created_at:new Date().toISOString(),
+    items
+  };
+
+  /* حفظ نسخة كاملة من الطلب على جهاز العميل فور إتمامه.
+     هذا يجعل التتبع يُعبّأ تلقائياً حتى لو لم يكن جدول orders مهيأ بعد. */
+  localStorage.setItem("atyaf_last_order",JSON.stringify(order));
+  const history=(()=>{try{return JSON.parse(localStorage.getItem("atyaf_order_history")||"[]")}catch(e){return []}})();
+  history.unshift(order);
+  localStorage.setItem("atyaf_order_history",JSON.stringify(history.slice(0,20)));
+
+  const orderLines=items.map(x=>`• ${x.name} × ${x.quantity} — ${atyafMoney(x.price*x.quantity)}`).join("\\n");
+  const wa=normalizeWhatsAppNumber(atyafGeneralSettings.whatsapp||atyafGeneralSettings.whatsappNumber||atyafGeneralSettings.phone||"");
+  const waText=`طلب جديد من متجر أطياف
+رقم الطلب: ${number}
+الاسم: ${name}
+الهاتف: ${phone}
+العنوان: ${address}
+طريقة الدفع: ${paymentName}
+${coupon?`كود الخصم: ${coupon}\\n`:""}${notes?`ملاحظات: ${notes}\\n`:""}
+المنتجات:
+${orderLines}
+الإجمالي: ${atyafMoney(total)}`;
+
+  cart=[];saveCart();
+
+  document.getElementById("modalContent").innerHTML=`
+   <div class="order-success-pro">
+    <div class="order-success-check">✓</div>
+    <div class="order-success-title">تم استلام طلبك بنجاح</div>
+    <p>احتفظ برقم الطلب، ويمكنك متابعة حالته من أيقونة <b>تتبع الطلب</b>.</p>
+    <div class="order-success-number"><small>رقم الطلب</small><strong>${atyafEsc(number)}</strong></div>
+    <div class="order-success-grid">
+      <div><small>الاسم</small><b>${atyafEsc(name)}</b></div>
+      <div><small>الهاتف</small><b>${atyafEsc(phone)}</b></div>
+      <div><small>طريقة الدفع</small><b>${atyafEsc(paymentName)}</b></div>
+      <div><small>الإجمالي</small><b>${atyafEsc(atyafMoney(total))}</b></div>
+      <div class="wide"><small>العنوان</small><b>${atyafEsc(address)}</b></div>
+    </div>
+    <div class="order-success-items">
+      <h4>تفاصيل الطلب</h4>
+      ${items.map(x=>`<div><span>${atyafEsc(x.name)} × ${x.quantity}</span><b>${atyafEsc(atyafMoney(x.price*x.quantity))}</b></div>`).join("")}
+    </div>
+    <div class="order-success-actions">
+      <button class="checkout-confirm" onclick="closeModal();openOrderTracking()">تتبع الطلب الآن</button><button class="checkout-confirm invoice-print-btn" onclick="printAtyafInvoice()">🧾 عرض وطباعة الفاتورة</button>
+      ${wa?`<button class="checkout-cancel" onclick='window.open("https://wa.me/${wa}?text="+encodeURIComponent(${JSON.stringify(waText)}),"_blank","noopener")'>إرسال الطلب عبر واتساب</button>`:""}
+    </div>
+   </div>`;
+  document.getElementById("modal").classList.add("open");
+}
+function openGiftPreparation(){
+ document.getElementById("modalContent").innerHTML=`
+  <h2 style="margin-top:0">تجهيز الهدية</h2>
+  <p style="color:#777;font-size:13px">أدخل بيانات الهدية وسيتم حفظها مع طلبك.</p>
+  <div class="gift-form">
+   <input id="giftSender" placeholder="اسم المرسل *">
+   <input id="giftSenderPhone" placeholder="رقم المرسل *" inputmode="tel">
+   <input id="giftRecipient" placeholder="اسم المستلم *">
+   <input id="giftRecipientPhone" placeholder="رقم المستلم *" inputmode="tel">
+   <textarea id="giftMessage" class="full" placeholder="اكتب رسالة الإهداء"></textarea>
+   <select id="giftWrap">
+    <option value="تغليف أطياف الفاخر">تغليف أطياف الفاخر</option>
+    <option value="تغليف مناسب للمناسبة">تغليف مناسب للمناسبة</option>
+   </select>
+   <input id="giftDate" type="date" aria-label="تاريخ التسليم">
+   <textarea id="giftAddress" class="full" placeholder="عنوان المستلم بالتفصيل *"></textarea>
+  </div>
+  <div class="gift-summary">بعد حفظ البيانات اختر المنتج الذي تريد إهداءه من المتجر واضغط زر <b>هدية</b>. ستبقى بيانات التجهيز محفوظة مع طلب الهدية.</div>
+  <button class="gift-submit" onclick="saveGiftPreparation()">حفظ بيانات الهدية والبدء بالتسوق</button>`;
+ document.getElementById("modal").classList.add("open");
+}
+
+function saveGiftPreparation(){
+ const data={
+  sender:document.getElementById("giftSender").value.trim(),
+  senderPhone:document.getElementById("giftSenderPhone").value.trim(),
+  recipient:document.getElementById("giftRecipient").value.trim(),
+  recipientPhone:document.getElementById("giftRecipientPhone").value.trim(),
+  message:document.getElementById("giftMessage").value.trim(),
+  wrap:document.getElementById("giftWrap").value,
+  date:document.getElementById("giftDate").value,
+  address:document.getElementById("giftAddress").value.trim()
+ };
+ if(!data.sender||!data.senderPhone||!data.recipient||!data.recipientPhone||!data.address){
+  showMessage("أكمل اسم ورقم المرسل والمستلم وعنوان المستلم");return;
+ }
+ localStorage.setItem("atyafGiftPreparation",JSON.stringify(data));
+ closeModal();
+ document.getElementById("best").scrollIntoView({behavior:"smooth"});
+ setTimeout(()=>showMessage("تم حفظ بيانات الهدية — اختر المنتج واضغط هدية"),350);
+}
+
+function showProduct(id){
+ let p=products.find(x=>String(x.id)===String(id));
+ document.getElementById("modalContent").innerHTML=`
+  <div class="detail">
+   <img src="${p.image||""}" onerror="this.style.visibility='hidden'">
+   <div>
+    <h2>${p.name}</h2>
+    <div class="stars">★★★★★</div>
+    <p style="color:#777">${p.description||""}</p>
+    <h2 style="color:#b33128">${p.price} ر.س</h2>
+    <p>التوفر: <span style="color:green">متوفر</span></p>
+    <button onclick="addToCart(${p.id});closeModal()">إضافة إلى السلة</button>
+    <button style="background:#222" onclick="gift(${p.id});closeModal()">شراء كهدية</button>
+   </div>
+  </div>`;
+ document.getElementById("modal").classList.add("open");
+}
+
+function saveFavorites(){
+ localStorage.setItem("atyaf_favorites",JSON.stringify(favorites));
+}
+function toggleFavorite(id,button){
+ id=String(id);
+ const i=favorites.indexOf(id);
+ if(i>=0)favorites.splice(i,1);else favorites.push(id);
+ saveFavorites();
+ document.querySelectorAll(`.product[data-product-id="${CSS.escape(id)}"] .heart`).forEach(btn=>{
+   const on=favorites.includes(id);
+   btn.classList.toggle("active",on);
+   btn.textContent=on?"♥":"♡";
+ });
+ updateFavoritesCount();
+ const favOverlay=document.getElementById("favoritesOverlay");
+ if(favOverlay?.classList.contains("open")) openFavorites();
+}
+function updateFavoritesCount(){
+ const el=document.getElementById("favoritesCount");
+ if(el)el.textContent=favorites.length?favorites.length:"";
+}
+function openFavorites(){
+ const list=products.filter(p=>favorites.includes(String(p.id)));
+ const content=document.getElementById("favoritesContent");
+ if(!content)return;
+ content.innerHTML=list.length
+   ? `<div class="grid">${list.map(productCard).join("")}</div>`
+   : `<div class="favorites-empty"><div class="ico">♡</div><h3>المفضلة فارغة</h3><p>اضغط على القلب في أي منتج لإضافته إلى المفضلة.</p></div>`;
+ document.getElementById("favoritesOverlay").classList.add("open");
+ document.body.style.overflow="hidden";
+}
+function closeFavorites(event){
+ const overlay=document.getElementById("favoritesOverlay");
+ if(event && event.target!==overlay)return;
+ overlay?.classList.remove("open");
+ document.body.style.overflow="";
+}
+function addFavorite(id){
+ if(id!=null)toggleFavorite(id);
+}
+
+function showMessage(text){
+ document.getElementById("modalContent").innerHTML=
+ `<div style="text-align:center;padding:35px">
+  <div style="font-size:42px;color:#b9934b">✓</div>
+  <h3>${text}</h3>
+  <button onclick="closeModal()" style="padding:10px 40px;background:#b9934b;color:#fff;border:0">حسناً</button>
+ </div>`;
+ document.getElementById("modal").classList.add("open");
+}
+
+function closeModal(){
+ document.getElementById("modal").classList.remove("open");
+}
+
+function slideTo(n){
+ const hero=document.getElementById("heroAds");
+ if(!hero)return;
+ const slides=[...hero.querySelectorAll(".slide")];
+ const dots=[...hero.querySelectorAll(".dot")];
+ if(!slides.length)return;
+ currentSlide=(Number(n)+slides.length)%slides.length;
+ slides.forEach((x,i)=>x.classList.toggle("active",i===currentSlide));
+ dots.forEach((x,i)=>x.classList.toggle("active",i===currentSlide));
+}
+
+
+async function atyafBootStore(){
+  saveCart();
+  updateFavoritesCount();
+
+  await Promise.allSettled([
+    loadProductsFromSupabase(),
+    loadManagedStoreSettings(),
+    loadTopAds(),
+    loadBottomAds()
+  ]);
+
+  setTimeout(()=>applyManagedDesign(atyafCurrentDesign),250);
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",atyafBootStore,{once:true});
+}else{
+  atyafBootStore();
+}
+/* ATYAF SAFE BOOT FIX 2026-09-20 */
+</script>
+
+
+<script>
+(function(){
+ document.addEventListener('click',function(e){
+   const b=e.target.closest('.search button'); if(!b)return;
+   const box=b.closest('.search'), input=box&&box.querySelector('input');
+   if(!input)return;
+   if(box.classList.contains('hero-search-open')){ input.focus(); return; }
+   box.classList.add('hero-search-open'); input.style.cssText='position:fixed!important;top:150px!important;left:50%!important;transform:translateX(-50%)!important;width:min(520px,86vw)!important;height:46px!important;opacity:1!important;pointer-events:auto!important;z-index:10000!important;background:#fff!important;border:1px solid #ddd!important;border-radius:3px!important;padding:0 15px!important;color:#111!important'; input.focus();
+ });
+})();
+</script>
+
+
+
+</body>
+</html>

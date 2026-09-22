@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://atyaf1store-gif.github.io/sitemap.xml

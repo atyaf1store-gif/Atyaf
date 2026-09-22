@@ -1387,6 +1387,27 @@ main#home{position:relative}
   }
 }
 
+/* ===== ATYAF ORDER TRACKING PRO ===== */
+.order-track-tool{gap:5px!important}.order-track-icon{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(169,121,60,.10);color:var(--gold,#A9793C);flex:0 0 auto}
+.tracking-pro-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}.tracking-pro-head h2{margin:0 0 3px;font-size:25px}.tracking-pro-head p{margin:0;color:#777;font-size:13px}.tracking-pro-badge{width:48px;height:48px;border-radius:15px;background:#f7f0e4;display:grid;place-items:center;font-size:23px}
+.tracking-pro-label{display:block;font-size:12px;font-weight:800;margin:9px 2px 5px}.tracking-pro-action{margin-top:12px!important}.tracking-pro-result{margin-top:16px}.tracking-alert,.tracking-loading{padding:13px;border-radius:12px;background:#f7f4ee;text-align:center;font-size:13px}
+.tracking-success{border:1px solid rgba(0,0,0,.09);border-radius:17px;overflow:hidden;background:#fff}.tracking-status-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;background:#faf7f0}.tracking-status-row small{color:#777}.tracking-status-row h3{margin:2px 0 0;font-size:19px}.tracking-order-no{padding:7px 10px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.08);font-size:12px;font-weight:800;direction:ltr}
+.tracking-timeline{display:grid;grid-template-columns:repeat(5,1fr);padding:18px 12px 12px;gap:3px}.track-step{text-align:center;position:relative;color:#aaa;font-size:9px}.track-step:before{content:"";position:absolute;top:10px;right:-50%;width:100%;height:2px;background:#e8e8e8;z-index:0}.track-step:first-child:before{display:none}.track-step i{position:relative;z-index:1;margin:auto auto 6px;width:21px;height:21px;border-radius:50%;background:#eee;display:grid;place-items:center;font-style:normal;font-size:10px}.track-step.done{color:#1f3a22;font-weight:800}.track-step.done i{background:#1f3a22;color:#fff}.track-step.done:before{background:#1f3a22}
+.tracking-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}.tracking-details>div{padding:10px;border-radius:10px;background:#fafafa;display:flex;flex-direction:column;gap:3px}.tracking-details .wide{grid-column:1/-1}.tracking-details small{color:#777;font-size:10px}.tracking-details b{font-size:12px}.tracking-items{margin:0 12px 12px;padding:12px;border-radius:10px;background:#fafafa}.tracking-items>div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #eee;font-size:11px}
+@media(max-width:600px){.order-track-tool small{font-size:9px!important}.order-track-icon{width:25px;height:25px}.tracking-pro-head h2{font-size:21px}.tracking-timeline{padding-inline:5px}.track-step span{font-size:8px}.tracking-details{grid-template-columns:1fr}.tracking-details .wide{grid-column:auto}}
+
+
+/* ===== ATYAF COMPLETED ORDER AUTO DETAILS ===== */
+.order-success-pro{text-align:center;padding:4px 2px}
+.order-success-check{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;background:#17351f;color:#fff;font-size:31px;font-weight:900;box-shadow:0 10px 30px rgba(23,53,31,.18)}
+.order-success-title{font-size:25px;font-weight:900;margin-bottom:6px}.order-success-pro>p{margin:0 auto 16px;color:#6d6d6d;font-size:13px;line-height:1.8}
+.order-success-number{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-radius:14px;background:#f8f2e7;border:1px solid rgba(169,121,60,.22);margin-bottom:10px;text-align:right}
+.order-success-number small{color:#777}.order-success-number strong{direction:ltr;font-size:18px;letter-spacing:.6px}
+.order-success-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:right}.order-success-grid>div{padding:10px 12px;background:#fafafa;border-radius:11px;display:flex;flex-direction:column;gap:3px}.order-success-grid .wide{grid-column:1/-1}.order-success-grid small{font-size:10px;color:#777}.order-success-grid b{font-size:12px}
+.order-success-items{margin-top:10px;padding:12px;border-radius:12px;background:#fafafa;text-align:right}.order-success-items h4{margin:0 0 8px}.order-success-items>div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #ececec;font-size:11px}.order-success-items>div:last-child{border-bottom:0}
+.order-success-actions{display:grid;gap:7px;margin-top:12px}.order-success-actions button{width:100%}
+@media(max-width:600px){.order-success-title{font-size:21px}.order-success-grid{grid-template-columns:1fr}.order-success-grid .wide{grid-column:auto}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1410,7 +1431,7 @@ main#home{position:relative}
     </div>
 
     <div class="header-tools">
-      <button class="tool" onclick="openOrderTracking()">⌖<small>تتبع الطلب</small></button>
+      <button class="tool order-track-tool" onclick="openOrderTracking()" aria-label="تتبع الطلب"><span class="order-track-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 12 2l9 4.5v11L12 22l-9-4.5z"/><path d="M3 6.5 12 11l9-4.5M12 11v11"/></svg></span><small>تتبع الطلب</small></button>
       <button class="tool" onclick="openFavorites()">♡<small>المفضلة <span id="favoritesCount"></span></small></button>
       <button class="tool" onclick="openCart()">🛒<span class="badge" id="cartCount">0</span></button>
     </div>
@@ -1641,53 +1662,35 @@ if(atyafDb)atyafDb.auth.onAuthStateChange((_e,session)=>{
 
 /* ===== ATYAF ORDER TRACKING ===== */
 function atyafTrackDigits(v){return String(v||"").replace(/[^\d]/g,"").replace(/^00/,"")}
-function atyafTrackStatus(v){
- const x=String(v||"").toLowerCase().trim();
- const m={pending:"قيد المراجعة",new:"طلب جديد",confirmed:"تم التأكيد",processing:"جاري التجهيز",preparing:"جاري التجهيز",ready:"جاهز للشحن",shipped:"تم الشحن",out_for_delivery:"خرج للتوصيل",delivering:"قيد التوصيل",delivered:"تم التسليم",completed:"مكتمل",cancelled:"ملغي",canceled:"ملغي"};
- return m[x]||String(v||"قيد المراجعة");
+function atyafTrackStatus(v){const x=String(v||"").toLowerCase().trim();const m={pending:"قيد المراجعة",new:"طلب جديد",confirmed:"تم تأكيد الطلب",processing:"جاري تجهيز الطلب",preparing:"جاري تجهيز الطلب",ready:"جاهز للشحن",shipped:"تم شحن الطلب",out_for_delivery:"خرج للتوصيل",delivering:"قيد التوصيل",delivered:"تم التسليم",completed:"تم إكمال الطلب",cancelled:"تم إلغاء الطلب",canceled:"تم إلغاء الطلب"};return m[x]||String(v||"قيد المراجعة")}
+function atyafTrackStep(v){const x=String(v||"").toLowerCase().trim();if(["delivered","completed"].includes(x))return 4;if(["shipped","out_for_delivery","delivering"].includes(x))return 3;if(["processing","preparing","ready"].includes(x))return 2;if(x==="confirmed")return 1;return 0}
+function atyafLastOrder(){
+ try{return JSON.parse(localStorage.getItem("atyaf_last_order")||"null")}catch(e){return null}
 }
 function openOrderTracking(){
- document.getElementById("modalContent").innerHTML=`
-  <div class="account-card">
-   <h2>تتبع الطلب</h2>
-   <p class="muted">أدخل رقم الطلب ورقم الهاتف المستخدم عند إنشاء الطلب.</p>
-   <input id="trackOrderNo" class="auth-input" placeholder="رقم الطلب" inputmode="text">
-   <input id="trackPhone" class="auth-input" placeholder="رقم الهاتف" inputmode="tel">
-   <button class="auth-action" onclick="trackAtyafOrder()">تتبع الآن</button>
-   <div id="trackResult" style="margin-top:14px"></div>
-  </div>`;
+ const last=atyafLastOrder();
+ document.getElementById("modalContent").innerHTML=`<div class="account-card tracking-pro"><div class="tracking-pro-head"><span class="tracking-pro-badge">📦</span><div><h2>تتبع طلبك</h2><p>${last?"تم تعبئة آخر طلب لك تلقائياً.":"اعرف حالة طلبك وتفاصيله مباشرة."}</p></div></div><label class="tracking-pro-label">رقم الطلب</label><input id="trackOrderNo" class="auth-input" placeholder="مثال: AT-610170" value="${last?atyafEsc(last.order_number||""):""}"><label class="tracking-pro-label">رقم الهاتف</label><input id="trackPhone" class="auth-input" placeholder="رقم الهاتف المستخدم في الطلب" inputmode="tel" value="${last?atyafEsc(last.phone||""):""}"><button class="auth-action tracking-pro-action" onclick="trackAtyafOrder()">تتبع الطلب</button><div id="trackResult" class="tracking-pro-result"></div></div>`;
  document.getElementById("modal").classList.add("open");
+ if(last)setTimeout(()=>trackAtyafOrder(true),80);
 }
-async function trackAtyafOrder(){
- const no=document.getElementById("trackOrderNo")?.value.trim();
- const phone=document.getElementById("trackPhone")?.value.trim();
- const box=document.getElementById("trackResult");
- if(!no||!phone){box.innerHTML="<div class='message'>أدخل رقم الطلب ورقم الهاتف.</div>";return}
- if(!atyafDb){box.innerHTML="<div class='message'>تعذر الاتصال حالياً.</div>";return}
- box.innerHTML="<div class='message'>جاري البحث...</div>";
+async function trackAtyafOrder(auto=false){
+ const no=document.getElementById("trackOrderNo")?.value.trim(),phone=document.getElementById("trackPhone")?.value.trim(),box=document.getElementById("trackResult");
+ if(!no||!phone){box.innerHTML="<div class='tracking-alert'>أدخل رقم الطلب ورقم الهاتف لإظهار معلومات الطلب.</div>";return}
+ if(!atyafDb){box.innerHTML="<div class='tracking-alert'>تعذر الاتصال حالياً.</div>";return}
+ box.innerHTML="<div class='tracking-loading'>جاري جلب معلومات الطلب...</div>";
  try{
   let found=null;
-  for(const col of ["order_number","order_no","code","id"]){
-   const r=await atyafDb.from("orders").select("*").eq(col,no).limit(10);
-   if(r.error)continue;
-   found=(r.data||[]).find(o=>atyafTrackDigits(o.phone??o.customer_phone??o.phone_number??o.mobile)===atyafTrackDigits(phone))||null;
-   if(found)break;
+  const local=atyafLastOrder();
+  if(local && String(local.order_number||"").trim()===String(no).trim() && atyafTrackDigits(local.phone)===atyafTrackDigits(phone)){
+    found=local;
   }
-  if(!found){box.innerHTML="<div class='message'>لم نجد طلباً مطابقاً لرقم الطلب ورقم الهاتف.</div>";return}
-  const num=found.order_number??found.order_no??found.code??found.id??no;
-  const status=atyafTrackStatus(found.status??found.order_status);
-  const total=found.total??found.total_amount??found.grand_total;
-  const date=found.created_at?new Date(found.created_at).toLocaleString("ar"):"";
-  box.innerHTML=`<div class="message" style="text-align:right">
-   <h3 style="margin-top:0">${atyafEsc(status)}</h3>
-   <div><b>رقم الطلب:</b> ${atyafEsc(num)}</div>
-   ${date?`<div><b>التاريخ:</b> ${atyafEsc(date)}</div>`:""}
-   ${total!=null?`<div><b>الإجمالي:</b> ${atyafEsc(total)}</div>`:""}
-  </div>`;
- }catch(e){
-  console.warn("ATYAF tracking",e);
-  box.innerHTML="<div class='message'>تعذر تتبع الطلب حالياً. حاول مرة أخرى.</div>";
- }
+  if(!found)for(const col of ["order_number","order_no","code","id"]){const r=await atyafDb.from("orders").select("*").eq(col,no).limit(10);if(r.error)continue;found=(r.data||[]).find(o=>atyafTrackDigits(o.phone??o.customer_phone??o.phone_number??o.mobile)===atyafTrackDigits(phone))||null;if(found)break}
+  if(!found){box.innerHTML="<div class='tracking-alert'>لم نجد طلباً مطابقاً. تأكد من رقم الطلب ورقم الهاتف.</div>";return}
+  const num=found.order_number??found.order_no??found.code??found.id??no,raw=found.status??found.order_status??"pending",status=atyafTrackStatus(raw),step=atyafTrackStep(raw),total=found.total??found.total_amount??found.grand_total,date=found.created_at?new Date(found.created_at).toLocaleString("ar"):"",name=found.customer_name??found.full_name??found.name??"",address=found.address??found.customer_address??found.shipping_address??"",payment=found.payment_method??found.payment??"",notes=found.notes??found.note??"",items=Array.isArray(found.items)?found.items:(Array.isArray(found.order_items)?found.order_items:[]);
+  const labels=["تم استلام الطلب","تم التأكيد","جاري التجهيز","قيد التوصيل","تم التسليم"],timeline=labels.map((x,i)=>`<div class="track-step ${i<=step?"done":""}"><i>${i<step?"✓":i===step?"●":""}</i><span>${x}</span></div>`).join("");
+  const itemsHtml=items.length?`<div class="tracking-items"><b>المنتجات</b>${items.map(it=>`<div><span>${atyafEsc(it.name||it.product_name||"منتج")}${it.quantity?` × ${atyafEsc(it.quantity)}`:""}</span><span>${it.price!=null?atyafEsc(it.price):""}</span></div>`).join("")}</div>`:"";
+  box.innerHTML=`<div class="tracking-success"><div class="tracking-status-row"><div><small>حالة الطلب</small><h3>${atyafEsc(status)}</h3></div><span class="tracking-order-no">${atyafEsc(num)}</span></div><div class="tracking-timeline">${timeline}</div><div class="tracking-details">${name?`<div><small>العميل</small><b>${atyafEsc(name)}</b></div>`:""}${date?`<div><small>تاريخ الطلب</small><b>${atyafEsc(date)}</b></div>`:""}${total!=null?`<div><small>الإجمالي</small><b>${atyafEsc(total)}</b></div>`:""}${payment?`<div><small>طريقة الدفع</small><b>${atyafEsc(payment)}</b></div>`:""}${address?`<div class="wide"><small>عنوان التوصيل</small><b>${atyafEsc(address)}</b></div>`:""}${notes?`<div class="wide"><small>ملاحظات</small><b>${atyafEsc(notes)}</b></div>`:""}</div>${itemsHtml}</div>`;
+ }catch(e){console.warn("ATYAF tracking",e);box.innerHTML="<div class='tracking-alert'>تعذر تتبع الطلب حالياً. حاول مرة أخرى.</div>"}
 }
 /* ===== END ORDER TRACKING ===== */
 
@@ -2699,30 +2702,69 @@ async function finishOrder(){
 
   const number="AT-"+Math.floor(100000+Math.random()*900000);
   const total=cart.reduce((sum,x)=>sum+(Number(x.price||0)*Number(x.qty||1)),0);
-  const orderLines=cart.map(x=>`• ${x.name} × ${x.qty||1} — ${atyafMoney(Number(x.price||0)*Number(x.qty||1))}`).join("\n");
+  const items=cart.map(x=>({id:x.id||null,name:x.name||"منتج",quantity:Number(x.qty||1),price:Number(x.price||0),image:x.image||""}));
   const paymentName=payment==="qatibi"?"إيداع قطبي":payment==="bank"?"تحويل بنكي":"الدفع عند الاستلام";
+  const order={
+    order_number:number,
+    customer_name:name,
+    phone,
+    address,
+    notes,
+    payment_method:paymentName,
+    payment_code:payment,
+    coupon,
+    total,
+    status:"pending",
+    created_at:new Date().toISOString(),
+    items
+  };
 
+  /* حفظ نسخة كاملة من الطلب على جهاز العميل فور إتمامه.
+     هذا يجعل التتبع يُعبّأ تلقائياً حتى لو لم يكن جدول orders مهيأ بعد. */
+  localStorage.setItem("atyaf_last_order",JSON.stringify(order));
+  const history=(()=>{try{return JSON.parse(localStorage.getItem("atyaf_order_history")||"[]")}catch(e){return []}})();
+  history.unshift(order);
+  localStorage.setItem("atyaf_order_history",JSON.stringify(history.slice(0,20)));
+
+  const orderLines=items.map(x=>`• ${x.name} × ${x.quantity} — ${atyafMoney(x.price*x.quantity)}`).join("\\n");
   const wa=normalizeWhatsAppNumber(atyafGeneralSettings.whatsapp||atyafGeneralSettings.whatsappNumber||atyafGeneralSettings.phone||"");
-  const text=`طلب جديد من متجر أطياف
+  const waText=`طلب جديد من متجر أطياف
 رقم الطلب: ${number}
 الاسم: ${name}
 الهاتف: ${phone}
 العنوان: ${address}
 طريقة الدفع: ${paymentName}
-${coupon?`كود الخصم: ${coupon}\n`:""}${notes?`ملاحظات: ${notes}\n`:""}
+${coupon?`كود الخصم: ${coupon}\\n`:""}${notes?`ملاحظات: ${notes}\\n`:""}
 المنتجات:
 ${orderLines}
 الإجمالي: ${atyafMoney(total)}`;
 
-  cart=[];saveCart();closeModal();
-  if(wa){
-    window.open("https://wa.me/"+wa+"?text="+encodeURIComponent(text),"_blank","noopener");
-    showMessage("تم تجهيز الطلب وسيتم فتح واتساب لإرساله");
-  }else{
-    showMessage("تم إنشاء الطلب — رقم الطلب: "+number);
-  }
-}
+  cart=[];saveCart();
 
+  document.getElementById("modalContent").innerHTML=`
+   <div class="order-success-pro">
+    <div class="order-success-check">✓</div>
+    <div class="order-success-title">تم استلام طلبك بنجاح</div>
+    <p>احتفظ برقم الطلب، ويمكنك متابعة حالته من أيقونة <b>تتبع الطلب</b>.</p>
+    <div class="order-success-number"><small>رقم الطلب</small><strong>${atyafEsc(number)}</strong></div>
+    <div class="order-success-grid">
+      <div><small>الاسم</small><b>${atyafEsc(name)}</b></div>
+      <div><small>الهاتف</small><b>${atyafEsc(phone)}</b></div>
+      <div><small>طريقة الدفع</small><b>${atyafEsc(paymentName)}</b></div>
+      <div><small>الإجمالي</small><b>${atyafEsc(atyafMoney(total))}</b></div>
+      <div class="wide"><small>العنوان</small><b>${atyafEsc(address)}</b></div>
+    </div>
+    <div class="order-success-items">
+      <h4>تفاصيل الطلب</h4>
+      ${items.map(x=>`<div><span>${atyafEsc(x.name)} × ${x.quantity}</span><b>${atyafEsc(atyafMoney(x.price*x.quantity))}</b></div>`).join("")}
+    </div>
+    <div class="order-success-actions">
+      <button class="checkout-confirm" onclick="closeModal();openOrderTracking()">تتبع الطلب الآن</button>
+      ${wa?`<button class="checkout-cancel" onclick='window.open("https://wa.me/${wa}?text="+encodeURIComponent(${JSON.stringify(waText)}),"_blank","noopener")'>إرسال الطلب عبر واتساب</button>`:""}
+    </div>
+   </div>`;
+  document.getElementById("modal").classList.add("open");
+}
 function openGiftPreparation(){
  document.getElementById("modalContent").innerHTML=`
   <h2 style="margin-top:0">تجهيز الهدية</h2>

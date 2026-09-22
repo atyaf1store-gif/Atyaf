@@ -1410,7 +1410,7 @@ main#home{position:relative}
     </div>
 
     <div class="header-tools">
-      <button class="tool" onclick="openFavorites()">♙<small id="accountLabel">الحساب</small></button>
+      <button class="tool" onclick="openOrderTracking()">⌖<small>تتبع الطلب</small></button>
       <button class="tool" onclick="openFavorites()">♡<small>المفضلة <span id="favoritesCount"></span></small></button>
       <button class="tool" onclick="openCart()">🛒<span class="badge" id="cartCount">0</span></button>
     </div>
@@ -1632,12 +1632,65 @@ async function refreshAccountState(){
  if(!atyafDb)return;
  const {data}=await atyafDb.auth.getSession();
  atyafAuthUser=data?.session?.user||null;
- const x=document.getElementById("accountLabel");if(x)x.textContent=atyafAuthUser?"حسابي":"الحساب";
+ /* account button replaced by order tracking */
 }
 if(atyafDb)atyafDb.auth.onAuthStateChange((_e,session)=>{
  atyafAuthUser=session?.user||null;
- const x=document.getElementById("accountLabel");if(x)x.textContent=atyafAuthUser?"حسابي":"الحساب";
+ /* account button replaced by order tracking */
 });
+
+/* ===== ATYAF ORDER TRACKING ===== */
+function atyafTrackDigits(v){return String(v||"").replace(/[^\d]/g,"").replace(/^00/,"")}
+function atyafTrackStatus(v){
+ const x=String(v||"").toLowerCase().trim();
+ const m={pending:"قيد المراجعة",new:"طلب جديد",confirmed:"تم التأكيد",processing:"جاري التجهيز",preparing:"جاري التجهيز",ready:"جاهز للشحن",shipped:"تم الشحن",out_for_delivery:"خرج للتوصيل",delivering:"قيد التوصيل",delivered:"تم التسليم",completed:"مكتمل",cancelled:"ملغي",canceled:"ملغي"};
+ return m[x]||String(v||"قيد المراجعة");
+}
+function openOrderTracking(){
+ document.getElementById("modalContent").innerHTML=`
+  <div class="account-card">
+   <h2>تتبع الطلب</h2>
+   <p class="muted">أدخل رقم الطلب ورقم الهاتف المستخدم عند إنشاء الطلب.</p>
+   <input id="trackOrderNo" class="auth-input" placeholder="رقم الطلب" inputmode="text">
+   <input id="trackPhone" class="auth-input" placeholder="رقم الهاتف" inputmode="tel">
+   <button class="auth-action" onclick="trackAtyafOrder()">تتبع الآن</button>
+   <div id="trackResult" style="margin-top:14px"></div>
+  </div>`;
+ document.getElementById("modal").classList.add("open");
+}
+async function trackAtyafOrder(){
+ const no=document.getElementById("trackOrderNo")?.value.trim();
+ const phone=document.getElementById("trackPhone")?.value.trim();
+ const box=document.getElementById("trackResult");
+ if(!no||!phone){box.innerHTML="<div class='message'>أدخل رقم الطلب ورقم الهاتف.</div>";return}
+ if(!atyafDb){box.innerHTML="<div class='message'>تعذر الاتصال حالياً.</div>";return}
+ box.innerHTML="<div class='message'>جاري البحث...</div>";
+ try{
+  let found=null;
+  for(const col of ["order_number","order_no","code","id"]){
+   const r=await atyafDb.from("orders").select("*").eq(col,no).limit(10);
+   if(r.error)continue;
+   found=(r.data||[]).find(o=>atyafTrackDigits(o.phone??o.customer_phone??o.phone_number??o.mobile)===atyafTrackDigits(phone))||null;
+   if(found)break;
+  }
+  if(!found){box.innerHTML="<div class='message'>لم نجد طلباً مطابقاً لرقم الطلب ورقم الهاتف.</div>";return}
+  const num=found.order_number??found.order_no??found.code??found.id??no;
+  const status=atyafTrackStatus(found.status??found.order_status);
+  const total=found.total??found.total_amount??found.grand_total;
+  const date=found.created_at?new Date(found.created_at).toLocaleString("ar"):"";
+  box.innerHTML=`<div class="message" style="text-align:right">
+   <h3 style="margin-top:0">${atyafEsc(status)}</h3>
+   <div><b>رقم الطلب:</b> ${atyafEsc(num)}</div>
+   ${date?`<div><b>التاريخ:</b> ${atyafEsc(date)}</div>`:""}
+   ${total!=null?`<div><b>الإجمالي:</b> ${atyafEsc(total)}</div>`:""}
+  </div>`;
+ }catch(e){
+  console.warn("ATYAF tracking",e);
+  box.innerHTML="<div class='message'>تعذر تتبع الطلب حالياً. حاول مرة أخرى.</div>";
+ }
+}
+/* ===== END ORDER TRACKING ===== */
+
 function openAccount(){
  if(!atyafDb)return showMessage("تعذر الاتصال بالحسابات");
  if(atyafAuthUser)return renderAccountProfile();

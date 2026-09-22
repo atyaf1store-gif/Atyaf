@@ -574,11 +574,17 @@ main{max-width:1500px;margin:auto;padding:18px 14px 80px}.card{margin-bottom:16p
     <div class="grid2"><div><label>العنوان</label><input id="homeBrandsTitle"></div><div><label>الوصف</label><input id="homeBrandsSubtitle"></div></div>
     <label>الماركات الحالية</label>
     <textarea id="homeBrandsItems" style="min-height:130px" readonly></textarea>
+    <input id="homeBrandEditIndex" type="hidden" value="-1">
+    <input id="homeBrandExistingImage" type="hidden">
     <div class="grid2">
-      <div><label>اسم الماركة الجديدة</label><input id="homeBrandNewName" placeholder="مثال: إبراق"></div>
-      <div><label>صورة الماركة من الجهاز</label><input id="homeBrandNewFile" type="file" accept="image/*"></div>
+      <div><label>اسم الماركة</label><input id="homeBrandNewName" placeholder="مثال: إبراق"></div>
+      <div><label>صورة الماركة من الجهاز</label><input id="homeBrandNewFile" type="file" accept="image/*" onchange="previewHomepageBrandImage()"></div>
     </div>
-    <button type="button" class="btn" onclick="addHomepageMediaItem('brand')">رفع وإضافة الماركة</button>
+    <div id="homeBrandEditPreview" class="media-preview-grid"></div>
+    <div class="actions">
+      <button id="saveHomepageBrandButton" type="button" class="btn gold" onclick="saveHomepageBrand()">إضافة الماركة</button>
+      <button type="button" class="btn out" onclick="resetHomepageBrandForm()">ماركة جديدة</button>
+    </div>
     <div id="homeBrandsManagedList" class="media-preview-grid"></div>
 
     <h3>قسم تجهيز الهدية</h3>
@@ -2581,10 +2587,13 @@ function renderHomepageManagedLists(){
 
   const render=(id,items,type)=>{
     $(id).innerHTML=(Array.isArray(items)?items:[]).map((x,i)=>`
-      <div class="media-preview" style="height:auto;min-height:120px;padding:8px">
-        ${x.image?`<img src="${esc(x.image)}" style="height:75px;object-fit:contain">`:""}
-        <div style="font-weight:800;margin:6px 0">${esc(x.name||"")}</div>
-        <button type="button" class="btn red sm" onclick="removeHomepageMediaItem('${type}',${i})">حذف</button>
+      <div class="media-preview" style="height:auto;min-height:150px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+        ${x.image?`<img src="${esc(x.image)}" style="height:78px;width:100%;object-fit:contain">`:""}
+        <div style="font-weight:900;margin:7px 0;text-align:center">${esc(x.name||"")}</div>
+        <div class="actions" style="justify-content:center;margin-top:auto">
+          ${type==="brand"?`<button type="button" class="btn green sm" onclick="editHomepageBrand(${i})">تعديل</button>`:""}
+          <button type="button" class="btn red sm" onclick="removeHomepageMediaItem('${type}',${i})">حذف</button>
+        </div>
       </div>`).join("");
   };
   render("homeBrandsManagedList",hp.brands,"brand");
@@ -2593,6 +2602,76 @@ function renderHomepageManagedLists(){
   $("homeGiftImagePreview").innerHTML=hp.giftImage?`<div class="media-preview"><img src="${esc(hp.giftImage)}"></div>`:"";
   $("homeOfferImagePreview").innerHTML=hp.offerImage?`<div class="media-preview"><img src="${esc(hp.offerImage)}"></div>`:"";
 }
+
+/* ===== ATYAF — SAFE HOMEPAGE BRANDS CRUD ===== */
+function previewHomepageBrandImage(){
+  const file=$("homeBrandNewFile")?.files?.[0];
+  const existing=$("homeBrandExistingImage")?.value||"";
+  if(!$("homeBrandEditPreview")) return;
+  if(file){
+    const url=URL.createObjectURL(file);
+    $("homeBrandEditPreview").innerHTML=`<div class="media-preview"><img src="${url}" alt="" style="object-fit:contain"></div>`;
+  }else{
+    $("homeBrandEditPreview").innerHTML=existing
+      ?`<div class="media-preview"><img src="${esc(existing)}" alt="" style="object-fit:contain"></div>`
+      :"";
+  }
+}
+function resetHomepageBrandForm(){
+  if($("homeBrandEditIndex")) $("homeBrandEditIndex").value="-1";
+  if($("homeBrandExistingImage")) $("homeBrandExistingImage").value="";
+  if($("homeBrandNewName")) $("homeBrandNewName").value="";
+  if($("homeBrandNewFile")) $("homeBrandNewFile").value="";
+  if($("homeBrandEditPreview")) $("homeBrandEditPreview").innerHTML="";
+  if($("saveHomepageBrandButton")) $("saveHomepageBrandButton").textContent="إضافة الماركة";
+}
+function editHomepageBrand(index){
+  const arr=Array.isArray(homepageSettings?.brands)?homepageSettings.brands:[];
+  const item=arr[index];
+  if(!item) return;
+  $("homeBrandEditIndex").value=String(index);
+  $("homeBrandNewName").value=String(item.name||"");
+  $("homeBrandExistingImage").value=String(item.image||"");
+  $("homeBrandNewFile").value="";
+  previewHomepageBrandImage();
+  $("saveHomepageBrandButton").textContent="حفظ تعديل الماركة";
+  $("homeBrandNewName").scrollIntoView({behavior:"smooth",block:"center"});
+  $("homeBrandNewName").focus();
+}
+async function saveHomepageBrand(){
+  const name=$("homeBrandNewName").value.trim();
+  const editIndex=Number($("homeBrandEditIndex").value||-1);
+  const file=$("homeBrandNewFile").files?.[0];
+  let image=$("homeBrandExistingImage").value||"";
+  if(!name) return alert("اكتب اسم الماركة");
+  if(editIndex<0 && !file) return alert("اختر صورة الماركة من الجهاز");
+
+  const button=$("saveHomepageBrandButton");
+  button.disabled=true;
+  try{
+    if(file) image=await uploadMediaFile(file,"homepage/brands");
+    if(!image) return alert("اختر صورة الماركة");
+
+    const arr=[...(Array.isArray(homepageSettings?.brands)?homepageSettings.brands:[])];
+    const item={name,image};
+
+    if(editIndex>=0 && editIndex<arr.length) arr[editIndex]=item;
+    else arr.push(item);
+
+    const next={...homepageSettings,brands:arr};
+    await saveSetting("homepage",next);
+    homepageSettings=next;
+    renderHomepageManagedLists();
+    resetHomepageBrandForm();
+    toast(editIndex>=0?"تم تعديل الماركة ✓":"تمت إضافة الماركة ✓");
+  }catch(e){
+    alert("تعذر حفظ الماركة:\n"+(e?.message||e));
+  }finally{
+    button.disabled=false;
+  }
+}
+/* ===== END SAFE HOMEPAGE BRANDS CRUD ===== */
+
 async function addHomepageMediaItem(type){
   const isBrand=type==="brand";
   const nameEl=$(isBrand?"homeBrandNewName":"homeScentNewName");
@@ -2612,14 +2691,21 @@ async function addHomepageMediaItem(type){
   }catch(e){alert("تعذر رفع الصورة:\n"+(e.message||e))}
 }
 async function removeHomepageMediaItem(type,index){
-  if(!confirm("حذف هذا العنصر؟"))return;
+  if(!confirm(type==="brand"?"هل تريد حذف هذه الماركة؟":"حذف هذا العنصر؟"))return;
   const key=type==="brand"?"brands":"scents";
-  const arr=[...(Array.isArray(homepageSettings[key])?homepageSettings[key]:[])];
-  arr.splice(index,1);
-  const next={...homepageSettings,[key]:arr};
-  await saveSetting("homepage",next);
-  homepageSettings=next;
-  renderHomepageManagedLists();
+  try{
+    const arr=[...(Array.isArray(homepageSettings[key])?homepageSettings[key]:[])];
+    if(index<0 || index>=arr.length)return;
+    arr.splice(index,1);
+    const next={...homepageSettings,[key]:arr};
+    await saveSetting("homepage",next);
+    homepageSettings=next;
+    renderHomepageManagedLists();
+    if(type==="brand") resetHomepageBrandForm();
+    toast(type==="brand"?"تم حذف الماركة ✓":"تم حذف العنصر ✓");
+  }catch(e){
+    alert("تعذر الحذف:\n"+(e?.message||e));
+  }
 }
 function parseHomepageItems(id){
   return $(id).value.split(/\n+/).map(line=>{

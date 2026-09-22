@@ -1689,9 +1689,42 @@ async function trackAtyafOrder(auto=false){
   const num=found.order_number??found.order_no??found.code??found.id??no,raw=found.status??found.order_status??"pending",status=atyafTrackStatus(raw),step=atyafTrackStep(raw),total=found.total??found.total_amount??found.grand_total,date=found.created_at?new Date(found.created_at).toLocaleString("ar"):"",name=found.customer_name??found.full_name??found.name??"",address=found.address??found.customer_address??found.shipping_address??"",payment=found.payment_method??found.payment??"",notes=found.notes??found.note??"",items=Array.isArray(found.items)?found.items:(Array.isArray(found.order_items)?found.order_items:[]);
   const labels=["تم استلام الطلب","تم التأكيد","جاري التجهيز","قيد التوصيل","تم التسليم"],timeline=labels.map((x,i)=>`<div class="track-step ${i<=step?"done":""}"><i>${i<step?"✓":i===step?"●":""}</i><span>${x}</span></div>`).join("");
   const itemsHtml=items.length?`<div class="tracking-items"><b>المنتجات</b>${items.map(it=>`<div><span>${atyafEsc(it.name||it.product_name||"منتج")}${it.quantity?` × ${atyafEsc(it.quantity)}`:""}</span><span>${it.price!=null?atyafEsc(it.price):""}</span></div>`).join("")}</div>`:"";
-  box.innerHTML=`<div class="tracking-success"><div class="tracking-status-row"><div><small>حالة الطلب</small><h3>${atyafEsc(status)}</h3></div><span class="tracking-order-no">${atyafEsc(num)}</span></div><div class="tracking-timeline">${timeline}</div><div class="tracking-details">${name?`<div><small>العميل</small><b>${atyafEsc(name)}</b></div>`:""}${date?`<div><small>تاريخ الطلب</small><b>${atyafEsc(date)}</b></div>`:""}${total!=null?`<div><small>الإجمالي</small><b>${atyafEsc(total)}</b></div>`:""}${payment?`<div><small>طريقة الدفع</small><b>${atyafEsc(payment)}</b></div>`:""}${address?`<div class="wide"><small>عنوان التوصيل</small><b>${atyafEsc(address)}</b></div>`:""}${notes?`<div class="wide"><small>ملاحظات</small><b>${atyafEsc(notes)}</b></div>`:""}</div>${itemsHtml}</div>`;
+  box.innerHTML=`<div class="tracking-success"><div class="tracking-status-row"><div><small>حالة الطلب</small><h3>${atyafEsc(status)}</h3></div><span class="tracking-order-no">${atyafEsc(num)}</span></div><div class="tracking-timeline">${timeline}</div><div class="tracking-details">${name?`<div><small>العميل</small><b>${atyafEsc(name)}</b></div>`:""}${date?`<div><small>تاريخ الطلب</small><b>${atyafEsc(date)}</b></div>`:""}${total!=null?`<div><small>الإجمالي</small><b>${atyafEsc(total)}</b></div>`:""}${payment?`<div><small>طريقة الدفع</small><b>${atyafEsc(payment)}</b></div>`:""}${address?`<div class="wide"><small>عنوان التوصيل</small><b>${atyafEsc(address)}</b></div>`:""}${notes?`<div class="wide"><small>ملاحظات</small><b>${atyafEsc(notes)}</b></div>`:""}</div>${itemsHtml}<div class="tracking-print-wrap"><button class="auth-action invoice-print-btn" onclick="printAtyafInvoice(atyafLastOrder())">🧾 طباعة الفاتورة</button></div></div>`;
  }catch(e){console.warn("ATYAF tracking",e);box.innerHTML="<div class='tracking-alert'>تعذر تتبع الطلب حالياً. حاول مرة أخرى.</div>"}
 }
+
+function printAtyafInvoice(orderData){
+ const o=orderData||atyafLastOrder();
+ if(!o){showMessage("لا توجد بيانات طلب لطباعة الفاتورة");return}
+ const items=Array.isArray(o.items)?o.items:[];
+ const date=o.created_at?new Date(o.created_at).toLocaleString("ar"):"";
+ const invoice=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>فاتورة ${atyafEsc(o.order_number||"")}</title><style>
+ *{box-sizing:border-box}body{font-family:Arial,Tahoma,sans-serif;background:#fff;color:#171717;margin:0;padding:28px}.invoice{max-width:760px;margin:auto;border:1px solid #ddd;padding:28px}.head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid #9b713d;padding-bottom:18px}.brand h1{margin:0;font-size:28px}.brand p{margin:5px 0 0;color:#777}.num{text-align:left;direction:ltr}.num strong{display:block;font-size:18px}.info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}.info div{border:1px solid #eee;padding:10px}.info small{display:block;color:#777;margin-bottom:4px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border-bottom:1px solid #e5e5e5;padding:11px 8px;text-align:right}th{background:#faf7f0}.total{margin-top:18px;display:flex;justify-content:space-between;font-size:18px;font-weight:bold;border-top:2px solid #222;padding-top:12px}.thanks{text-align:center;margin-top:28px;color:#777;font-size:12px}@media print{body{padding:0}.invoice{border:0;max-width:none;padding:10mm}.no-print{display:none!important}}@page{size:A4;margin:10mm}
+ 
+/* ===== ATYAF INVOICE PRINT ===== */
+.invoice-print-btn{cursor:pointer!important}.tracking-print-wrap{padding:0 12px 12px}.tracking-print-wrap button{width:100%!important}
+
+</style></head><body><div class="invoice">
+ <div class="head"><div class="brand"><h1>متجر أطياف</h1><p>ATYAF STORE</p></div><div class="num"><small>فاتورة / طلب</small><strong>${atyafEsc(o.order_number||"")}</strong><small>${atyafEsc(date)}</small></div></div>
+ <div class="info">
+  <div><small>اسم العميل</small><b>${atyafEsc(o.customer_name||"")}</b></div>
+  <div><small>رقم الهاتف</small><b>${atyafEsc(o.phone||"")}</b></div>
+  <div><small>طريقة الدفع</small><b>${atyafEsc(o.payment_method||"")}</b></div>
+  <div><small>حالة الطلب</small><b>${atyafEsc(atyafTrackStatus(o.status||"pending"))}</b></div>
+  <div style="grid-column:1/-1"><small>العنوان</small><b>${atyafEsc(o.address||"")}</b></div>
+ </div>
+ <table><thead><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>
+ ${items.map(x=>`<tr><td>${atyafEsc(x.name||"منتج")}</td><td>${atyafEsc(x.quantity||1)}</td><td>${atyafEsc(atyafMoney(Number(x.price||0)))}</td><td>${atyafEsc(atyafMoney(Number(x.price||0)*Number(x.quantity||1)))}</td></tr>`).join("")}
+ </tbody></table>
+ <div class="total"><span>الإجمالي النهائي</span><span>${atyafEsc(atyafMoney(Number(o.total||0)))}</span></div>
+ ${o.notes?`<div style="margin-top:14px"><small>ملاحظات:</small> ${atyafEsc(o.notes)}</div>`:""}
+ <div class="thanks">شكراً لتسوقك من متجر أطياف</div>
+ </div><script>window.onload=()=>{setTimeout(()=>window.print(),250)}<\/script></body></html>`;
+ const w=window.open("","_blank");
+ if(!w){showMessage("اسمح بالنوافذ المنبثقة لطباعة الفاتورة");return}
+ w.document.open();w.document.write(invoice);w.document.close();
+}
+
 /* ===== END ORDER TRACKING ===== */
 
 function openAccount(){
@@ -2759,7 +2792,7 @@ ${orderLines}
       ${items.map(x=>`<div><span>${atyafEsc(x.name)} × ${x.quantity}</span><b>${atyafEsc(atyafMoney(x.price*x.quantity))}</b></div>`).join("")}
     </div>
     <div class="order-success-actions">
-      <button class="checkout-confirm" onclick="closeModal();openOrderTracking()">تتبع الطلب الآن</button>
+      <button class="checkout-confirm" onclick="closeModal();openOrderTracking()">تتبع الطلب الآن</button><button class="checkout-cancel invoice-print-btn" onclick="printAtyafInvoice()">🧾 طباعة الفاتورة</button>
       ${wa?`<button class="checkout-cancel" onclick='window.open("https://wa.me/${wa}?text="+encodeURIComponent(${JSON.stringify(waText)}),"_blank","noopener")'>إرسال الطلب عبر واتساب</button>`:""}
     </div>
    </div>`;

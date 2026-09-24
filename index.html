@@ -765,10 +765,7 @@ main#home{position:relative}
 ====================================================== */
 :root{
   --atyaf-splash-bg:#fbf6ee;
-  --atyaf-splash-logo-desktop-width:330px;
-  --atyaf-splash-logo-tablet-width:280px;
-  --atyaf-splash-logo-mobile-width:220px;
-  --atyaf-splash-logo-width:min(var(--atyaf-splash-logo-desktop-width),72vw);
+  --atyaf-splash-logo-width:min(520px,72vw);
   --atyaf-splash-logo-max-height:220px;
   --atyaf-splash-hold:650ms;
   --atyaf-splash-move:900ms;
@@ -816,14 +813,9 @@ main#home{position:relative}
   visibility:hidden;
   pointer-events:none;
 }
-@media(min-width:701px) and (max-width:1100px){
-  :root{
-    --atyaf-splash-logo-width:min(var(--atyaf-splash-logo-tablet-width),78vw);
-  }
-}
 @media(max-width:700px){
   :root{
-    --atyaf-splash-logo-width:min(var(--atyaf-splash-logo-mobile-width),82vw);
+    --atyaf-splash-logo-width:min(390px,82vw);
     --atyaf-splash-logo-max-height:170px;
   }
 }
@@ -831,23 +823,6 @@ main#home{position:relative}
   #atyafLogoSplash,#atyafSplashLogo{transition-duration:.01ms!important}
 }
 
-
-/* ===== ATYAF LOGO SIZE STABILITY ===== */
-.logo .atyaf-hero-logo{
-  width:310px!important;
-  height:86px!important;
-  max-width:100%!important;
-  max-height:86px!important;
-  object-fit:contain!important;
-}
-@media(max-width:800px){
-  .logo .atyaf-hero-logo{
-    width:190px!important;
-    height:62px!important;
-    max-width:100%!important;
-    max-height:62px!important;
-  }
-}
 /* ===== ATYAF EDITABLE TRANSPARENT BRAND — HEADER ONLY ===== */
 .logo,.logo .atyaf-hero-logo{background:transparent!important}
 .logo .atyaf-hero-logo{filter:none!important;mix-blend-mode:normal!important}
@@ -2154,33 +2129,9 @@ function applyManagedGeneral(g={}){
     }
   }
 
-  /* Splash uses the SAME managed store logo. If the main logo is changed
-     from the admin panel, the opening screen changes with it immediately.
-     The separate splash-logo field remains only as a fallback when no main
-     store logo exists. */
+  /* Splash follows the uploaded logo too, without changing any other store section. */
   const splashLogo=document.getElementById("atyafSplashLogo");
-  const fallbackSplashLogo=pickLogo(
-    g.splashLogoUrl||g.splash_logo_url||g.splashLogo||g.splash_logo||
-    g.splashLogoImage||g.splash_logo_image
-  );
-  const effectiveSplashLogo=managedLogo||fallbackSplashLogo;
-  if(splashLogo && effectiveSplashLogo){
-    splashLogo.src=effectiveSplashLogo;
-    splashLogo.removeAttribute("srcset");
-  }
-
-  /* Keep the splash size stable across different uploaded logo proportions.
-     These values come from the existing admin controls. */
-  const splashDesktop=Math.max(120,Math.min(800,Number(g.splashDesktopWidth||g.splashLogoWidth||330)));
-  const splashTablet=Math.max(120,Math.min(700,Number(g.splashTabletWidth||280)));
-  const splashMobile=Math.max(100,Math.min(600,Number(g.splashMobileWidth||220)));
-  const splashRoot=document.documentElement;
-  splashRoot.style.setProperty("--atyaf-splash-logo-desktop-width",splashDesktop+"px");
-  splashRoot.style.setProperty("--atyaf-splash-logo-tablet-width",splashTablet+"px");
-  splashRoot.style.setProperty("--atyaf-splash-logo-mobile-width",splashMobile+"px");
-  if(g.splashBackground){
-    splashRoot.style.setProperty("--atyaf-splash-bg",String(g.splashBackground));
-  }
+  if(splashLogo && logoEnabled && managedLogo)splashLogo.src=managedLogo;
 
   const search=document.getElementById("search");
   if(search)search.closest(".search").style.display=g.enableSearch===false?"none":"";
@@ -2189,22 +2140,42 @@ function applyManagedGeneral(g={}){
 function applyManagedDesign(d={}){
   atyafCurrentDesign=d||{};
   const c=d.colors||{};
-  if(c.cream)document.documentElement.style.setProperty("--cream",c.cream);
-  if(c.card)document.documentElement.style.setProperty("--card",c.card);
-  if(c.ink)document.documentElement.style.setProperty("--dark",c.ink);
-  if(c.gold)document.documentElement.style.setProperty("--gold",c.gold);
+  const root=document.documentElement;
+  if(c.cream)root.style.setProperty("--cream",c.cream);
+  if(c.card)root.style.setProperty("--card",c.card);
+  if(c.ink)root.style.setProperty("--dark",c.ink);
+  if(c.gold)root.style.setProperty("--gold",c.gold);
 
-  /* Keep the startup screen background synchronized with the store background.
-     The store design uses backgroundUrl when an image is selected; otherwise
-     the cream/background color is used. */
-  const splashRoot=document.documentElement;
-  if(d.backgroundUrl){
-    const bgUrl=String(d.backgroundUrl).trim();
-    splashRoot.style.setProperty("--atyaf-splash-bg",`url(${JSON.stringify(bgUrl)})`);
-    document.body.style.backgroundImage=`url("${bgUrl}")`;
-  }else if(c.cream){
-    splashRoot.style.setProperty("--atyaf-splash-bg",String(c.cream));
+  /* ===== STARTUP BACKGROUND: SAME DESIGN AS THE STORE =====
+     The startup screen is a fixed layer, so changing body background alone
+     does not guarantee that its own background changes. Apply the managed
+     design directly to both the CSS variable and the splash element. */
+  const splashRoot=document.getElementById("atyafLogoSplash");
+  const splashBg=String(d.backgroundUrl||d.background_url||d.backgroundImage||d.background_image||"").trim();
+  const splashColor=String(
+    d.backgroundColor||d.background_color||c.cream||d.cream||"#fbf6ee"
+  ).trim();
+
+  if(splashBg){
+    root.style.setProperty("--atyaf-splash-bg",`url("${splashBg.replace(/"/g,'\\"')}")`);
+    if(splashRoot){
+      splashRoot.style.backgroundImage=`url("${splashBg.replace(/"/g,'\\"')}")`;
+      splashRoot.style.backgroundColor="transparent";
+      splashRoot.style.backgroundSize="cover";
+      splashRoot.style.backgroundPosition="center";
+      splashRoot.style.backgroundRepeat="no-repeat";
+    }
+    document.body.style.backgroundImage=`url("${splashBg.replace(/"/g,'\\"')}")`;
+    document.body.style.backgroundSize="cover";
+    document.body.style.backgroundPosition="center";
+  }else{
+    root.style.setProperty("--atyaf-splash-bg",splashColor);
+    if(splashRoot){
+      splashRoot.style.backgroundImage="none";
+      splashRoot.style.backgroundColor=splashColor;
+    }
     document.body.style.backgroundImage="";
+    document.body.style.backgroundColor=splashColor;
   }
 
   const fonts=d.fonts||{};
@@ -2233,7 +2204,7 @@ function applyManagedDesign(d={}){
     if(!color)return;
     document.querySelectorAll(sel).forEach(el=>el.style.setProperty("color",color,"important"));
   });
-  const pc=d.productCard||{}; const root=document.documentElement;
+  const pc=d.productCard||{};
   const set=(k,v)=>{if(v!==undefined&&v!==null&&v!=="")root.style.setProperty(k,String(v))};
   set("--pc-bg",pc.background||"#fff");set("--pc-border",pc.borderColor||"#eeeae2");set("--pc-border-w",(pc.borderWidth??1)+"px");set("--pc-radius",(pc.radius??18)+"px");set("--pc-img-bg",pc.imageBg||"#fff");set("--pc-img-h",(pc.imageHeight||315)+"px");set("--pc-img-pad",(pc.imagePadding??12)+"px");set("--pc-info-pad",(pc.infoPadding??12)+"px");set("--pc-name-size",(pc.nameSize||13)+"px");set("--pc-name-color",pc.nameColor||"#171717");set("--pc-name-weight",pc.nameWeight||"800");set("--pc-name-line",pc.nameLineHeight||1.75);set("--pc-price-size",(pc.priceSize||14)+"px");set("--pc-price-color",pc.priceColor||"#9d342b");set("--pc-old-color",pc.oldPriceColor||"#747874");set("--pc-font",pc.fontFamily||"Cairo");set("--pc-heart-size",(pc.heartSize||34)+"px");set("--pc-heart-bg",pc.heartBg||"#fff");set("--pc-heart-color",pc.heartColor||"#292929");set("--pc-heart-border",pc.heartBorder||"#ddd8ce");set("--pc-heart-active",pc.heartActive||"#111");set("--pc-badge-bg",pc.badgeBg||"#050505");set("--pc-badge-text",pc.badgeText||"#fff");set("--pc-badge-radius",(pc.badgeRadius??14)+"px");set("--pc-cart-bg",pc.cartBg||"#050505");set("--pc-cart-text",pc.cartText||"#fff");set("--pc-gift-bg",pc.giftBg||"#fff");set("--pc-gift-text",pc.giftText||"#171717");set("--pc-gift-border",pc.giftBorder||"#d8d4cb");set("--pc-btn-h",(pc.buttonHeight||43)+"px");set("--pc-btn-radius",(pc.buttonRadius??0)+"px");set("--pc-btn-font",(pc.buttonFontSize||11)+"px");set("--pc-align",pc.textAlign||"center");set("--pc-fit",pc.imageFit||"contain");
   set("--pc-card-width-desktop",Math.max(140,Math.min(600,Number(pc.cardWidthDesktop||300)))+"px");

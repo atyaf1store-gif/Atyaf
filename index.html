@@ -153,6 +153,109 @@
 }
 </style>
 
+
+<style id="atyaf-professional-product-cards">
+/* بطاقات منتجات متوازنة واحترافية */
+.products{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:20px!important;
+  align-items:stretch!important;
+}
+.product{
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  height:100%!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  background:var(--paper)!important;
+}
+.product-visual{
+  height:260px!important;
+  min-height:260px!important;
+  position:relative!important;
+  overflow:hidden!important;
+  padding:0!important;
+}
+.product-visual > img{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  padding:18px!important;
+  background:#fff!important;
+  z-index:2!important;
+}
+/* عند وجود صورة حقيقية نخفي رسمة العبوة الافتراضية */
+.product-visual:has(> img)::before,
+.product-visual:has(> img)::after,
+.product-visual:has(> img) .cap{display:none!important}
+
+.product-info{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1!important;
+  padding:18px!important;
+}
+.product-info small{
+  min-height:20px!important;
+  display:block!important;
+}
+.product-info h3{
+  margin:5px 0 4px!important;
+  min-height:28px!important;
+  font-size:17px!important;
+  line-height:1.45!important;
+}
+.price{
+  min-height:32px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  font-size:18px!important;
+}
+.product-actions{
+  margin-top:auto!important;
+  padding-top:14px!important;
+  grid-template-columns:minmax(105px,1.2fr) minmax(82px,.85fr) 42px!important;
+  gap:8px!important;
+}
+.product-actions .btn,.gift-buy-btn{
+  height:42px!important;
+  min-height:42px!important;
+  white-space:nowrap!important;
+}
+.gift-buy-btn{width:42px!important;font-size:18px!important}
+
+/* تثبيت الشارات والأزرار فوق الصورة */
+.favorite{left:12px!important;top:12px!important;z-index:5!important}
+.tag{right:12px!important;top:12px!important;z-index:5!important}
+
+@media(max-width:900px){
+  .products{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+  .product-visual{height:230px!important;min-height:230px!important}
+}
+@media(max-width:560px){
+  .products{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .product{border-radius:16px!important}
+  .product-visual{height:190px!important;min-height:190px!important}
+  .product-visual > img{padding:10px!important}
+  .product-info{padding:11px!important}
+  .product-info h3{font-size:14px!important;min-height:24px!important}
+  .price{font-size:15px!important;min-height:27px!important}
+  .product-actions{
+    grid-template-columns:1fr 40px!important;
+    gap:6px!important;
+  }
+  .product-actions .btn-primary{grid-column:1/-1!important}
+  .product-actions .btn-outline{grid-column:1!important}
+  .gift-buy-btn{grid-column:2!important;width:40px!important;height:40px!important}
+}
+</style>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>

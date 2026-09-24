@@ -228,7 +228,7 @@
     window.atyafRenderHeroAds=renderHeroAd;
     async function loadHeroAds(){
       if(!atyafDb)return renderHeroAd({enabled:false});
-      try{const keys=['ads','hero_ads','hero_ad','top_ads','top_ad'];const {data,error}=await atyafDb.from('settings').select('id,key,value,updated_at').in('key',keys).order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(30);if(error)throw error;const rows=Array.isArray(data)?data:[];let row=null;for(const key of keys){row=rows.find(r=>r.key===key&&r.value!=null);if(row)break}renderHeroAd(row?.value||{enabled:false})}catch(e){console.warn('ATYAAF hero ads:',e);renderHeroAd({enabled:false})}
+      try{const {data,error}=await atyafDb.from('settings').select('id,key,value,updated_at').eq('key','hero_ads').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);if(error)throw error;const row=Array.isArray(data)?data[0]:null;renderHeroAd(row?.value||{enabled:false})}catch(e){console.warn('ATYAAF hero ads:',e);renderHeroAd({enabled:false})}
     }
     window.atyafLoadHeroAds=loadHeroAds;
     window.addEventListener('focus',loadHeroAds);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadHeroAds()});
@@ -464,7 +464,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(map.brands)applyBrands(map.brands);
       if(map.policies)applyPolicies(map.policies);
       // نفس مفاتيح لوحة الإدارة، مع دعم الأسماء القديمة.
-      const upperKeys=["ads","hero_ads","hero_ad","top_ads","top_ad"];
+      const upperKeys=["hero_ads"];
       const lowerKeys=["bottom_ads","bottom_ad","lower_ads","lower_ad","after_products_ad","after_products_ads"];
       const upperKey=upperKeys.find(k=>map[k]!=null);
       const lowerKey=lowerKeys.find(k=>map[k]!=null);
@@ -489,5 +489,18 @@ window.addEventListener("focus",atyafLoadLowerAds);
 /* ATYAAF ADMIN <-> STORE FULL SETTINGS BRIDGE END */
 
 </script>
+
+<script id="atyaf-hero-admin-realtime">
+document.addEventListener("DOMContentLoaded",()=>{
+  if(!window.atyafDb || typeof window.atyafLoadHeroAds!=="function") return;
+  window.atyafDb.channel("atyaf-hero-ads-live")
+    .on("postgres_changes",
+      {event:"*",schema:"public",table:"settings",filter:"key=eq.hero_ads"},
+      ()=>window.atyafLoadHeroAds()
+    )
+    .subscribe();
+});
+</script>
+
 </body>
 </html>

@@ -108,7 +108,16 @@ function stat(t,bad=false){
   el.style.background=bad?'#f8e5e3':'#eaf2ed';
 }
 function getSetting(key,def={}){let r=SETTINGS.find(x=>x.key===key);return r?parse(r.value):def}
-async function putSetting(key,value){let old=SETTINGS.find(x=>x.key===key);let r=old?await db.from('settings').update({value}).eq('id',old.id):await db.from('settings').insert({key,value});if(r.error)throw r.error}
+async function putSetting(key,value){
+  const matches=SETTINGS.filter(x=>x.key===key);
+  let r;
+  if(matches.length){
+    r=await db.from('settings').update({value}).eq('key',key);
+  }else{
+    r=await db.from('settings').insert({key,value});
+  }
+  if(r.error)throw r.error;
+}
 async function removeSetting(key){let old=SETTINGS.find(x=>x.key===key);if(old){let r=await db.from('settings').delete().eq('id',old.id);if(r.error)throw r.error}}
 
 async function uploadFiles(files,folder){
@@ -142,7 +151,7 @@ function adEditor(el,key,title){
  <div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveAd('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
 }
 async function saveAd(key,card){
- try{let old=getSetting(key,{}),files=card.querySelector('.files').files,added=files.length?await uploadFiles(files,key):[];let value={...old,enabled:card.querySelector('.enabled').value==='true',interval:+card.querySelector('.interval').value||3500,heightDesktop:+card.querySelector('.hd').value||650,heightTablet:+card.querySelector('.ht').value||520,heightMobile:+card.querySelector('.hm').value||360,fit:card.querySelector('.fit').value,link:card.querySelector('.link').value.trim(),media:[...(Array.isArray(old.media)?old.media:[]),...added]};await putSetting(key,value);await loadAll();stat('تم الحفظ والرفع مباشرة بنجاح')}catch(e){stat(e.message,true)}}
+ try{let old=getSetting(key,{}),files=card.querySelector('.files').files,added=files.length?await uploadFiles(files,key):[];let value={...old,enabled:card.querySelector('.enabled').value==='true',interval:+card.querySelector('.interval').value||3500,heightDesktop:+card.querySelector('.hd').value||650,heightTablet:+card.querySelector('.ht').value||520,heightMobile:+card.querySelector('.hm').value||360,fit:card.querySelector('.fit').value,link:card.querySelector('.link').value.trim(),media:[...(Array.isArray(old.media)?old.media:[]),...added]};await putSetting(key,value);await loadAll();stat((key==='hero_ads'?'تم حفظ وربط الشاشة العلوية hero_ads بنجاح':key==='bottom_ads'?'تم حفظ وربط الشاشة السفلية bottom_ads بنجاح':'تم الحفظ والرفع مباشرة بنجاح'))}catch(e){stat(e.message,true)}}
 async function removeAdMedia(key,i){let s=getSetting(key,{}),m=Array.isArray(s.media)?[...s.media]:[];m.splice(i,1);s.media=m;await putSetting(key,s);await loadAll()}
 async function toggleSection(key){let s=getSetting(key,{});s.enabled=s.enabled===false;await putSetting(key,s);await loadAll()}
 async function deleteSection(key){if(!confirm('حذف هذا القسم وإعداداته؟'))return;await removeSetting(key);await loadAll()}

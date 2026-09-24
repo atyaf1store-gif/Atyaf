@@ -2193,7 +2193,19 @@ function applyManagedDesign(d={}){
   if(c.card)document.documentElement.style.setProperty("--card",c.card);
   if(c.ink)document.documentElement.style.setProperty("--dark",c.ink);
   if(c.gold)document.documentElement.style.setProperty("--gold",c.gold);
-  if(d.backgroundUrl)document.body.style.backgroundImage=`url("${d.backgroundUrl}")`;
+
+  /* Keep the startup screen background synchronized with the store background.
+     The store design uses backgroundUrl when an image is selected; otherwise
+     the cream/background color is used. */
+  const splashRoot=document.documentElement;
+  if(d.backgroundUrl){
+    const bgUrl=String(d.backgroundUrl).trim();
+    splashRoot.style.setProperty("--atyaf-splash-bg",`url(${JSON.stringify(bgUrl)})`);
+    document.body.style.backgroundImage=`url("${bgUrl}")`;
+  }else if(c.cream){
+    splashRoot.style.setProperty("--atyaf-splash-bg",String(c.cream));
+    document.body.style.backgroundImage="";
+  }
 
   const fonts=d.fonts||{};
   if(fonts.body)document.body.style.fontFamily=fonts.body+", Cairo, sans-serif";

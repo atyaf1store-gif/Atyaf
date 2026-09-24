@@ -33,8 +33,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 
 <section id="dashboard" class="panel active"><div class="card"><h2>إدارة كاملة</h2><p>اختر أي قسم من القائمة. كل جزء يُحفظ مستقلاً في جدول <b>settings</b>، والوسائط تُرفع مباشرة إلى Supabase Storage بدون لصق روابط.</p></div></section>
 
-<section id="hero" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية العلوية</h2><div id="heroEditor"></div></div></section>
-<section id="lowerAd" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية تحت الهدية</h2><div id="lowerEditor"></div></div></section>
+<section id="hero" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية العلوية</h2><div class="muted" style="margin-bottom:12px">نفس إعدادات الشاشة السفلية بالكامل: رفع مباشر • سلايدر • فيديو • ارتفاعات • إظهار/إخفاء • حذف</div><div id="heroEditor"></div></div></section>
+<section id="lowerAd" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية تحت الهدية</h2><div class="muted" style="margin-bottom:12px">رفع مباشر • سلايدر • فيديو • ارتفاعات • إظهار/إخفاء • حذف</div><div id="lowerEditor"></div></div></section>
 <section id="topbar" class="panel"><div class="card section-editor"><h2>الشريط العلوي</h2><div id="topbarEditor"></div></div></section>
 <section id="header" class="panel"><div class="card section-editor"><h2>الهيدر والبحث والشعار</h2><div id="headerEditor"></div></div></section>
 <section id="nav" class="panel"><div class="card section-editor"><h2>روابط القائمة الرئيسية</h2><div id="navEditor"></div></div></section>
@@ -108,43 +108,7 @@ function stat(t,bad=false){
   el.style.background=bad?'#f8e5e3':'#eaf2ed';
 }
 function getSetting(key,def={}){let r=SETTINGS.find(x=>x.key===key);return r?parse(r.value):def}
-async function putSetting(key,value){
-  // اقرأ السجل مباشرة من القاعدة أولاً حتى لا نعتمد على نسخة SETTINGS القديمة.
-  let q=await db.from('settings').select('*').eq('key',key).limit(1);
-  if(q.error)throw q.error;
-  const live=(q.data&&q.data[0])||null;
-
-  if(live){
-    let u=await db.from('settings').update({value}).eq('id',live.id);
-    if(u.error)throw u.error;
-    return;
-  }
-
-  let ins=await db.from('settings').insert({key,value});
-  if(!ins.error)return;
-
-  // إصلاح تلقائي لمشكلة PostgreSQL sequence:
-  // duplicate key value violates unique constraint "settings_pkey"
-  if(String(ins.error.message||'').includes('settings_pkey') ||
-     String(ins.error.code||'')==='23505'){
-    let last=await db.from('settings').select('id').order('id',{ascending:false}).limit(1);
-    if(last.error)throw last.error;
-    const maxId=(last.data&&last.data[0]&&Number(last.data[0].id))||0;
-    let retry=await db.from('settings').insert({id:maxId+1,key,value});
-    if(retry.error){
-      // في حال كان التعارض على المفتاح نفسه بسبب طلب متزامن، حدّثه بدلاً من الإضافة.
-      let again=await db.from('settings').select('*').eq('key',key).limit(1);
-      if(again.data&&again.data[0]){
-        let u2=await db.from('settings').update({value}).eq('id',again.data[0].id);
-        if(u2.error)throw u2.error;
-        return;
-      }
-      throw retry.error;
-    }
-    return;
-  }
-  throw ins.error;
-}
+async function putSetting(key,value){let old=SETTINGS.find(x=>x.key===key);let r=old?await db.from('settings').update({value}).eq('id',old.id):await db.from('settings').insert({key,value});if(r.error)throw r.error}
 async function removeSetting(key){let old=SETTINGS.find(x=>x.key===key);if(old){let r=await db.from('settings').delete().eq('id',old.id);if(r.error)throw r.error}}
 
 async function uploadFiles(files,folder){
@@ -156,6 +120,10 @@ async function uploadFiles(files,folder){
   const pub=db.storage.from(BUCKET).getPublicUrl(path); urls.push(pub.data.publicUrl);
  }
  return urls;
+}
+
+function renderAdScreen(el,key){
+ return adEditor(el,key);
 }
 
 function adEditor(el,key,title){
@@ -174,22 +142,7 @@ function adEditor(el,key,title){
  <div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveAd('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
 }
 async function saveAd(key,card){
- const btn=card.querySelector('.toolbar .btn');
- try{
-  if(btn){btn.disabled=true;btn.textContent='جاري الرفع والحفظ…'}
-  stat('جاري رفع الصور/الفيديو وحفظ الإعلان…');
-  let old=getSetting(key,{}),files=card.querySelector('.files').files;
-  let added=files.length?await uploadFiles(files,key):[];
-  let value={...old,enabled:card.querySelector('.enabled').value==='true',interval:+card.querySelector('.interval').value||3500,heightDesktop:+card.querySelector('.hd').value||650,heightTablet:+card.querySelector('.ht').value||520,heightMobile:+card.querySelector('.hm').value||360,fit:card.querySelector('.fit').value,link:card.querySelector('.link').value.trim(),media:[...(Array.isArray(old.media)?old.media:[]),...added]};
-  await putSetting(key,value);
-  await loadAll();
-  stat('تم رفع الوسائط وحفظ الإعلان بنجاح ✓');
- }catch(e){
-  console.error(e);stat('تعذر الحفظ: '+(e.message||e),true);
- }finally{
-  if(btn){btn.disabled=false;btn.textContent='حفظ'}
- }
-}
+ try{let old=getSetting(key,{}),files=card.querySelector('.files').files,added=files.length?await uploadFiles(files,key):[];let value={...old,enabled:card.querySelector('.enabled').value==='true',interval:+card.querySelector('.interval').value||3500,heightDesktop:+card.querySelector('.hd').value||650,heightTablet:+card.querySelector('.ht').value||520,heightMobile:+card.querySelector('.hm').value||360,fit:card.querySelector('.fit').value,link:card.querySelector('.link').value.trim(),media:[...(Array.isArray(old.media)?old.media:[]),...added]};await putSetting(key,value);await loadAll();stat('تم الحفظ والرفع مباشرة بنجاح')}catch(e){stat(e.message,true)}}
 async function removeAdMedia(key,i){let s=getSetting(key,{}),m=Array.isArray(s.media)?[...s.media]:[];m.splice(i,1);s.media=m;await putSetting(key,s);await loadAll()}
 async function toggleSection(key){let s=getSetting(key,{});s.enabled=s.enabled===false;await putSetting(key,s);await loadAll()}
 async function deleteSection(key){if(!confirm('حذف هذا القسم وإعداداته؟'))return;await removeSetting(key);await loadAll()}
@@ -237,7 +190,7 @@ async function loadAll(){
     else { stat('لوحة الأقسام تعمل، لكن تعذر تحميل مكتبة Supabase. أعد تحميل الصفحة.',true); return; }
   }
   stat('جاري تحميل بيانات المتجر…');let [s,p]=await Promise.all([db.from('settings').select('*').order('updated_at',{ascending:false}),db.from('products').select('*').order('sort_order',{ascending:true})]);if(s.error)throw s.error;if(p.error)throw p.error;SETTINGS=s.data||[];PRODUCTS=p.data||[];
- adEditor(heroEditor,'hero_ads','الإعلان العلوي');adEditor(lowerEditor,'bottom_ads','الإعلان السفلي');
+ renderAdScreen(heroEditor,'hero_ads');renderAdScreen(lowerEditor,'bottom_ads');
  ['topbar','header','nav','gift','footer','policies'].forEach(k=>simpleEditor(document.getElementById(k+'Editor'),k));
  listEditor(benefitsEditor,'benefits',[{title:'منتجات أصلية',text:'اختيارات موثوقة بعناية'},{title:'شحن سريع',text:'توصيل آمن'},{title:'تغليف فاخر',text:'هدية تليق بمن تحب'},{title:'خدمة تهتم',text:'نحن هنا لمساعدتك'}]);
  listEditor(brandsEditor,'brands',[{title:'أطياف',text:'ATYAAF'}]);renderProducts();renderAllSettings();

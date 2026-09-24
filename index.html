@@ -28,7 +28,50 @@
     .benefits{margin-top:0 !important;padding-top:22px;position:relative;z-index:6}
     @media(max-width:850px){.hero-ad{height:560px;min-height:560px}.benefits{margin-top:0 !important;padding-top:18px}}
     @media(max-width:480px){.hero-ad{height:500px;min-height:500px}.benefits{margin-top:0 !important;padding-top:14px}}
-  </style>
+  
+/* ATYAAF FULL WIDTH LOWER ADS CSS START */
+#atyafLowerAds{
+  width:100%;
+  height:clamp(280px,38vw,560px);
+  position:relative;
+  overflow:hidden;
+  background:#17352e;
+  margin:0;
+  padding:0;
+}
+#atyafLowerAds[hidden]{display:none!important}
+#atyafLowerAds .atyaf-lower-slide{
+  position:absolute;inset:0;opacity:0;transition:opacity .65s ease;
+}
+#atyafLowerAds .atyaf-lower-slide.active{opacity:1;z-index:1}
+#atyafLowerAds img,#atyafLowerAds video{
+  width:100%;height:100%;display:block;object-fit:cover;object-position:center;
+}
+#atyafLowerAds .atyaf-lower-dots{
+  position:absolute;z-index:4;left:50%;bottom:16px;transform:translateX(-50%);
+  display:flex;gap:7px;padding:7px 10px;border-radius:999px;background:#0003;
+}
+#atyafLowerAds .atyaf-lower-dot{
+  width:9px;height:9px;padding:0;border:1px solid #fff;background:#fff6;border-radius:50%;
+}
+#atyafLowerAds .atyaf-lower-dot.active{background:#fff}
+#atyafLowerAds .atyaf-lower-arrow{
+  position:absolute;z-index:4;top:50%;transform:translateY(-50%);
+  width:42px;height:42px;border-radius:50%;background:#fffbe8;color:#17352e;
+  box-shadow:0 5px 18px #0002;font-size:23px;
+}
+#atyafLowerAds .atyaf-lower-prev{right:18px}
+#atyafLowerAds .atyaf-lower-next{left:18px}
+@media(max-width:850px){
+  #atyafLowerAds{height:clamp(250px,48vw,430px)}
+  #atyafLowerAds .atyaf-lower-arrow{width:36px;height:36px}
+}
+@media(max-width:480px){
+  #atyafLowerAds{height:clamp(220px,65vw,340px)}
+}
+/* ATYAAF FULL WIDTH LOWER ADS CSS END */
+
+</style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -48,6 +91,11 @@
     <section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands"><button class="brand-card" onclick="filterBrand('أطياف')"><strong>أطياف</strong><span>ATYAAF</span></button><button class="brand-card" onclick="filterBrand('دار العود')"><strong>دار العود</strong><span>HOUSE OF OUD</span></button><button class="brand-card" onclick="filterBrand('نُبل')"><strong>نُبل</strong><span>NOBLE</span></button><button class="brand-card" onclick="filterBrand('سُلاف')"><strong>سُلاف</strong><span>SULAF</span></button><button class="brand-card" onclick="filterBrand('كل الماركات')"><strong>الكل</strong><span>VIEW ALL</span></button></div></section>
     <section class="section container" id="products" style="padding-top:20px"><div class="section-head"><div><h2>مختارات أطياف</h2><p id="resultText">منتجاتنا الأكثر حبًا</p></div><select id="sortSelect" onchange="renderProducts()" style="border:1px solid var(--line);background:#fffdfa;padding:10px 14px;border-radius:999px;color:var(--green)"><option value="featured">ترتيب: مميز</option><option value="price-low">السعر: الأقل</option><option value="price-high">السعر: الأعلى</option><option value="new">الأحدث</option></select></div><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all',this)">الكل</button><button class="chip" data-filter="oud" onclick="setFilter('oud',this)">عود</button><button class="chip" data-filter="musk" onclick="setFilter('musk',this)">مسك</button><button class="chip" data-filter="floral" onclick="setFilter('floral',this)">زهور</button><button class="chip" data-filter="sale" onclick="setFilter('sale',this)">عروض</button><button class="chip" data-filter="new" onclick="setFilter('new',this)">وصل حديثًا</button></div><div class="products" id="productGrid"></div></section>
     <section class="section container" id="scents"><div class="gift"><div><span class="eyebrow" style="color:#e8bb80">هدية تحمل شعورًا</span><h2>لأن أجمل الهدايا<br>تُحسّ قبل أن تُفتح</h2><p>اختر عطرك، أضف تغليفنا الفاخر، ودعنا نجهزها بعناية لتصل كما تتمنى.</p><button class="btn" onclick="openGift()">جهّز هديتك</button></div><div style="font-size:90px;color:#f2d19d80">✦</div></div></section>
+
+<!-- ATYAAF FULL WIDTH LOWER ADS START -->
+<section id="atyafLowerAds" aria-label="إعلانات أطياف" hidden></section>
+<!-- ATYAAF FULL WIDTH LOWER ADS END -->
+
   </main>
   <section class="admin" id="admin"><div class="container"><div class="section-head"><div><span class="eyebrow">مساحة الإدارة</span><h2>لوحة أطياف</h2><p>تحكم سريع بالمحتوى والإعدادات — نسخة تفاعلية تجريبية</p></div><button class="btn btn-outline" onclick="closeAdmin()">العودة للمتجر</button></div><div class="admin-grid"><aside class="admin-nav"><button class="active">نظرة عامة</button><button>المنتجات</button><button>الطلبات</button><button>التصميم</button></aside><div><div class="stat-grid"><div class="stat"><span>طلبات اليوم</span><b>٢٤</b><small>+١٨٪ عن أمس</small></div><div class="stat"><span>إجمالي المنتجات</span><b id="adminProducts">6</b><small>منشورة ونشطة</small></div><div class="stat"><span>المبيعات</span><b>١٢٫٨K</b><small>ر.س هذا الشهر</small></div></div><div class="admin-card" style="margin-top:18px"><h3>إعدادات سريعة</h3><div class="settings-row"><span>شريط الإعلانات العلوي</span><button class="switch on" id="switchTop" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>عرض قسم الهدايا</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>الوضع التجريبي للطلبات</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="notice">ملاحظة: هذه نسخة HTML مستقلة. ربط Supabase والدفع الحقيقي يحتاج طبقة خادم ومفاتيح بيئة آمنة.</div></div></div></div></section>
   <footer id="contact"><div class="container"><div class="footer-grid"><div><div class="footer-brand">أطياف ستور</div><p style="color:#9db3a6;font-size:13px">عطور مختارة بعناية، لتصنع لحظات تبقى.</p></div><div><h3>المتجر</h3><a href="#products">كل المنتجات</a><a href="#brands">الماركات</a><a href="#scents">الهدايا</a></div><div><h3>خدمة العملاء</h3><a href="#">تواصل معنا</a><a href="#">الشحن والتوصيل</a><a href="#">الاستبدال والاسترجاع</a></div><div><h3>تابعنا</h3><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">WhatsApp</a></div></div><div class="copyright"><span>© 2026 ATYAAF STORE. جميع الحقوق محفوظة.</span><span>صُنع بذوق ✦</span></div></div></footer>
@@ -161,5 +209,114 @@
     function openAdmin(){document.getElementById('store').style.display='none';document.querySelector('footer').style.display='none';document.getElementById('admin').classList.add('show');window.scrollTo(0,0)}function closeAdmin(){document.getElementById('admin').classList.remove('show');document.getElementById('store').style.display='block';document.querySelector('footer').style.display='block'}function toggleSetting(el){el.classList.toggle('on');if(el.id==='switchTop')document.getElementById('topbar').style.display=el.classList.contains('on')?'flex':'none'}
     renderProducts();updateCounts();loadAtyafConnections();loadHeroAds();
   </script>
+<script>
+
+/* ATYAAF FULL WIDTH LOWER ADS JS START */
+let atyafLowerAdTimer=null, atyafLowerAdIndex=0;
+
+function atyafLowerMediaUrl(item){
+  if(!item)return "";
+  if(typeof item==="string")return item.trim();
+  return String(item.url||item.src||item.publicUrl||item.public_url||
+                item.image||item.image_url||item.video||item.video_url||"").trim();
+}
+function atyafNormalizeLowerAd(raw){
+  let s=raw;
+  if(typeof s==="string"){try{s=JSON.parse(s)}catch(e){s={}}}
+  if(!s||typeof s!=="object")s={};
+  if(s.bottom_ads&&typeof s.bottom_ads==="object")s=s.bottom_ads;
+  if(s.bottomAds&&typeof s.bottomAds==="object")s=s.bottomAds;
+  if(s.lower_ad&&typeof s.lower_ad==="object")s=s.lower_ad;
+  if(s.lowerAd&&typeof s.lowerAd==="object")s=s.lowerAd;
+
+  let media=s.media??s.medias??s.slides??s.images??s.files??s.items??s.urls??[];
+  if(typeof media==="string"){
+    try{const p=JSON.parse(media);media=Array.isArray(p)?p:[media]}
+    catch(e){media=media.split(/\r?\n|,/).map(x=>x.trim()).filter(Boolean)}
+  }
+  if(!Array.isArray(media))media=[media];
+  media=media.map(atyafLowerMediaUrl).filter(Boolean);
+
+  return {
+    enabled:s.enabled!==false,
+    media,
+    interval:Math.max(1500,Number(s.interval||4000)),
+    fit:s.fit||"cover",
+    position:s.position||"center",
+    link:String(s.link||"").trim(),
+    heightDesktop:Number(s.heightDesktop||0),
+    heightTablet:Number(s.heightTablet||0),
+    heightMobile:Number(s.heightMobile||0)
+  };
+}
+function atyafLowerGo(n){
+  const box=document.getElementById("atyafLowerAds");
+  if(!box)return;
+  const slides=[...box.querySelectorAll(".atyaf-lower-slide")];
+  const dots=[...box.querySelectorAll(".atyaf-lower-dot")];
+  if(!slides.length)return;
+  atyafLowerAdIndex=(Number(n)+slides.length)%slides.length;
+  slides.forEach((x,i)=>x.classList.toggle("active",i===atyafLowerAdIndex));
+  dots.forEach((x,i)=>x.classList.toggle("active",i===atyafLowerAdIndex));
+}
+function atyafRenderLowerAds(raw){
+  const box=document.getElementById("atyafLowerAds");
+  if(!box)return;
+  const s=atyafNormalizeLowerAd(raw);
+  clearInterval(atyafLowerAdTimer);atyafLowerAdTimer=null;
+  if(!s.enabled||!s.media.length){box.hidden=true;box.innerHTML="";return}
+
+  box.hidden=false;
+  if(s.heightDesktop)box.style.height=s.heightDesktop+"px";
+  box.innerHTML=s.media.map((url,i)=>{
+    const video=/\.(mp4|webm|ogg)(?:\?|#|$)/i.test(url);
+    const media=video
+      ? `<video src="${url}" muted playsinline autoplay loop preload="metadata" style="object-fit:${s.fit};object-position:${s.position}"></video>`
+      : `<img src="${url}" alt="إعلان أطياف" loading="${i===0?'eager':'lazy'}" style="object-fit:${s.fit};object-position:${s.position}">`;
+    return `<div class="atyaf-lower-slide ${i===0?'active':''}" data-index="${i}">${media}</div>`;
+  }).join("")+
+  (s.media.length>1?`
+    <button class="atyaf-lower-arrow atyaf-lower-prev" type="button" aria-label="السابق" onclick="event.stopPropagation();atyafLowerGo(atyafLowerAdIndex-1)">›</button>
+    <button class="atyaf-lower-arrow atyaf-lower-next" type="button" aria-label="التالي" onclick="event.stopPropagation();atyafLowerGo(atyafLowerAdIndex+1)">‹</button>
+    <div class="atyaf-lower-dots">${s.media.map((_,i)=>`<button class="atyaf-lower-dot ${i===0?'active':''}" type="button" onclick="event.stopPropagation();atyafLowerGo(${i})"></button>`).join("")}</div>`:"");
+
+  if(s.link){
+    box.style.cursor="pointer";
+    box.onclick=e=>{
+      if(e.target.closest("button"))return;
+      if(/^https?:/i.test(s.link))window.open(s.link,"_blank","noopener");
+      else location.href=s.link;
+    };
+  }else{box.onclick=null;box.style.cursor=""}
+
+  atyafLowerAdIndex=0;
+  if(s.media.length>1)atyafLowerAdTimer=setInterval(()=>atyafLowerGo(atyafLowerAdIndex+1),s.interval);
+}
+async function atyafLoadLowerAds(){
+  const box=document.getElementById("atyafLowerAds");
+  try{
+    if(!atyafDb)throw new Error("Supabase client is not available");
+    const keys=["bottom_ads","bottom_ad","lower_ads","lower_ad","after_products_ad","after_products_ads"];
+    const {data,error}=await atyafDb.from("settings")
+      .select("id,key,value,updated_at").in("key",keys)
+      .order("updated_at",{ascending:false,nullsFirst:false})
+      .order("id",{ascending:false}).limit(30);
+    if(error)throw error;
+    const rows=Array.isArray(data)?data:[];
+    let chosen=null;
+    for(const key of keys){const r=rows.find(x=>x.key===key&&x.value!=null);if(r){chosen=r;break}}
+    if(!chosen&&rows.length)chosen=rows[0];
+    if(!chosen){atyafRenderLowerAds({enabled:false});return}
+    atyafRenderLowerAds(chosen.value);
+  }catch(e){
+    console.warn("ATYAF lower ads:",e);
+    if(box){box.hidden=true;box.innerHTML=""}
+  }
+}
+document.addEventListener("DOMContentLoaded",atyafLoadLowerAds);
+window.addEventListener("focus",atyafLoadLowerAds);
+/* ATYAAF FULL WIDTH LOWER ADS JS END */
+
+</script>
 </body>
 </html>

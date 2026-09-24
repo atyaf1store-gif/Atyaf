@@ -312,15 +312,53 @@
 }
 </style>
 
+
+<style id="atyaf-header-layout-final">
+.atyaf-head-balanced{
+  display:grid!important;
+  grid-template-columns:minmax(250px,1fr) auto minmax(250px,1fr)!important;
+  grid-template-areas:"actions profile search"!important;
+  align-items:center!important;gap:24px!important;
+}
+.atyaf-head-actions{grid-area:actions!important;justify-self:start!important;direction:rtl!important}
+.atyaf-profile{grid-area:profile!important;justify-self:center!important}
+.atyaf-head-search{grid-area:search!important;justify-self:end!important;width:min(100%,420px)!important}
+.atyaf-head-balanced>.menu-btn{display:none!important}
+.order-track-btn{font-size:22px!important}
+@media(max-width:850px){
+  .atyaf-head-balanced{
+    height:auto!important;min-height:82px!important;padding:10px 0!important;
+    grid-template-columns:1fr auto 1fr!important;
+    grid-template-areas:"actions profile menu" "search search search"!important;
+    gap:9px 12px!important;
+  }
+  .atyaf-head-balanced>.menu-btn{grid-area:menu!important;display:grid!important;justify-self:end!important}
+  .atyaf-head-search{width:100%!important;justify-self:stretch!important}
+  .atyaf-head-actions{justify-self:start!important}
+}
+@media(max-width:520px){
+  .atyaf-profile strong{font-size:13px!important}
+  .atyaf-profile small{display:none!important}
+  .atyaf-head-actions{gap:4px!important}
+  .atyaf-head-actions .icon-btn{width:38px!important;height:38px!important;min-width:38px!important}
+}
+</style>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
   <header class="header">
-    <div class="container headrow">
+    <div class="container headrow atyaf-head-balanced">
+      <div class="actions atyaf-head-actions">
+        <button class="icon-btn" onclick="openCart()" title="السلة" aria-label="السلة">🛍<span class="count" id="cartCount">0</span></button>
+        <button class="icon-btn" onclick="showFavorites()" title="المفضلة" aria-label="المفضلة">♡<span class="count" id="favCount">0</span></button>
+        <button class="icon-btn order-track-btn" onclick="openOrderTracking()" title="تتبع الطلب" aria-label="تتبع الطلب">⌖</button>
+      </div>
+      <a class="brand atyaf-profile" href="#home" onclick="goHome()" title="الرئيسية">
+        <span class="brand-mark">أ</span><span><strong>ATYAAF</strong><small>STORE</small></span>
+      </a>
+      <div class="search atyaf-head-search"><span>⌕</span><input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." /></div>
       <button class="menu-btn" onclick="toggleNav()" aria-label="القائمة">☰</button>
-      <a class="brand" href="#home" onclick="goHome()"><span class="brand-mark">أ</span><span><strong>ATYAAF</strong><small>STORE</small></span></a>
-      <div class="search"><span>⌕</span><input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." /></div>
-      <div class="actions"><button class="icon-btn hide-mobile" onclick="openAdmin()" title="لوحة الإدارة">⚙<span class="count" id="adminDot" style="display:none">•</span></button><button class="icon-btn" onclick="showFavorites()" title="المفضلة">♡<span class="count" id="favCount">0</span></button><button class="icon-btn" onclick="openCart()" title="السلة">🛍<span class="count" id="cartCount">0</span></button></div>
     </div>
     <nav class="nav" id="nav"><div class="container navrow"><a href="#home">الرئيسية</a><a href="#brands">الماركات</a><a href="#products">الأكثر مبيعًا</a><a href="#products">وصل حديثًا</a><a href="#products">العروض</a><a href="#scents">الروائح</a><a href="#contact">تواصل معنا</a></div></nav>
   </header>
@@ -342,6 +380,18 @@
   <div class="modal" id="checkoutModal" onclick="if(event.target===this)closeCheckout()"><div class="modal-card"><button class="close" onclick="closeCheckout()">×</button><h2>إتمام الطلب</h2><div class="notice">الدفع عند الاستلام متاح في النسخة التجريبية.</div><form onsubmit="submitOrder(event)"><div class="form-grid"><div class="field"><label>الاسم الكامل</label><input required placeholder="اكتب اسمك" /></div><div class="field"><label>رقم الهاتف</label><input required type="tel" placeholder="05xxxxxxxx" /></div><div class="field"><label>المدينة</label><input required placeholder="الرياض" /></div><div class="field"><label>المنطقة</label><input placeholder="الحي" /></div><div class="field full"><label>العنوان بالتفصيل</label><textarea required rows="2" placeholder="الشارع، المبنى، رقم الشقة"></textarea></div><div class="field full"><label>ملاحظات الطلب</label><textarea rows="2" placeholder="أي تفاصيل إضافية..."></textarea></div></div><button class="btn btn-primary" style="width:100%" type="submit">تأكيد الطلب — <span id="checkoutTotal">0 ر.س</span></button></form></div></div>
   <div class="modal" id="giftModal" onclick="if(event.target===this)closeGift()"><div class="modal-card"><button class="close" onclick="closeGift()">×</button><h2>جهّز هديتك</h2><p style="color:var(--muted)">أضف تغليفًا فاخرًا إلى سلتك، وسنجهزها بعناية.</p><div class="gift-options"><label class="brand-card" style="display:block;text-align:right;cursor:pointer"><input type="radio" name="wrap" value="25" checked /> تغليف أطياف الكريمي <b style="float:left">25 ر.س</b></label><label class="brand-card" style="display:block;text-align:right;cursor:pointer;margin-top:10px"><input type="radio" name="wrap" value="45" /> صندوق المناسبات الفاخر <b style="float:left">45 ر.س</b></label></div><button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="addGift()">إضافة للسلة</button></div></div>
   
+
+
+<div class="modal" id="trackingModal" onclick="if(event.target===this)closeOrderTracking()">
+  <div class="modal-card" style="width:min(520px,96vw)">
+    <button class="close" onclick="closeOrderTracking()">×</button>
+    <h2>تتبع الطلب</h2>
+    <p style="color:var(--muted)">أدخل رقم طلبك لمعرفة حالته.</p>
+    <div class="field"><label>رقم الطلب</label><input id="trackingNumber" placeholder="مثال: ATY-12345"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="trackOrder()">تتبع الآن</button>
+    <div id="trackingResult" class="notice" style="display:none;margin-top:14px"></div>
+  </div>
+</div>
 
 <div class="modal" id="favoritesModal" onclick="if(event.target===this)closeFavorites()">
   <div class="modal-card">
@@ -545,6 +595,34 @@ function closeProductDetails(){document.getElementById('productModal')?.classLis
   save();closeGift();showMessage('تم تجهيزها كهدية','تم ربط التغليف بالمنتج المختار وإضافته إلى السلة.');
 }
     
+
+function openOrderTracking(){
+  document.getElementById('trackingResult').style.display='none';
+  document.getElementById('trackingModal').classList.add('open');
+}
+function closeOrderTracking(){document.getElementById('trackingModal')?.classList.remove('open')}
+async function trackOrder(){
+  const input=document.getElementById('trackingNumber');
+  const box=document.getElementById('trackingResult');
+  const raw=(input.value||'').trim();
+  if(!raw){box.style.display='block';box.textContent='أدخل رقم الطلب أولًا.';return}
+  const id=raw.replace(/^ATY-/i,'').trim();
+  box.style.display='block';box.textContent='جاري البحث عن الطلب...';
+  try{
+    if(!atyafDb)throw new Error('no db');
+    let q=atyafDb.from('orders').select('id,status,created_at').limit(1);
+    q=/^\\d+$/.test(id)?q.eq('id',Number(id)):q.eq('order_number',raw);
+    const {data,error}=await q;
+    if(error)throw error;
+    if(!data?.length){box.textContent='لم يتم العثور على طلب بهذا الرقم.';return}
+    const o=data[0], names={new:'جديد',pending:'قيد المراجعة',processing:'قيد التجهيز',shipped:'تم الشحن',delivered:'تم التسليم',cancelled:'ملغي'};
+    box.innerHTML=`<b>الطلب ATY-${escapeHtml(o.id)}</b><br>الحالة: ${escapeHtml(names[o.status]||o.status||'قيد المراجعة')}`;
+  }catch(e){
+    console.warn('Order tracking:',e);
+    box.textContent='تعذر جلب حالة الطلب حاليًا.';
+  }
+}
+
 function openInfoModal(title,html){
   document.getElementById('infoModalTitle').textContent=title;
   document.getElementById('infoModalBody').innerHTML=html;

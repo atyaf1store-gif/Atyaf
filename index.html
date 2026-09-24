@@ -117,6 +117,42 @@
 @media(max-width:480px){.hero-ad{height:clamp(220px,65vw,340px) !important}.header{top:0 !important}}
 </style>
 
+
+<style id="atyaf-ui-balance-gift-buy">
+/* موازنة أيقونات الهيدر */
+.actions{align-items:center!important;gap:10px!important}
+.icon-btn,.menu-btn{
+  width:44px!important;height:44px!important;min-width:44px!important;
+  display:inline-grid!important;place-items:center!important;
+  padding:0!important;border:1px solid var(--line)!important;
+  border-radius:50%!important;background:#fffdfa!important;
+  color:var(--green)!important;font-size:20px!important;line-height:1!important;
+}
+.icon-btn:hover,.menu-btn:hover{background:var(--cream)!important;transform:translateY(-1px)}
+.count{top:-3px!important;right:-3px!important;min-width:18px!important;height:18px!important;font-size:10px!important}
+
+/* أزرار بطاقة المنتج: شراء + عرض + هدية بشكل متوازن */
+.product-actions{
+  display:grid!important;
+  grid-template-columns:1.15fr .85fr 44px!important;
+  gap:8px!important;align-items:center!important;
+}
+.product-actions .btn{width:100%!important;margin:0!important;min-height:42px!important}
+.gift-buy-btn{
+  width:44px;height:42px;padding:0;border-radius:999px;
+  border:1px solid var(--copper);background:#fffdfa;color:var(--copper);
+  display:grid;place-items:center;font-size:19px;line-height:1;
+  transition:.2s;
+}
+.gift-buy-btn:hover{background:var(--copper);color:#fff;transform:translateY(-1px)}
+@media(max-width:480px){
+  .icon-btn,.menu-btn{width:40px!important;height:40px!important;min-width:40px!important;font-size:18px!important}
+  .product-actions{grid-template-columns:1fr 1fr 40px!important}
+  .gift-buy-btn{width:40px;height:40px}
+  .product-actions .btn{min-height:40px!important;font-size:11px!important;padding:8px 5px!important}
+}
+</style>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
@@ -238,7 +274,7 @@
     function save(){localStorage.setItem('atyaaf-cart',JSON.stringify(state.cart));localStorage.setItem('atyaaf-favs',JSON.stringify(state.favs));updateCounts()}
     function updateCounts(){document.getElementById('cartCount').textContent=state.cart.reduce((a,x)=>a+x.qty,0);document.getElementById('favCount').textContent=state.favs.length}
     function renderProducts(){let q=(document.getElementById('searchInput').value||'').trim().toLowerCase(), list=products.filter(p=>(state.filter==='all'||p.tags.includes(state.filter))&&(state.brand==='كل الماركات'||p.brand===state.brand)&&(!q||[p.name,p.brand,p.desc].join(' ').toLowerCase().includes(q)));let sort=document.getElementById('sortSelect').value;if(sort==='price-low')list.sort((a,b)=>a.price-b.price);if(sort==='price-high')list.sort((a,b)=>b.price-a.price);if(sort==='new')list.sort((a,b)=>b.id-a.id);document.getElementById('resultText').textContent=q?`نتائج البحث عن «${q}»`:state.brand==='كل الماركات'?'منتجاتنا الأكثر حبًا':`منتجات ${state.brand}`;document.getElementById('productGrid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">لم نعثر على ما تبحث عنه. جرّب كلمة أخرى أو تصفح كل المنتجات.</div>';updateCounts()}
-    function card(p){let liked=state.favs.includes(p.id);let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav(${p.id})">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="product-actions"><button class="btn btn-primary" onclick="addCart(${p.id})">أضف للسلة</button><button class="btn btn-outline" onclick="quickView(${p.id})">عرض</button></div></div></article>`}
+    function card(p){let liked=state.favs.includes(p.id);let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav(${p.id})">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="product-actions"><button class="btn btn-primary" onclick="addCart(${p.id})">أضف للسلة</button><button class="btn btn-outline" onclick="quickView(${p.id})">عرض</button><button class="gift-buy-btn" onclick="buyAsGift(${p.id})" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
     function setFilter(f,el){state.filter=f;document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderProducts()}
     function filterBrand(b){state.brand=b;document.getElementById('products').scrollIntoView({behavior:'smooth'});renderProducts()}
     function toggleFav(id){let i=state.favs.indexOf(id);i>-1?state.favs.splice(i,1):state.favs.push(id);save();renderProducts()}
@@ -251,6 +287,12 @@
     function submitOrder(e){e.preventDefault();let no='ATY-'+Math.floor(10000+Math.random()*89999);state.cart=[];save();closeCheckout();showMessage('تم استلام طلبك','رقم الطلب '+no+' — شكرًا لاختيارك أطياف ستور.');}
     function quickView(id){let p=products.find(x=>x.id===id);showMessage(p.name,p.desc+' السعر '+money(p.price)+'.');}
     function showMessage(title,body){document.getElementById('messageTitle').textContent=title;document.getElementById('messageBody').textContent=body;document.getElementById('messageModal').classList.add('open')};function closeMessage(){document.getElementById('messageModal').classList.remove('open')}
+    function buyAsGift(id){
+  let item=state.cart.find(x=>x.id===id);
+  item?item.qty++:state.cart.push({id,qty:1});
+  save();
+  openGift();
+}
     function openGift(){document.getElementById('giftModal').classList.add('open')};function closeGift(){document.getElementById('giftModal').classList.remove('open')};function addGift(){let price=+document.querySelector('input[name=wrap]:checked').value;state.cart.push({id:0,qty:1,gift:true,price});closeGift();showMessage('تم اختيار التغليف','سيظهر خيار التغليف عند ربطه بمنتج في السلة.');}
     function toggleTopbar(){document.getElementById('topbar').style.display='none'}function toggleNav(){document.getElementById('nav').classList.toggle('open')};function goHome(){closeAdmin();window.scrollTo({top:0,behavior:'smooth'})}
     function openAdmin(){document.getElementById('store').style.display='none';document.querySelector('footer').style.display='none';document.getElementById('admin').classList.add('show');window.scrollTo(0,0)}function closeAdmin(){document.getElementById('admin').classList.remove('show');document.getElementById('store').style.display='block';document.querySelector('footer').style.display='block'}function toggleSetting(el){el.classList.toggle('on');if(el.id==='switchTop')document.getElementById('topbar').style.display=el.classList.contains('on')?'flex':'none'}

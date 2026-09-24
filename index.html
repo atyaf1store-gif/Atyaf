@@ -73,6 +73,50 @@
 
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style id="atyaf-upper-screen-clean-fix">
+/* تعديل هذا التصميم فقط — الشاشة العلوية بنفس منطق السفلية */
+.topbar{
+  position:relative !important; top:auto !important; left:auto !important; right:auto !important;
+  background:var(--green) !important; backdrop-filter:none !important;
+}
+.header{
+  position:sticky !important; top:0 !important; left:auto !important; right:auto !important;
+  background:#fffdfaee !important; backdrop-filter:blur(14px) !important;
+  border-bottom:1px solid var(--line) !important; box-shadow:none !important;
+}
+.header .brand,.header .icon-btn,.header .menu-btn,.header .nav a{color:var(--ink) !important}
+.header .brand{color:var(--green) !important}
+.header .brand small,.header .brand-mark,.header .search span{color:var(--copper) !important}
+.header .brand-mark{border-color:var(--copper) !important}
+.header .search{background:var(--cream) !important;border-color:transparent !important}
+.header .search input{color:var(--ink) !important}
+.header .search input::placeholder{color:var(--muted) !important}
+.header .nav{border-top-color:#eee7dc !important}
+
+.hero-ad{
+  width:100% !important;
+  height:clamp(280px,38vw,560px) !important;
+  min-height:0 !important;
+  position:relative !important;
+  overflow:hidden !important;
+  background:#17352e !important;
+  margin:0 !important;padding:0 !important;
+}
+.hero-ad-track,.hero-ad-slide{position:absolute !important;inset:0 !important;width:100% !important;height:100% !important}
+.hero-ad-slide img,.hero-ad-slide video{width:100% !important;height:100% !important;display:block !important;object-fit:cover}
+.hero-ad-shade{display:none !important}
+.hero-ad-dots{
+  position:absolute !important;z-index:5 !important;left:50% !important;bottom:16px !important;
+  transform:translateX(-50%) !important;display:flex !important;gap:7px !important;
+  padding:7px 10px !important;border-radius:999px !important;background:#0003 !important;
+}
+.hero-ad-dot{width:9px !important;height:9px !important;padding:0 !important;border:1px solid #fff !important;background:#fff6 !important;border-radius:50% !important}
+.hero-ad-dot.active{width:9px !important;background:#fff !important;border-radius:50% !important}
+@media(max-width:850px){.hero-ad{height:clamp(250px,48vw,430px) !important}.header{top:0 !important}}
+@media(max-width:480px){.hero-ad{height:clamp(220px,65vw,340px) !important}.header{top:0 !important}}
+</style>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
@@ -116,6 +160,7 @@
     const ATYAF_SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
     const ATYAF_SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
     const atyafDb=window.supabase?.createClient ? window.supabase.createClient(ATYAF_SUPABASE_URL,ATYAF_SUPABASE_KEY) : null;
+    window.atyafDb=atyafDb;
     let atyafGeneralSettings={};
 
     function atyafProductImage(row){
@@ -180,6 +225,7 @@
       track.innerHTML=a.media.map((url,i)=>{const v=/\\.(mp4|webm|ogg)(?:\\?|#|$)/i.test(url);const m=v?`<video src="${escapeHtml(url)}" muted playsinline autoplay loop preload="metadata" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}"></video>`:`<img src="${escapeHtml(url)}" alt="إعلان أطياف" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}" ${i?'loading="lazy"':''}>`;return `<div class="hero-ad-slide ${i===0?'active':''}">${m}${a.link?`<a class="hero-ad-link" href="${safeLink(a.link)}" aria-label="فتح الإعلان"></a>`:''}</div>`}).join('')+'<div class="hero-ad-shade"></div>';
       dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;if(a.media.length>1)heroAdTimer=setInterval(()=>heroAdTo(heroAdIndex+1),a.interval);
     }
+    window.atyafRenderHeroAds=renderHeroAd;
     async function loadHeroAds(){
       if(!atyafDb)return renderHeroAd({enabled:false});
       try{const keys=['ads','hero_ads','hero_ad','top_ads','top_ad'];const {data,error}=await atyafDb.from('settings').select('id,key,value,updated_at').in('key',keys).order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(30);if(error)throw error;const rows=Array.isArray(data)?data:[];let row=null;for(const key of keys){row=rows.find(r=>r.key===key&&r.value!=null);if(row)break}renderHeroAd(row?.value||{enabled:false})}catch(e){console.warn('ATYAAF hero ads:',e);renderHeroAd({enabled:false})}
@@ -292,6 +338,8 @@ function atyafRenderLowerAds(raw){
   atyafLowerAdIndex=0;
   if(s.media.length>1)atyafLowerAdTimer=setInterval(()=>atyafLowerGo(atyafLowerAdIndex+1),s.interval);
 }
+window.atyafRenderLowerAds=atyafRenderLowerAds;
+
 async function atyafLoadLowerAds(){
   const box=document.getElementById("atyafLowerAds");
   try{

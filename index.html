@@ -1179,149 +1179,9 @@ main#home{position:relative}
 }
 
 
-/* ===== ATYAF MOBILE — BALANCED HEADER TOOLS ONLY ===== */
-@media (max-width:600px){
 
-  /* لا نفصل الشاشة الإعلانية عن الهيدر */
-  .header{
-    position:absolute!important;
-    top:30px!important;
-    left:0!important;
-    right:0!important;
-    background:transparent!important;
-    z-index:40!important;
-  }
-  .header-main{
-    position:relative!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    width:100%!important;
-    height:58px!important;
-    min-height:58px!important;
-    padding:5px 10px!important;
-    background:transparent!important;
-    overflow:visible!important;
-  }
-  .nav{
-    position:relative!important;
-    width:100%!important;
-    height:38px!important;
-    min-height:38px!important;
-    padding:0 12px!important;
-    gap:18px!important;
-    background:transparent!important;
-    border:0!important;
-    overflow-x:auto!important;
-    overflow-y:hidden!important;
-    white-space:nowrap!important;
-    z-index:41!important;
-  }
-  .nav a{
-    flex:0 0 auto!important;
-    line-height:38px!important;
-    font-size:10px!important;
-  }
+/* legacy header-over-hero override removed */
 
-  /* الإعلان يبقى خلف الهيدر والقائمة بدون فصل */
-  .hero,#heroAds{
-    margin-top:0!important;
-    top:auto!important;
-    min-height:330px!important;
-    height:330px!important;
-    max-height:330px!important;
-  }
-
-  /* الشعار في المنتصف */
-  .header-main .logo{
-    position:absolute!important;
-    left:50%!important;
-    top:5px!important;
-    transform:translateX(-50%)!important;
-    width:min(155px,42vw)!important;
-    height:48px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    overflow:visible!important;
-    z-index:42!important;
-  }
-  .header-main .logo img,
-  .header-main .logo .atyaf-hero-logo{
-    width:auto!important;
-    height:auto!important;
-    max-width:100%!important;
-    max-height:46px!important;
-    object-fit:contain!important;
-  }
-
-  /* الحساب + المفضلة + السلة: مجموعة واحدة موزونة داخل الشاشة */
-  .header-tools{
-    position:absolute!important;
-    left:8px!important;
-    right:auto!important;
-    top:9px!important;
-    transform:none!important;
-    width:auto!important;
-    max-width:34vw!important;
-    height:40px!important;
-    display:flex!important;
-    flex-direction:row!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    gap:2px!important;
-    overflow:visible!important;
-    z-index:43!important;
-  }
-  .header-tools .tool{
-    flex:0 0 30px!important;
-    width:30px!important;
-    min-width:30px!important;
-    height:36px!important;
-    padding:3px!important;
-    margin:0!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    font-size:16px!important;
-    line-height:1!important;
-    overflow:visible!important;
-  }
-  .header-tools .tool span,
-  .header-tools .tool small{
-    display:none!important;
-  }
-  .header-tools .badge,
-  .header-tools [class*="count"]{
-    transform:scale(.82)!important;
-    transform-origin:center!important;
-  }
-
-  /* البحث في الجهة المقابلة */
-  .search{
-    position:absolute!important;
-    right:9px!important;
-    left:auto!important;
-    top:11px!important;
-    transform:none!important;
-    width:32px!important;
-    min-width:32px!important;
-    max-width:32px!important;
-    height:32px!important;
-    z-index:43!important;
-    overflow:hidden!important;
-  }
-  .search input{display:none!important}
-  .search button{
-    width:32px!important;
-    min-width:32px!important;
-    height:32px!important;
-    padding:0!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-  }
-}
 
 /* أجهزة الجوال الضيقة جداً */
 @media (max-width:390px){
@@ -1416,6 +1276,41 @@ main#home{position:relative}
    The hero becomes visible only when saved admin advertisement media is loaded. */
 #heroAds:empty{display:none!important}
 </style>
+
+<style id="atyaf-hero-isolation-fix">
+/* الشاشة العلوية مستقلة تماماً: لا هيدر ولا قائمة فوق الإعلان */
+.header{
+  position:relative !important;
+  top:auto !important;
+  left:auto !important;
+  right:auto !important;
+  background:var(--cream,#fffaf3) !important;
+  z-index:20 !important;
+}
+.header-main,.nav{
+  background:var(--cream,#fffaf3) !important;
+}
+.hero,#heroAds{
+  position:relative !important;
+  top:auto !important;
+  margin-top:0 !important;
+  z-index:1 !important;
+  overflow:hidden !important;
+}
+@media (max-width:600px){
+  .header{
+    position:relative !important;
+    top:auto !important;
+    background:var(--cream,#fffaf3) !important;
+  }
+  .hero,#heroAds{
+    position:relative !important;
+    top:auto !important;
+    margin-top:0 !important;
+  }
+}
+</style>
+
 </head>
 
 <body>

@@ -318,5 +318,112 @@ window.addEventListener("focus",atyafLoadLowerAds);
 /* ATYAAF FULL WIDTH LOWER ADS JS END */
 
 </script>
+<script>
+
+/* ATYAAF ADMIN <-> STORE FULL SETTINGS BRIDGE START */
+(function(){
+  const SB=window.atyafDb || (window.supabase && typeof ATYAF_SUPABASE_URL!=="undefined"
+    ? window.supabase.createClient(ATYAF_SUPABASE_URL,ATYAF_SUPABASE_KEY) : null);
+  if(!SB){ console.warn("ATYAF settings bridge: Supabase unavailable"); return; }
+
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const val=v=>{if(typeof v!=="string")return v;try{return JSON.parse(v)}catch(e){return v}};
+  const hide=(el,on)=>{if(el)el.style.display=on?"none":""};
+  const setText=(el,t)=>{if(el && t!==undefined && t!==null && t!=="")el.textContent=t};
+  const findText=(selectors,contains)=>{
+    for(const s of selectors){for(const e of $$(s)){if(!contains||e.textContent.includes(contains))return e}} return null;
+  };
+
+  function applyTopbar(s){
+    const el=findText([".announcement",".topbar",".top-bar",".promo-bar",".announcement-bar","header div"],"شحن مجاني");
+    if(!el)return; hide(el,s.enabled===false); setText(el,s.text);
+  }
+  function applyHeader(s){
+    const header=$("header")||$(".header");
+    hide(header,s.enabled===false);
+    const search=$('input[type="search"]')||$('input[placeholder*="ابحث"]');
+    if(search&&s.searchPlaceholder)search.placeholder=s.searchPlaceholder;
+    const logo=findText([".logo",".brand",".store-logo","header *"],"ATYAAF");
+    if(logo)setText(logo,s.logoText||s.storeName);
+  }
+  function applyNav(s){
+    const nav=$("#atyafManagedNav")||$("nav");
+    if(!nav)return; hide(nav,s.enabled===false);
+    const map=[["home","الرئيسية"],["brands","الماركات"],["best","الأكثر مبيع"],["new","وصل حديث"],["offers","العروض"],["scents","الروائح"],["contact","تواصل معنا"]];
+    map.forEach(([k,old])=>{if(!s[k])return;const a=[...nav.querySelectorAll("a,button")].find(x=>x.textContent.includes(old));if(a)a.textContent=s[k]});
+  }
+  function applyGift(s){
+    let sec=$("#scents")||$(".gift-section")||$(".gift")||findText(["section"],"جهز هديتك")?.closest("section");
+    if(!sec)return; hide(sec,s.enabled===false);
+    const heads=sec.querySelectorAll("h1,h2,h3");
+    if(heads[0])setText(heads[0],s.title);
+    const p=sec.querySelector("p");setText(p,s.text);
+    const small=sec.querySelector(".kicker,.eyebrow,small");setText(small,s.kicker);
+    const b=sec.querySelector("a,button"); if(b){setText(b,s.button);if(b.tagName==="A"&&s.link)b.href=s.link}
+  }
+  function applyFooter(s){
+    const f=$("#atyafManagedFooter")||$("footer");if(!f)return;hide(f,s.enabled===false);
+    const title=f.querySelector("h2,h3,h4,.logo,.brand");setText(title,s.storeName);
+    const p=f.querySelector("p");setText(p,s.description);
+    if(s.copyright){const c=[...f.querySelectorAll("*")].find(x=>/©|حقوق|2026/.test(x.textContent));setText(c,s.copyright)}
+    const links=[["instagram",/instagram/i],["tiktok",/tiktok/i],["whatsapp",/whatsapp/i]];
+    links.forEach(([k,rx])=>{if(!s[k])return;const a=[...f.querySelectorAll("a")].find(x=>rx.test(x.textContent)||rx.test(x.href));if(a)a.href=s[k]});
+  }
+  function applyBenefits(s){
+    let sec=findText(["section",".features",".benefits"],"منتجات أصلية")?.closest("section")||$(".features")||$(".benefits");
+    if(!sec)return;hide(sec,s.enabled===false);
+    const items=s.items||[];const cards=[...sec.querySelectorAll(".feature,.benefit,.card,article")];
+    items.forEach((it,i)=>{if(!cards[i])return;hide(cards[i],it.hidden===true);const h=cards[i].querySelector("h2,h3,h4,strong");const p=cards[i].querySelector("p,small");setText(h,it.title||it.name);setText(p,it.text)});
+  }
+  function applyBrands(s){
+    let sec=findText(["section"],"الماركات")?.closest("section")||$(".brands");
+    if(!sec)return;hide(sec,s.enabled===false);
+  }
+  function applyPolicies(s){
+    Object.entries(s||{}).forEach(([k,v])=>{
+      if(k==="enabled"||!v)return;
+      const el=document.querySelector(`[data-policy="${k}"]`);
+      if(el)el.textContent=v;
+    });
+  }
+  function applyAdAlias(key,s){
+    // Existing store renderers already know hero_ads/bottom_ads; expose aliases and rerender.
+    if(key==="hero_ads" && typeof window.atyafRenderHeroAds==="function")window.atyafRenderHeroAds(s);
+    if(key==="bottom_ads" && typeof window.atyafRenderLowerAds==="function")window.atyafRenderLowerAds(s);
+  }
+  async function sync(){
+    try{
+      const {data,error}=await SB.from("settings").select("key,value,updated_at");
+      if(error)throw error;
+      const map={};(data||[]).forEach(r=>map[r.key]=val(r.value));
+      if(map.topbar)applyTopbar(map.topbar);
+      if(map.header)applyHeader(map.header);
+      if(map.nav)applyNav(map.nav);
+      if(map.gift)applyGift(map.gift);
+      if(map.footer)applyFooter(map.footer);
+      if(map.benefits)applyBenefits(map.benefits);
+      if(map.brands)applyBrands(map.brands);
+      if(map.policies)applyPolicies(map.policies);
+      if(map.hero_ads)applyAdAlias("hero_ads",map.hero_ads);
+      if(map.bottom_ads)applyAdAlias("bottom_ads",map.bottom_ads);
+      window.ATYAF_ADMIN_SETTINGS=map;
+      document.dispatchEvent(new CustomEvent("atyaf:settings-applied",{detail:map}));
+    }catch(e){console.error("ATYAF settings sync:",e)}
+  }
+  window.atyafSyncAdminSettings=sync;
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(sync,250));
+  else setTimeout(sync,250);
+  window.addEventListener("focus",sync);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)sync()});
+  // Realtime: admin changes appear without manual refresh when Realtime is enabled for settings.
+  try{
+    SB.channel("atyaf-store-settings-live")
+      .on("postgres_changes",{event:"*",schema:"public",table:"settings"},()=>sync())
+      .subscribe();
+  }catch(e){}
+})();
+/* ATYAAF ADMIN <-> STORE FULL SETTINGS BRIDGE END */
+
+</script>
 </body>
 </html>

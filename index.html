@@ -230,6 +230,7 @@
       if(!atyafDb)return renderHeroAd({enabled:false});
       try{const keys=['ads','hero_ads','hero_ad','top_ads','top_ad'];const {data,error}=await atyafDb.from('settings').select('id,key,value,updated_at').in('key',keys).order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(30);if(error)throw error;const rows=Array.isArray(data)?data:[];let row=null;for(const key of keys){row=rows.find(r=>r.key===key&&r.value!=null);if(row)break}renderHeroAd(row?.value||{enabled:false})}catch(e){console.warn('ATYAAF hero ads:',e);renderHeroAd({enabled:false})}
     }
+    window.atyafLoadHeroAds=loadHeroAds;
     window.addEventListener('focus',loadHeroAds);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadHeroAds()});
 
     let state={filter:'all',brand:'كل الماركات',cart:JSON.parse(localStorage.getItem('atyaaf-cart')||'[]'),favs:JSON.parse(localStorage.getItem('atyaaf-favs')||'[]')};
@@ -435,15 +436,25 @@ window.addEventListener("focus",atyafLoadLowerAds);
     });
   }
   function applyAdAlias(key,s){
-    // Existing store renderers already know hero_ads/bottom_ads; expose aliases and rerender.
-    if(key==="hero_ads" && typeof window.atyafRenderHeroAds==="function")window.atyafRenderHeroAds(s);
-    if(key==="bottom_ads" && typeof window.atyafRenderLowerAds==="function")window.atyafRenderLowerAds(s);
+    // الشاشة العلوية في لوحة الإدارة محفوظة فعليًا تحت key = ads.
+    if(["ads","hero_ads","hero_ad","top_ads","top_ad"].includes(key)
+       && typeof window.atyafRenderHeroAds==="function"){
+      window.atyafRenderHeroAds(s);
+    }
+    if(["bottom_ads","bottom_ad","lower_ads","lower_ad","after_products_ad","after_products_ads"].includes(key)
+       && typeof window.atyafRenderLowerAds==="function"){
+      window.atyafRenderLowerAds(s);
+    }
   }
   async function sync(){
     try{
-      const {data,error}=await SB.from("settings").select("key,value,updated_at");
+      const {data,error}=await SB.from("settings")
+        .select("id,key,value,updated_at")
+        .order("updated_at",{ascending:false,nullsFirst:false})
+        .order("id",{ascending:false});
       if(error)throw error;
-      const map={};(data||[]).forEach(r=>map[r.key]=val(r.value));
+      const map={};
+      (data||[]).forEach(r=>{ if(!(r.key in map)) map[r.key]=val(r.value); });
       if(map.topbar)applyTopbar(map.topbar);
       if(map.header)applyHeader(map.header);
       if(map.nav)applyNav(map.nav);
@@ -452,8 +463,13 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(map.benefits)applyBenefits(map.benefits);
       if(map.brands)applyBrands(map.brands);
       if(map.policies)applyPolicies(map.policies);
-      if(map.hero_ads)applyAdAlias("hero_ads",map.hero_ads);
-      if(map.bottom_ads)applyAdAlias("bottom_ads",map.bottom_ads);
+      // نفس مفاتيح لوحة الإدارة، مع دعم الأسماء القديمة.
+      const upperKeys=["ads","hero_ads","hero_ad","top_ads","top_ad"];
+      const lowerKeys=["bottom_ads","bottom_ad","lower_ads","lower_ad","after_products_ad","after_products_ads"];
+      const upperKey=upperKeys.find(k=>map[k]!=null);
+      const lowerKey=lowerKeys.find(k=>map[k]!=null);
+      if(upperKey)applyAdAlias(upperKey,map[upperKey]);
+      if(lowerKey)applyAdAlias(lowerKey,map[lowerKey]);
       window.ATYAF_ADMIN_SETTINGS=map;
       document.dispatchEvent(new CustomEvent("atyaf:settings-applied",{detail:map}));
     }catch(e){console.error("ATYAF settings sync:",e)}

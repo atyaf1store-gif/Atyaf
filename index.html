@@ -2140,42 +2140,30 @@ function applyManagedGeneral(g={}){
 function applyManagedDesign(d={}){
   atyafCurrentDesign=d||{};
   const c=d.colors||{};
-  const root=document.documentElement;
-  if(c.cream)root.style.setProperty("--cream",c.cream);
-  if(c.card)root.style.setProperty("--card",c.card);
-  if(c.ink)root.style.setProperty("--dark",c.ink);
-  if(c.gold)root.style.setProperty("--gold",c.gold);
+  if(c.cream)document.documentElement.style.setProperty("--cream",c.cream);
+  if(c.card)document.documentElement.style.setProperty("--card",c.card);
+  if(c.ink)document.documentElement.style.setProperty("--dark",c.ink);
+  if(c.gold)document.documentElement.style.setProperty("--gold",c.gold);
 
-  /* ===== STARTUP BACKGROUND: SAME DESIGN AS THE STORE =====
-     The startup screen is a fixed layer, so changing body background alone
-     does not guarantee that its own background changes. Apply the managed
-     design directly to both the CSS variable and the splash element. */
-  const splashRoot=document.getElementById("atyafLogoSplash");
-  const splashBg=String(d.backgroundUrl||d.background_url||d.backgroundImage||d.background_image||"").trim();
-  const splashColor=String(
-    d.backgroundColor||d.background_color||c.cream||d.cream||"#fbf6ee"
-  ).trim();
-
-  if(splashBg){
-    root.style.setProperty("--atyaf-splash-bg",`url("${splashBg.replace(/"/g,'\\"')}")`);
-    if(splashRoot){
-      splashRoot.style.backgroundImage=`url("${splashBg.replace(/"/g,'\\"')}")`;
-      splashRoot.style.backgroundColor="transparent";
-      splashRoot.style.backgroundSize="cover";
-      splashRoot.style.backgroundPosition="center";
-      splashRoot.style.backgroundRepeat="no-repeat";
+  /* مزامنة خلفية شاشة البداية مع "خلفية المتجر" من قسم التصميم.
+     خلفية التصميم (backgroundUrl) هي المصدر الأساسي؛ وعند عدم وجود صورة
+     نعيد الشاشة للوضع اللوني الطبيعي بدون ترك صورة قديمة. */
+  const splash=document.getElementById("atyafLogoSplash");
+  if(d.backgroundUrl){
+    const safeBg=String(d.backgroundUrl).replace(/\\/g,"\\\\").replace(/"/g,'\\"');
+    document.body.style.backgroundImage=`url("${safeBg}")`;
+    if(splash){
+      splash.style.backgroundImage=`url("${safeBg}")`;
+      splash.style.backgroundSize="cover";
+      splash.style.backgroundPosition="center";
+      splash.style.backgroundRepeat="no-repeat";
     }
-    document.body.style.backgroundImage=`url("${splashBg.replace(/"/g,'\\"')}")`;
-    document.body.style.backgroundSize="cover";
-    document.body.style.backgroundPosition="center";
   }else{
-    root.style.setProperty("--atyaf-splash-bg",splashColor);
-    if(splashRoot){
-      splashRoot.style.backgroundImage="none";
-      splashRoot.style.backgroundColor=splashColor;
-    }
     document.body.style.backgroundImage="";
-    document.body.style.backgroundColor=splashColor;
+    if(splash){
+      splash.style.backgroundImage="none";
+      splash.style.backgroundColor=c.cream||"#fbf6ee";
+    }
   }
 
   const fonts=d.fonts||{};
@@ -2204,7 +2192,7 @@ function applyManagedDesign(d={}){
     if(!color)return;
     document.querySelectorAll(sel).forEach(el=>el.style.setProperty("color",color,"important"));
   });
-  const pc=d.productCard||{};
+  const pc=d.productCard||{}; const root=document.documentElement;
   const set=(k,v)=>{if(v!==undefined&&v!==null&&v!=="")root.style.setProperty(k,String(v))};
   set("--pc-bg",pc.background||"#fff");set("--pc-border",pc.borderColor||"#eeeae2");set("--pc-border-w",(pc.borderWidth??1)+"px");set("--pc-radius",(pc.radius??18)+"px");set("--pc-img-bg",pc.imageBg||"#fff");set("--pc-img-h",(pc.imageHeight||315)+"px");set("--pc-img-pad",(pc.imagePadding??12)+"px");set("--pc-info-pad",(pc.infoPadding??12)+"px");set("--pc-name-size",(pc.nameSize||13)+"px");set("--pc-name-color",pc.nameColor||"#171717");set("--pc-name-weight",pc.nameWeight||"800");set("--pc-name-line",pc.nameLineHeight||1.75);set("--pc-price-size",(pc.priceSize||14)+"px");set("--pc-price-color",pc.priceColor||"#9d342b");set("--pc-old-color",pc.oldPriceColor||"#747874");set("--pc-font",pc.fontFamily||"Cairo");set("--pc-heart-size",(pc.heartSize||34)+"px");set("--pc-heart-bg",pc.heartBg||"#fff");set("--pc-heart-color",pc.heartColor||"#292929");set("--pc-heart-border",pc.heartBorder||"#ddd8ce");set("--pc-heart-active",pc.heartActive||"#111");set("--pc-badge-bg",pc.badgeBg||"#050505");set("--pc-badge-text",pc.badgeText||"#fff");set("--pc-badge-radius",(pc.badgeRadius??14)+"px");set("--pc-cart-bg",pc.cartBg||"#050505");set("--pc-cart-text",pc.cartText||"#fff");set("--pc-gift-bg",pc.giftBg||"#fff");set("--pc-gift-text",pc.giftText||"#171717");set("--pc-gift-border",pc.giftBorder||"#d8d4cb");set("--pc-btn-h",(pc.buttonHeight||43)+"px");set("--pc-btn-radius",(pc.buttonRadius??0)+"px");set("--pc-btn-font",(pc.buttonFontSize||11)+"px");set("--pc-align",pc.textAlign||"center");set("--pc-fit",pc.imageFit||"contain");
   set("--pc-card-width-desktop",Math.max(140,Math.min(600,Number(pc.cardWidthDesktop||300)))+"px");

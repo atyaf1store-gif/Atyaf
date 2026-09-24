@@ -1,145 +1,146 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>لوحة إدارة أطياف PRO</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ATYAAF PRO — الإدارة الكاملة</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--g:#17352e;--g2:#214c41;--c:#b47a4f;--bg:#f5f1ea;--p:#fffdfa;--line:#e4ddd2;--muted:#6d7772;--red:#a83d36}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:#17231f}
-button,input,textarea,select{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:245px 1fr;min-height:100vh}
-aside{background:var(--g);color:white;padding:24px 16px;position:sticky;top:0;height:100vh}.logo{font:700 22px Georgia;margin-bottom:6px}.sub{color:#cbd9d2;font-size:12px;margin-bottom:28px}
-.nav button{width:100%;text-align:right;border:0;background:transparent;color:#dce8e2;padding:12px;border-radius:10px;margin:3px 0}.nav button.active,.nav button:hover{background:#ffffff16;color:#fff}
-main{padding:28px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}h1{margin:0;color:var(--g)}.muted{color:var(--muted);font-size:13px}
-.card{background:var(--p);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--g);color:#fff}.btn.alt{background:white;color:var(--g);border:1px solid var(--line)}.btn.danger{background:var(--red)}.btn.copper{background:var(--c)}.grow{flex:1}
-table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:right;font-size:13px;vertical-align:top}th{color:var(--muted)}.actions{display:flex;gap:5px;flex-wrap:wrap}
-.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}.field input,.field textarea,.field select{border:1px solid var(--line);border-radius:10px;padding:10px;background:white}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}
-dialog{border:0;border-radius:18px;padding:0;width:min(760px,94vw);max-height:90vh}dialog::backdrop{background:#0c1d1888}.modal{padding:22px;overflow:auto;max-height:90vh}.modal-head{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#eee7dc;border-radius:50%;width:34px;height:34px}
-.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#edf3ef;font-size:11px}.notice{padding:12px;border-radius:10px;background:#eef4ef;color:var(--g);margin-bottom:14px}
-pre{direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-word;background:#17231f;color:#dff2e7;padding:14px;border-radius:12px;max-height:420px;overflow:auto}
-.section{display:none}.section.active{display:block}
-@media(max-width:800px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;width:auto}main{padding:16px}.grid{grid-template-columns:1fr}.full{grid-column:auto}table{display:block;overflow:auto}}
-</style>
-</head>
-<body>
-<div class="app">
-<aside>
-  <div class="logo">ATYAAF PRO</div><div class="sub">لوحة إدارة مستقلة مرتبطة بقاعدة المتجر</div>
-  <div class="nav">
-    <button class="active" data-tab="products">المنتجات</button>
-    <button data-tab="settings">فقرات وإعدادات المتجر</button>
-    <button data-tab="ads">الشاشة الإعلانية</button>
-    <button data-tab="raw">محرر متقدم</button>
-  </div>
-</aside>
-<main>
-<div class="top"><div><h1>إدارة متجر أطياف</h1><div class="muted">إضافة، تعديل وحذف المحتوى من ملف مستقل.</div></div><button class="btn alt" onclick="loadAll()">↻ تحديث</button></div>
-<div id="status" class="notice">جاري الاتصال بقاعدة البيانات…</div>
+:root{--g:#17352e;--g2:#24463d;--c:#b47a4f;--bg:#f5f1ea;--p:#fffdfa;--line:#e4ddd2;--muted:#707b75;--red:#a9443c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:#17231f}button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}aside{background:var(--g);color:#fff;padding:25px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+.logo{font:700 24px Georgia}.sub{font-size:11px;color:#bfd0c7;margin:8px 0 25px}.nav button{width:100%;border:0;background:none;color:#d9e5df;padding:12px;text-align:right;border-radius:10px;margin:2px 0}.nav button:hover,.nav button.active{background:#ffffff15;color:#fff}
+main{padding:28px;min-width:0}h1,h2,h3{color:var(--g)}.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}.status{padding:12px 15px;border-radius:12px;background:#eaf2ed;margin-bottom:16px}
+.panel{display:none}.panel.active{display:block}.card{background:var(--p);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--g);color:white}.btn.alt{background:#fff;color:var(--g);border:1px solid var(--line)}.btn.red{background:var(--red)}.btn.copper{background:var(--c)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}input,textarea,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}textarea{resize:vertical}
+table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;font-size:13px}th{color:var(--muted)}.actions{display:flex;gap:5px;flex-wrap:wrap}.muted{color:var(--muted);font-size:12px}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.media{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.media img,.media video{width:100%;height:110px;object-fit:cover;border-radius:8px}.upload{border:2px dashed #cfc4b6;border-radius:14px;padding:18px;text-align:center;background:#faf7f1}.upload input{border:0;background:none}
+.section-editor{border-right:4px solid var(--c)}.switch{display:flex;gap:8px;align-items:center}dialog{border:0;border-radius:18px;width:min(800px,95vw);padding:0;max-height:92vh}dialog::backdrop{background:#102a2588}.modal{padding:20px;max-height:92vh;overflow:auto}.close{border:0;width:34px;height:34px;border-radius:50%;float:left}
+@media(max-width:850px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.nav{display:flex;overflow:auto}.nav button{width:auto;white-space:nowrap}main{padding:14px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}table{display:block;overflow:auto}}
+</style></head><body>
+<div class="app"><aside><div class="logo">ATYAAF PRO</div><div class="sub">إدارة كاملة لكل تفصيل في المتجر</div><div class="nav">
+<button class="active" data-tab="dashboard">الرئيسية</button>
+<button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
+<button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="nav">القائمة الرئيسية</button>
+<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
+<button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
+<button data-tab="allsettings">كل الإعدادات</button>
+</div></aside><main>
+<div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><button class="btn alt" onclick="loadAll()">↻ تحديث</button></div>
+<div id="status" class="status">جاري الاتصال…</div>
 
-<section id="products" class="section active">
- <div class="card"><div class="toolbar"><h3 class="grow">المنتجات</h3><input id="productSearch" placeholder="بحث…" oninput="renderProducts()"><button class="btn" onclick="openProduct()">+ إضافة منتج</button></div></div>
- <div class="card"><div style="overflow:auto"><table><thead><tr><th>الاسم</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productsBody"></tbody></table></div></div>
-</section>
+<section id="dashboard" class="panel active"><div class="card"><h2>إدارة كاملة</h2><p>اختر أي قسم من القائمة. كل جزء يُحفظ مستقلاً في جدول <b>settings</b>، والوسائط تُرفع مباشرة إلى Supabase Storage بدون لصق روابط.</p></div></section>
 
-<section id="settings" class="section">
- <div class="card"><div class="toolbar"><h3 class="grow">فقرات وإعدادات المتجر</h3><button class="btn" onclick="openSetting()">+ إضافة فقرة/إعداد</button></div><p class="muted">كل سجل في جدول settings قابل للإضافة والتعديل والحذف. يدعم النص أو JSON.</p></div>
- <div class="card"><div style="overflow:auto"><table><thead><tr><th>المفتاح</th><th>المحتوى</th><th>آخر تحديث</th><th>إجراءات</th></tr></thead><tbody id="settingsBody"></tbody></table></div></div>
-</section>
-
-<section id="ads" class="section">
- <div class="card"><h3>الشاشة الإعلانية الرئيسية</h3><p class="muted">تعديل السلايدات/الصور/الفيديو والارتفاع والرابط من إعداد واحد متوافق مع المتجر.</p>
- <div class="grid">
-  <label class="field"><span>مفعلة</span><select id="adEnabled"><option value="true">نعم</option><option value="false">لا</option></select></label>
-  <label class="field"><span>المدة بين السلايدات (ms)</span><input id="adInterval" type="number" value="3500"></label>
-  <label class="field"><span>ارتفاع الكمبيوتر</span><input id="adDesktop" type="number" value="510"></label>
-  <label class="field"><span>ارتفاع التابلت</span><input id="adTablet" type="number" value="430"></label>
-  <label class="field"><span>ارتفاع الجوال</span><input id="adMobile" type="number" value="360"></label>
-  <label class="field"><span>طريقة الملاءمة</span><select id="adFit"><option value="cover">Cover</option><option value="contain">Contain</option></select></label>
-  <label class="field full"><span>رابط الضغط على الإعلان</span><input id="adLink" placeholder="#products أو https://..."></label>
-  <label class="field full"><span>روابط الصور/الفيديو — رابط في كل سطر</span><textarea id="adMedia" rows="8"></textarea></label>
- </div><div class="toolbar"><button class="btn" onclick="saveHeroAd()">حفظ الشاشة</button><button class="btn danger" onclick="deleteHeroAd()">حذف/إيقاف الشاشة</button></div></div>
-</section>
-
-<section id="raw" class="section">
- <div class="card"><h3>محرر متقدم</h3><p class="muted">لأي فقرة غير موجودة في الواجهات أعلاه: اختر سجل settings وعدّل JSON مباشرة.</p>
- <div class="grid"><label class="field"><span>المفتاح</span><input id="rawKey"></label><label class="field full"><span>القيمة JSON أو نص</span><textarea id="rawValue" rows="16"></textarea></label></div>
- <div class="toolbar"><button class="btn" onclick="saveRaw()">حفظ / إنشاء</button><button class="btn danger" onclick="deleteRaw()">حذف</button></div></div>
-</section>
+<section id="hero" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية العلوية</h2><div id="heroEditor"></div></div></section>
+<section id="lowerAd" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية تحت الهدية</h2><div id="lowerEditor"></div></div></section>
+<section id="topbar" class="panel"><div class="card section-editor"><h2>الشريط العلوي</h2><div id="topbarEditor"></div></div></section>
+<section id="header" class="panel"><div class="card section-editor"><h2>الهيدر والبحث والشعار</h2><div id="headerEditor"></div></div></section>
+<section id="nav" class="panel"><div class="card section-editor"><h2>روابط القائمة الرئيسية</h2><div id="navEditor"></div></div></section>
+<section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
+<section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
+<section id="products" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
+<section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
+<section id="footer" class="panel"><div class="card section-editor"><h2>الفوتر والتواصل</h2><div id="footerEditor"></div></div></section>
+<section id="policies" class="panel"><div class="card section-editor"><h2>السياسات والنصوص</h2><div id="policiesEditor"></div></div></section>
+<section id="allsettings" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">كل إعدادات قاعدة البيانات</h2><button class="btn" onclick="editAny()">+ إضافة إعداد</button></div><div style="overflow:auto"><table><thead><tr><th>المفتاح</th><th>القيمة</th><th>إجراءات</th></tr></thead><tbody id="settingRows"></tbody></table></div></div></section>
 </main></div>
 
-<dialog id="productDialog"><div class="modal"><div class="modal-head"><h2 id="productTitle">منتج</h2><button class="close" onclick="productDialog.close()">×</button></div>
-<form id="productForm" onsubmit="saveProduct(event)"><input type="hidden" id="pId">
-<div class="grid">
-<label class="field"><span>اسم المنتج</span><input id="pName" required></label>
-<label class="field"><span>الماركة</span><input id="pBrand"></label>
-<label class="field"><span>السعر</span><input id="pPrice" type="number" step="0.01" required></label>
-<label class="field"><span>السعر القديم</span><input id="pOld" type="number" step="0.01"></label>
-<label class="field"><span>التصنيف/الوسوم</span><input id="pTags" placeholder="oud,sale,new"></label>
-<label class="field"><span>الشارة</span><input id="pLabel" placeholder="جديد"></label>
-<label class="field full"><span>الوصف</span><textarea id="pDesc" rows="3"></textarea></label>
-<label class="field full"><span>رابط الصورة</span><input id="pImage"></label>
-<label class="field"><span>نشط</span><select id="pActive"><option value="true">نعم</option><option value="false">لا</option></select></label>
-<label class="field"><span>ترتيب العرض</span><input id="pSort" type="number" value="0"></label>
-</div><button class="btn" type="submit">حفظ المنتج</button></form></div></dialog>
+<dialog id="jsonDialog"><div class="modal"><button class="close" onclick="jsonDialog.close()">×</button><h2 id="jsonTitle">تعديل</h2><input type="hidden" id="jsonOldKey"><div class="field"><label>المفتاح</label><input id="jsonKey"></div><div class="field" style="margin-top:10px"><label>المحتوى JSON أو نص</label><textarea id="jsonValue" rows="16"></textarea></div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="saveAny()">حفظ</button><button class="btn red" onclick="deleteAny()">حذف</button></div></div></dialog>
 
-<dialog id="settingDialog"><div class="modal"><div class="modal-head"><h2>فقرة / إعداد</h2><button class="close" onclick="settingDialog.close()">×</button></div>
-<form onsubmit="saveSetting(event)"><input type="hidden" id="sId"><div class="field"><span>المفتاح</span><input id="sKey" required placeholder="مثال: general أو policies"></div><div class="field"><span>المحتوى (نص أو JSON)</span><textarea id="sValue" rows="14" required></textarea></div><button class="btn">حفظ</button></form></div></dialog>
+<dialog id="productDialog"><div class="modal"><button class="close" onclick="productDialog.close()">×</button><h2>المنتج</h2><input type="hidden" id="pId"><div class="grid">
+<div class="field"><label>الاسم</label><input id="pName"></div><div class="field"><label>الماركة</label><input id="pBrand"></div>
+<div class="field"><label>السعر</label><input id="pPrice" type="number"></div><div class="field"><label>السعر القديم</label><input id="pOld" type="number"></div>
+<div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field"><label>نشط/مخفي</label><select id="pActive"><option value="true">ظاهر</option><option value="false">مخفي</option></select></div>
+<div class="field"><label>ترتيب</label><input id="pSort" type="number"></div><div class="field full upload"><label>صورة المنتج — رفع مباشر</label><input id="pImageFile" type="file" accept="image/*"><div id="pImagePreview"></div></div>
+</div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
 
 <script>
-const SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
-const SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let PRODUCTS=[],SETTINGS=[];
+const URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co",KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl",db=supabase.createClient(URL,KEY);
+const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[];
 
-function msg(t,bad=false){const e=document.getElementById('status');e.textContent=t;e.style.background=bad?'#f8e7e5':'#eef4ef';e.style.color=bad?'#8e302a':'#17352e'}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function parseValue(v){if(typeof v!=='string')return v;try{return JSON.parse(v)}catch{return v}}
-function pretty(v){return typeof v==='string'?v:JSON.stringify(v,null,2)}
-document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.tab).classList.add('active')});
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.tab).classList.add('active')});
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const parse=v=>{if(typeof v!=='string')return v;try{return JSON.parse(v)}catch{return v}};
+const pretty=v=>typeof v==='string'?v:JSON.stringify(v,null,2);
+function stat(t,bad=false){status.textContent=t;status.style.background=bad?'#f8e5e3':'#eaf2ed'}
+function getSetting(key,def={}){let r=SETTINGS.find(x=>x.key===key);return r?parse(r.value):def}
+async function putSetting(key,value){let old=SETTINGS.find(x=>x.key===key);let r=old?await db.from('settings').update({value}).eq('id',old.id):await db.from('settings').insert({key,value});if(r.error)throw r.error}
+async function removeSetting(key){let old=SETTINGS.find(x=>x.key===key);if(old){let r=await db.from('settings').delete().eq('id',old.id);if(r.error)throw r.error}}
+
+async function uploadFiles(files,folder){
+ let urls=[];
+ for(const f of [...files]){
+  const safe=f.name.replace(/[^a-zA-Z0-9._-]/g,'_'),path=`${folder}/${Date.now()}_${Math.random().toString(36).slice(2,8)}_${safe}`;
+  const up=await db.storage.from(BUCKET).upload(path,f,{upsert:false,contentType:f.type||undefined});
+  if(up.error)throw up.error;
+  const pub=db.storage.from(BUCKET).getPublicUrl(path); urls.push(pub.data.publicUrl);
+ }
+ return urls;
+}
+
+function adEditor(el,key,title){
+ const s=getSetting(key,{enabled:true,media:[],interval:3500,fit:'cover',link:'',heightDesktop:650,heightTablet:520,heightMobile:360});
+ const media=Array.isArray(s.media)?s.media:[];
+ el.innerHTML=`<div class="grid">
+ <div class="field"><label>الحالة</label><select class="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
+ <div class="field"><label>مدة السلايد ms</label><input class="interval" type="number" value="${Number(s.interval||3500)}"></div>
+ <div class="field"><label>ارتفاع الكمبيوتر</label><input class="hd" type="number" value="${Number(s.heightDesktop||650)}"></div>
+ <div class="field"><label>ارتفاع التابلت</label><input class="ht" type="number" value="${Number(s.heightTablet||520)}"></div>
+ <div class="field"><label>ارتفاع الجوال</label><input class="hm" type="number" value="${Number(s.heightMobile||360)}"></div>
+ <div class="field"><label>طريقة عرض الصورة</label><select class="fit"><option value="cover" ${s.fit==='cover'?'selected':''}>Cover</option><option value="contain" ${s.fit==='contain'?'selected':''}>Contain</option></select></div>
+ <div class="field full"><label>رابط الضغط</label><input class="link" value="${esc(s.link||'')}"></div>
+ <div class="field full upload"><b>رفع صور أو فيديو مباشرة</b><input class="files" type="file" accept="image/*,video/*" multiple><small class="muted">يمكن اختيار عدة ملفات مرة واحدة.</small></div>
+ </div><div class="media-grid">${media.map((u,i)=>`<div class="media">${/\.(mp4|webm|ogg)(\?|$)/i.test(u)?`<video src="${esc(u)}" controls></video>`:`<img src="${esc(u)}">`}<button class="btn red" style="width:100%;margin-top:5px" onclick="removeAdMedia('${key}',${i})">حذف الوسائط</button></div>`).join('')}</div>
+ <div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveAd('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
+}
+async function saveAd(key,card){
+ try{let old=getSetting(key,{}),files=card.querySelector('.files').files,added=files.length?await uploadFiles(files,key):[];let value={...old,enabled:card.querySelector('.enabled').value==='true',interval:+card.querySelector('.interval').value||3500,heightDesktop:+card.querySelector('.hd').value||650,heightTablet:+card.querySelector('.ht').value||520,heightMobile:+card.querySelector('.hm').value||360,fit:card.querySelector('.fit').value,link:card.querySelector('.link').value.trim(),media:[...(Array.isArray(old.media)?old.media:[]),...added]};await putSetting(key,value);await loadAll();stat('تم الحفظ والرفع مباشرة بنجاح')}catch(e){stat(e.message,true)}}
+async function removeAdMedia(key,i){let s=getSetting(key,{}),m=Array.isArray(s.media)?[...s.media]:[];m.splice(i,1);s.media=m;await putSetting(key,s);await loadAll()}
+async function toggleSection(key){let s=getSetting(key,{});s.enabled=s.enabled===false;await putSetting(key,s);await loadAll()}
+async function deleteSection(key){if(!confirm('حذف هذا القسم وإعداداته؟'))return;await removeSetting(key);await loadAll()}
+
+const schemas={
+ topbar:{title:'الشريط العلوي',fields:[['text','النص'],['enabled','ظاهر','bool']]},
+ header:{title:'الهيدر',fields:[['storeName','اسم المتجر'],['searchPlaceholder','نص البحث'],['logoText','نص الشعار'],['enabled','ظاهر','bool']]},
+ nav:{title:'القائمة الرئيسية',fields:[['home','الرئيسية'],['brands','الماركات'],['best','الأكثر مبيعاً'],['new','وصل حديثاً'],['offers','العروض'],['scents','الروائح'],['contact','تواصل معنا'],['enabled','ظاهر','bool']]},
+ gift:{title:'قسم الهدية',fields:[['kicker','النص الصغير'],['title','العنوان'],['text','الوصف'],['button','نص الزر'],['link','الرابط'],['enabled','ظاهر','bool']]},
+ footer:{title:'الفوتر',fields:[['storeName','اسم المتجر'],['description','الوصف'],['phone','الهاتف'],['email','البريد'],['instagram','Instagram'],['tiktok','TikTok'],['whatsapp','WhatsApp'],['copyright','حقوق النشر'],['enabled','ظاهر','bool']]},
+ policies:{title:'السياسات',fields:[['about','من نحن','area'],['privacy','الخصوصية','area'],['terms','الشروط','area'],['returns','الاستبدال والاسترجاع','area'],['shipping','الشحن','area'],['customerService','خدمة العملاء','area']]}
+};
+function simpleEditor(el,key){
+ const sc=schemas[key],s=getSetting(key,{enabled:true});
+ el.innerHTML=`<div class="grid">${sc.fields.map(([k,l,t])=>t==='area'?`<div class="field full"><label>${l}</label><textarea data-k="${k}" rows="5">${esc(s[k]||'')}</textarea></div>`:t==='bool'?`<div class="field"><label>${l}</label><select data-k="${k}"><option value="true" ${s[k]!==false?'selected':''}>ظاهر</option><option value="false" ${s[k]===false?'selected':''}>مخفي</option></select></div>`:`<div class="field"><label>${l}</label><input data-k="${k}" value="${esc(s[k]||'')}"></div>`).join('')}</div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveSimple('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
+}
+async function saveSimple(key,card){let s=getSetting(key,{});card.querySelectorAll('[data-k]').forEach(x=>s[x.dataset.k]=x.tagName==='SELECT'?x.value==='true':x.value);await putSetting(key,s);await loadAll();stat('تم حفظ '+schemas[key].title)}
+
+function listEditor(el,key,defaults){
+ let s=getSetting(key,{enabled:true,items:defaults}),items=Array.isArray(s.items)?s.items:[];
+ el.innerHTML=`<div class="toolbar"><button class="btn" onclick="addListItem('${key}')">+ إضافة عنصر</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء القسم</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`+
+ items.map((x,i)=>`<div class="card" style="margin-top:10px"><div class="grid"><div class="field"><label>العنوان/الاسم</label><input id="${key}_title_${i}" value="${esc(x.title||x.name||'')}"></div><div class="field"><label>النص/الرمز</label><input id="${key}_text_${i}" value="${esc(x.text||x.icon||'')}"></div></div><div class="actions" style="margin-top:8px"><button class="btn" onclick="saveListItem('${key}',${i})">حفظ العنصر</button><button class="btn alt" onclick="hideListItem('${key}',${i})">${x.hidden?'إظهار':'إخفاء'}</button><button class="btn red" onclick="removeListItem('${key}',${i})">حذف</button></div></div>`).join('');
+}
+async function addListItem(key){let s=getSetting(key,{enabled:true,items:[]});s.items=Array.isArray(s.items)?s.items:[];s.items.push({title:'عنصر جديد',text:'',hidden:false});await putSetting(key,s);await loadAll()}
+async function saveListItem(key,i){let s=getSetting(key,{items:[]});s.items[i].title=document.getElementById(`${key}_title_${i}`).value;s.items[i].text=document.getElementById(`${key}_text_${i}`).value;await putSetting(key,s);await loadAll()}
+async function hideListItem(key,i){let s=getSetting(key,{items:[]});s.items[i].hidden=!s.items[i].hidden;await putSetting(key,s);await loadAll()}
+async function removeListItem(key,i){let s=getSetting(key,{items:[]});s.items.splice(i,1);await putSetting(key,s);await loadAll()}
+
+function renderProducts(){productRows.innerHTML=PRODUCTS.map(p=>`<tr><td>${esc(p.name||p.title||'')}</td><td>${esc(p.brand||'')}</td><td>${esc(p.price||0)}</td><td>${p.is_active===false?'مخفي':'ظاهر'}</td><td class="actions"><button class="btn alt" onclick='editProduct(${JSON.stringify(String(p.id))})'>تعديل</button><button class="btn red" onclick='quickDeleteProduct(${JSON.stringify(String(p.id))})'>حذف</button></td></tr>`).join('')}
+function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pDesc.value=p.description||p.desc||'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
+async function saveProduct(){try{let id=pId.value,p=PRODUCTS.find(x=>String(x.id)===String(id))||{},image=p.image_url||p.image||'';if(pImageFile.files.length)image=(await uploadFiles(pImageFile.files,'products'))[0];let row={name:pName.value.trim(),brand:pBrand.value.trim(),price:+pPrice.value||0,old_price:+pOld.value||0,description:pDesc.value.trim(),image_url:image,is_active:pActive.value==='true',sort_order:+pSort.value||0};let r=id?await db.from('products').update(row).eq('id',id):await db.from('products').insert(row);if(r.error)throw r.error;productDialog.close();await loadAll()}catch(e){stat(e.message,true)}}
+async function deleteProduct(){if(pId.value)await quickDeleteProduct(pId.value);productDialog.close()}
+async function quickDeleteProduct(id){if(!confirm('حذف المنتج؟'))return;let r=await db.from('products').delete().eq('id',id);if(r.error)return stat(r.error.message,true);await loadAll()}
+
+function renderAllSettings(){settingRows.innerHTML=SETTINGS.map(s=>`<tr><td><b>${esc(s.key)}</b></td><td>${esc(pretty(s.value)).slice(0,220)}</td><td class="actions"><button class="btn alt" onclick='editAny(${JSON.stringify(s.key)})'>تعديل</button><button class="btn red" onclick='removeAny(${JSON.stringify(s.key)})'>حذف</button></td></tr>`).join('')}
+function editAny(key=''){let s=SETTINGS.find(x=>x.key===key);jsonOldKey.value=key;jsonKey.value=key;jsonValue.value=s?pretty(s.value):'';jsonTitle.textContent=key?'تعديل '+key:'إضافة إعداد';jsonDialog.showModal()}
+async function saveAny(){let old=jsonOldKey.value,k=jsonKey.value.trim(),v=parse(jsonValue.value);if(old&&old!==k)await removeSetting(old);await putSetting(k,v);jsonDialog.close();await loadAll()}
+async function deleteAny(){let k=jsonOldKey.value||jsonKey.value;if(k&&confirm('حذف '+k+'؟')){await removeSetting(k);jsonDialog.close();await loadAll()}}
+async function removeAny(k){if(confirm('حذف '+k+'؟')){await removeSetting(k);await loadAll()}}
 
 async function loadAll(){
- try{
-  msg('جاري التحديث…');
-  const [p,s]=await Promise.all([db.from('products').select('*').order('sort_order',{ascending:true}),db.from('settings').select('*').order('updated_at',{ascending:false})]);
-  if(p.error)throw p.error;if(s.error)throw s.error;
-  PRODUCTS=p.data||[];SETTINGS=s.data||[];renderProducts();renderSettings();loadHeroAd();msg('متصل — تم تحميل بيانات المتجر.');
- }catch(e){console.error(e);msg('تعذر تحميل البيانات: '+e.message,true)}
+ try{stat('جاري تحميل بيانات المتجر…');let [s,p]=await Promise.all([db.from('settings').select('*').order('updated_at',{ascending:false}),db.from('products').select('*').order('sort_order',{ascending:true})]);if(s.error)throw s.error;if(p.error)throw p.error;SETTINGS=s.data||[];PRODUCTS=p.data||[];
+ adEditor(heroEditor,'hero_ads','الإعلان العلوي');adEditor(lowerEditor,'bottom_ads','الإعلان السفلي');
+ ['topbar','header','nav','gift','footer','policies'].forEach(k=>simpleEditor(document.getElementById(k+'Editor'),k));
+ listEditor(benefitsEditor,'benefits',[{title:'منتجات أصلية',text:'اختيارات موثوقة بعناية'},{title:'شحن سريع',text:'توصيل آمن'},{title:'تغليف فاخر',text:'هدية تليق بمن تحب'},{title:'خدمة تهتم',text:'نحن هنا لمساعدتك'}]);
+ listEditor(brandsEditor,'brands',[{title:'أطياف',text:'ATYAAF'}]);renderProducts();renderAllSettings();stat('متصل — تم تحميل بيانات المتجر')}catch(e){console.error(e);stat('خطأ: '+e.message,true)}
 }
-function renderProducts(){
- const q=(document.getElementById('productSearch').value||'').toLowerCase();
- const rows=PRODUCTS.filter(p=>!q||JSON.stringify(p).toLowerCase().includes(q));
- document.getElementById('productsBody').innerHTML=rows.map(p=>`<tr><td><b>${esc(p.name||p.title||'بدون اسم')}</b></td><td>${esc(p.brand||'')}</td><td>${esc(p.price||0)}</td><td><span class="pill">${p.is_active===false||p.active===false?'مخفي':'نشط'}</span></td><td><div class="actions"><button class="btn alt" onclick='openProduct(${JSON.stringify(String(p.id))})'>تعديل</button><button class="btn danger" onclick='deleteProduct(${JSON.stringify(String(p.id))})'>حذف</button></div></td></tr>`).join('')||'<tr><td colspan="5">لا توجد منتجات.</td></tr>';
-}
-function openProduct(id=''){
- const p=PRODUCTS.find(x=>String(x.id)===String(id))||{};
- pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pTags.value=Array.isArray(p.tags)?p.tags.join(','):(p.tags||'');pLabel.value=p.label||'';pDesc.value=p.description||p.desc||'';pImage.value=p.image_url||p.image||'';pActive.value=String(!(p.is_active===false||p.active===false));pSort.value=p.sort_order||0;productTitle.textContent=id?'تعديل المنتج':'إضافة منتج';productDialog.showModal()
-}
-async function saveProduct(e){
- e.preventDefault();const id=pId.value;
- let row={name:pName.value.trim(),brand:pBrand.value.trim(),price:Number(pPrice.value||0),old_price:Number(pOld.value||0),tags:pTags.value.split(',').map(x=>x.trim()).filter(Boolean),label:pLabel.value.trim(),description:pDesc.value.trim(),image_url:pImage.value.trim(),is_active:pActive.value==='true',sort_order:Number(pSort.value||0)};
- let r=id?await db.from('products').update(row).eq('id',id):await db.from('products').insert(row);
- if(r.error)return msg('خطأ حفظ المنتج: '+r.error.message,true);productDialog.close();await loadAll()
-}
-async function deleteProduct(id){if(!confirm('حذف هذا المنتج نهائياً؟'))return;const r=await db.from('products').delete().eq('id',id);if(r.error)return msg(r.error.message,true);await loadAll()}
-
-function renderSettings(){
- settingsBody.innerHTML=SETTINGS.map(s=>`<tr><td><b>${esc(s.key)}</b></td><td>${esc(pretty(s.value)).slice(0,180)}</td><td>${esc(s.updated_at||'')}</td><td><div class="actions"><button class="btn alt" onclick='openSetting(${JSON.stringify(String(s.id))})'>تعديل</button><button class="btn copper" onclick='editRaw(${JSON.stringify(String(s.id))})'>متقدم</button><button class="btn danger" onclick='deleteSetting(${JSON.stringify(String(s.id))})'>حذف</button></div></td></tr>`).join('')||'<tr><td colspan="4">لا توجد إعدادات.</td></tr>'
-}
-function openSetting(id=''){const s=SETTINGS.find(x=>String(x.id)===String(id))||{};sId.value=s.id||'';sKey.value=s.key||'';sValue.value=pretty(s.value??'');settingDialog.showModal()}
-async function saveSetting(e){e.preventDefault();const id=sId.value;const row={key:sKey.value.trim(),value:parseValue(sValue.value)};let r=id?await db.from('settings').update(row).eq('id',id):await db.from('settings').insert(row);if(r.error)return msg('خطأ الحفظ: '+r.error.message,true);settingDialog.close();await loadAll()}
-async function deleteSetting(id){if(!confirm('حذف هذه الفقرة/الإعداد؟'))return;const r=await db.from('settings').delete().eq('id',id);if(r.error)return msg(r.error.message,true);await loadAll()}
-
-function heroRow(){const keys=['ads','hero_ads','hero_ad','top_ads','top_ad'];for(const k of keys){const r=SETTINGS.find(x=>x.key===k);if(r)return r}return null}
-function normalizeAd(raw){let s=parseValue(raw)||{};let media=s.media||s.images||s.slides||s.files||[];if(typeof media==='string')media=media.split(/\r?\n|,/).map(x=>x.trim()).filter(Boolean);if(!Array.isArray(media))media=[media];return {enabled:s.enabled!==false,media:media.map(x=>typeof x==='string'?x:(x.url||x.src||x.image||x.video||'')).filter(Boolean),interval:Number(s.interval||3500),heightDesktop:Number(s.heightDesktop||510),heightTablet:Number(s.heightTablet||430),heightMobile:Number(s.heightMobile||360),fit:s.fit||'cover',link:s.link||''}}
-function loadHeroAd(){const r=heroRow(),s=normalizeAd(r?.value);adEnabled.value=String(s.enabled);adInterval.value=s.interval;adDesktop.value=s.heightDesktop;adTablet.value=s.heightTablet;adMobile.value=s.heightMobile;adFit.value=s.fit;adLink.value=s.link;adMedia.value=s.media.join('\n')}
-async function saveHeroAd(){const old=heroRow();const value={enabled:adEnabled.value==='true',media:adMedia.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),interval:Number(adInterval.value||3500),heightDesktop:Number(adDesktop.value||510),heightTablet:Number(adTablet.value||430),heightMobile:Number(adMobile.value||360),fit:adFit.value,link:adLink.value.trim()};let r=old?await db.from('settings').update({key:'hero_ads',value}).eq('id',old.id):await db.from('settings').insert({key:'hero_ads',value});if(r.error)return msg(r.error.message,true);await loadAll();msg('تم حفظ الشاشة الإعلانية.')}
-async function deleteHeroAd(){if(!confirm('إيقاف وحذف محتوى الشاشة الإعلانية؟'))return;const old=heroRow();if(old){const r=await db.from('settings').update({value:{enabled:false,media:[]}}).eq('id',old.id);if(r.error)return msg(r.error.message,true)}await loadAll()}
-
-function editRaw(id){const s=SETTINGS.find(x=>String(x.id)===String(id));if(!s)return;rawKey.value=s.key||'';rawValue.value=pretty(s.value??'');document.querySelector('[data-tab="raw"]').click()}
-async function saveRaw(){const key=rawKey.value.trim();if(!key)return msg('اكتب المفتاح أولاً',true);const value=parseValue(rawValue.value);const old=SETTINGS.find(x=>x.key===key);let r=old?await db.from('settings').update({value}).eq('id',old.id):await db.from('settings').insert({key,value});if(r.error)return msg(r.error.message,true);await loadAll();msg('تم الحفظ.')}
-async function deleteRaw(){const key=rawKey.value.trim(),old=SETTINGS.find(x=>x.key===key);if(!old)return;if(!confirm('حذف '+key+'؟'))return;const r=await db.from('settings').delete().eq('id',old.id);if(r.error)return msg(r.error.message,true);rawKey.value='';rawValue.value='';await loadAll()}
-
 loadAll();
-</script>
-</body></html>
+</script></body></html>

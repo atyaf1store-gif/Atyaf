@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -764,7 +765,10 @@ main#home{position:relative}
 ====================================================== */
 :root{
   --atyaf-splash-bg:#fbf6ee;
-  --atyaf-splash-logo-width:min(520px,72vw);
+  --atyaf-splash-logo-desktop-width:330px;
+  --atyaf-splash-logo-tablet-width:280px;
+  --atyaf-splash-logo-mobile-width:220px;
+  --atyaf-splash-logo-width:min(var(--atyaf-splash-logo-desktop-width),72vw);
   --atyaf-splash-logo-max-height:220px;
   --atyaf-splash-hold:650ms;
   --atyaf-splash-move:900ms;
@@ -812,9 +816,14 @@ main#home{position:relative}
   visibility:hidden;
   pointer-events:none;
 }
+@media(min-width:701px) and (max-width:1100px){
+  :root{
+    --atyaf-splash-logo-width:min(var(--atyaf-splash-logo-tablet-width),78vw);
+  }
+}
 @media(max-width:700px){
   :root{
-    --atyaf-splash-logo-width:min(390px,82vw);
+    --atyaf-splash-logo-width:min(var(--atyaf-splash-logo-mobile-width),82vw);
     --atyaf-splash-logo-max-height:170px;
   }
 }
@@ -822,6 +831,23 @@ main#home{position:relative}
   #atyafLogoSplash,#atyafSplashLogo{transition-duration:.01ms!important}
 }
 
+
+/* ===== ATYAF LOGO SIZE STABILITY ===== */
+.logo .atyaf-hero-logo{
+  width:310px!important;
+  height:86px!important;
+  max-width:100%!important;
+  max-height:86px!important;
+  object-fit:contain!important;
+}
+@media(max-width:800px){
+  .logo .atyaf-hero-logo{
+    width:190px!important;
+    height:62px!important;
+    max-width:100%!important;
+    max-height:62px!important;
+  }
+}
 /* ===== ATYAF EDITABLE TRANSPARENT BRAND — HEADER ONLY ===== */
 .logo,.logo .atyaf-hero-logo{background:transparent!important}
 .logo .atyaf-hero-logo{filter:none!important;mix-blend-mode:normal!important}
@@ -2128,9 +2154,33 @@ function applyManagedGeneral(g={}){
     }
   }
 
-  /* Splash follows the uploaded logo too, without changing any other store section. */
+  /* Splash uses the SAME managed store logo. If the main logo is changed
+     from the admin panel, the opening screen changes with it immediately.
+     The separate splash-logo field remains only as a fallback when no main
+     store logo exists. */
   const splashLogo=document.getElementById("atyafSplashLogo");
-  if(splashLogo && logoEnabled && managedLogo)splashLogo.src=managedLogo;
+  const fallbackSplashLogo=pickLogo(
+    g.splashLogoUrl||g.splash_logo_url||g.splashLogo||g.splash_logo||
+    g.splashLogoImage||g.splash_logo_image
+  );
+  const effectiveSplashLogo=managedLogo||fallbackSplashLogo;
+  if(splashLogo && effectiveSplashLogo){
+    splashLogo.src=effectiveSplashLogo;
+    splashLogo.removeAttribute("srcset");
+  }
+
+  /* Keep the splash size stable across different uploaded logo proportions.
+     These values come from the existing admin controls. */
+  const splashDesktop=Math.max(120,Math.min(800,Number(g.splashDesktopWidth||g.splashLogoWidth||330)));
+  const splashTablet=Math.max(120,Math.min(700,Number(g.splashTabletWidth||280)));
+  const splashMobile=Math.max(100,Math.min(600,Number(g.splashMobileWidth||220)));
+  const splashRoot=document.documentElement;
+  splashRoot.style.setProperty("--atyaf-splash-logo-desktop-width",splashDesktop+"px");
+  splashRoot.style.setProperty("--atyaf-splash-logo-tablet-width",splashTablet+"px");
+  splashRoot.style.setProperty("--atyaf-splash-logo-mobile-width",splashMobile+"px");
+  if(g.splashBackground){
+    splashRoot.style.setProperty("--atyaf-splash-bg",String(g.splashBackground));
+  }
 
   const search=document.getElementById("search");
   if(search)search.closest(".search").style.display=g.enableSearch===false?"none":"";

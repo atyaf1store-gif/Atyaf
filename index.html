@@ -362,11 +362,11 @@
   <header class="header">
     <div class="container headrow atyaf-head-balanced">
       <div class="actions atyaf-head-actions customer-tools">
-<button class="customer-tool" onclick="openCart()" title="السلة">🛍<span class="tool-count" id="cartCount">0</span></button>
-<button class="customer-tool" onclick="showFavorites()" title="المفضلة">♡<span class="tool-count" id="favCount">0</span></button>
-<button class="customer-tool" onclick="openGiftCenter()" title="الهدايا">🎁</button>
-<button class="customer-tool" onclick="openInvoices()" title="طلباتي والفواتير">▤</button>
-<button class="customer-tool" onclick="openOrderTracking()" title="تتبع الطلب">⌖</button>
+<button class="customer-tool" data-store-action="cart" title="السلة">🛍<span class="tool-count" id="cartCount">0</span></button>
+<button class="customer-tool" data-store-action="favorites" title="المفضلة">♡<span class="tool-count" id="favCount">0</span></button>
+<button class="customer-tool" data-store-action="gifts" title="الهدايا">🎁</button>
+<button class="customer-tool" data-store-action="invoices" title="طلباتي والفواتير">▤</button>
+<button class="customer-tool" data-store-action="tracking" title="تتبع الطلب">⌖</button>
 </div>
 <a class="brand atyaf-profile" href="javascript:void(0)" onclick="openCustomerCenter()" title="حساب العميل">
         <span class="brand-mark">أ</span><span><strong>ATYAAF</strong><small>STORE</small></span>
@@ -523,7 +523,7 @@
     function save(){localStorage.setItem('atyaaf-cart',JSON.stringify(state.cart));localStorage.setItem('atyaaf-favs',JSON.stringify(state.favs));updateCounts()}
     function updateCounts(){document.getElementById('cartCount').textContent=state.cart.reduce((a,x)=>a+x.qty,0);document.getElementById('favCount').textContent=state.favs.length}
     function renderProducts(){let q=(document.getElementById('searchInput').value||'').trim().toLowerCase(), list=products.filter(p=>(state.filter==='all'||p.tags.includes(state.filter))&&(state.brand==='كل الماركات'||p.brand===state.brand)&&(!q||[p.name,p.brand,p.desc].join(' ').toLowerCase().includes(q)));let sort=document.getElementById('sortSelect').value;if(sort==='price-low')list.sort((a,b)=>a.price-b.price);if(sort==='price-high')list.sort((a,b)=>b.price-a.price);if(sort==='new')list.sort((a,b)=>b.id-a.id);document.getElementById('resultText').textContent=q?`نتائج البحث عن «${q}»`:state.brand==='كل الماركات'?'منتجاتنا الأكثر حبًا':`منتجات ${state.brand}`;document.getElementById('productGrid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">لم نعثر على ما تبحث عنه. جرّب كلمة أخرى أو تصفح كل المنتجات.</div>';updateCounts()}
-    function card(p){let liked=state.favs.includes(p.id);let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav(${p.id})">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="product-actions"><button class="btn btn-primary" onclick="addCart(${p.id})">أضف للسلة</button><button class="btn btn-outline" onclick="quickView(${p.id})">عرض</button><button class="gift-buy-btn" onclick="buyAsGift(${p.id})" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
+    function card(p){let liked=state.favs.includes(p.id);let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product" data-product-id="${p.id}"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav(${p.id})">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="product-actions"><button class="btn btn-primary" onclick="addCart(${p.id})">أضف للسلة</button><button class="btn btn-outline" onclick="quickView(${p.id})">عرض</button><button class="gift-buy-btn" onclick="buyAsGift(${p.id})" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
     function setFilter(f,el){state.filter=f;document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderProducts()}
     function filterBrand(b){state.brand=b;document.getElementById('products').scrollIntoView({behavior:'smooth'});renderProducts()}
     function toggleFav(id){let i=state.favs.indexOf(id);i>-1?state.favs.splice(i,1):state.favs.push(id);save();renderProducts()}
@@ -921,6 +921,46 @@ document.addEventListener("DOMContentLoaded",()=>{
     )
     .subscribe();
 });
+</script>
+
+
+<script id="atyaf-store-actions-controller">
+(function(){
+  function productId(el){
+    const card=el.closest('.product');
+    return card ? Number(card.dataset.productId) : 0;
+  }
+  document.addEventListener('click',function(e){
+    const tool=e.target.closest('[data-store-action]');
+    if(tool){
+      e.preventDefault();
+      const a=tool.dataset.storeAction;
+      if(a==='cart') return openCart();
+      if(a==='favorites') return showFavorites();
+      if(a==='gifts') return openGiftCenter();
+      if(a==='invoices') return openInvoices();
+      if(a==='tracking') return openOrderTracking();
+    }
+
+    const el=e.target.closest('.product .btn-primary,.product .btn-outline,.product .gift-buy-btn,.product .favorite');
+    if(!el) return;
+    const id=productId(el); if(!id) return;
+    e.preventDefault(); e.stopPropagation();
+
+    if(el.classList.contains('favorite')) return toggleFav(id);
+    if(el.classList.contains('gift-buy-btn')) return buyAsGift(id);
+    if(el.classList.contains('btn-primary')) return addCart(id);
+    if(el.classList.contains('btn-outline')) return quickView(id);
+  },true);
+
+  // Make the important functions explicitly global for Safari/GitHub Pages.
+  Object.assign(window,{
+    addCart,quickView,buyAsGift,toggleFav,showFavorites,openCart,closeCart,
+    openGift,closeGift,addGift,openGiftCenter,openOrderTracking,closeOrderTracking,
+    trackOrder,openInvoices,closeInvoices,openCustomerCenter,closeCustomerCenter,
+    openCheckout,closeCheckout,submitOrder,changeQty,removeCartItem
+  });
+})();
 </script>
 
 </body>

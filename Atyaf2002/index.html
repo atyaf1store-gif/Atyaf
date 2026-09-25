@@ -55,7 +55,20 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 </div><div class="toolbar" style="margin-top:12px"><button type="button" class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
 
 <script>
-const URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co",KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl",db=supabase.createClient(URL,KEY);
+const URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
+const KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
+let db=null;
+try{
+  if(!window.supabase || typeof window.supabase.createClient!=="function"){
+    throw new Error("مكتبة Supabase لم تُحمّل. تحقق من اتصال الإنترنت أو CDN.");
+  }
+  db=window.supabase.createClient(URL,KEY,{
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  });
+}catch(e){
+  console.error("Supabase init:",e);
+  setTimeout(()=>stat("خطأ الاتصال: "+e.message,true),0);
+}
 const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[];
 
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.tab).classList.add('active')});
@@ -186,12 +199,37 @@ async function deleteAny(){let k=jsonOldKey.value||jsonKey.value;if(k&&confirm('
 async function removeAny(k){if(confirm('حذف '+k+'؟')){await removeSetting(k);await loadAll()}}
 
 async function loadAll(){
- try{stat('جاري تحميل بيانات المتجر…');let [s,p]=await Promise.all([db.from('settings').select('*').order('updated_at',{ascending:false}),db.from('products').select('*').order('sort_order',{ascending:true})]);if(s.error)throw s.error;if(p.error)throw p.error;SETTINGS=s.data||[];PRODUCTS=p.data||[];
- adEditor(heroEditor,'hero_ads','الإعلان العلوي');adEditor(lowerEditor,'bottom_ads','الإعلان السفلي');
- ['topbar','header','nav','gift','footer','policies'].forEach(k=>simpleEditor(document.getElementById(k+'Editor'),k));
- listEditor(benefitsEditor,'benefits',[{title:'منتجات أصلية',text:'اختيارات موثوقة بعناية'},{title:'شحن سريع',text:'توصيل آمن'},{title:'تغليف فاخر',text:'هدية تليق بمن تحب'},{title:'خدمة تهتم',text:'نحن هنا لمساعدتك'}]);
- listEditor(brandsEditor,'brands',[{title:'أطياف',text:'ATYAAF'}]);renderProducts();renderAllSettings();stat('متصل — تم تحميل بيانات المتجر')}catch(e){console.error(e);stat('خطأ: '+e.message,true)}
+ try{
+  if(!db) throw new Error("لم يتم إنشاء اتصال Supabase.");
+  stat("جاري اختبار الاتصال بـ Supabase…");
+
+  const settingsReq=await db.from("settings").select("*").order("updated_at",{ascending:false});
+  if(settingsReq.error) throw new Error("settings: "+settingsReq.error.message);
+
+  const productsReq=await db.from("products").select("*").order("sort_order",{ascending:true});
+  if(productsReq.error) throw new Error("products: "+productsReq.error.message);
+
+  SETTINGS=settingsReq.data||[];
+  PRODUCTS=productsReq.data||[];
+
+  adEditor(heroEditor,"hero_ads","الإعلان العلوي");
+  adEditor(lowerEditor,"bottom_ads","الإعلان السفلي");
+  ["topbar","header","nav","gift","footer","policies"].forEach(k=>simpleEditor(document.getElementById(k+"Editor"),k));
+  listEditor(benefitsEditor,"benefits",[
+    {title:"منتجات أصلية",text:"اختيارات موثوقة بعناية"},
+    {title:"شحن سريع",text:"توصيل آمن"},
+    {title:"تغليف فاخر",text:"هدية تليق بمن تحب"},
+    {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
+  ]);
+  listEditor(brandsEditor,"brands",[{title:"أطياف",text:"ATYAAF"}]);
+  renderProducts();
+  renderAllSettings();
+  stat("متصل بـ Supabase ✓ — تم تحميل "+PRODUCTS.length+" منتج");
+ }catch(e){
+  console.error("loadAll:",e);
+  stat("فشل الاتصال: "+(e?.message||String(e)),true);
+ }
 }
 window.saveProduct=saveProduct;
-loadAll();
+window.addEventListener("DOMContentLoaded",()=>loadAll());
 </script></body></html>

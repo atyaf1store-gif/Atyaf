@@ -519,16 +519,64 @@
     window.addEventListener('focus',loadHeroAds);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadHeroAds()});
 
     let state={filter:'all',brand:'كل الماركات',cart:JSON.parse(localStorage.getItem('atyaaf-cart')||'[]'),favs:JSON.parse(localStorage.getItem('atyaaf-favs')||'[]')};
+    const ATYAAF_CART_SESSION_KEY='atyaaf-cart-session';
+    function cartSessionId(){
+      let id=localStorage.getItem(ATYAAF_CART_SESSION_KEY);
+      if(!id){
+        id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():
+          ('atyaf-'+Date.now()+'-'+Math.random().toString(36).slice(2));
+        localStorage.setItem(ATYAAF_CART_SESSION_KEY,id);
+      }
+      return id;
+    }
+    async function loadCartFromSupabase(){
+      if(!window.atyafDb) return;
+      try{
+        const {data,error}=await window.atyafDb.from('cart_items')
+          .select('product_id,quantity,is_gift,gift_data')
+          .eq('session_id',cartSessionId());
+        if(error) throw error;
+        state.cart=(data||[]).map(x=>({
+          id:String(x.product_id),qty:Number(x.quantity)||1,
+          gift:!!x.is_gift,
+          giftWrap:x.gift_data?.wrap||'',
+          giftWrapPrice:Number(x.gift_data?.price||0)
+        }));
+        save(); renderCart();
+      }catch(e){console.warn('ATYAAF cart load:',e)}
+    }
+    async function syncCartItem(item){
+      if(!window.atyafDb) return false;
+      const payload={
+        session_id:cartSessionId(),
+        product_id:String(item.id),
+        quantity:Number(item.qty)||1,
+        is_gift:!!item.gift,
+        gift_data:item.gift?{wrap:item.giftWrap||'',price:Number(item.giftWrapPrice||0)}:{}
+      };
+      const {error}=await window.atyafDb.from('cart_items')
+        .upsert(payload,{onConflict:'session_id,product_id'});
+      if(error) throw error;
+      return true;
+    }
+    async function deleteCartItemFromSupabase(id){
+      if(!window.atyafDb) return false;
+      const {error}=await window.atyafDb.from('cart_items').delete()
+        .eq('session_id',cartSessionId()).eq('product_id',String(id));
+      if(error) throw error;
+      return true;
+    }
+
     const money=n=>new Intl.NumberFormat('ar-SA').format(n)+' ر.س';
     function save(){localStorage.setItem('atyaaf-cart',JSON.stringify(state.cart));localStorage.setItem('atyaaf-favs',JSON.stringify(state.favs));updateCounts()}
     function updateCounts(){document.getElementById('cartCount').textContent=state.cart.reduce((a,x)=>a+x.qty,0);document.getElementById('favCount').textContent=state.favs.length}
     function renderProducts(){let q=(document.getElementById('searchInput').value||'').trim().toLowerCase(), list=products.filter(p=>(state.filter==='all'||p.tags.includes(state.filter))&&(state.brand==='كل الماركات'||p.brand===state.brand)&&(!q||[p.name,p.brand,p.desc].join(' ').toLowerCase().includes(q)));let sort=document.getElementById('sortSelect').value;if(sort==='price-low')list.sort((a,b)=>a.price-b.price);if(sort==='price-high')list.sort((a,b)=>b.price-a.price);if(sort==='new')list.sort((a,b)=>b.id-a.id);document.getElementById('resultText').textContent=q?`نتائج البحث عن «${q}»`:state.brand==='كل الماركات'?'منتجاتنا الأكثر حبًا':`منتجات ${state.brand}`;document.getElementById('productGrid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">لم نعثر على ما تبحث عنه. جرّب كلمة أخرى أو تصفح كل المنتجات.</div>';updateCounts()}
-    function card(p){let liked=state.favs.includes(p.id);let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product" data-product-id="${p.id}"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav(${p.id})">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="product-actions"><button class="btn btn-primary" onclick="addCart(${p.id})">أضف للسلة</button><button class="btn btn-outline" onclick="quickView(${p.id})">عرض</button><button class="gift-buy-btn" onclick="buyAsGift(${p.id})" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
+    function card(p){let liked=state.favs.map(String).includes(String(p.id));let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product" data-product-id="${p.id}"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav('${p.id}')">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="product-actions"><button class="btn btn-primary" onclick="addCart('${p.id}')">أضف للسلة</button><button class="btn btn-outline" onclick="quickView('${p.id}')">عرض</button><button class="gift-buy-btn" onclick="buyAsGift('${p.id}')" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
     function setFilter(f,el){state.filter=f;document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderProducts()}
     function filterBrand(b){state.brand=b;document.getElementById('products').scrollIntoView({behavior:'smooth'});renderProducts()}
-    function toggleFav(id){let i=state.favs.indexOf(id);i>-1?state.favs.splice(i,1):state.favs.push(id);save();renderProducts()}
+    function toggleFav(id){let i=state.favs.map(String).indexOf(String(id));i>-1?state.favs.splice(i,1):state.favs.push(id);save();renderProducts()}
     function showFavorites(){
-  const list=products.filter(p=>state.favs.includes(p.id));
+  const list=products.filter(p=>state.favs.map(String).includes(String(p.id)));
   const box=document.getElementById('favoritesList');
   box.innerHTML=list.length?list.map(p=>`
     <div class="favorite-row">
@@ -538,8 +586,8 @@
         <h3 style="margin:2px 0">${escapeHtml(p.name)}</h3>
         <b class="price">${money(p.price)}</b>
         <div class="fav-actions">
-          <button class="btn btn-primary" onclick="addCart(${p.id})">أضف للسلة</button>
-          <button class="btn btn-outline" onclick="quickView(${p.id})">عرض</button>
+          <button class="btn btn-primary" onclick="addCart('${p.id}')">أضف للسلة</button>
+          <button class="btn btn-outline" onclick="quickView('${p.id}')">عرض</button>
           <button class="btn btn-outline" onclick="toggleFav(${p.id});showFavorites()">حذف ♡</button>
         </div>
       </div>
@@ -547,21 +595,50 @@
   document.getElementById('favoritesModal').classList.add('open');
 }
 function closeFavorites(){document.getElementById('favoritesModal')?.classList.remove('open')}
-    function addCart(id){let item=state.cart.find(x=>x.id===id);item?item.qty++:state.cart.push({id,qty:1});save();showMessage('أضيف إلى السلة','تمت إضافة المنتج إلى سلتك بنجاح.');}
-    function changeQty(id,delta){let x=state.cart.find(i=>i.id===id);if(!x)return;x.qty+=delta;if(x.qty<=0)state.cart=state.cart.filter(i=>i.id!==id);save();renderCart()}
-    function cartTotal(){return state.cart.reduce((sum,x)=>{let p=products.find(p=>p.id===x.id);return sum+(p?p.price*x.qty:0)+Number(x.giftWrapPrice||0)},0)}
+    async function addCart(id){
+      id=String(id);
+      let item=state.cart.find(x=>String(x.id)===id);
+      item?item.qty++:state.cart.push(item={id,qty:1});
+      save(); renderCart();
+      try{
+        await syncCartItem(item);
+        showMessage('أضيف إلى السلة','تمت إضافة المنتج إلى سلتك بنجاح.');
+      }catch(e){
+        console.error('Add cart:',e);
+        showMessage('تعذر مزامنة السلة','تم حفظ المنتج على هذا الجهاز، لكن تعذر مزامنته مع قاعدة البيانات.');
+      }
+    }
+    async function changeQty(id,delta){
+      id=String(id);
+      let x=state.cart.find(i=>String(i.id)===id); if(!x)return;
+      x.qty+=delta;
+      if(x.qty<=0){
+        state.cart=state.cart.filter(i=>String(i.id)!==id);
+        save();renderCart();
+        try{await deleteCartItemFromSupabase(id)}catch(e){console.error(e)}
+        return;
+      }
+      save();renderCart();
+      try{await syncCartItem(x)}catch(e){console.error(e)}
+    }
+    function cartTotal(){return state.cart.reduce((sum,x)=>{let p=products.find(p=>String(p.id)===String(x.id));return sum+(p?p.price*x.qty:0)+Number(x.giftWrapPrice||0)},0)}
     function renderCart(){
   const el=document.getElementById('cartList');
   el.innerHTML=state.cart.length?state.cart.map(x=>{
-    const p=products.find(p=>p.id===x.id);
+    const p=products.find(p=>String(p.id)===String(x.id));
     if(!p)return '';
     const pic=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:66px;height:72px;object-fit:contain;background:#fff;border-radius:12px">`:`<div class="mini-art" style="--tone:${p.tone}"></div>`;
-    return `<div class="cart-item">${pic}<div style="flex:1;min-width:0"><h4>${escapeHtml(p.name)}</h4><small>${money(p.price)}</small>${x.gift?`<div style="font-size:11px;color:var(--copper)">🎁 ${escapeHtml(x.giftWrap||'تغليف هدية')} ${x.giftWrapPrice?' + '+money(x.giftWrapPrice):''}</div>`:''}<div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><b>${x.qty}</b><button onclick="changeQty(${p.id},1)">+</button></div></div><button onclick="removeCartItem(${p.id})" aria-label="حذف" style="background:none;color:var(--danger);font-size:20px">×</button></div>`;
+    return `<div class="cart-item">${pic}<div style="flex:1;min-width:0"><h4>${escapeHtml(p.name)}</h4><small>${money(p.price)}</small>${x.gift?`<div style="font-size:11px;color:var(--copper)">🎁 ${escapeHtml(x.giftWrap||'تغليف هدية')} ${x.giftWrapPrice?' + '+money(x.giftWrapPrice):''}</div>`:''}<div class="qty"><button onclick="changeQty('${p.id}',-1)">−</button><b>${x.qty}</b><button onclick="changeQty('${p.id}',1)">+</button></div></div><button onclick="removeCartItem('${p.id}')" aria-label="حذف" style="background:none;color:var(--danger);font-size:20px">×</button></div>`;
   }).join(''):'<div class="empty">السلة فارغة<br><a href="#products" onclick="closeCart()" class="link">ابدأ التسوق</a></div>';
   document.getElementById('cartTotal').textContent=money(cartTotal());
   document.getElementById('checkoutTotal').textContent=money(cartTotal());
 }
-function removeCartItem(id){state.cart=state.cart.filter(x=>x.id!==id);save();renderCart()}
+async function removeCartItem(id){
+  id=String(id);
+  state.cart=state.cart.filter(x=>String(x.id)!==id);
+  save();renderCart();
+  try{await deleteCartItemFromSupabase(id)}catch(e){console.error('Remove cart:',e)}
+}
 function openCart(){renderCart();document.getElementById('cartDrawer').classList.add('open')};function closeCart(){document.getElementById('cartDrawer').classList.remove('open')};function openCheckout(){if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا واحدًا على الأقل قبل متابعة الطلب.');closeCart();document.getElementById('checkoutModal').classList.add('open')};function closeCheckout(){document.getElementById('checkoutModal').classList.remove('open')}
     async function submitOrder(e){
   e.preventDefault();
@@ -589,7 +666,7 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
   }
 }
     function quickView(id){
-  const p=products.find(x=>x.id===id);if(!p)return;
+  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
   const body=document.getElementById('productModalBody');
   const img=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;max-height:330px;object-fit:contain;background:#fff;border-radius:18px;margin-bottom:18px">`:'';
   body.innerHTML=`${img}<small style="color:var(--copper)">${escapeHtml(p.brand)}</small><h2 style="margin:5px 0">${escapeHtml(p.name)}</h2><p>${escapeHtml(p.desc||'')}</p><div class="price" style="margin:14px 0">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" onclick="addCart(${p.id});closeProductDetails()">أضف للسلة</button><button class="btn btn-outline" onclick="toggleFav(${p.id});closeProductDetails()">♡ المفضلة</button><button class="btn btn-outline" onclick="buyAsGift(${p.id});closeProductDetails()">🎁 شراء كهدية</button></div>`;
@@ -609,7 +686,9 @@ function closeProductDetails(){document.getElementById('productModal')?.classLis
   if(!state.cart.length){closeGift();return showMessage('اختر المنتج أولًا','أضف المنتج الذي تريد إهداءه ثم اختر التغليف.')}
   const item=state.cart[state.cart.length-1];
   item.gift=true;item.giftWrapPrice=price;item.giftWrap=price===45?'صندوق المناسبات الفاخر':'تغليف أطياف الكريمي';
-  save();closeGift();showMessage('تم تجهيزها كهدية','تم ربط التغليف بالمنتج المختار وإضافته إلى السلة.');
+  save();closeGift();
+  syncCartItem(item).catch(e=>console.error('Gift cart sync:',e));
+  showMessage('تم تجهيزها كهدية','تم ربط التغليف بالمنتج المختار وإضافته إلى السلة.');
 }
     
 
@@ -928,7 +1007,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 (function(){
   function productId(el){
     const card=el.closest('.product');
-    return card ? Number(card.dataset.productId) : 0;
+    return card ? String(card.dataset.productId||'').trim() : '';
   }
   document.addEventListener('click',function(e){
     const tool=e.target.closest('[data-store-action]');
@@ -963,5 +1042,8 @@ document.addEventListener("DOMContentLoaded",()=>{
 })();
 </script>
 
+<script>
+window.addEventListener('load',()=>setTimeout(loadCartFromSupabase,700));
+</script>
 </body>
 </html>

@@ -344,17 +344,31 @@
 }
 </style>
 
+<style id="atyaf-tools-final">
+.customer-tools{display:flex!important;align-items:center!important;gap:7px!important;direction:rtl!important}
+.customer-tool{position:relative;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--paper);display:grid;place-items:center;color:var(--green);font-size:19px;cursor:pointer}
+.customer-tool:hover{border-color:var(--copper);color:var(--copper);transform:translateY(-1px)}
+.customer-tool .tool-count{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 4px;border-radius:20px;display:grid;place-items:center;background:var(--copper);color:#fff;font-size:10px;border:2px solid var(--paper)}
+.account-sheet,.orders-list{display:grid;gap:10px}
+.account-action,.order-card{padding:13px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.account-action{display:flex;align-items:center;gap:12px;cursor:pointer;text-align:right}
+.order-card-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.status-pill{padding:5px 9px;border-radius:999px;background:var(--cream);font-size:11px;color:var(--green)}
+@media(max-width:520px){.customer-tools{gap:4px!important}.customer-tool{width:38px;height:38px;font-size:17px}}
+</style>
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
   <header class="header">
     <div class="container headrow atyaf-head-balanced">
-      <div class="actions atyaf-head-actions">
-        <button class="icon-btn" onclick="openCart()" title="السلة" aria-label="السلة">🛍<span class="count" id="cartCount">0</span></button>
-        <button class="icon-btn" onclick="showFavorites()" title="المفضلة" aria-label="المفضلة">♡<span class="count" id="favCount">0</span></button>
-        <button class="icon-btn order-track-btn" onclick="openOrderTracking()" title="تتبع الطلب" aria-label="تتبع الطلب">⌖</button>
-      </div>
-      <a class="brand atyaf-profile" href="#home" onclick="goHome()" title="الرئيسية">
+      <div class="actions atyaf-head-actions customer-tools">
+<button class="customer-tool" onclick="openCart()" title="السلة">🛍<span class="tool-count" id="cartCount">0</span></button>
+<button class="customer-tool" onclick="showFavorites()" title="المفضلة">♡<span class="tool-count" id="favCount">0</span></button>
+<button class="customer-tool" onclick="openGiftCenter()" title="الهدايا">🎁</button>
+<button class="customer-tool" onclick="openInvoices()" title="طلباتي والفواتير">▤</button>
+<button class="customer-tool" onclick="openOrderTracking()" title="تتبع الطلب">⌖</button>
+</div>
+<a class="brand atyaf-profile" href="javascript:void(0)" onclick="openCustomerCenter()" title="حساب العميل">
         <span class="brand-mark">أ</span><span><strong>ATYAAF</strong><small>STORE</small></span>
       </a>
       <div class="search atyaf-head-search"><span>⌕</span><input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." /></div>
@@ -382,6 +396,8 @@
   
 
 
+<div class="modal" id="customerCenterModal" onclick="if(event.target===this)closeCustomerCenter()"><div class="modal-card" style="width:min(560px,96vw)"><button class="close" onclick="closeCustomerCenter()">×</button><h2>حساب العميل</h2><div class="account-sheet"><button class="account-action" onclick="closeCustomerCenter();openCart()">🛍 <span><b>السلة</b><small style="display:block;color:var(--muted)">مراجعة المنتجات وإتمام الطلب</small></span></button><button class="account-action" onclick="closeCustomerCenter();showFavorites()">♡ <span><b>المفضلة</b><small style="display:block;color:var(--muted)">المنتجات المحفوظة</small></span></button><button class="account-action" onclick="closeCustomerCenter();openInvoices()">▤ <span><b>طلباتي والفواتير</b><small style="display:block;color:var(--muted)">سجل الطلبات والفواتير</small></span></button><button class="account-action" onclick="closeCustomerCenter();openOrderTracking()">⌖ <span><b>تتبع الطلب</b><small style="display:block;color:var(--muted)">معرفة حالة الطلب</small></span></button><button class="account-action" onclick="closeCustomerCenter();openGiftCenter()">🎁 <span><b>الهدايا</b><small style="display:block;color:var(--muted)">شراء منتج كهدية</small></span></button></div></div></div>
+<div class="modal" id="invoicesModal" onclick="if(event.target===this)closeInvoices()"><div class="modal-card" style="width:min(680px,96vw)"><button class="close" onclick="closeInvoices()">×</button><h2>طلباتي والفواتير</h2><div id="ordersList" class="orders-list"></div></div></div>
 <div class="modal" id="trackingModal" onclick="if(event.target===this)closeOrderTracking()">
   <div class="modal-card" style="width:min(520px,96vw)">
     <button class="close" onclick="closeOrderTracking()">×</button>
@@ -564,8 +580,9 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
       if(error)throw error;
       if(data?.id)no='ATY-'+data.id;
     }
+    saveLocalOrder({number:no,status:'new',total:order.total,date:new Date().toLocaleString('ar'),items:order.items});
     state.cart=[];save();closeCheckout();form.reset();
-    showMessage('تم استلام طلبك','رقم الطلب '+no+' — شكرًا لاختيارك أطياف ستور.');
+    showMessage('تم استلام طلبك','رقم الطلب '+no+' — تم حفظه في طلباتي والفواتير.');
   }catch(err){
     console.warn('Order save:',err);
     showMessage('تعذر إرسال الطلب','لم يتم حفظ الطلب. تحقق من اتصال المتجر وجدول orders ثم حاول مرة أخرى.');
@@ -595,6 +612,14 @@ function closeProductDetails(){document.getElementById('productModal')?.classLis
   save();closeGift();showMessage('تم تجهيزها كهدية','تم ربط التغليف بالمنتج المختار وإضافته إلى السلة.');
 }
     
+
+function openCustomerCenter(){document.getElementById('customerCenterModal')?.classList.add('open')}
+function closeCustomerCenter(){document.getElementById('customerCenterModal')?.classList.remove('open')}
+function getLocalOrders(){try{return JSON.parse(localStorage.getItem('atyaf_orders')||'[]')}catch(e){return []}}
+function saveLocalOrder(o){const a=getLocalOrders();a.unshift(o);localStorage.setItem('atyaf_orders',JSON.stringify(a.slice(0,30)))}
+function openInvoices(){const box=document.getElementById('ordersList'),a=getLocalOrders(),names={new:'جديد',pending:'قيد المراجعة',processing:'قيد التجهيز',shipped:'تم الشحن',delivered:'تم التسليم',cancelled:'ملغي'};box.innerHTML=a.length?a.map(o=>`<div class="order-card"><div class="order-card-head"><b>${escapeHtml(o.number||'طلب')}</b><span class="status-pill">${escapeHtml(names[o.status]||o.status||'جديد')}</span></div><small>${escapeHtml(o.date||'')}</small><div>الإجمالي: <b>${money(Number(o.total||0))}</b></div><button class="btn btn-outline" style="margin-top:9px" onclick="document.getElementById('trackingNumber').value='${escapeHtml(o.number||'')}';closeInvoices();openOrderTracking();trackOrder()">تتبع الطلب</button></div>`).join(''):'<div class="empty">لا توجد طلبات محفوظة بعد.</div>';document.getElementById('invoicesModal')?.classList.add('open')}
+function closeInvoices(){document.getElementById('invoicesModal')?.classList.remove('open')}
+function openGiftCenter(){document.getElementById('products')?.scrollIntoView({behavior:'smooth'});showMessage('شراء كهدية','اختر المنتج واضغط زر 🎁 ثم اختر التغليف.')}
 
 function openOrderTracking(){
   document.getElementById('trackingResult').style.display='none';

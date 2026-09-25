@@ -536,6 +536,45 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
+
+<style id="atyaf-mobile-nav-horizontal-fix">
+@media(max-width:600px){
+  /* Force the section names into ONE horizontal row on mobile. */
+  .header .nav{
+    display:block!important;
+    width:100%!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-width:none!important;
+  }
+  .header .nav::-webkit-scrollbar{display:none!important}
+  .header .nav .container.navrow,
+  .header .navrow{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    width:max-content!important;
+    min-width:max-content!important;
+    max-width:none!important;
+    gap:7px!important;
+    padding:8px 10px!important;
+    margin:0!important;
+  }
+  .header .navrow>a{
+    display:inline-flex!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:max-content!important;
+    margin:0!important;
+    white-space:nowrap!important;
+    writing-mode:horizontal-tb!important;
+  }
+}
+</style>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>

@@ -445,6 +445,97 @@ input,select,textarea,button{font:inherit}
 }
 </style>
 
+
+<style id="atyaf-mobile-header-profile-v2">
+/* Mobile header/profile refinement only. Desktop remains unchanged. */
+.atyaf-mobile-profile{display:none}
+@media(max-width:600px){
+  /* Remove hamburger on mobile and use the same position for order tracking. */
+  .menu-btn{display:none!important}
+  .atyaf-mobile-track{
+    display:grid!important;place-items:center;width:40px;height:40px;border:1px solid var(--line);
+    border-radius:50%;background:rgba(255,253,250,.72);color:var(--green);cursor:pointer;
+    grid-column:1;grid-row:1;font-size:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+  }
+
+  /* Main store profile: Arabic on right, mark in center, English on left. */
+  .atyaf-profile{display:none!important}
+  .atyaf-mobile-profile{
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:9px;
+    grid-column:2;grid-row:1;width:100%;max-width:235px;justify-self:center;
+    color:var(--green);text-decoration:none
+  }
+  .atyaf-mobile-profile .ar{text-align:right;font-size:12px;font-weight:700;white-space:nowrap}
+  .atyaf-mobile-profile .en{text-align:left;font-size:11px;letter-spacing:1.6px;font-weight:700;white-space:nowrap}
+  .atyaf-mobile-profile .mark{
+    width:39px;height:39px;border:1px solid var(--copper);border-radius:50%;
+    display:grid;place-items:center;color:var(--copper);background:rgba(255,255,255,.35);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)
+  }
+
+  /* Search below profile/icons. */
+  .atyaf-head-search{grid-column:1/-1!important;grid-row:3!important;margin-top:3px}
+
+  /* Named sections bar directly below search. */
+  .nav{display:block!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;
+       background:rgba(255,253,250,.68)!important;border-top:1px solid rgba(212,194,168,.55);
+       border-bottom:1px solid rgba(212,194,168,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .navrow{display:flex!important;width:max-content!important;min-width:100%!important;justify-content:flex-start!important;
+          gap:7px!important;padding:8px 10px!important}
+  .navrow a{
+    display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:6px 12px;
+    border:1px solid rgba(176,126,79,.22);border-radius:999px;background:rgba(255,255,255,.35);
+    color:var(--green);font-size:11px;white-space:nowrap;text-decoration:none
+  }
+
+  /* Header tools stay aligned and transparent. Hide duplicate tracking icon because it moved left. */
+  .atyaf-head-actions{grid-column:1/-1!important;grid-row:2!important;justify-self:center!important}
+  .atyaf-head-actions [data-store-action="tracking"]{display:none!important}
+}
+@media(max-width:380px){
+  .atyaf-mobile-profile{max-width:205px;gap:6px}
+  .atyaf-mobile-profile .ar{font-size:11px}
+  .atyaf-mobile-profile .en{font-size:10px;letter-spacing:1px}
+  .atyaf-mobile-profile .mark{width:35px;height:35px}
+}
+@media(min-width:601px){.atyaf-mobile-track{display:none!important}}
+</style>
+<script id="atyaf-mobile-header-profile-script">
+document.addEventListener('DOMContentLoaded',()=>{
+  const head=document.querySelector('.atyaf-head-balanced');
+  if(!head || head.querySelector('.atyaf-mobile-profile')) return;
+
+  const desktopProfile=head.querySelector('.atyaf-profile');
+  const mobileProfile=document.createElement('a');
+  mobileProfile.href='javascript:void(0)';
+  mobileProfile.className='atyaf-mobile-profile';
+  mobileProfile.title='بروفايل المتجر';
+  mobileProfile.setAttribute('onclick','openCustomerCenter()');
+  mobileProfile.innerHTML='<span class="ar" id="atyafProfileAr">أطياف</span><span class="mark">أ</span><span class="en" id="atyafProfileEn">ATYAAF</span>';
+  if(desktopProfile) desktopProfile.insertAdjacentElement('afterend',mobileProfile);
+  else head.appendChild(mobileProfile);
+
+  const track=document.createElement('button');
+  track.type='button'; track.className='atyaf-mobile-track';
+  track.title='تتبع الطلب'; track.setAttribute('aria-label','تتبع الطلب');
+  track.innerHTML='⌖'; track.addEventListener('click',()=>openOrderTracking());
+  head.appendChild(track);
+
+  // Profile labels are controlled from settings.header without changing the existing desktop logo.
+  const applyProfile=()=>{
+    const m=window.ATYAF_ADMIN_SETTINGS||{};
+    const h=m.header||m.general||{};
+    const ar=h.storeNameAr||h.nameAr||h.arabicName||h.storeName||'أطياف';
+    const en=h.storeNameEn||h.nameEn||h.englishName||'ATYAAF';
+    const arEl=document.getElementById('atyafProfileAr'), enEl=document.getElementById('atyafProfileEn');
+    if(arEl) arEl.textContent=ar;
+    if(enEl) enEl.textContent=en;
+  };
+  applyProfile();
+  document.addEventListener('atyaf:settings-applied',applyProfile);
+});
+</script>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>

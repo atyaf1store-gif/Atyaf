@@ -55,19 +55,23 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 </div><div class="toolbar" style="margin-top:12px"><button type="button" class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
 
 <script>
-const URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
-const KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
+const SUPABASE_PROJECT_URL = String("https://zgvkiqoxmtifuvgcmrqc.supabase.co").trim();
+const SUPABASE_PUBLISHABLE_KEY = String("sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl").trim();
 let db=null;
 try{
   if(!window.supabase || typeof window.supabase.createClient!=="function"){
     throw new Error("مكتبة Supabase لم تُحمّل. تحقق من اتصال الإنترنت أو CDN.");
   }
-  db=window.supabase.createClient(URL,KEY,{
+  const parsedProjectUrl = new window.URL(SUPABASE_PROJECT_URL);
+  if(parsedProjectUrl.protocol!=="https:" || !parsedProjectUrl.hostname.endsWith(".supabase.co")){
+    throw new Error("رابط مشروع Supabase غير صالح: "+SUPABASE_PROJECT_URL);
+  }
+  db=window.supabase.createClient(SUPABASE_PROJECT_URL,SUPABASE_PUBLISHABLE_KEY,{
     auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
   });
 }catch(e){
   console.error("Supabase init:",e);
-  setTimeout(()=>stat("خطأ الاتصال: "+e.message,true),0);
+  setTimeout(()=>stat("خطأ الاتصال: "+(e?.message||String(e)),true),0);
 }
 const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[];
 

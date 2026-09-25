@@ -356,6 +356,95 @@
 .status-pill{padding:5px 9px;border-radius:999px;background:var(--cream);font-size:11px;color:var(--green)}
 @media(max-width:520px){.customer-tools{gap:4px!important}.customer-tool{width:38px;height:38px;font-size:17px}}
 </style>
+
+<style id="atyaf-responsive-polish-v1">
+/* Responsive polish only — keeps the current ATYAAF design and functionality. */
+html{overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+img,video,svg{max-width:100%;height:auto}
+.container{width:min(1180px,calc(100% - 32px));margin-inline:auto}
+.headrow{min-height:76px;gap:16px}
+.atyaf-head-balanced{display:grid!important;grid-template-columns:minmax(250px,1fr) auto minmax(250px,1fr);align-items:center}
+.atyaf-head-search{width:100%;max-width:440px;min-width:0}
+.atyaf-profile{justify-self:center}
+.atyaf-head-actions{justify-self:end;display:flex;flex-wrap:nowrap}
+.navrow{display:flex;justify-content:center;align-items:center;gap:clamp(18px,2.4vw,38px);white-space:nowrap}
+.hero-ad{width:100%;overflow:hidden}
+.hero-ad-track{width:100%}
+.hero-ad img,.hero-ad-track img{width:100%;height:100%;object-fit:cover;object-position:center}
+.benefits{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.benefit{min-width:0;height:100%}
+.brands{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.product{min-width:0}
+.product-visual{aspect-ratio:1/1;min-height:0!important;height:auto!important}
+.product-visual img{width:100%!important;height:100%!important;object-fit:contain!important}
+.product-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px}
+.product-actions .btn{min-width:0}
+.modal-card{max-height:min(88dvh,820px);overflow:auto}
+input,select,textarea,button{font:inherit}
+
+@media (max-width:900px){
+  .container{width:min(100% - 24px,1180px)}
+  .atyaf-head-balanced{grid-template-columns:auto 1fr auto!important;gap:10px}
+  .atyaf-profile{grid-column:2;grid-row:1}
+  .atyaf-head-actions{grid-column:3;grid-row:1}
+  .atyaf-head-search{grid-column:1/-1;grid-row:2;max-width:none}
+  .headrow{padding-block:10px}
+  .nav{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .navrow{width:max-content;min-width:100%;justify-content:center;padding-inline:14px}
+  .benefits{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .brands{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .products{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media (max-width:600px){
+  .container{width:calc(100% - 20px)}
+  .topbar{font-size:11px;min-height:32px}
+  .header{position:relative!important;top:auto!important}
+  .atyaf-head-balanced{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto!important;gap:7px}
+  .atyaf-profile{grid-column:2;grid-row:1;min-width:0;transform:scale(.9)}
+  .atyaf-head-actions{grid-column:1/-1;grid-row:2;justify-self:center!important;max-width:100%;gap:5px!important}
+  .atyaf-head-search{grid-column:1/-1;grid-row:3;width:100%;margin:2px 0 4px}
+  .menu-btn{grid-column:1;grid-row:1}
+  .customer-tool{width:38px!important;height:38px!important;flex:0 0 38px}
+  .navrow{justify-content:flex-start;font-size:12px;gap:20px}
+  .hero-ad{min-height:0!important;height:auto!important;aspect-ratio:16/10;margin-top:0!important}
+  .hero-ad-track{height:100%!important;min-height:0!important}
+  .benefits{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding-block:12px}
+  .benefit{padding:16px 10px!important;min-height:128px;display:flex!important;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+  .benefit i{margin-bottom:7px}
+  .benefit b{font-size:14px}
+  .benefit span{font-size:11px;line-height:1.6}
+  .section{padding-block:34px}
+  .section-head{align-items:flex-end;gap:10px}
+  .section-head h2{font-size:clamp(25px,8vw,34px)}
+  .brands{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .brand-card{min-height:92px;padding:12px 8px!important}
+  .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .product-info{padding:12px!important}
+  .product-info h3{font-size:14px;line-height:1.45}
+  .product-info small{font-size:10px}
+  .price{font-size:13px}
+  .product-actions{grid-template-columns:1fr 1fr;gap:6px}
+  .product-actions .gift-buy-btn{grid-column:1/-1;width:100%;height:38px}
+  .product-actions .btn{padding:9px 5px;font-size:11px}
+  .modal-card{width:calc(100vw - 20px)!important;max-width:none!important;max-height:88dvh;padding:18px!important}
+}
+
+@media (max-width:380px){
+  .container{width:calc(100% - 16px)}
+  .customer-tool{width:35px!important;height:35px!important;flex-basis:35px}
+  .benefits,.brands,.products{gap:7px}
+  .benefit{min-height:118px;padding:12px 7px!important}
+  .brand-card{min-height:84px}
+  .product-info{padding:9px!important}
+  .product-actions{grid-template-columns:1fr}
+  .product-actions .gift-buy-btn{grid-column:auto}
+}
+</style>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>

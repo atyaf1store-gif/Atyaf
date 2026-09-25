@@ -16,25 +16,23 @@ main{padding:28px;min-width:0}h1,h2,h3{color:var(--g)}.top{display:flex;align-it
 table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;font-size:13px}th{color:var(--muted)}.actions{display:flex;gap:5px;flex-wrap:wrap}.muted{color:var(--muted);font-size:12px}
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.media{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.media img,.media video{width:100%;height:110px;object-fit:cover;border-radius:8px}.upload{border:2px dashed #cfc4b6;border-radius:14px;padding:18px;text-align:center;background:#faf7f1}.upload input{border:0;background:none}
 .section-editor{border-right:4px solid var(--c)}.switch{display:flex;gap:8px;align-items:center}dialog{border:0;border-radius:18px;width:min(800px,95vw);padding:0;max-height:92vh}dialog::backdrop{background:#102a2588}.modal{padding:20px;max-height:92vh;overflow:auto}.close{border:0;width:34px;height:34px;border-radius:50%;float:left}
-.nav button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
-.panel{scroll-margin-top:18px}
 @media(max-width:850px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.nav{display:flex;overflow:auto}.nav button{width:auto;white-space:nowrap}main{padding:14px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}table{display:block;overflow:auto}}
 </style></head><body>
 <div class="app"><aside><div class="logo">ATYAAF PRO</div><div class="sub">إدارة كاملة لكل تفصيل في المتجر</div><div class="nav">
-<button class="active" data-tab="dashboard" onclick="openAdminTab('dashboard')">الرئيسية</button>
-<button data-tab="hero" onclick="openAdminTab('hero')">الإعلان العلوي</button><button data-tab="lowerAd" onclick="openAdminTab('lowerAd')">الإعلان السفلي</button>
-<button data-tab="topbar" onclick="openAdminTab('topbar')">الشريط العلوي</button><button data-tab="header" onclick="openAdminTab('header')">الهيدر والبحث</button><button data-tab="nav" onclick="openAdminTab('nav')">القائمة الرئيسية</button>
-<button data-tab="benefits" onclick="openAdminTab('benefits')">مزايا المتجر</button><button data-tab="brands" onclick="openAdminTab('brands')">الماركات</button><button data-tab="products" onclick="openAdminTab('products')">المنتجات</button>
-<button data-tab="gift" onclick="openAdminTab('gift')">قسم الهدية</button><button data-tab="footer" onclick="openAdminTab('footer')">الفوتر والتواصل</button><button data-tab="policies" onclick="openAdminTab('policies')">السياسات</button>
-<button data-tab="allsettings" onclick="openAdminTab('allsettings')">كل الإعدادات</button>
+<button class="active" data-tab="dashboard">الرئيسية</button>
+<button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
+<button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="nav">القائمة الرئيسية</button>
+<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
+<button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
+<button data-tab="allsettings">كل الإعدادات</button>
 </div></aside><main>
 <div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><button class="btn alt" onclick="loadAll()">↻ تحديث</button></div>
 <div id="status" class="status">جاري الاتصال…</div>
 
 <section id="dashboard" class="panel active"><div class="card"><h2>إدارة كاملة</h2><p>اختر أي قسم من القائمة. كل جزء يُحفظ مستقلاً في جدول <b>settings</b>، والوسائط تُرفع مباشرة إلى Supabase Storage بدون لصق روابط.</p></div></section>
 
-<section id="hero" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية العلوية</h2><div class="muted" style="margin-bottom:12px">نفس إعدادات الشاشة السفلية بالكامل: رفع مباشر • سلايدر • فيديو • ارتفاعات • إظهار/إخفاء • حذف</div><div id="heroEditor"></div></div></section>
-<section id="lowerAd" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية تحت الهدية</h2><div class="muted" style="margin-bottom:12px">رفع مباشر • سلايدر • فيديو • ارتفاعات • إظهار/إخفاء • حذف</div><div id="lowerEditor"></div></div></section>
+<section id="hero" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية العلوية</h2><div id="heroEditor"></div></div></section>
+<section id="lowerAd" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية تحت الهدية</h2><div id="lowerEditor"></div></div></section>
 <section id="topbar" class="panel"><div class="card section-editor"><h2>الشريط العلوي</h2><div id="topbarEditor"></div></div></section>
 <section id="header" class="panel"><div class="card section-editor"><h2>الهيدر والبحث والشعار</h2><div id="headerEditor"></div></div></section>
 <section id="nav" class="panel"><div class="card section-editor"><h2>روابط القائمة الرئيسية</h2><div id="navEditor"></div></div></section>
@@ -54,70 +52,19 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <div class="field"><label>السعر</label><input id="pPrice" type="number"></div><div class="field"><label>السعر القديم</label><input id="pOld" type="number"></div>
 <div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field"><label>نشط/مخفي</label><select id="pActive"><option value="true">ظاهر</option><option value="false">مخفي</option></select></div>
 <div class="field"><label>ترتيب</label><input id="pSort" type="number"></div><div class="field full upload"><label>صورة المنتج — رفع مباشر</label><input id="pImageFile" type="file" accept="image/*"><div id="pImagePreview"></div></div>
-</div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
+</div><div class="toolbar" style="margin-top:12px"><button type="button" class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
 
 <script>
-const SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
-const SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
-const BUCKET='store-media';
-let db=null, SETTINGS=[], PRODUCTS=[];
+const URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co",KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl",db=supabase.createClient(URL,KEY);
+const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[];
 
-function openAdminTab(id, updateHash=true){
-  const panel=document.getElementById(id);
-  if(!panel) return false;
-  document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===id));
-  document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
-  if(updateHash && location.hash!=='#'+id){
-    try{history.replaceState(null,'','#'+id)}catch(e){location.hash=id}
-  }
-  if(window.innerWidth<=850){
-    requestAnimationFrame(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}));
-  }
-  return true;
-}
-window.openAdminTab=openAdminTab;
-
-document.addEventListener('click',function(e){
-  const b=e.target.closest('.nav button[data-tab]');
-  if(!b) return;
-  e.preventDefault();
-  openAdminTab(b.dataset.tab);
-},{passive:false});
-
-window.addEventListener('hashchange',()=>{
-  const id=location.hash.replace('#','');
-  if(id) openAdminTab(id,false);
-});
-
-function initAdminNavigation(){
-  const id=location.hash.replace('#','');
-  openAdminTab(document.getElementById(id)?id:'dashboard',false);
-}
-initAdminNavigation();
-
-if(window.supabase){
-  db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.tab).classList.add('active')});
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const parse=v=>{if(typeof v!=='string')return v;try{return JSON.parse(v)}catch{return v}};
 const pretty=v=>typeof v==='string'?v:JSON.stringify(v,null,2);
-function stat(t,bad=false){
-  const el=document.getElementById('status');
-  if(!el)return;
-  el.textContent=t;
-  el.style.background=bad?'#f8e5e3':'#eaf2ed';
-}
+function stat(t,bad=false){status.textContent=t;status.style.background=bad?'#f8e5e3':'#eaf2ed'}
 function getSetting(key,def={}){let r=SETTINGS.find(x=>x.key===key);return r?parse(r.value):def}
-async function putSetting(key,value){
-  const matches=SETTINGS.filter(x=>x.key===key);
-  let r;
-  if(matches.length){
-    r=await db.from('settings').update({value}).eq('key',key);
-  }else{
-    r=await db.from('settings').insert({key,value});
-  }
-  if(r.error)throw r.error;
-}
+async function putSetting(key,value){let old=SETTINGS.find(x=>x.key===key);let r=old?await db.from('settings').update({value}).eq('id',old.id):await db.from('settings').insert({key,value});if(r.error)throw r.error}
 async function removeSetting(key){let old=SETTINGS.find(x=>x.key===key);if(old){let r=await db.from('settings').delete().eq('id',old.id);if(r.error)throw r.error}}
 
 async function uploadFiles(files,folder){
@@ -129,10 +76,6 @@ async function uploadFiles(files,folder){
   const pub=db.storage.from(BUCKET).getPublicUrl(path); urls.push(pub.data.publicUrl);
  }
  return urls;
-}
-
-function renderAdScreen(el,key){
- return adEditor(el,key);
 }
 
 function adEditor(el,key,title){
@@ -151,7 +94,7 @@ function adEditor(el,key,title){
  <div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveAd('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
 }
 async function saveAd(key,card){
- try{let old=getSetting(key,{}),files=card.querySelector('.files').files,added=files.length?await uploadFiles(files,key):[];let value={...old,enabled:card.querySelector('.enabled').value==='true',interval:+card.querySelector('.interval').value||3500,heightDesktop:+card.querySelector('.hd').value||650,heightTablet:+card.querySelector('.ht').value||520,heightMobile:+card.querySelector('.hm').value||360,fit:card.querySelector('.fit').value,link:card.querySelector('.link').value.trim(),media:[...(Array.isArray(old.media)?old.media:[]),...added]};await putSetting(key,value);await loadAll();stat((key==='hero_ads'?'تم حفظ وربط الشاشة العلوية hero_ads بنجاح':key==='bottom_ads'?'تم حفظ وربط الشاشة السفلية bottom_ads بنجاح':'تم الحفظ والرفع مباشرة بنجاح'))}catch(e){stat(e.message,true)}}
+ try{let old=getSetting(key,{}),files=card.querySelector('.files').files,added=files.length?await uploadFiles(files,key):[];let value={...old,enabled:card.querySelector('.enabled').value==='true',interval:+card.querySelector('.interval').value||3500,heightDesktop:+card.querySelector('.hd').value||650,heightTablet:+card.querySelector('.ht').value||520,heightMobile:+card.querySelector('.hm').value||360,fit:card.querySelector('.fit').value,link:card.querySelector('.link').value.trim(),media:[...(Array.isArray(old.media)?old.media:[]),...added]};await putSetting(key,value);await loadAll();stat('تم الحفظ والرفع مباشرة بنجاح')}catch(e){stat(e.message,true)}}
 async function removeAdMedia(key,i){let s=getSetting(key,{}),m=Array.isArray(s.media)?[...s.media]:[];m.splice(i,1);s.media=m;await putSetting(key,s);await loadAll()}
 async function toggleSection(key){let s=getSetting(key,{});s.enabled=s.enabled===false;await putSetting(key,s);await loadAll()}
 async function deleteSection(key){if(!confirm('حذف هذا القسم وإعداداته؟'))return;await removeSetting(key);await loadAll()}
@@ -182,7 +125,57 @@ async function removeListItem(key,i){let s=getSetting(key,{items:[]});s.items.sp
 
 function renderProducts(){productRows.innerHTML=PRODUCTS.map(p=>`<tr><td>${esc(p.name||p.title||'')}</td><td>${esc(p.brand||'')}</td><td>${esc(p.price||0)}</td><td>${p.is_active===false?'مخفي':'ظاهر'}</td><td class="actions"><button class="btn alt" onclick='editProduct(${JSON.stringify(String(p.id))})'>تعديل</button><button class="btn red" onclick='quickDeleteProduct(${JSON.stringify(String(p.id))})'>حذف</button></td></tr>`).join('')}
 function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pDesc.value=p.description||p.desc||'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
-async function saveProduct(){try{let id=pId.value,p=PRODUCTS.find(x=>String(x.id)===String(id))||{},image=p.image_url||p.image||'';if(pImageFile.files.length)image=(await uploadFiles(pImageFile.files,'products'))[0];let row={name:pName.value.trim(),brand:pBrand.value.trim(),price:+pPrice.value||0,old_price:+pOld.value||0,description:pDesc.value.trim(),image_url:image,is_active:pActive.value==='true',sort_order:+pSort.value||0};let r=id?await db.from('products').update(row).eq('id',id):await db.from('products').insert(row);if(r.error)throw r.error;productDialog.close();await loadAll()}catch(e){stat(e.message,true)}}
+async function saveProduct(){
+ try{
+  const btn=document.querySelector('#productDialog .toolbar .btn:not(.red)');
+  if(btn){btn.disabled=true;btn.textContent='جاري الحفظ…'}
+  stat('جاري حفظ المنتج…');
+
+  const id=String(pId.value||'').trim();
+  const current=PRODUCTS.find(x=>String(x.id)===id)||{};
+  let image=current.image_url||current.image||'';
+
+  if(pImageFile.files && pImageFile.files.length){
+    stat('جاري رفع صورة المنتج…');
+    image=(await uploadFiles(pImageFile.files,'products'))[0]||image;
+  }
+
+  const row={
+    name:pName.value.trim(),
+    brand:pBrand.value.trim(),
+    price:Number(pPrice.value)||0,
+    old_price:Number(pOld.value)||0,
+    description:pDesc.value.trim(),
+    image_url:image,
+    is_active:pActive.value==='true',
+    sort_order:Number(pSort.value)||0
+  };
+
+  if(!row.name) throw new Error('اسم المنتج مطلوب');
+
+  let q;
+  if(id){
+    q=await db.from('products').update(row).eq('id',id).select('*');
+    if(q.error) throw q.error;
+    if(!q.data || !q.data.length) throw new Error('لم يتم تحديث المنتج. تحقق من صلاحية UPDATE في جدول products.');
+  }else{
+    q=await db.from('products').insert(row).select('*');
+    if(q.error) throw q.error;
+    if(!q.data || !q.data.length) throw new Error('لم يتم إنشاء المنتج. تحقق من صلاحية INSERT في جدول products.');
+  }
+
+  stat('تم حفظ المنتج بنجاح ✓');
+  pImageFile.value='';
+  productDialog.close();
+  await loadAll();
+ }catch(e){
+  console.error('saveProduct:',e);
+  stat('فشل الحفظ: '+(e?.message||String(e)),true);
+ }finally{
+  const btn=document.querySelector('#productDialog .toolbar .btn:not(.red)');
+  if(btn){btn.disabled=false;btn.textContent='حفظ'}
+ }
+}
 async function deleteProduct(){if(pId.value)await quickDeleteProduct(pId.value);productDialog.close()}
 async function quickDeleteProduct(id){if(!confirm('حذف المنتج؟'))return;let r=await db.from('products').delete().eq('id',id);if(r.error)return stat(r.error.message,true);await loadAll()}
 
@@ -193,18 +186,12 @@ async function deleteAny(){let k=jsonOldKey.value||jsonKey.value;if(k&&confirm('
 async function removeAny(k){if(confirm('حذف '+k+'؟')){await removeSetting(k);await loadAll()}}
 
 async function loadAll(){
- try{
-  if(!db){
-    if(window.supabase) db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    else { stat('لوحة الأقسام تعمل، لكن تعذر تحميل مكتبة Supabase. أعد تحميل الصفحة.',true); return; }
-  }
-  stat('جاري تحميل بيانات المتجر…');let [s,p]=await Promise.all([db.from('settings').select('*').order('updated_at',{ascending:false}),db.from('products').select('*').order('sort_order',{ascending:true})]);if(s.error)throw s.error;if(p.error)throw p.error;SETTINGS=s.data||[];PRODUCTS=p.data||[];
- renderAdScreen(heroEditor,'hero_ads');renderAdScreen(lowerEditor,'bottom_ads');
+ try{stat('جاري تحميل بيانات المتجر…');let [s,p]=await Promise.all([db.from('settings').select('*').order('updated_at',{ascending:false}),db.from('products').select('*').order('sort_order',{ascending:true})]);if(s.error)throw s.error;if(p.error)throw p.error;SETTINGS=s.data||[];PRODUCTS=p.data||[];
+ adEditor(heroEditor,'hero_ads','الإعلان العلوي');adEditor(lowerEditor,'bottom_ads','الإعلان السفلي');
  ['topbar','header','nav','gift','footer','policies'].forEach(k=>simpleEditor(document.getElementById(k+'Editor'),k));
  listEditor(benefitsEditor,'benefits',[{title:'منتجات أصلية',text:'اختيارات موثوقة بعناية'},{title:'شحن سريع',text:'توصيل آمن'},{title:'تغليف فاخر',text:'هدية تليق بمن تحب'},{title:'خدمة تهتم',text:'نحن هنا لمساعدتك'}]);
- listEditor(brandsEditor,'brands',[{title:'أطياف',text:'ATYAAF'}]);renderProducts();renderAllSettings();
-   const activeId=location.hash.replace('#','')||'dashboard';openAdminTab(activeId,false);
-   stat('متصل — تم تحميل بيانات المتجر')}catch(e){console.error(e);stat('خطأ: '+e.message,true)}
+ listEditor(brandsEditor,'brands',[{title:'أطياف',text:'ATYAAF'}]);renderProducts();renderAllSettings();stat('متصل — تم تحميل بيانات المتجر')}catch(e){console.error(e);stat('خطأ: '+e.message,true)}
 }
+window.saveProduct=saveProduct;
 loadAll();
 </script></body></html>

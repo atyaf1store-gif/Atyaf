@@ -919,14 +919,46 @@ window.addEventListener("focus",atyafLoadLowerAds);
     links.forEach(([k,rx])=>{if(!s[k])return;const a=[...f.querySelectorAll("a")].find(x=>rx.test(x.textContent)||rx.test(x.href));if(a)a.href=s[k]});
   }
   function applyBenefits(s){
-    let sec=findText(["section",".features",".benefits"],"منتجات أصلية")?.closest("section")||$(".features")||$(".benefits");
-    if(!sec)return;hide(sec,s.enabled===false);
-    const items=s.items||[];const cards=[...sec.querySelectorAll(".feature,.benefit,.card,article")];
-    items.forEach((it,i)=>{if(!cards[i])return;hide(cards[i],it.hidden===true);const h=cards[i].querySelector("h2,h3,h4,strong");const p=cards[i].querySelector("p,small");setText(h,it.title||it.name);setText(p,it.text)});
+    const sec=document.querySelector('section.benefits,.benefits');
+    if(!sec)return;
+    hide(sec,s?.enabled===false);
+    const items=Array.isArray(s?.items)?s.items:[];
+    if(!items.length)return;
+
+    // Preserve the existing card design, but let Admin control title/text/icon/visibility.
+    const current=[...sec.querySelectorAll(':scope > .benefit')];
+    items.forEach((it,i)=>{
+      let card=current[i];
+      if(!card){
+        card=document.createElement('div');
+        card.className='benefit';
+        card.innerHTML='<i>✦</i><b></b><span></span>';
+        sec.appendChild(card);
+      }
+      hide(card,it?.hidden===true);
+      const icon=card.querySelector('i');
+      const title=card.querySelector('b,strong,h3,h4');
+      const desc=card.querySelector('span,p,small');
+      if(icon && (it.icon||it.symbol||it.textIcon)) icon.textContent=it.icon||it.symbol||it.textIcon;
+      if(title) title.textContent=it.title||it.name||'';
+      if(desc) desc.textContent=it.text||it.description||'';
+    });
+    current.slice(items.length).forEach(x=>hide(x,true));
   }
   function applyBrands(s){
-    let sec=findText(["section"],"الماركات")?.closest("section")||$(".brands");
-    if(!sec)return;hide(sec,s.enabled===false);
+    const sec=document.querySelector('#brands');
+    if(!sec)return;
+    hide(sec,s?.enabled===false);
+    const items=Array.isArray(s?.items)?s.items:[];
+    if(!items.length)return;
+    const box=sec.querySelector('.brands');
+    if(!box)return;
+    box.innerHTML=items.filter(x=>x?.hidden!==true).map(it=>{
+      const title=String(it.title||it.name||'');
+      const sub=String(it.text||it.subtitle||'');
+      const safeTitle=title.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      return `<button class="brand-card" onclick="filterBrand('${safeTitle}')"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(sub)}</span></button>`;
+    }).join('');
   }
   function applyPolicies(s){
     Object.entries(s||{}).forEach(([k,v])=>{
@@ -975,6 +1007,8 @@ window.addEventListener("focus",atyafLoadLowerAds);
     }catch(e){console.error("ATYAF settings sync:",e)}
   }
   window.atyafSyncAdminSettings=sync;
+  // atyaf-settings-poll-fallback: keeps Admin changes visible even if Realtime is disabled.
+  window.setInterval(()=>{ if(!document.hidden) sync(); },15000);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(sync,250));
   else setTimeout(sync,250);
   window.addEventListener("focus",sync);

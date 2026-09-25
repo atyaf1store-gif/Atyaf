@@ -71,11 +71,36 @@ try{
 }
 const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[];
 
+const heroEditor=document.getElementById('heroEditor');
+const lowerEditor=document.getElementById('lowerEditor');
+const benefitsEditor=document.getElementById('benefitsEditor');
+const brandsEditor=document.getElementById('brandsEditor');
+const productRows=document.getElementById('productRows');
+const settingRows=document.getElementById('settingRows');
+const productDialog=document.getElementById('productDialog');
+const pId=document.getElementById('pId');
+const pName=document.getElementById('pName');
+const pBrand=document.getElementById('pBrand');
+const pPrice=document.getElementById('pPrice');
+const pOld=document.getElementById('pOld');
+const pDesc=document.getElementById('pDesc');
+const pActive=document.getElementById('pActive');
+const pSort=document.getElementById('pSort');
+const pImageFile=document.getElementById('pImageFile');
+const pImagePreview=document.getElementById('pImagePreview');
+
+
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.tab).classList.add('active')});
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const parse=v=>{if(typeof v!=='string')return v;try{return JSON.parse(v)}catch{return v}};
 const pretty=v=>typeof v==='string'?v:JSON.stringify(v,null,2);
-function stat(t,bad=false){status.textContent=t;status.style.background=bad?'#f8e5e3':'#eaf2ed'}
+function stat(t,bad=false){
+ const el=document.getElementById('status');
+ if(!el){console.log(t);return}
+ el.textContent=t;
+ el.style.background=bad?'#f8e5e3':'#eaf2ed';
+ el.style.color=bad?'#8b211b':'#17352e';
+}
 function getSetting(key,def={}){let r=SETTINGS.find(x=>x.key===key);return r?parse(r.value):def}
 async function putSetting(key,value){let old=SETTINGS.find(x=>x.key===key);let r=old?await db.from('settings').update({value}).eq('id',old.id):await db.from('settings').insert({key,value});if(r.error)throw r.error}
 async function removeSetting(key){let old=SETTINGS.find(x=>x.key===key);if(old){let r=await db.from('settings').delete().eq('id',old.id);if(r.error)throw r.error}}
@@ -214,7 +239,10 @@ async function loadAll(){
 
   adEditor(heroEditor,"hero_ads","الإعلان العلوي");
   adEditor(lowerEditor,"bottom_ads","الإعلان السفلي");
-  ["topbar","header","nav","gift","footer","policies"].forEach(k=>simpleEditor(document.getElementById(k+"Editor"),k));
+  ["topbar","header","nav","gift","footer","policies"].forEach(k=>{
+    const el=document.getElementById(k+"Editor");
+    if(el) simpleEditor(el,k);
+  });
   listEditor(benefitsEditor,"benefits",[
     {title:"منتجات أصلية",text:"اختيارات موثوقة بعناية"},
     {title:"شحن سريع",text:"توصيل آمن"},
@@ -231,5 +259,11 @@ async function loadAll(){
  }
 }
 window.saveProduct=saveProduct;
-window.addEventListener("DOMContentLoaded",()=>loadAll());
+setTimeout(()=>{
+  const el=document.getElementById("status");
+  if(el && el.textContent.includes("جاري الاتصال")){
+    stat("الاتصال لم يبدأ — تحقق من تحميل مكتبة Supabase",true);
+  }
+},6000);
+loadAll();
 </script></body></html>

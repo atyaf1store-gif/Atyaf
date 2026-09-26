@@ -17,6 +17,14 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.media{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.media img,.media video{width:100%;height:110px;object-fit:cover;border-radius:8px}.upload{border:2px dashed #cfc4b6;border-radius:14px;padding:18px;text-align:center;background:#faf7f1}.upload input{border:0;background:none}
 .section-editor{border-right:4px solid var(--c)}.switch{display:flex;gap:8px;align-items:center}dialog{border:0;border-radius:18px;width:min(800px,95vw);padding:0;max-height:92vh}dialog::backdrop{background:#102a2588}.modal{padding:20px;max-height:92vh;overflow:auto}.close{border:0;width:34px;height:34px;border-radius:50%;float:left}
 @media(max-width:850px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.nav{display:flex;overflow:auto}.nav button{width:auto;white-space:nowrap}main{padding:14px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}table{display:block;overflow:auto}}
+
+/* محرر الهدية المستقل */
+.gift-admin-preview{border:1px solid var(--line);border-radius:18px;overflow:hidden;min-height:230px;display:grid;grid-template-columns:minmax(180px,36%) 1fr;background:#fff;margin-top:14px}
+.gift-admin-preview .gift-pic{min-height:230px;background:#f3eee6 center/cover no-repeat}
+.gift-admin-preview .gift-copy{padding:26px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.gift-admin-preview .gift-kicker{font-size:12px;margin-bottom:7px}.gift-admin-preview h3{margin:0 0 9px;font-size:30px}.gift-admin-preview p{margin:0 0 14px;line-height:1.8}
+.gift-admin-preview .gift-preview-btn{border:0;border-radius:10px;padding:10px 17px}.color-row{display:grid;grid-template-columns:72px 1fr;gap:8px;align-items:center}.color-row input[type=color]{height:42px;padding:3px}
+@media(max-width:650px){.gift-admin-preview{grid-template-columns:1fr}.gift-admin-preview .gift-pic{min-height:190px}.gift-admin-preview .gift-copy{padding:20px}}
 </style></head><body>
 <div class="app"><aside><div class="logo">ATYAAF PRO</div><div class="sub">إدارة كاملة لكل تفصيل في المتجر</div><div class="nav">
 <button class="active" data-tab="dashboard">الرئيسية</button>
@@ -79,6 +87,7 @@ const heroEditor=document.getElementById('heroEditor');
 const lowerEditor=document.getElementById('lowerEditor');
 const benefitsEditor=document.getElementById('benefitsEditor');
 const brandsEditor=document.getElementById('brandsEditor');
+const giftEditor=document.getElementById('giftEditor');
 const productRows=document.getElementById('productRows');
 const settingRows=document.getElementById('settingRows');
 const productDialog=document.getElementById('productDialog');
@@ -149,6 +158,62 @@ const schemas={
  footer:{title:'الفوتر',fields:[['storeName','اسم المتجر'],['description','الوصف'],['phone','الهاتف'],['email','البريد'],['instagram','Instagram'],['tiktok','TikTok'],['whatsapp','WhatsApp'],['copyright','حقوق النشر'],['enabled','ظاهر','bool']]},
  policies:{title:'السياسات',fields:[['about','من نحن','area'],['privacy','الخصوصية','area'],['terms','الشروط','area'],['returns','الاستبدال والاسترجاع','area'],['shipping','الشحن','area'],['customerService','خدمة العملاء','area']]}
 };
+
+function giftSectionEditor(){
+ const s=getSetting('gift',{enabled:true,kicker:'هدية مميزة',title:'اختر هديتك',text:'تغليف أنيق يليق بمن تحب',button:'اختيار الهدية',link:'#',image:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',buttonColor:'#17352e',buttonTextColor:'#ffffff',fontFamily:'Tahoma, Arial, sans-serif',titleSize:32,textSize:15,imageFit:'cover',imagePosition:'center',borderRadius:22});
+ const image=String(s.image||s.image_url||'');
+ giftEditor.innerHTML=`<div class="grid">
+ <div class="field"><label>الحالة</label><select data-gift="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
+ <div class="field"><label>النص الصغير</label><input data-gift="kicker" value="${esc(s.kicker||'')}"></div>
+ <div class="field"><label>العنوان</label><input data-gift="title" value="${esc(s.title||'')}"></div>
+ <div class="field"><label>نص الزر</label><input data-gift="button" value="${esc(s.button||'')}"></div>
+ <div class="field full"><label>الوصف</label><textarea data-gift="text" rows="4">${esc(s.text||'')}</textarea></div>
+ <div class="field full"><label>رابط الزر</label><input data-gift="link" value="${esc(s.link||'')}"></div>
+ ${giftColor('backgroundColor','لون الخلفية',s.backgroundColor||'#fffdfa')}
+ ${giftColor('textColor','لون النص',s.textColor||'#17352e')}
+ ${giftColor('accentColor','اللون المميز',s.accentColor||'#b47a4f')}
+ ${giftColor('buttonColor','لون الزر',s.buttonColor||'#17352e')}
+ ${giftColor('buttonTextColor','لون كتابة الزر',s.buttonTextColor||'#ffffff')}
+ <div class="field"><label>نوع الخط</label><select data-gift="fontFamily">
+  <option value="Tahoma, Arial, sans-serif" ${String(s.fontFamily||'').startsWith('Tahoma')?'selected':''}>Tahoma</option>
+  <option value="Arial, sans-serif" ${s.fontFamily==='Arial, sans-serif'?'selected':''}>Arial</option>
+  <option value="Georgia, serif" ${s.fontFamily==='Georgia, serif'?'selected':''}>Georgia</option>
+  <option value="'Times New Roman', serif" ${s.fontFamily==="'Times New Roman', serif"?'selected':''}>Times New Roman</option>
+ </select></div>
+ <div class="field"><label>حجم العنوان</label><input data-gift="titleSize" type="number" min="16" max="80" value="${Number(s.titleSize||32)}"></div>
+ <div class="field"><label>حجم الوصف</label><input data-gift="textSize" type="number" min="10" max="36" value="${Number(s.textSize||15)}"></div>
+ <div class="field"><label>استدارة الحواف</label><input data-gift="borderRadius" type="number" min="0" max="60" value="${Number(s.borderRadius??22)}"></div>
+ <div class="field"><label>عرض الصورة</label><select data-gift="imageFit"><option value="cover" ${s.imageFit!=='contain'?'selected':''}>Cover</option><option value="contain" ${s.imageFit==='contain'?'selected':''}>Contain</option></select></div>
+ <div class="field"><label>موضع الصورة</label><select data-gift="imagePosition"><option value="center" ${!s.imagePosition||s.imagePosition==='center'?'selected':''}>الوسط</option><option value="top" ${s.imagePosition==='top'?'selected':''}>أعلى</option><option value="bottom" ${s.imagePosition==='bottom'?'selected':''}>أسفل</option></select></div>
+ <div class="field full upload"><b>صورة الهدية — رفع مباشر مستقل</b><input id="giftImageFile" type="file" accept="image/*"><small class="muted">الصورة الجديدة تستبدل الحالية عند الحفظ.</small>
+ ${image?`<div style="margin-top:10px"><img src="${esc(image)}" style="max-width:220px;max-height:160px;object-fit:cover;border-radius:12px"><br><button type="button" class="btn red" style="margin-top:7px" onclick="removeGiftImage()">حذف الصورة فقط</button></div>`:''}</div>
+ </div>
+ <div class="gift-admin-preview" id="giftAdminPreview"><div class="gift-pic"></div><div class="gift-copy"><div class="gift-kicker"></div><h3></h3><p></p><button type="button" class="gift-preview-btn"></button></div></div>
+ <div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveGiftSection()">حفظ تعديلات الهدية</button><button class="btn alt" onclick="toggleSection('gift')">إظهار/إخفاء</button><button class="btn copper" onclick="createGiftSection()">+ إضافة/إنشاء</button><button class="btn red" onclick="deleteGiftSection()">حذف قسم الهدية</button></div>`;
+ giftEditor.querySelectorAll('[data-gift]').forEach(x=>x.addEventListener('input',syncGiftPreview));
+ syncGiftPreview();
+}
+function giftColor(k,label,value){return `<div class="field"><label>${label}</label><div class="color-row"><input data-gift="${k}" type="color" value="${esc(value)}"><input value="${esc(value)}" readonly></div></div>`}
+function readGiftForm(){
+ const old=getSetting('gift',{}),v=k=>giftEditor.querySelector(`[data-gift="${k}"]`)?.value??'';
+ return {...old,enabled:v('enabled')==='true',kicker:v('kicker').trim(),title:v('title').trim(),text:v('text').trim(),button:v('button').trim(),link:v('link').trim(),backgroundColor:v('backgroundColor'),textColor:v('textColor'),accentColor:v('accentColor'),buttonColor:v('buttonColor'),buttonTextColor:v('buttonTextColor'),fontFamily:v('fontFamily'),titleSize:Number(v('titleSize'))||32,textSize:Number(v('textSize'))||15,borderRadius:Number(v('borderRadius'))||0,imageFit:v('imageFit')||'cover',imagePosition:v('imagePosition')||'center'};
+}
+function syncGiftPreview(){
+ const p=document.getElementById('giftAdminPreview');if(!p)return;const s=readGiftForm(),old=getSetting('gift',{}),img=String(old.image||old.image_url||'');
+ p.style.background=s.backgroundColor;p.style.color=s.textColor;p.style.borderRadius=s.borderRadius+'px';p.style.fontFamily=s.fontFamily;
+ const pic=p.querySelector('.gift-pic');pic.style.backgroundImage=img?`url("${img.replace(/"/g,'%22')}")`:'none';pic.style.backgroundSize=s.imageFit;pic.style.backgroundPosition=s.imagePosition;
+ p.querySelector('.gift-kicker').textContent=s.kicker;p.querySelector('.gift-kicker').style.color=s.accentColor;
+ p.querySelector('h3').textContent=s.title;p.querySelector('h3').style.color=s.textColor;p.querySelector('h3').style.fontSize=s.titleSize+'px';
+ p.querySelector('p').textContent=s.text;p.querySelector('p').style.fontSize=s.textSize+'px';
+ const b=p.querySelector('.gift-preview-btn');b.textContent=s.button;b.style.background=s.buttonColor;b.style.color=s.buttonTextColor;
+}
+async function saveGiftSection(){
+ try{stat('جاري حفظ قسم الهدية…');let value=readGiftForm(),file=document.getElementById('giftImageFile')?.files?.[0];if(file){stat('جاري رفع صورة الهدية…');value.image=(await uploadFiles([file],'gift'))[0]||value.image||''}await putSetting('gift',value);await loadAll();stat('تم حفظ الهدية والصورة والألوان والخطوط بنجاح ✓')}catch(e){stat('فشل حفظ الهدية: '+(e?.message||String(e)),true)}
+}
+async function removeGiftImage(){try{let s=getSetting('gift',{});s.image='';s.image_url='';await putSetting('gift',s);await loadAll();stat('تم حذف صورة الهدية فقط ✓')}catch(e){stat(e?.message||String(e),true)}}
+async function deleteGiftSection(){if(!confirm('حذف قسم الهدية وإعداداته؟'))return;try{await removeSetting('gift');await loadAll();stat('تم حذف قسم الهدية')}catch(e){stat(e?.message||String(e),true)}}
+async function createGiftSection(){try{if(SETTINGS.some(x=>x.key==='gift')&&!confirm('استبدال إعدادات الهدية الحالية بإعدادات جديدة؟'))return;await putSetting('gift',{enabled:true,kicker:'هدية مميزة',title:'اختر هديتك',text:'تغليف أنيق يليق بمن تحب',button:'اختيار الهدية',link:'#',image:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',buttonColor:'#17352e',buttonTextColor:'#ffffff',fontFamily:'Tahoma, Arial, sans-serif',titleSize:32,textSize:15,imageFit:'cover',imagePosition:'center',borderRadius:22});await loadAll();stat('تم إنشاء قسم الهدية ✓')}catch(e){stat(e?.message||String(e),true)}}
+
 function simpleEditor(el,key){
  const sc=schemas[key],s=getSetting(key,{enabled:true});
  el.innerHTML=`<div class="grid">${sc.fields.map(([k,l,t])=>t==='area'?`<div class="field full"><label>${l}</label><textarea data-k="${k}" rows="5">${esc(s[k]||'')}</textarea></div>`:t==='bool'?`<div class="field"><label>${l}</label><select data-k="${k}"><option value="true" ${s[k]!==false?'selected':''}>ظاهر</option><option value="false" ${s[k]===false?'selected':''}>مخفي</option></select></div>`:`<div class="field"><label>${l}</label><input data-k="${k}" value="${esc(s[k]||'')}"></div>`).join('')}</div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveSimple('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
@@ -243,10 +308,11 @@ async function loadAll(){
 
   adEditor(heroEditor,"hero_ads","الإعلان العلوي");
   adEditor(lowerEditor,"bottom_ads","الإعلان السفلي");
-  ["topbar","header","nav","gift","footer","policies"].forEach(k=>{
+  ["topbar","header","nav","footer","policies"].forEach(k=>{
     const el=document.getElementById(k+"Editor");
     if(el) simpleEditor(el,k);
   });
+   giftSectionEditor();
   listEditor(benefitsEditor,"benefits",[
     {title:"منتجات أصلية",text:"اختيارات موثوقة بعناية"},
     {title:"شحن سريع",text:"توصيل آمن"},
@@ -262,6 +328,7 @@ async function loadAll(){
   stat("فشل الاتصال: "+(e?.message||String(e)),true);
  }
 }
+Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview});
 window.saveProduct=saveProduct;
 setTimeout(()=>{
   const el=document.getElementById("status");

@@ -1672,5 +1672,80 @@ window.addEventListener('load',()=>{
 });
 </script>
 
+
+<style id="atyaf-profile-intro-admin-sync-css">
+.atyaf-mobile-profile,.atyaf-profile{font-family:var(--atyaf-profile-font,inherit)!important;color:var(--atyaf-profile-text,#17352e)!important}
+.atyaf-mobile-profile .ar,.atyaf-profile .ar{font-size:var(--atyaf-profile-ar,18px)!important}
+.atyaf-mobile-profile .en,.atyaf-profile .en{font-size:var(--atyaf-profile-en,12px)!important}
+.atyaf-mobile-profile .mark,.atyaf-profile .mark{font-size:var(--atyaf-profile-mark,28px)!important;color:var(--atyaf-profile-accent,#b47a4f)!important}
+.atyaf-profile-admin-logo{display:block;max-width:72px;max-height:72px;object-fit:contain}
+#atyafIntro{background:var(--atyaf-intro-bg,#17352e)!important}
+#atyafIntro .atyaf-intro-word{color:var(--atyaf-intro-text,#f5eee4)!important;font-family:var(--atyaf-intro-font,Georgia,serif)!important;font-size:var(--atyaf-intro-size,58px)!important}
+#atyafIntro .atyaf-intro-logo{color:var(--atyaf-intro-accent,#c99a69)!important;border-color:var(--atyaf-intro-accent,#c99a69)!important;font-size:var(--atyaf-intro-mark-size,35px)!important}
+#atyafIntro .atyaf-intro-sub{color:var(--atyaf-intro-accent,#c99a69)!important}
+#atyafIntro .atyaf-intro-admin-logo{max-width:90px;max-height:90px;object-fit:contain}
+</style>
+<script id="atyaf-profile-intro-admin-sync-js">
+(()=>{
+ const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch{return {}}};
+ async function latest(key){
+  const db=window.atyafDb;if(!db)return {};
+  const {data,error}=await db.from('settings').select('id,key,value,updated_at').eq('key',key).order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
+  if(error)throw error;return parse(data?.[0]?.value);
+ }
+ function applyProfile(p){
+  if(!p||typeof p!=='object')return;
+  const profiles=[...document.querySelectorAll('.atyaf-mobile-profile,.atyaf-profile')];
+  profiles.forEach(el=>{
+   el.style.display=p.enabled===false?'none':'';
+   el.style.setProperty('--atyaf-profile-font',p.fontFamily||'Tahoma, Arial, sans-serif');
+   el.style.setProperty('--atyaf-profile-text',p.textColor||'#17352e');
+   el.style.setProperty('--atyaf-profile-accent',p.accentColor||'#b47a4f');
+   el.style.setProperty('--atyaf-profile-ar',(Number(p.arabicSize)||18)+'px');
+   el.style.setProperty('--atyaf-profile-en',(Number(p.englishSize)||12)+'px');
+   el.style.setProperty('--atyaf-profile-mark',(Number(p.markSize)||28)+'px');
+   const ar=el.querySelector('.ar,strong');if(ar&&p.nameAr!=null)ar.textContent=p.nameAr;
+   const en=el.querySelector('.en,small');if(en&&p.nameEn!=null)en.textContent=p.nameEn;
+   const mark=el.querySelector('.mark');
+   if(mark){
+    if(p.logoImage){mark.innerHTML=`<img class="atyaf-profile-admin-logo" src="${String(p.logoImage).replace(/"/g,'&quot;')}" alt="">`}
+    else if(p.mark!=null)mark.textContent=p.mark;
+   }
+  });
+ }
+ function rebuildIntroWord(intro,name){
+  const word=intro.querySelector('.atyaf-intro-word');if(!word)return;
+  const chars=[...String(name||'ATYAAF')];
+  word.innerHTML=chars.map((c,i)=>`<span class="atyaf-intro-letter" style="--dx:${i%2?95:-110}px;--dy:${-155-(i%3)*35}px;--rot:${i%2?18:-17}deg;--delay:${.12+i*.10}s">${c===' '?'&nbsp;':c}</span>`).join('');
+ }
+ function applyIntro(i){
+  const intro=document.getElementById('atyafIntro');if(!intro)return;
+  if(i.enabled===false){intro.remove();return}
+  intro.style.setProperty('--atyaf-intro-bg',i.backgroundColor||'#17352e');
+  intro.style.setProperty('--atyaf-intro-text',i.textColor||'#f5eee4');
+  intro.style.setProperty('--atyaf-intro-accent',i.accentColor||'#c99a69');
+  intro.style.setProperty('--atyaf-intro-font',i.fontFamily||'Georgia, serif');
+  intro.style.setProperty('--atyaf-intro-size',(Number(i.letterSize)||58)+'px');
+  intro.style.setProperty('--atyaf-intro-mark-size',(Number(i.markSize)||35)+'px');
+  rebuildIntroWord(intro,i.name||'ATYAAF');
+  const sub=intro.querySelector('.atyaf-intro-sub');if(sub)sub.textContent=i.sub||'';
+  const mark=intro.querySelector('.atyaf-intro-logo');
+  if(mark){if(i.logoImage)mark.innerHTML=`<img class="atyaf-intro-admin-logo" src="${String(i.logoImage).replace(/"/g,'&quot;')}" alt="">`;else mark.textContent=i.mark||'أ'}
+  if(i.showOnce===false)sessionStorage.removeItem('atyaf_intro_seen');
+  const duration=Math.max(1500,Number(i.duration)||3350);
+  setTimeout(()=>{intro.classList.add('done');setTimeout(()=>intro.remove(),750)},duration);
+ }
+ async function sync(){
+  try{const [p,i]=await Promise.all([latest('profile'),latest('intro')]);applyProfile(p);applyIntro(i)}
+  catch(e){console.warn('ATYAAF profile/intro settings:',e)}
+ }
+ window.atyafLoadProfileIntroSettings=sync;
+ window.addEventListener('load',()=>setTimeout(sync,300));
+ window.addEventListener('focus',sync);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync()});
+ setInterval(()=>{if(!document.hidden)sync()},15000);
+})();
+</script>
+
 </body>
 </html>

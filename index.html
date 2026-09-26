@@ -1026,6 +1026,28 @@ document.addEventListener('DOMContentLoaded',()=>{
 }
 </style>
 
+
+<style id="atyaf-store-colors-central">
+:root{
+ --atyaf-page-bg:#fffdfa;--atyaf-surface:#ffffff;--atyaf-topbar-bg:#17352e;--atyaf-topbar-text:#ffffff;
+ --atyaf-header-bg:#fffdfa;--atyaf-nav-bg:#fffdfa;--atyaf-text:#17352e;--atyaf-muted:#707b75;
+ --atyaf-accent:#b47a4f;--atyaf-border:#e4ddd2;--atyaf-search-bg:#f5f1ea;--atyaf-icon-bg:#fffdfa;
+ --atyaf-icon-color:#17352e;--atyaf-card-bg:#fffdfa;--atyaf-button-bg:#17352e;--atyaf-button-text:#ffffff;
+ --atyaf-footer-bg:#17352e;--atyaf-footer-text:#ffffff;--atyaf-intro-bg:#17352e;
+}
+body{background:var(--atyaf-page-bg)!important;color:var(--atyaf-text)!important}
+.topbar{background:var(--atyaf-topbar-bg)!important;color:var(--atyaf-topbar-text)!important}
+header,.site-header,.header{background:var(--atyaf-header-bg)!important}
+nav,.nav,.main-nav{background:var(--atyaf-nav-bg)!important}
+.search,.search input{background:var(--atyaf-search-bg)!important}
+.customer-tool{background:var(--atyaf-icon-bg)!important;color:var(--atyaf-icon-color)!important;border-color:var(--atyaf-border)!important}
+.customer-tool svg{stroke:var(--atyaf-icon-color)!important}
+.card,.product-card,.benefit,.brand-card{background-color:var(--atyaf-card-bg)}
+button,.btn{border-color:var(--atyaf-border)}
+footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-footer-text)!important}
+#atyafIntro{background:var(--atyaf-intro-bg)!important}
+</style>
+
 </head>
 <body>
 
@@ -1855,6 +1877,27 @@ window.addEventListener('load',()=>{
  }
  document.addEventListener('atyaf:settings-applied',refreshProfile);
  window.addEventListener('focus',refreshProfile);
+})();
+</script>
+
+
+<script id="atyaf-store-colors-sync">
+(()=>{
+ const defaults={pageBackground:'#fffdfa',surfaceBackground:'#ffffff',topbarBackground:'#17352e',topbarText:'#ffffff',headerBackground:'#fffdfa',navBackground:'#fffdfa',primaryText:'#17352e',secondaryText:'#707b75',accent:'#b47a4f',border:'#e4ddd2',searchBackground:'#f5f1ea',iconBackground:'#fffdfa',iconColor:'#17352e',cardBackground:'#fffdfa',buttonBackground:'#17352e',buttonText:'#ffffff',footerBackground:'#17352e',footerText:'#ffffff',introBackground:'#17352e'};
+ const vars={pageBackground:'--atyaf-page-bg',surfaceBackground:'--atyaf-surface',topbarBackground:'--atyaf-topbar-bg',topbarText:'--atyaf-topbar-text',headerBackground:'--atyaf-header-bg',navBackground:'--atyaf-nav-bg',primaryText:'--atyaf-text',secondaryText:'--atyaf-muted',accent:'--atyaf-accent',border:'--atyaf-border',searchBackground:'--atyaf-search-bg',iconBackground:'--atyaf-icon-bg',iconColor:'--atyaf-icon-color',cardBackground:'--atyaf-card-bg',buttonBackground:'--atyaf-button-bg',buttonText:'--atyaf-button-text',footerBackground:'--atyaf-footer-bg',footerText:'--atyaf-footer-text',introBackground:'--atyaf-intro-bg'};
+ const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
+ function apply(c){c={...defaults,...(c||{})};for(const [k,v] of Object.entries(vars))document.documentElement.style.setProperty(v,c[k])}
+ async function refresh(){
+  if(!window.atyafDb)return;
+  try{
+   const {data,error}=await window.atyafDb.from('settings').select('id,value,updated_at').eq('key','store_colors').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
+   if(error)throw error;apply(parse(data?.[0]?.value));
+  }catch(e){console.warn('ATYAAF store colors:',e)}
+ }
+ apply(defaults);
+ let tries=0,t=setInterval(()=>{if(window.atyafDb){clearInterval(t);refresh()}else if(++tries>80)clearInterval(t)},100);
+ document.addEventListener('atyaf:settings-applied',refresh);
+ window.addEventListener('focus',refresh);
 })();
 </script>
 

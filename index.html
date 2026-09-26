@@ -2021,6 +2021,45 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(desc)desc.textContent=it.text||it.description||'';
     });
     current.slice(items.length).forEach(x=>hide(x,true));
+
+    // تطبيق مباشر على العناصر حتى لا تتغلب قواعد الجوال القديمة على إعدادات الإدارة.
+    const cards=[...sec.querySelectorAll(':scope > .benefit')].filter(x=>x.style.display!=='none');
+    sec.style.setProperty('background',s?.sectionBackground||'#fbf8f2','important');
+    sec.style.setProperty('gap',n(s?.gap,14,0,60)+'px','important');
+
+    const vw=window.innerWidth||document.documentElement.clientWidth||390;
+    const cols=vw<=600?n(s?.columnsMobile,2,1,2):(vw<=850?n(s?.columnsTablet,2,1,4):n(s?.columnsDesktop,4,1,6));
+    sec.style.setProperty('grid-template-columns',`repeat(${cols},minmax(0,1fr))`,'important');
+
+    cards.forEach(card=>{
+      card.style.setProperty('background',s?.cardBackground||'#fffdfa','important');
+      card.style.setProperty('border-color',s?.cardBorder||'#ffffff','important');
+      card.style.setProperty('border-width',n(s?.cardBorderWidth,1,0,8)+'px','important');
+      card.style.setProperty('border-style','solid','important');
+      card.style.setProperty('border-radius',n(s?.cardRadius,18,0,60)+'px','important');
+      card.style.setProperty('padding',n(s?.cardPadding,22,0,60)+'px','important');
+      card.style.setProperty('min-height',n(s?.cardMinHeight,128,60,400)+'px','important');
+      card.style.setProperty('box-shadow',s?.cardShadow||'0 14px 38px rgba(23,53,46,.10)','important');
+      card.style.setProperty('font-family',s?.fontFamily||'Tahoma, Arial, sans-serif','important');
+
+      const icon=card.querySelector('i');
+      if(icon){
+        icon.style.setProperty('color',s?.iconColor||'#b47a4f','important');
+        icon.style.setProperty('font-size',n(s?.iconSize,24,8,80)+'px','important');
+      }
+      const title=card.querySelector('b,strong,h3,h4');
+      if(title){
+        title.style.setProperty('color',s?.titleColor||'#17352e','important');
+        title.style.setProperty('font-size',n(s?.titleSize,16,8,60)+'px','important');
+        title.style.setProperty('font-weight',n(s?.titleWeight,700,400,900),'important');
+      }
+      const desc=card.querySelector('span,p,small');
+      if(desc){
+        desc.style.setProperty('color',s?.textColor||'#707b75','important');
+        desc.style.setProperty('font-size',n(s?.textSize,13,7,48)+'px','important');
+        desc.style.setProperty('font-weight',n(s?.textWeight,400,300,800),'important');
+      }
+    });
   }
   function applyBrands(s){
     const sec=document.querySelector('#brands');if(!sec)return;
@@ -2085,6 +2124,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(map.gift)applyGift(map.gift);
       if(map.footer)applyFooter(map.footer);
       if(map.benefits)applyBenefits(map.benefits);
+      window.__ATYAAF_LAST_BENEFITS_SETTINGS=map.benefits||null;
       if(map.brands)applyBrands(map.brands);
       if(map.policies)applyPolicies(map.policies);
       // نفس مفاتيح لوحة الإدارة، مع دعم الأسماء القديمة.
@@ -2342,6 +2382,23 @@ window.addEventListener('load',()=>{
  }
  apply(D);let n=0,t=setInterval(()=>{if(window.atyafDb){clearInterval(t);refresh()}else if(++n>80)clearInterval(t)},100);
  document.addEventListener('atyaf:settings-applied',refresh);window.addEventListener('focus',refresh);
+})();
+</script>
+
+
+<script id="atyaf-benefits-mobile-live-reapply-v2">
+(()=>{
+ let t;
+ const reapply=()=>{
+   clearTimeout(t);
+   t=setTimeout(()=>{
+     const cfg=window.__ATYAAF_LAST_BENEFITS_SETTINGS;
+     if(!cfg)return;
+     document.dispatchEvent(new CustomEvent('atyaf:settings-applied',{detail:{benefits:cfg}}));
+   },80);
+ };
+ window.addEventListener('resize',reapply,{passive:true});
+ window.addEventListener('orientationchange',reapply,{passive:true});
 })();
 </script>
 

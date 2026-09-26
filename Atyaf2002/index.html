@@ -327,6 +327,81 @@ function simpleEditor(el,key){
 }
 async function saveSimple(key,card){let s=getSetting(key,{});card.querySelectorAll('[data-k]').forEach(x=>s[x.dataset.k]=x.tagName==='SELECT'?x.value==='true':x.value);await putSetting(key,s);await loadAll();stat('تم حفظ '+schemas[key].title)}
 
+
+function brandColor(k,label,v){
+ return `<div class="field"><label>${label}</label><div class="color-row"><input data-brand-style="${k}" type="color" value="${esc(v)}"><input data-brand-style-text="${k}" value="${esc(v)}"></div></div>`;
+}
+function brandsSectionEditor(){
+ const d={enabled:true,title:'تسوق حسب الماركة',subtitle:'علامات مختارة لعشاق التفاصيل',showAllText:'عرض الكل ←',
+ backgroundColor:'#fffdfa',titleColor:'#17352e',subtitleColor:'#707b75',linkColor:'#b47a4f',
+ cardBackground:'#fffdfa',cardBorder:'#e4ddd2',brandNameColor:'#17352e',brandSubColor:'#b47a4f',
+ fontFamily:'Tahoma, Arial, sans-serif',titleSize:32,subtitleSize:14,linkSize:14,
+ brandNameSize:18,brandSubSize:11,logoSize:54,cardRadius:18,cardPadding:22,gap:14,
+ columnsDesktop:5,columnsTablet:3,columnsMobile:2,items:[]};
+ const b={...d,...getSetting('brands',{})}; b.items=Array.isArray(b.items)?b.items:[];
+ brandsEditor.innerHTML=`<div class="grid">
+  <div class="field"><label>الحالة</label><select data-brand-style="enabled"><option value="true" ${b.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${b.enabled===false?'selected':''}>مخفي</option></select></div>
+  <div class="field"><label>عنوان القسم</label><input data-brand-style="title" value="${esc(b.title)}"></div>
+  <div class="field"><label>الوصف</label><input data-brand-style="subtitle" value="${esc(b.subtitle)}"></div>
+  <div class="field"><label>نص عرض الكل</label><input data-brand-style="showAllText" value="${esc(b.showAllText)}"></div>
+  ${brandColor('backgroundColor','خلفية القسم',b.backgroundColor)}
+  ${brandColor('titleColor','لون العنوان',b.titleColor)}
+  ${brandColor('subtitleColor','لون الوصف',b.subtitleColor)}
+  ${brandColor('linkColor','لون عرض الكل',b.linkColor)}
+  ${brandColor('cardBackground','خلفية بطاقة الماركة',b.cardBackground)}
+  ${brandColor('cardBorder','حدود بطاقة الماركة',b.cardBorder)}
+  ${brandColor('brandNameColor','لون اسم الماركة',b.brandNameColor)}
+  ${brandColor('brandSubColor','لون النص الصغير',b.brandSubColor)}
+  <div class="field"><label>الخط</label><select data-brand-style="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
+  <div class="field"><label>حجم عنوان القسم</label><input data-brand-style="titleSize" type="number" min="16" max="80" value="${Number(b.titleSize)}"></div>
+  <div class="field"><label>حجم الوصف</label><input data-brand-style="subtitleSize" type="number" min="9" max="36" value="${Number(b.subtitleSize)}"></div>
+  <div class="field"><label>حجم عرض الكل</label><input data-brand-style="linkSize" type="number" min="9" max="32" value="${Number(b.linkSize)}"></div>
+  <div class="field"><label>حجم اسم الماركة</label><input data-brand-style="brandNameSize" type="number" min="10" max="42" value="${Number(b.brandNameSize)}"></div>
+  <div class="field"><label>حجم النص الصغير</label><input data-brand-style="brandSubSize" type="number" min="8" max="30" value="${Number(b.brandSubSize)}"></div>
+  <div class="field"><label>حجم صورة/أيقونة الماركة</label><input data-brand-style="logoSize" type="number" min="20" max="180" value="${Number(b.logoSize)}"></div>
+  <div class="field"><label>استدارة البطاقات</label><input data-brand-style="cardRadius" type="number" min="0" max="60" value="${Number(b.cardRadius)}"></div>
+  <div class="field"><label>المساحة داخل البطاقة</label><input data-brand-style="cardPadding" type="number" min="4" max="60" value="${Number(b.cardPadding)}"></div>
+  <div class="field"><label>المسافة بين البطاقات</label><input data-brand-style="gap" type="number" min="0" max="50" value="${Number(b.gap)}"></div>
+  <div class="field"><label>أعمدة الكمبيوتر</label><input data-brand-style="columnsDesktop" type="number" min="1" max="8" value="${Number(b.columnsDesktop)}"></div>
+  <div class="field"><label>أعمدة التابلت</label><input data-brand-style="columnsTablet" type="number" min="1" max="6" value="${Number(b.columnsTablet)}"></div>
+  <div class="field"><label>أعمدة الجوال</label><input data-brand-style="columnsMobile" type="number" min="1" max="3" value="${Number(b.columnsMobile)}"></div>
+ </div>
+ <div class="toolbar" style="margin:16px 0"><button class="btn" onclick="saveBrandsStyle()">حفظ إعدادات القسم</button><button class="btn copper" onclick="addBrandItem()">+ إضافة ماركة</button><button class="btn alt" onclick="toggleSection('brands')">إظهار/إخفاء</button></div>
+ <div>${b.items.map((x,i)=>`<div class="card" style="margin-top:12px">
+  <div class="grid">
+   <div class="field"><label>اسم الماركة</label><input id="brand_title_${i}" value="${esc(x.title||x.name||'')}"></div>
+   <div class="field"><label>النص الصغير</label><input id="brand_text_${i}" value="${esc(x.text||x.subtitle||'')}"></div>
+   <div class="field full upload"><b>صورة/أيقونة الماركة — رفع مباشر</b><input id="brand_file_${i}" type="file" accept="image/*"><small class="muted">ترفع مباشرة إلى Storage؛ لا تحتاج رابط.</small>
+   ${x.image?`<div style="margin-top:9px"><img src="${esc(x.image)}" style="max-width:120px;max-height:90px;object-fit:contain;background:transparent"><br><button class="btn red" type="button" onclick="removeBrandImage(${i})">حذف الصورة فقط</button></div>`:''}</div>
+  </div>
+  <div class="actions"><button class="btn" onclick="saveBrandItem(${i})">حفظ الماركة</button><button class="btn alt" onclick="hideBrandItem(${i})">${x.hidden?'إظهار':'إخفاء'}</button><button class="btn red" onclick="removeBrandItem(${i})">حذف</button></div>
+ </div>`).join('')}</div>`;
+ const ff=brandsEditor.querySelector('[data-brand-style="fontFamily"]');if(ff)ff.value=b.fontFamily;
+ brandsEditor.querySelectorAll('input[type="color"][data-brand-style]').forEach(p=>p.addEventListener('input',()=>{const t=brandsEditor.querySelector(`[data-brand-style-text="${p.dataset.brandStyle}"]`);if(t)t.value=p.value}));
+}
+function readBrandsStyle(){
+ const old=getSetting('brands',{}),v={...old};
+ brandsEditor.querySelectorAll('[data-brand-style]').forEach(x=>{
+  let z=x.value,k=x.dataset.brandStyle;
+  if(k==='enabled')z=z==='true';
+  else if(['titleSize','subtitleSize','linkSize','brandNameSize','brandSubSize','logoSize','cardRadius','cardPadding','gap','columnsDesktop','columnsTablet','columnsMobile'].includes(k))z=Number(z)||0;
+  v[k]=z;
+ });return v;
+}
+async function saveBrandsStyle(){try{await putSetting('brands',readBrandsStyle());await loadAll();stat('تم حفظ جميع إعدادات قسم الماركات ✓')}catch(e){stat(e.message,true)}}
+async function addBrandItem(){let b=getSetting('brands',{enabled:true,items:[]});b.items=Array.isArray(b.items)?b.items:[];b.items.push({title:'ماركة جديدة',text:'',image:'',hidden:false});await putSetting('brands',b);await loadAll()}
+async function saveBrandItem(i){
+ try{
+  let b=getSetting('brands',{items:[]});b.items=Array.isArray(b.items)?b.items:[];
+  let x={...(b.items[i]||{})};x.title=document.getElementById(`brand_title_${i}`).value.trim();x.text=document.getElementById(`brand_text_${i}`).value.trim();
+  const f=document.getElementById(`brand_file_${i}`)?.files?.[0];if(f)x.image=(await uploadFiles([f],'brands'))[0]||x.image||'';
+  b.items[i]=x;await putSetting('brands',b);await loadAll();stat('تم حفظ الماركة ورفع الصورة مباشرة ✓');
+ }catch(e){stat(e.message,true)}
+}
+async function removeBrandImage(i){let b=getSetting('brands',{items:[]});if(b.items?.[i])b.items[i].image='';await putSetting('brands',b);await loadAll()}
+async function hideBrandItem(i){let b=getSetting('brands',{items:[]});if(b.items?.[i])b.items[i].hidden=!b.items[i].hidden;await putSetting('brands',b);await loadAll()}
+async function removeBrandItem(i){if(!confirm('حذف هذه الماركة؟'))return;let b=getSetting('brands',{items:[]});b.items.splice(i,1);await putSetting('brands',b);await loadAll()}
+
 function listEditor(el,key,defaults){
  let s=getSetting(key,{enabled:true,items:defaults}),items=Array.isArray(s.items)?s.items:[];
  el.innerHTML=`<div class="toolbar"><button class="btn" onclick="addListItem('${key}')">+ إضافة عنصر</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء القسم</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`+
@@ -429,7 +504,7 @@ async function loadAll(){
     {title:"تغليف فاخر",text:"هدية تليق بمن تحب"},
     {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
   ]);
-  listEditor(brandsEditor,"brands",[{title:"أطياف",text:"ATYAAF"}]);
+  brandsSectionEditor();
   renderProducts();
   renderAllSettings();
   stat("متصل بـ Supabase ✓ — تم تحميل "+PRODUCTS.length+" منتج");
@@ -439,6 +514,7 @@ async function loadAll(){
  }
 }
 Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,saveStoreColors,resetStoreColors,
+saveBrandsStyle,addBrandItem,saveBrandItem,removeBrandImage,hideBrandItem,removeBrandItem,
 saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection});
 window.saveProduct=saveProduct;
 setTimeout(()=>{

@@ -1265,6 +1265,14 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
 }
 </style>
 
+
+<style id="atyaf-brand-navigation-fix-v1">
+#atyafBrandProductSections .atyaf-brand-products{scroll-margin-top:150px}
+@media(max-width:600px){
+ #atyafBrandProductSections .atyaf-brand-products{scroll-margin-top:115px}
+}
+</style>
+
 </head>
 <body>
 
@@ -1552,7 +1560,30 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
     function renderProducts(){window.ATYAAF_LIVE_PRODUCTS=products;let q=(document.getElementById('searchInput').value||'').trim().toLowerCase(), list=products.filter(p=>(state.filter==='all'||p.tags.includes(state.filter))&&(state.brand==='كل الماركات'||p.brand===state.brand)&&(!q||[p.name,p.brand,p.desc].join(' ').toLowerCase().includes(q)));let sort=document.getElementById('sortSelect').value;if(sort==='price-low')list.sort((a,b)=>a.price-b.price);if(sort==='price-high')list.sort((a,b)=>b.price-a.price);if(sort==='new')list.sort((a,b)=>b.id-a.id);document.getElementById('resultText').textContent=q?`نتائج البحث عن «${q}»`:state.brand==='كل الماركات'?'منتجاتنا الأكثر حبًا':`منتجات ${state.brand}`;document.getElementById('productGrid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">لم نعثر على ما تبحث عنه. جرّب كلمة أخرى أو تصفح كل المنتجات.</div>';updateCounts()}
     function card(p){let liked=state.favs.map(String).includes(String(p.id));let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product" data-product-id="${p.id}"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav('${p.id}')">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="product-actions"><button class="btn btn-primary" onclick="addCart('${p.id}')">أضف للسلة</button><button class="btn btn-outline" onclick="quickView('${p.id}')">عرض</button><button class="gift-buy-btn" onclick="buyAsGift('${p.id}')" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
     function setFilter(f,el){state.filter=f;document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderProducts()}
-    function filterBrand(b){state.brand=b;document.getElementById('products').scrollIntoView({behavior:'smooth'});renderProducts()}
+    function filterBrand(b){
+  state.brand=b;
+  const normBrand=v=>String(v||'').trim().toLowerCase().replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/\s+/g,' ');
+  const all=/^(كل الماركات|الكل|view all)$/i.test(String(b||'').trim());
+  if(all){
+    const host=document.getElementById('atyafBrandProductSections');
+    if(host){host.scrollIntoView({behavior:'smooth',block:'start'});return}
+  }
+  const sections=[...document.querySelectorAll('#atyafBrandProductSections [data-brand-section]')];
+  const target=sections.find(el=>normBrand(el.getAttribute('data-brand-section'))===normBrand(b));
+  if(target){
+    target.scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  // إذا لم تكن الأقسام قد اكتملت بعد، أعد رسمها ثم حاول مرة أخرى.
+  if(typeof window.atyafRenderBrandProductSections==='function'){
+    window.atyafRenderBrandProductSections();
+    requestAnimationFrame(()=>{
+      const retry=[...document.querySelectorAll('#atyafBrandProductSections [data-brand-section]')]
+        .find(el=>normBrand(el.getAttribute('data-brand-section'))===normBrand(b));
+      if(retry) retry.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  }
+}
     function toggleFav(id){let i=state.favs.map(String).indexOf(String(id));i>-1?state.favs.splice(i,1):state.favs.push(id);save();renderProducts()}
     function showFavorites(){
   const list=products.filter(p=>state.favs.map(String).includes(String(p.id)));

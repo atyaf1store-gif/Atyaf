@@ -605,6 +605,72 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
+
+<style id="atyaf-icon-visibility-size-fix">
+/* Icon visibility correction only — no layout/function changes */
+.customer-tool,
+.atyaf-mobile-track{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  position:relative!important;
+}
+.customer-tool .atyaf-svg,
+.atyaf-mobile-track .atyaf-svg{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  min-height:24px!important;
+  max-width:24px!important;
+  max-height:24px!important;
+  flex:0 0 24px!important;
+  display:block!important;
+  overflow:visible!important;
+  color:var(--green)!important;
+  stroke:currentColor!important;
+  fill:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:none!important;
+}
+.customer-tool .badge,
+.customer-tool .count,
+.customer-tool [id*="Count"],
+.customer-tool [id*="count"]{
+  position:absolute!important;
+  top:-5px!important;
+  right:-5px!important;
+  z-index:3!important;
+}
+@media(max-width:600px){
+  .customer-tool,
+  .atyaf-mobile-track{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    min-height:42px!important;
+    flex:0 0 42px!important;
+    padding:0!important;
+  }
+  .customer-tool .atyaf-svg,
+  .atyaf-mobile-track .atyaf-svg{
+    width:23px!important;
+    height:23px!important;
+    min-width:23px!important;
+    min-height:23px!important;
+    flex-basis:23px!important;
+  }
+}
+@media(max-width:380px){
+  .customer-tool,.atyaf-mobile-track{
+    width:39px!important;height:39px!important;min-width:39px!important;min-height:39px!important;flex-basis:39px!important;
+  }
+  .customer-tool .atyaf-svg,.atyaf-mobile-track .atyaf-svg{
+    width:22px!important;height:22px!important;min-width:22px!important;min-height:22px!important;flex-basis:22px!important;
+  }
+}
+</style>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>

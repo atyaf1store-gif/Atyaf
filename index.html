@@ -511,31 +511,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   mobileProfile.className='atyaf-mobile-profile';
   mobileProfile.title='بروفايل المتجر';
   mobileProfile.setAttribute('onclick','openCustomerCenter()');
-  mobileProfile.innerHTML='<span class="ar" id="atyafProfileAr">أطياف</span><span class="mark atyaf-profile-image-slot" aria-hidden="true"></span><span class="en" id="atyafProfileEn">ATYAAF</span>';
+  mobileProfile.innerHTML='<span class="mark atyaf-profile-image-slot" aria-hidden="true"></span>';
   if(desktopProfile) desktopProfile.insertAdjacentElement('afterend',mobileProfile);
   else head.appendChild(mobileProfile);
 
-  // Store profile name comes only from settings.profile.
-  const parseProfile=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
-  const applyProfile=async()=>{
-    if(!window.atyafDb)return;
-    try{
-      const {data,error}=await window.atyafDb.from('settings')
-        .select('id,value,updated_at').eq('key','profile')
-        .order('updated_at',{ascending:false,nullsFirst:false})
-        .order('id',{ascending:false}).limit(1);
-      if(error)throw error;
-      const p=parseProfile(data?.[0]?.value);
-      const ar=p?.nameAr||'أطياف';
-      const en=p?.nameEn||'ATYAAF';
-      const arEl=document.getElementById('atyafProfileAr');
-      const enEl=document.getElementById('atyafProfileEn');
-      if(arEl)arEl.textContent=ar;
-      if(enEl)enEl.textContent=en;
-    }catch(e){console.warn('ATYAAF profile names:',e)}
-  };
-  applyProfile();
-  document.addEventListener('atyaf:settings-applied',applyProfile);
+
 });
 </script>
 
@@ -938,6 +918,34 @@ document.addEventListener('DOMContentLoaded',()=>{
 <style id="atyaf-single-tracking-final">
 .atyaf-mobile-track{display:none!important}
 </style>
+
+<style id="atyaf-profile-image-only-final">
+.atyaf-profile,
+.atyaf-mobile-profile{
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ padding:0!important;gap:0!important;
+}
+.atyaf-profile>span:not(.atyaf-profile-image-slot),
+.atyaf-mobile-profile>span:not(.atyaf-profile-image-slot),
+.atyaf-profile strong,.atyaf-profile small,
+.atyaf-mobile-profile .ar,.atyaf-mobile-profile .en{display:none!important}
+.atyaf-profile .atyaf-profile-image-slot,
+.atyaf-mobile-profile .atyaf-profile-image-slot{
+ display:grid!important;place-items:center!important;
+ width:auto!important;height:auto!important;min-width:0!important;
+ border:0!important;border-radius:0!important;background:transparent!important;
+ box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+.atyaf-profile .atyaf-profile-image-slot img{
+ display:block!important;width:auto!important;height:48px!important;max-width:120px!important;
+ object-fit:contain!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+}
+.atyaf-mobile-profile .atyaf-profile-image-slot img{
+ display:block!important;width:auto!important;height:38px!important;max-width:86px!important;
+ object-fit:contain!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -960,18 +968,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  ).trim();
 
  function applyHeaderProfile(p,url){
-   const ar=String(p?.nameAr||'أطياف');
-   const en=String(p?.nameEn||'ATYAAF');
-   const d=document.querySelector('.atyaf-profile');
-   if(d){
-     const strong=d.querySelector('strong'),small=d.querySelector('small');
-     if(strong)strong.textContent=ar;
-     if(small)small.textContent=en;
-   }
-   const mar=document.getElementById('atyafProfileAr');
-   const men=document.getElementById('atyafProfileEn');
-   if(mar)mar.textContent=ar;
-   if(men)men.textContent=en;
+
    document.querySelectorAll('.atyaf-profile-image-slot').forEach(slot=>{
      slot.textContent='';
      if(url){
@@ -1029,8 +1026,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 <button class="customer-tool" data-store-action="invoices" title="طلباتي والفواتير">▤</button>
 <button class="customer-tool" data-store-action="tracking" title="تتبع الطلب">⌖</button>
 </div>
-<a class="brand atyaf-profile" href="javascript:void(0)" onclick="openCustomerCenter()" title="حساب العميل">
-        <span class="brand-mark atyaf-profile-image-slot" aria-hidden="true"></span><span><strong>ATYAAF</strong><small>STORE</small></span>
+<a class="brand atyaf-profile" href="javascript:void(0)" onclick="openCustomerCenter()" title="بروفايل المتجر">
+        <span class="brand-mark atyaf-profile-image-slot" aria-hidden="true"></span>
       </a>
       <div class="search atyaf-head-search"><span>⌕</span><input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." /></div>
       <button class="menu-btn" onclick="toggleNav()" aria-label="القائمة">☰</button>
@@ -1765,15 +1762,7 @@ window.addEventListener('load',()=>{
      if(error)throw error;
      const p=parse(data?.[0]?.value);
      const url=String(p?.logoImage||p?.profileImage||p?.image||p?.imageUrl||p?.logo||p?.logoUrl||'').trim();
-     const ar=document.getElementById('atyafProfileAr'),en=document.getElementById('atyafProfileEn');
-     if(ar)ar.textContent=p?.nameAr||'أطياف';
-     if(en)en.textContent=p?.nameEn||'ATYAAF';
-     const d=document.querySelector('.atyaf-profile');
-     if(d){
-       const strong=d.querySelector('strong'),small=d.querySelector('small');
-       if(strong)strong.textContent=p?.nameAr||'أطياف';
-       if(small)small.textContent=p?.nameEn||'ATYAAF';
-     }
+
      document.querySelectorAll('.atyaf-profile-image-slot').forEach(slot=>{
        slot.textContent='';slot.style.display='';
        if(url){const img=document.createElement('img');img.src=url;img.alt='';slot.replaceChildren(img)}

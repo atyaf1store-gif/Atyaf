@@ -575,6 +575,36 @@ document.addEventListener('DOMContentLoaded',()=>{
 }
 </style>
 
+
+<style id="atyaf-pro-icons">
+.customer-tool .atyaf-svg,.atyaf-mobile-track .atyaf-svg{width:19px;height:19px;display:block;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.customer-tool,.atyaf-mobile-track{color:var(--green)!important;background:rgba(255,255,255,.42)!important;border:1px solid rgba(176,126,79,.28)!important;box-shadow:0 4px 16px rgba(30,57,48,.045);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.customer-tool:hover{border-color:var(--copper)!important;color:var(--copper)!important}
+</style>
+<script id="atyaf-pro-icons-js">
+document.addEventListener('DOMContentLoaded',()=>{
+ const I={
+ cart:'<svg class="atyaf-svg" viewBox="0 0 24 24"><path d="M3 4h2l2.1 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="10" cy="20" r="1.2"/><circle cx="18" cy="20" r="1.2"/></svg>',
+ fav:'<svg class="atyaf-svg" viewBox="0 0 24 24"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z"/></svg>',
+ gift:'<svg class="atyaf-svg" viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13"/><path d="M12 7H8.7a2.2 2.2 0 1 1 2.2-2.2C10.9 6 12 7 12 7Zm0 0h3.3a2.2 2.2 0 1 0-2.2-2.2C13.1 6 12 7 12 7Z"/></svg>',
+ track:'<svg class="atyaf-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>',
+ invoice:'<svg class="atyaf-svg" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>',
+ orders:'<svg class="atyaf-svg" viewBox="0 0 24 24"><path d="M5 7h14l-1 14H6L5 7Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>'
+ };
+ function set(el,svg){if(!el)return;const b=el.querySelector('.badge,.count,[id*="Count"],[id*="count"]');const badge=b?b.outerHTML:'';el.innerHTML=svg+badge}
+ document.querySelectorAll('.customer-tool').forEach(el=>{
+  const a=(el.dataset.storeAction||'').toLowerCase(),t=(el.title||el.getAttribute('aria-label')||'').toLowerCase();
+  if(a.includes('cart')||t.includes('سلة'))set(el,I.cart);
+  else if(a.includes('fav')||t.includes('مفضل'))set(el,I.fav);
+  else if(a.includes('gift')||t.includes('هدي'))set(el,I.gift);
+  else if(a.includes('track')||t.includes('تتبع'))set(el,I.track);
+  else if(a.includes('invoice')||t.includes('فاتور'))set(el,I.invoice);
+  else if(a.includes('order')||t.includes('طلب'))set(el,I.orders);
+ });
+ set(document.querySelector('.atyaf-mobile-track'),I.track);
+});
+</script>
+
 </head>
 <body>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>

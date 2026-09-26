@@ -1215,11 +1215,28 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
 }
 @media(max-width:600px){
  #atyafBrandProductSections .atyaf-brand-products{padding-top:24px!important;padding-bottom:24px!important}
- #atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(var(--catalog-cols-m),minmax(0,1fr))!important;gap:8px!important}
- #atyafBrandProductSections .product{height:330px!important}
- #atyafBrandProductSections .product-visual{flex-basis:245px!important;height:245px!important}
- #atyafBrandProductSections .product-visual>img{padding:14px 9px 7px!important}
- #atyafBrandProductSections .product-info{padding:7px 8px 8px!important}
+ #atyafBrandProductSections .atyaf-brand-products-grid{
+   grid-template-columns:repeat(var(--catalog-cols-m),minmax(0,1fr))!important;
+   gap:var(--bs-gap)!important
+ }
+ #atyafBrandProductSections .product{
+   height:var(--catalog-card-h)!important;
+   border-radius:var(--bs-radius)!important
+ }
+ #atyafBrandProductSections .product-visual{
+   flex:0 0 var(--catalog-image-h)!important;
+   height:var(--catalog-image-h)!important
+ }
+ #atyafBrandProductSections .product-visual>img{
+   width:var(--bs-icon-w)!important;
+   height:var(--bs-icon-h)!important;
+   padding:0!important
+ }
+ #atyafBrandProductSections .product-info{padding:9px 10px 10px!important}
+ #atyafBrandProductSections .product-info small{font-size:var(--bs-brand-size)!important}
+ #atyafBrandProductSections .product-info h3{font-size:var(--bs-product-size)!important}
+ #atyafBrandProductSections .price{font-size:var(--bs-price-size)!important}
+ #atyafBrandProductSections .tag{font-size:var(--badge-size)!important}
 }
 </style>
 
@@ -1228,6 +1245,24 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
 #productModalBody .btn{min-height:44px!important;padding:10px 16px!important;cursor:pointer!important;touch-action:manipulation!important}
 #productModalBody .btn-primary,#productModalBody .btn-outline{font-size:var(--bs-button-size,14px)!important}
 #atyafBrandProductSections .favorite{pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}
+</style>
+
+
+<style id="atyaf-brand-mobile-settings-parity-v1">
+@media(max-width:600px){
+ #atyafBrandProductSections .product-info{padding:9px 10px 10px!important}
+ #atyafBrandProductSections .product-actions{display:none!important}
+ #atyafBrandProductSections .product-info h3{
+   font-size:var(--bs-product-size)!important;
+   line-height:1.35!important
+ }
+ #atyafBrandProductSections .product-info small{font-size:var(--bs-brand-size)!important}
+ #atyafBrandProductSections .price{font-size:var(--bs-price-size)!important}
+ #atyafBrandProductSections .old{font-size:calc(var(--bs-price-size) * .68)!important}
+ #atyafBrandProductSections .favorite{
+   width:36px!important;height:36px!important;font-size:20px!important
+ }
+}
 </style>
 
 </head>

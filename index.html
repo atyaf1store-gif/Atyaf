@@ -946,6 +946,63 @@ document.addEventListener('DOMContentLoaded',()=>{
 }
 </style>
 
+
+<style id="atyaf-mobile-balance-final">
+/* Phone header: balanced, image-only profile, no hamburger. */
+@media(max-width:600px){
+ .menu-btn{display:none!important}
+ .headrow.atyaf-head-balanced{
+   height:auto!important;min-height:0!important;
+   display:grid!important;
+   grid-template-columns:1fr!important;
+   grid-template-rows:auto auto!important;
+   align-items:center!important;justify-items:center!important;
+   gap:10px!important;padding:12px 0 11px!important;
+ }
+ .atyaf-profile{display:none!important}
+ .atyaf-mobile-profile{
+   display:flex!important;
+   grid-column:1!important;grid-row:1!important;
+   justify-self:center!important;align-self:center!important;
+   width:auto!important;max-width:none!important;height:42px!important;
+   align-items:center!important;justify-content:center!important;
+   margin:0!important;padding:0!important;
+   background:transparent!important;border:0!important;box-shadow:none!important;
+ }
+ .atyaf-mobile-profile .atyaf-profile-image-slot{
+   display:flex!important;align-items:center!important;justify-content:center!important;
+   width:auto!important;height:42px!important;margin:0!important;padding:0!important;
+ }
+ .atyaf-mobile-profile .atyaf-profile-image-slot img{
+   width:auto!important;height:42px!important;max-width:112px!important;max-height:42px!important;
+   object-fit:contain!important;margin:0 auto!important;
+ }
+ .atyaf-head-actions.customer-tools{
+   grid-column:1!important;grid-row:2!important;
+   position:static!important;
+   width:100%!important;max-width:310px!important;
+   display:flex!important;align-items:center!important;justify-content:center!important;
+   gap:7px!important;margin:0 auto!important;padding:0!important;
+ }
+ .atyaf-head-actions .customer-tool{
+   flex:0 0 40px!important;width:40px!important;height:40px!important;
+   margin:0!important;
+ }
+ .atyaf-head-search,.headrow .search{
+   grid-column:1!important;grid-row:3!important;
+   width:100%!important;max-width:none!important;
+   justify-self:stretch!important;margin:0!important;
+ }
+}
+@media(max-width:380px){
+ .headrow.atyaf-head-balanced{gap:8px!important;padding:10px 0!important}
+ .atyaf-head-actions.customer-tools{max-width:285px!important;gap:5px!important}
+ .atyaf-head-actions .customer-tool{flex-basis:38px!important;width:38px!important;height:38px!important}
+ .atyaf-mobile-profile,.atyaf-mobile-profile .atyaf-profile-image-slot{height:38px!important}
+ .atyaf-mobile-profile .atyaf-profile-image-slot img{height:38px!important;max-height:38px!important;max-width:100px!important}
+}
+</style>
+
 </head>
 <body>
 
@@ -1030,7 +1087,6 @@ document.addEventListener('DOMContentLoaded',()=>{
         <span class="brand-mark atyaf-profile-image-slot" aria-hidden="true"></span>
       </a>
       <div class="search atyaf-head-search"><span>⌕</span><input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." /></div>
-      <button class="menu-btn" onclick="toggleNav()" aria-label="القائمة">☰</button>
     </div>
     <nav class="nav" id="nav"><div class="container navrow"><a href="#home">الرئيسية</a><a href="#brands">الماركات</a><a href="#products">الأكثر مبيعًا</a><a href="#products">وصل حديثًا</a><a href="#products">العروض</a><a href="#scents">الروائح</a><a href="#contact">تواصل معنا</a></div></nav>
   </header>

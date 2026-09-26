@@ -1099,7 +1099,7 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
  --bs-price:#17352e;--bs-btn:#17352e;--bs-btn-text:#fff;--bs-btn2:#fff;--bs-btn2-text:#17352e;
  --bs-font:Tahoma,Arial,sans-serif;--bs-title-size:32px;--bs-sub-size:14px;--bs-product-size:18px;
  --bs-brand-size:12px;--bs-price-size:18px;--bs-button-size:14px;--bs-radius:18px;--bs-image-h:360px;
- --bs-gap:18px;--bs-section-gap:42px;--bs-icon-w:100%;--bs-icon-h:100%;--bs-card-w:100%;--bs-card-h:auto;--bs-cols-d:3;--bs-cols-t:2;--bs-cols-m:1;
+ --bs-gap:18px;--bs-section-gap:42px;--bs-icon-w:100%;--bs-icon-h:100%;--bs-card-w:100%;--bs-card-h:auto;--bs-action-h:46px;--bs-cart-w:72%;--bs-gift-w:24%;--bs-action-gap:8px;--bs-action-radius:22px;--bs-action-icon:20px;--bs-cols-d:3;--bs-cols-t:2;--bs-cols-m:1;
  background:var(--bs-bg);font-family:var(--bs-font)
 }
 #atyafBrandProductSections .atyaf-brand-products{padding-top:var(--bs-section-gap);background:var(--bs-bg)}
@@ -1132,6 +1132,10 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
 #atyafBrandProductSections .price{color:var(--bs-price)!important;font-size:var(--bs-price-size)!important}
 #atyafBrandProductSections .btn-primary{background:var(--bs-btn)!important;color:var(--bs-btn-text)!important;font-size:var(--bs-button-size)!important}
 #atyafBrandProductSections .btn-outline{background:var(--bs-btn2)!important;color:var(--bs-btn2-text)!important;font-size:var(--bs-button-size)!important}
+#atyafBrandProductSections .atyaf-brand-actions{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:var(--bs-action-gap)!important;width:100%!important}
+#atyafBrandProductSections .atyaf-cart-action{flex:0 0 var(--bs-cart-w)!important;width:var(--bs-cart-w)!important;height:var(--bs-action-h)!important;border-radius:var(--bs-action-radius)!important;margin:0!important}
+#atyafBrandProductSections .atyaf-gift-action{flex:0 0 var(--bs-gift-w)!important;width:var(--bs-gift-w)!important;height:var(--bs-action-h)!important;border-radius:var(--bs-action-radius)!important;margin:0!important;font-size:var(--bs-action-icon)!important;display:grid!important;place-items:center!important}
+
 @media(max-width:850px){#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(var(--bs-cols-t),minmax(0,1fr))!important}}
 @media(max-width:600px){#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(var(--bs-cols-m),minmax(0,1fr))!important}}
 </style>
@@ -2016,16 +2020,15 @@ window.addEventListener('load',()=>{
    const liked=(window.state?.favs||[]).map(String).includes(id);
    const visual=p.image?`<img src="${esc(p.image)}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';
    return `<article class="product" data-product-id="${esc(id)}">
-    <div class="product-visual" style="--tone:${esc(p.tone||'#8c542e')}">
+    <div class="product-visual" style="--tone:${esc(p.tone||'#8c542e')};cursor:pointer" onclick="quickView('${esc(id)}')" role="button" tabindex="0" aria-label="عرض ${esc(p.name||'المنتج')}">
       ${visual}<span class="tag">${esc(p.label||'')}</span>
-      <button class="favorite ${liked?'on':''}" onclick="toggleFav('${esc(id)}')">${liked?'♥':'♡'}</button><span class="cap"></span>
+      <button class="favorite ${liked?'on':''}" onclick="event.stopPropagation();toggleFav('${esc(id)}')">${liked?'♥':'♡'}</button><span class="cap"></span>
     </div>
     <div class="product-info"><small>${esc(p.brand||'')}</small><h3>${esc(p.name||'منتج')}</h3>
       <div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div>
-      <div class="product-actions">
-       <button class="btn btn-primary" onclick="addCart('${esc(id)}')">أضف للسلة</button>
-       <button class="btn btn-outline" onclick="quickView('${esc(id)}')">عرض</button>
-       <button class="gift-buy-btn" onclick="buyAsGift('${esc(id)}')" title="شراء كهدية">🎁</button>
+      <div class="product-actions atyaf-brand-actions">
+       <button class="btn btn-primary atyaf-cart-action" onclick="addCart('${esc(id)}')">أضف للسلة</button>
+       <button class="gift-buy-btn atyaf-gift-action" onclick="buyAsGift('${esc(id)}')" title="شراء كهدية" aria-label="شراء كهدية">🎁</button>
       </div>
     </div>
    </article>`;
@@ -2065,7 +2068,7 @@ window.addEventListener('load',()=>{
 
 <script id="atyaf-brand-sections-admin-sync">
 (()=>{
- const D={enabled:true,backgroundColor:'#fffdfa',titleColor:'#17352e',subtitleColor:'#707b75',dividerColor:'#e4ddd2',cardBackground:'#fffdfa',cardBorder:'#e4ddd2',productNameColor:'#17352e',brandTextColor:'#b47a4f',priceColor:'#17352e',buttonBackground:'#17352e',buttonText:'#ffffff',secondaryButtonBackground:'#ffffff',secondaryButtonText:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',titleSize:32,subtitleSize:14,productNameSize:18,brandTextSize:12,priceSize:18,buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,productCardWidth:100,productCardHeight:0,gap:18,sectionGap:42,columnsDesktop:3,columnsTablet:2,columnsMobile:1};
+ const D={enabled:true,backgroundColor:'#fffdfa',titleColor:'#17352e',subtitleColor:'#707b75',dividerColor:'#e4ddd2',cardBackground:'#fffdfa',cardBorder:'#e4ddd2',productNameColor:'#17352e',brandTextColor:'#b47a4f',priceColor:'#17352e',buttonBackground:'#17352e',buttonText:'#ffffff',secondaryButtonBackground:'#ffffff',secondaryButtonText:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',titleSize:32,subtitleSize:14,productNameSize:18,brandTextSize:12,priceSize:18,buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,productCardWidth:100,productCardHeight:0,actionButtonHeight:46,cartButtonWidth:72,giftButtonWidth:24,actionGap:8,actionRadius:22,actionIconSize:20,gap:18,sectionGap:42,columnsDesktop:3,columnsTablet:2,columnsMobile:1};
  const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
  function apply(x){
   x={...D,...(x||{})};const h=document.getElementById('atyafBrandProductSections');if(!h)return;
@@ -2078,6 +2081,12 @@ window.addEventListener('load',()=>{
   h.style.setProperty('--bs-card-w',Math.max(35,Math.min(100,Number(x.productCardWidth)||100))+'%');
   const cardH=Number(x.productCardHeight)||0;
   h.style.setProperty('--bs-card-h',cardH>0?Math.max(280,Math.min(1200,cardH))+'px':'auto');
+  h.style.setProperty('--bs-action-h',Math.max(30,Math.min(90,Number(x.actionButtonHeight)||46))+'px');
+  h.style.setProperty('--bs-cart-w',Math.max(40,Math.min(85,Number(x.cartButtonWidth)||72))+'%');
+  h.style.setProperty('--bs-gift-w',Math.max(12,Math.min(45,Number(x.giftButtonWidth)||24))+'%');
+  h.style.setProperty('--bs-action-gap',Math.max(0,Math.min(30,Number(x.actionGap)||8))+'px');
+  h.style.setProperty('--bs-action-radius',Math.max(0,Math.min(50,Number(x.actionRadius)||22))+'px');
+  h.style.setProperty('--bs-action-icon',Math.max(12,Math.min(40,Number(x.actionIconSize)||20))+'px');
   h.style.setProperty('--bs-cols-d',Math.max(1,Number(x.columnsDesktop)||3));h.style.setProperty('--bs-cols-t',Math.max(1,Number(x.columnsTablet)||2));h.style.setProperty('--bs-cols-m',Math.max(1,Number(x.columnsMobile)||1));
  }
  async function refresh(){

@@ -1673,194 +1673,101 @@ window.addEventListener('load',()=>{
 </script>
 
 
-<style id="atyaf-profile-intro-admin-sync-css">
-.atyaf-mobile-profile,.atyaf-profile{font-family:var(--atyaf-profile-font,inherit)!important;color:var(--atyaf-profile-text,#17352e)!important}
-.atyaf-mobile-profile .ar,.atyaf-profile .ar{font-size:var(--atyaf-profile-ar,18px)!important}
-.atyaf-mobile-profile .en,.atyaf-profile .en{font-size:var(--atyaf-profile-en,12px)!important}
-.atyaf-mobile-profile .mark,.atyaf-profile .mark{font-size:var(--atyaf-profile-mark,28px)!important;color:var(--atyaf-profile-accent,#b47a4f)!important}
-.atyaf-profile-admin-logo{display:block;max-width:72px;max-height:72px;object-fit:contain}
-#atyafIntro{background:var(--atyaf-intro-bg,#17352e)!important}
-#atyafIntro .atyaf-intro-word{color:var(--atyaf-intro-text,#f5eee4)!important;font-family:var(--atyaf-intro-font,Georgia,serif)!important;font-size:var(--atyaf-intro-size,58px)!important}
-#atyafIntro .atyaf-intro-logo{color:var(--atyaf-intro-accent,#c99a69)!important;border-color:var(--atyaf-intro-accent,#c99a69)!important;font-size:var(--atyaf-intro-mark-size,35px)!important}
-#atyafIntro .atyaf-intro-sub{color:var(--atyaf-intro-accent,#c99a69)!important}
-#atyafIntro .atyaf-intro-admin-logo{max-width:90px;max-height:90px;object-fit:contain}
-</style>
-<script id="atyaf-profile-intro-admin-sync-js">
-(()=>{
- const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch{return {}}};
- async function latest(key){
-  const db=window.atyafDb;if(!db)return {};
-  const {data,error}=await db.from('settings').select('id,key,value,updated_at').eq('key',key).order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
-  if(error)throw error;return parse(data?.[0]?.value);
- }
- function applyProfile(p){
-  if(!p||typeof p!=='object')return;
-  const profiles=[...document.querySelectorAll('.atyaf-mobile-profile,.atyaf-profile')];
-  profiles.forEach(el=>{
-   el.style.display=p.enabled===false?'none':'';
-   el.style.setProperty('--atyaf-profile-font',p.fontFamily||'Tahoma, Arial, sans-serif');
-   el.style.setProperty('--atyaf-profile-text',p.textColor||'#17352e');
-   el.style.setProperty('--atyaf-profile-accent',p.accentColor||'#b47a4f');
-   el.style.setProperty('--atyaf-profile-ar',(Number(p.arabicSize)||18)+'px');
-   el.style.setProperty('--atyaf-profile-en',(Number(p.englishSize)||12)+'px');
-   el.style.setProperty('--atyaf-profile-mark',(Number(p.markSize)||28)+'px');
-   const ar=el.querySelector('.ar,strong');if(ar&&p.nameAr!=null)ar.textContent=p.nameAr;
-   const en=el.querySelector('.en,small');if(en&&p.nameEn!=null)en.textContent=p.nameEn;
-   const mark=el.querySelector('.mark');
-   if(mark){
-    if(p.logoImage){mark.innerHTML=`<img class="atyaf-profile-admin-logo" src="${String(p.logoImage).replace(/"/g,'&quot;')}" alt="">`}
-    else if(p.mark!=null)mark.textContent=p.mark;
-   }
-  });
- }
- function rebuildIntroWord(intro,name){
-  const word=intro.querySelector('.atyaf-intro-word');if(!word)return;
-  const chars=[...String(name||'ATYAAF')];
-  word.innerHTML=chars.map((c,i)=>`<span class="atyaf-intro-letter" style="--dx:${i%2?95:-110}px;--dy:${-155-(i%3)*35}px;--rot:${i%2?18:-17}deg;--delay:${.12+i*.10}s">${c===' '?'&nbsp;':c}</span>`).join('');
- }
- function applyIntro(i){
-  const intro=document.getElementById('atyafIntro');if(!intro)return;
-  if(i.enabled===false){intro.remove();return}
-  intro.style.setProperty('--atyaf-intro-bg',i.backgroundColor||'#17352e');
-  intro.style.setProperty('--atyaf-intro-text',i.textColor||'#f5eee4');
-  intro.style.setProperty('--atyaf-intro-accent',i.accentColor||'#c99a69');
-  intro.style.setProperty('--atyaf-intro-font',i.fontFamily||'Georgia, serif');
-  intro.style.setProperty('--atyaf-intro-size',(Number(i.letterSize)||58)+'px');
-  intro.style.setProperty('--atyaf-intro-mark-size',(Number(i.markSize)||35)+'px');
-  rebuildIntroWord(intro,i.name||'ATYAAF');
-  const sub=intro.querySelector('.atyaf-intro-sub');if(sub)sub.textContent=i.sub||'';
-  const mark=intro.querySelector('.atyaf-intro-logo');
-  if(mark){if(i.logoImage)mark.innerHTML=`<img class="atyaf-intro-admin-logo" src="${String(i.logoImage).replace(/"/g,'&quot;')}" alt="">`;else mark.textContent=i.mark||'أ'}
-  if(i.showOnce===false)sessionStorage.removeItem('atyaf_intro_seen');
-  const duration=Math.max(1500,Number(i.duration)||3350);
-  setTimeout(()=>{intro.classList.add('done');setTimeout(()=>intro.remove(),750)},duration);
- }
- async function sync(){
-  try{const [p,i]=await Promise.all([latest('profile'),latest('intro')]);applyProfile(p);applyIntro(i)}
-  catch(e){console.warn('ATYAAF profile/intro settings:',e)}
- }
- window.atyafLoadProfileIntroSettings=sync;
- window.addEventListener('load',()=>setTimeout(sync,300));
- window.addEventListener('focus',sync);
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync()});
- setInterval(()=>{if(!document.hidden)sync()},15000);
-})();
-</script>
 
-
-<style id="atyaf-profile-transparent-final-v3">
-/* البروفايل: بدون دائرة، شفاف، العربي يمين والإنجليزي يسار */
-.atyaf-profile,.atyaf-mobile-profile{
-  background:transparent!important;border:0!important;box-shadow:none!important;
-  border-radius:0!important;padding:0!important;min-width:0!important;
-  display:grid!important;grid-template-columns:minmax(58px,auto) auto minmax(58px,auto)!important;
-  align-items:center!important;justify-content:center!important;gap:10px!important;
-  direction:rtl!important;text-decoration:none!important;
+<style id="atyaf-header-profile-clean-v4">
+/* ملف إصلاح واحد فقط للبروفايل — يمنع التكرار */
+.atyaf-mobile-profile{
+  position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;
+  z-index:4!important;margin:0!important;padding:0!important;
+  width:auto!important;max-width:52%!important;height:auto!important;min-height:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  text-decoration:none!important;white-space:nowrap!important;direction:rtl!important;
+  font-family:var(--atyaf-profile-font,Tahoma,Arial,sans-serif)!important;
+  color:var(--atyaf-profile-text,#17352e)!important;
 }
-.atyaf-profile .ar,.atyaf-mobile-profile .ar{
-  grid-column:1!important;text-align:left!important;white-space:nowrap!important;
+.atyaf-mobile-profile .ar{order:1!important;font-size:var(--atyaf-profile-ar,17px)!important;font-weight:700!important}
+.atyaf-mobile-profile .mark{order:2!important;width:auto!important;height:auto!important;min-width:0!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;display:flex!important;align-items:center!important}
+.atyaf-mobile-profile .en{order:3!important;font-size:var(--atyaf-profile-en,11px)!important;letter-spacing:.08em!important}
+.atyaf-mobile-profile .mark:empty{display:none!important}
+.atyaf-mobile-profile img{display:block!important;width:auto!important;height:38px!important;max-width:70px!important;max-height:38px!important;object-fit:contain!important;border:0!important;border-radius:0!important;background:transparent!important}
+.atyaf-profile{display:none!important}
+@media(min-width:901px){
+ .atyaf-mobile-profile{max-width:36%!important;gap:10px!important}
 }
-.atyaf-profile .en,.atyaf-mobile-profile .en{
-  grid-column:3!important;text-align:right!important;white-space:nowrap!important;
+@media(max-width:600px){
+ .atyaf-mobile-profile{max-width:58%!important;gap:6px!important}
+ .atyaf-mobile-profile img{height:32px!important;max-height:32px!important;max-width:55px!important}
+ .atyaf-mobile-profile .ar{font-size:min(var(--atyaf-profile-ar,16px),16px)!important}
+ .atyaf-mobile-profile .en{font-size:min(var(--atyaf-profile-en,10px),10px)!important}
 }
-.atyaf-profile .mark,.atyaf-mobile-profile .mark{
-  grid-column:2!important;grid-row:1!important;
-  width:auto!important;height:auto!important;min-width:0!important;
-  border:0!important;border-radius:0!important;background:transparent!important;
-  box-shadow:none!important;padding:0!important;margin:0!important;
-  display:grid!important;place-items:center!important;
-}
-.atyaf-profile .mark:not(:has(img)),.atyaf-mobile-profile .mark:not(:has(img)){
-  font-size:0!important;width:0!important;gap:0!important;
-}
-.atyaf-profile .atyaf-profile-admin-logo,.atyaf-mobile-profile .atyaf-profile-admin-logo{
-  width:auto!important;height:44px!important;max-width:72px!important;max-height:44px!important;
-  object-fit:contain!important;background:transparent!important;border:0!important;border-radius:0!important;
-}
-@media(max-width:850px){
- .atyaf-profile,.atyaf-mobile-profile{gap:7px!important;grid-template-columns:minmax(46px,auto) auto minmax(46px,auto)!important}
- .atyaf-profile .atyaf-profile-admin-logo,.atyaf-mobile-profile .atyaf-profile-admin-logo{height:38px!important;max-height:38px!important;max-width:58px!important}
-}
-@media(max-width:430px){
- .atyaf-profile,.atyaf-mobile-profile{gap:5px!important;grid-template-columns:minmax(38px,auto) auto minmax(38px,auto)!important}
- .atyaf-profile .ar,.atyaf-mobile-profile .ar{font-size:min(var(--atyaf-profile-ar,16px),16px)!important}
- .atyaf-profile .en,.atyaf-mobile-profile .en{font-size:min(var(--atyaf-profile-en,11px),11px)!important}
+@media(max-width:380px){
+ .atyaf-mobile-profile{max-width:54%!important;gap:4px!important}
+ .atyaf-mobile-profile img{height:28px!important;max-height:28px!important;max-width:48px!important}
 }
 </style>
-<script id="atyaf-profile-intro-hard-fix-v3">
+<script id="atyaf-profile-intro-clean-v4">
 (()=>{
- const DBWAIT=()=>window.atyafDb;
  const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
- async function getLatest(key){
-   const db=DBWAIT(); if(!db)return {};
-   const {data,error}=await db.from('settings').select('id,key,value,updated_at')
-    .eq('key',key).order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
-   if(error)throw error; return parse(data?.[0]?.value);
+ async function latest(key){
+   const db=window.atyafDb;if(!db)return {};
+   const {data,error}=await db.from('settings').select('id,key,value,updated_at').eq('key',key)
+     .order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
+   if(error)throw error;return parse(data?.[0]?.value);
  }
- function ensureProfile(){
-   let p=document.querySelector('.atyaf-mobile-profile,.atyaf-profile');
-   if(p)return p;
-   const head=document.querySelector('.atyaf-head-balanced,.headrow,.header .container');
-   if(!head)return null;
-   p=document.createElement('a');p.href='#';p.className='atyaf-mobile-profile';
-   p.onclick=e=>{e.preventDefault();if(typeof window.openCustomerCenter==='function')window.openCustomerCenter()};
-   p.innerHTML='<span class="ar"></span><span class="mark"></span><span class="en"></span>';
-   head.appendChild(p);return p;
+ function headerHost(){
+   return document.querySelector('.headrow,.atyaf-head-balanced,.header .container,header .container');
  }
  function applyProfile(p){
-   if(!p||typeof p!=='object')return;
-   let els=[...document.querySelectorAll('.atyaf-mobile-profile,.atyaf-profile')];
-   if(!els.length){const x=ensureProfile();if(x)els=[x]}
-   els.forEach(el=>{
-     el.style.display=p.enabled===false?'none':'grid';
-     el.style.setProperty('--atyaf-profile-font',p.fontFamily||'Tahoma, Arial, sans-serif');
-     el.style.setProperty('--atyaf-profile-text',p.textColor||'#17352e');
-     el.style.setProperty('--atyaf-profile-accent',p.accentColor||'#b47a4f');
-     el.style.setProperty('--atyaf-profile-ar',(Number(p.arabicSize)||18)+'px');
-     el.style.setProperty('--atyaf-profile-en',(Number(p.englishSize)||12)+'px');
-     let ar=el.querySelector('.ar'),en=el.querySelector('.en'),mark=el.querySelector('.mark');
-     if(!ar){ar=document.createElement('span');ar.className='ar';el.prepend(ar)}
-     if(!mark){mark=document.createElement('span');mark.className='mark';el.appendChild(mark)}
-     if(!en){en=document.createElement('span');en.className='en';el.appendChild(en)}
-     ar.textContent=p.nameAr||'أطياف'; en.textContent=p.nameEn||'ATYAAF STORE';
-     if(p.logoImage)mark.innerHTML='<img class="atyaf-profile-admin-logo" src="'+String(p.logoImage).replace(/"/g,'&quot;')+'" alt="">';
-     else mark.innerHTML='';
-   });
+   // Remove every profile instance first: only ONE clean profile may exist.
+   document.querySelectorAll('.atyaf-mobile-profile,.atyaf-profile').forEach(x=>x.remove());
+   if(p.enabled===false)return;
+   const host=headerHost();if(!host)return;
+   const cs=getComputedStyle(host);if(cs.position==='static')host.style.position='relative';
+   const a=document.createElement('a');a.className='atyaf-mobile-profile';a.href='#';
+   a.onclick=e=>{e.preventDefault();if(typeof window.openCustomerCenter==='function')window.openCustomerCenter()};
+   a.style.setProperty('--atyaf-profile-font',p.fontFamily||'Tahoma, Arial, sans-serif');
+   a.style.setProperty('--atyaf-profile-text',p.textColor||'#17352e');
+   a.style.setProperty('--atyaf-profile-ar',(Number(p.arabicSize)||17)+'px');
+   a.style.setProperty('--atyaf-profile-en',(Number(p.englishSize)||11)+'px');
+   const ar=document.createElement('span');ar.className='ar';ar.textContent=p.nameAr||'أطياف';
+   const mark=document.createElement('span');mark.className='mark';
+   if(p.logoImage){const img=document.createElement('img');img.src=p.logoImage;img.alt='';mark.appendChild(img)}
+   const en=document.createElement('span');en.className='en';en.textContent=p.nameEn||'ATYAAF STORE';
+   // RTL flex: first = right, middle logo, last = left.
+   a.append(ar,mark,en);host.appendChild(a);
  }
- async function syncProfile(){try{applyProfile(await getLatest('profile'))}catch(e){console.warn('profile sync',e)}}
- window.atyafSyncProfileFinal=syncProfile;
- window.addEventListener('load',()=>setTimeout(syncProfile,500));
- window.addEventListener('focus',syncProfile);
- setInterval(()=>{if(!document.hidden)syncProfile()},10000);
-})();
-</script>
-<script id="atyaf-intro-every-refresh-v3">
-/* شاشة البداية يجب أن تظهر في كل تحديث للصفحة، لا تستخدم sessionStorage */
-(()=>{
- sessionStorage.removeItem('atyaf_intro_seen');
- sessionStorage.removeItem('atyaf_intro_seen_v2');
- async function rebuild(){
-   let tries=0;
-   while(!window.atyafDb && tries++<20)await new Promise(r=>setTimeout(r,100));
-   if(!window.atyafDb)return;
+ async function syncProfile(){try{applyProfile(await latest('profile'))}catch(e){console.warn('ATYAAF profile',e)}}
+
+ function removeIntro(){document.querySelectorAll('#atyafIntro').forEach(x=>x.remove())}
+ async function showIntroEveryRefresh(){
    try{
-     const {data,error}=await window.atyafDb.from('settings').select('id,key,value,updated_at')
-       .eq('key','intro').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
-     if(error)throw error;
-     let cfg=data?.[0]?.value||{};if(typeof cfg==='string'){try{cfg=JSON.parse(cfg)}catch(_){cfg={}}}
-     if(cfg.enabled===false)return;
-     let old=document.getElementById('atyafIntro');if(old)old.remove();
-     const intro=document.createElement('div');intro.id='atyafIntro';intro.setAttribute('aria-hidden','true');
-     intro.style.cssText='position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:'+(cfg.backgroundColor||'#17352e')+';overflow:hidden;';
-     const name=String(cfg.name||'ATYAAF'),letters=[...name].map((c,i)=>`<span class="atyaf-intro-letter" style="--dx:${i%2?95:-110}px;--dy:${-160-(i%3)*35}px;--rot:${i%2?18:-17}deg;--delay:${.12+i*.10}s">${c===' '?'&nbsp;':c}</span>`).join('');
-     const logo=cfg.logoImage?`<img src="${String(cfg.logoImage).replace(/"/g,'&quot;')}" alt="" style="max-width:90px;max-height:90px;object-fit:contain">`:`<span style="font-size:${Number(cfg.markSize)||35}px;color:${cfg.accentColor||'#c99a69'}">${cfg.mark||''}</span>`;
-     intro.innerHTML=`<div class="atyaf-intro-group" style="text-align:center;font-family:${cfg.fontFamily||'Georgia, serif'}">${logo}<div class="atyaf-intro-word" style="font-size:${Number(cfg.letterSize)||58}px;color:${cfg.textColor||'#f5eee4'}">${letters}</div><div class="atyaf-intro-sub" style="color:${cfg.accentColor||'#c99a69'}">${cfg.sub||''}</div></div>`;
-     document.body.appendChild(intro);
-     const duration=Math.max(1500,Number(cfg.duration)||3350);
-     setTimeout(()=>{intro.style.transition='opacity .65s ease,transform .65s ease';intro.style.opacity='0';intro.style.transform='translateY(-36px)';setTimeout(()=>intro.remove(),700)},duration);
-   }catch(e){console.warn('intro refresh sync',e)}
+     const c=await latest('intro');removeIntro();if(c.enabled===false)return;
+     const root=document.createElement('div');root.id='atyafIntro';
+     root.style.cssText=`position:fixed;inset:0;z-index:2147483640;display:grid;place-items:center;overflow:hidden;background:${c.backgroundColor||'#17352e'};`;
+     const group=document.createElement('div');group.style.cssText=`text-align:center;font-family:${c.fontFamily||'Georgia,serif'};`;
+     if(c.logoImage){
+       const img=document.createElement('img');img.src=c.logoImage;img.alt='';img.style.cssText='display:block;margin:0 auto 14px;max-width:min(22vw,92px);max-height:92px;object-fit:contain;';
+       group.appendChild(img);
+     }else if(c.mark){
+       const m=document.createElement('div');m.textContent=c.mark;m.style.cssText=`margin-bottom:12px;font-size:${Number(c.markSize)||35}px;color:${c.accentColor||'#c99a69'};`;group.appendChild(m);
+     }
+     const word=document.createElement('div');word.className='atyaf-clean-intro-word';word.style.cssText=`display:flex;justify-content:center;gap:.08em;font-size:clamp(34px,8vw,${Number(c.letterSize)||58}px);color:${c.textColor||'#f5eee4'};font-weight:600;letter-spacing:.08em;`;
+     [...String(c.name||'ATYAAF')].forEach((ch,i)=>{const sp=document.createElement('span');sp.textContent=ch;sp.style.cssText=`display:inline-block;opacity:0;transform:translate(${i%2?70:-70}px,${-130-(i%3)*28}px) rotate(${i%2?12:-12}deg);animation:atyafCleanDrop .85s cubic-bezier(.2,.8,.2,1) ${.08+i*.09}s forwards;`;word.appendChild(sp)});
+     group.appendChild(word);
+     const sub=document.createElement('div');sub.textContent=c.sub||'';sub.style.cssText=`margin-top:8px;color:${c.accentColor||'#c99a69'};font-size:clamp(10px,2.4vw,14px);letter-spacing:.32em;`;group.appendChild(sub);
+     root.appendChild(group);document.body.appendChild(root);
+     const duration=Math.max(1800,Number(c.duration)||3350);
+     setTimeout(()=>{group.style.transition='transform .7s cubic-bezier(.2,.8,.2,1),opacity .7s ease';group.style.transform='translateY(-70px)';group.style.opacity='0';root.style.transition='opacity .7s ease';root.style.opacity='0';setTimeout(removeIntro,720)},duration);
+   }catch(e){console.warn('ATYAAF intro',e)}
  }
- window.addEventListener('load',()=>setTimeout(rebuild,50));
+ const st=document.createElement('style');st.textContent='@keyframes atyafCleanDrop{0%{opacity:0}75%{opacity:1}100%{opacity:1;transform:translate(0,0) rotate(0)}}';document.head.appendChild(st);
+ // Each real page load runs once. No sessionStorage, no duplicate interval.
+ window.addEventListener('load',async()=>{
+   let n=0;while(!window.atyafDb&&n++<24)await new Promise(r=>setTimeout(r,100));
+   await syncProfile();await showIntroEveryRefresh();
+ });
+ window.addEventListener('focus',syncProfile);
 })();
 </script>
 

@@ -412,11 +412,37 @@ input,select,textarea,button{font:inherit}
   .navrow{justify-content:flex-start;font-size:12px;gap:20px}
   .hero-ad{min-height:0!important;height:auto!important;aspect-ratio:16/10;margin-top:0!important}
   .hero-ad-track{height:100%!important;min-height:0!important}
-  .benefits{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding-block:12px}
-  .benefit{padding:16px 10px!important;min-height:128px;display:flex!important;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-  .benefit i{margin-bottom:7px}
-  .benefit b{font-size:14px}
-  .benefit span{font-size:11px;line-height:1.6}
+  .benefits{
+    grid-template-columns:repeat(var(--benefit-cols-m,2),minmax(0,1fr))!important;
+    gap:var(--benefit-gap,14px)!important;
+    padding-block:12px
+  }
+  .benefit{
+    padding:var(--benefit-padding,22px)!important;
+    min-height:var(--benefit-min-h,128px)!important;
+    background:var(--benefit-card-bg,#fffdfa)!important;
+    border-color:var(--benefit-border,#fff)!important;
+    border-width:var(--benefit-border-w,1px)!important;
+    border-radius:var(--benefit-radius,18px)!important;
+    box-shadow:var(--benefit-shadow,var(--shadow))!important;
+    display:flex!important;flex-direction:column;justify-content:center;align-items:center;text-align:center
+  }
+  .benefit i{
+    margin-bottom:7px;
+    color:var(--benefit-icon-color,#b47a4f)!important;
+    font-size:var(--benefit-icon-size,24px)!important
+  }
+  .benefit b{
+    color:var(--benefit-title-color,#17352e)!important;
+    font-size:var(--benefit-title-size,16px)!important;
+    font-weight:var(--benefit-title-weight,700)!important
+  }
+  .benefit span{
+    color:var(--benefit-text-color,#707b75)!important;
+    font-size:var(--benefit-text-size,13px)!important;
+    font-weight:var(--benefit-text-weight,400)!important;
+    line-height:1.6
+  }
   .section{padding-block:34px}
   .section-head{align-items:flex-end;gap:10px}
   .section-head h2{font-size:clamp(25px,8vw,34px)}
@@ -1321,6 +1347,41 @@ section.benefits>.benefit span,.benefits>.benefit span{
 }
 </style>
 
+
+<style id="atyaf-benefits-mobile-authoritative-v3">
+@media (max-width:600px){
+  section.container.benefits{
+    background:var(--benefit-section-bg,transparent)!important;
+    grid-template-columns:repeat(var(--benefit-cols-m,2),minmax(0,1fr))!important;
+    gap:var(--benefit-gap,14px)!important;
+  }
+  section.container.benefits>.benefit{
+    height:auto!important;
+    min-height:var(--benefit-min-h,128px)!important;
+    padding:var(--benefit-padding,22px)!important;
+    background:var(--benefit-card-bg,#fffdfa)!important;
+    border:var(--benefit-border-w,1px) solid var(--benefit-border,#fff)!important;
+    border-radius:var(--benefit-radius,18px)!important;
+    box-shadow:var(--benefit-shadow,none)!important;
+    font-family:var(--benefit-font,Tahoma,Arial,sans-serif)!important;
+  }
+  section.container.benefits>.benefit>i{
+    color:var(--benefit-icon-color,#b47a4f)!important;
+    font-size:var(--benefit-icon-size,24px)!important;
+  }
+  section.container.benefits>.benefit>b{
+    color:var(--benefit-title-color,#17352e)!important;
+    font-size:var(--benefit-title-size,16px)!important;
+    font-weight:var(--benefit-title-weight,700)!important;
+  }
+  section.container.benefits>.benefit>span{
+    color:var(--benefit-text-color,#707b75)!important;
+    font-size:var(--benefit-text-size,13px)!important;
+    font-weight:var(--benefit-text-weight,400)!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -2061,6 +2122,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       }
     });
   }
+  window.atyafApplyBenefits=applyBenefits;
   function applyBrands(s){
     const sec=document.querySelector('#brands');if(!sec)return;
     hide(sec,s?.enabled===false);
@@ -2386,19 +2448,23 @@ window.addEventListener('load',()=>{
 </script>
 
 
-<script id="atyaf-benefits-mobile-live-reapply-v2">
+
+
+
+<script id="atyaf-benefits-mobile-live-reapply-v3">
 (()=>{
- let t;
- const reapply=()=>{
-   clearTimeout(t);
-   t=setTimeout(()=>{
-     const cfg=window.__ATYAAF_LAST_BENEFITS_SETTINGS;
-     if(!cfg)return;
-     document.dispatchEvent(new CustomEvent('atyaf:settings-applied',{detail:{benefits:cfg}}));
-   },80);
+ let timer=0;
+ const run=()=>{
+   clearTimeout(timer);
+   timer=setTimeout(()=>{
+     const cfg=window.__ATYAAF_LAST_BENEFITS_SETTINGS || window.ATYAF_ADMIN_SETTINGS?.benefits;
+     if(cfg && typeof window.atyafApplyBenefits==='function') window.atyafApplyBenefits(cfg);
+   },60);
  };
- window.addEventListener('resize',reapply,{passive:true});
- window.addEventListener('orientationchange',reapply,{passive:true});
+ window.addEventListener('resize',run,{passive:true});
+ window.addEventListener('orientationchange',run,{passive:true});
+ window.addEventListener('pageshow',run,{passive:true});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)run()});
 })();
 </script>
 

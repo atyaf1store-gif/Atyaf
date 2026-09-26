@@ -29,7 +29,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <div class="app"><aside><div class="logo">ATYAAF PRO</div><div class="sub">إدارة كاملة لكل تفصيل في المتجر</div><div class="nav">
 <button class="active" data-tab="dashboard">الرئيسية</button>
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
-<button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="nav">القائمة الرئيسية</button>
+<button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
 <button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
 <button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="allsettings">كل الإعدادات</button>
@@ -43,6 +43,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <section id="lowerAd" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية تحت الهدية</h2><div id="lowerEditor"></div></div></section>
 <section id="topbar" class="panel"><div class="card section-editor"><h2>الشريط العلوي</h2><div id="topbarEditor"></div></div></section>
 <section id="header" class="panel"><div class="card section-editor"><h2>الهيدر والبحث والشعار</h2><div id="headerEditor"></div></div></section>
+<section id="profile" class="panel"><div class="card section-editor"><h2>البروفايل واسم المتجر</h2><div id="profileEditor"></div></div></section>
+<section id="intro" class="panel"><div class="card section-editor"><h2>شاشة البداية</h2><div id="introEditor"></div></div></section>
 <section id="nav" class="panel"><div class="card section-editor"><h2>روابط القائمة الرئيسية</h2><div id="navEditor"></div></div></section>
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
@@ -88,6 +90,8 @@ const lowerEditor=document.getElementById('lowerEditor');
 const benefitsEditor=document.getElementById('benefitsEditor');
 const brandsEditor=document.getElementById('brandsEditor');
 const giftEditor=document.getElementById('giftEditor');
+const profileEditor=document.getElementById('profileEditor');
+const introEditor=document.getElementById('introEditor');
 const productRows=document.getElementById('productRows');
 const settingRows=document.getElementById('settingRows');
 const productDialog=document.getElementById('productDialog');
@@ -214,6 +218,58 @@ async function removeGiftImage(){try{let s=getSetting('gift',{});s.image='';s.im
 async function deleteGiftSection(){if(!confirm('حذف قسم الهدية وإعداداته؟'))return;try{await removeSetting('gift');await loadAll();stat('تم حذف قسم الهدية')}catch(e){stat(e?.message||String(e),true)}}
 async function createGiftSection(){try{if(SETTINGS.some(x=>x.key==='gift')&&!confirm('استبدال إعدادات الهدية الحالية بإعدادات جديدة؟'))return;await putSetting('gift',{enabled:true,kicker:'هدية مميزة',title:'اختر هديتك',text:'تغليف أنيق يليق بمن تحب',button:'اختيار الهدية',link:'#',image:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',buttonColor:'#17352e',buttonTextColor:'#ffffff',fontFamily:'Tahoma, Arial, sans-serif',titleSize:32,textSize:15,imageFit:'cover',imagePosition:'center',borderRadius:22});await loadAll();stat('تم إنشاء قسم الهدية ✓')}catch(e){stat(e?.message||String(e),true)}}
 
+
+function colorField(k,label,val){return `<div class="field"><label>${label}</label><div class="color-row"><input data-v="${k}" type="color" value="${esc(val)}"><input value="${esc(val)}" readonly></div></div>`}
+function profileSectionEditor(){
+ const s=getSetting('profile',{enabled:true,nameAr:'أطياف',nameEn:'ATYAAF STORE',mark:'أ',logoImage:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',fontFamily:'Tahoma, Arial, sans-serif',arabicSize:18,englishSize:12,markSize:28});
+ profileEditor.innerHTML=`<div class="grid">
+ <div class="field"><label>الحالة</label><select data-v="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
+ <div class="field"><label>اسم المتجر بالعربي</label><input data-v="nameAr" value="${esc(s.nameAr||'')}"></div>
+ <div class="field"><label>اسم المتجر بالإنجليزي</label><input data-v="nameEn" value="${esc(s.nameEn||'')}"></div>
+ <div class="field"><label>حرف/رمز الشعار</label><input data-v="mark" value="${esc(s.mark||'أ')}"></div>
+ ${colorField('backgroundColor','لون الخلفية',s.backgroundColor||'#fffdfa')}
+ ${colorField('textColor','لون الاسم',s.textColor||'#17352e')}
+ ${colorField('accentColor','لون الشعار',s.accentColor||'#b47a4f')}
+ <div class="field"><label>الخط</label><select data-v="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
+ <div class="field"><label>حجم العربي</label><input data-v="arabicSize" type="number" value="${Number(s.arabicSize||18)}"></div>
+ <div class="field"><label>حجم الإنجليزي</label><input data-v="englishSize" type="number" value="${Number(s.englishSize||12)}"></div>
+ <div class="field"><label>حجم الشعار</label><input data-v="markSize" type="number" value="${Number(s.markSize||28)}"></div>
+ <div class="field full upload"><b>صورة/لوجو البروفايل — رفع مباشر</b><input id="profileLogoFile" type="file" accept="image/*">${s.logoImage?`<div style="margin-top:9px"><img src="${esc(s.logoImage)}" style="max-width:160px;max-height:120px;border-radius:12px"><br><button class="btn red" type="button" onclick="removeProfileLogo()">حذف الصورة فقط</button></div>`:''}</div>
+ </div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveProfileSection()">حفظ</button><button class="btn alt" onclick="toggleSection('profile')">إظهار/إخفاء</button><button class="btn copper" onclick="createProfileSection()">+ إضافة/إنشاء</button><button class="btn red" onclick="deleteProfileSection()">حذف القسم</button></div>`;
+ const ff=profileEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Tahoma, Arial, sans-serif';
+}
+function introSectionEditor(){
+ const s=getSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});
+ introEditor.innerHTML=`<div class="grid">
+ <div class="field"><label>الحالة</label><select data-v="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
+ <div class="field"><label>اسم البداية</label><input data-v="name" value="${esc(s.name||'ATYAAF')}"></div>
+ <div class="field"><label>النص السفلي</label><input data-v="sub" value="${esc(s.sub||'STORE')}"></div>
+ <div class="field"><label>حرف/رمز الشعار</label><input data-v="mark" value="${esc(s.mark||'أ')}"></div>
+ ${colorField('backgroundColor','لون خلفية البداية',s.backgroundColor||'#17352e')}
+ ${colorField('textColor','لون الحروف',s.textColor||'#f5eee4')}
+ ${colorField('accentColor','اللون المميز',s.accentColor||'#c99a69')}
+ <div class="field"><label>الخط</label><select data-v="fontFamily"><option value="Georgia, serif">Georgia</option><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
+ <div class="field"><label>حجم الحروف</label><input data-v="letterSize" type="number" min="22" max="100" value="${Number(s.letterSize||58)}"></div>
+ <div class="field"><label>حجم الشعار</label><input data-v="markSize" type="number" min="20" max="80" value="${Number(s.markSize||35)}"></div>
+ <div class="field"><label>مدة الشاشة ms</label><input data-v="duration" type="number" min="1500" max="10000" step="100" value="${Number(s.duration||3350)}"></div>
+ <div class="field"><label>الظهور</label><select data-v="showOnce"><option value="true" ${s.showOnce!==false?'selected':''}>مرة واحدة في الجلسة</option><option value="false" ${s.showOnce===false?'selected':''}>كل دخول/تحديث</option></select></div>
+ <div class="field full upload"><b>لوجو شاشة البداية — رفع مباشر</b><input id="introLogoFile" type="file" accept="image/*">${s.logoImage?`<div style="margin-top:9px"><img src="${esc(s.logoImage)}" style="max-width:160px;max-height:120px;border-radius:12px"><br><button class="btn red" type="button" onclick="removeIntroLogo()">حذف الصورة فقط</button></div>`:''}</div>
+ </div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveIntroSection()">حفظ</button><button class="btn alt" onclick="toggleSection('intro')">إظهار/إخفاء</button><button class="btn copper" onclick="createIntroSection()">+ إضافة/إنشاء</button><button class="btn red" onclick="deleteIntroSection()">حذف القسم</button></div>`;
+ const ff=introEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Georgia, serif';
+}
+function readVisualEditor(el,key){
+ const old=getSetting(key,{}),o={...old};
+ el.querySelectorAll('[data-v]').forEach(x=>{let v=x.value;if(x.dataset.v==='enabled'||x.dataset.v==='showOnce')v=v==='true';else if(['arabicSize','englishSize','markSize','letterSize','duration'].includes(x.dataset.v))v=Number(v)||0;o[x.dataset.v]=v});return o;
+}
+async function saveProfileSection(){try{let v=readVisualEditor(profileEditor,'profile'),f=document.getElementById('profileLogoFile')?.files?.[0];if(f)v.logoImage=(await uploadFiles([f],'profile'))[0]||v.logoImage||'';await putSetting('profile',v);await loadAll();stat('تم حفظ البروفايل واسم المتجر ✓')}catch(e){stat(e.message,true)}}
+async function saveIntroSection(){try{let v=readVisualEditor(introEditor,'intro'),f=document.getElementById('introLogoFile')?.files?.[0];if(f)v.logoImage=(await uploadFiles([f],'intro'))[0]||v.logoImage||'';await putSetting('intro',v);await loadAll();stat('تم حفظ شاشة البداية ✓')}catch(e){stat(e.message,true)}}
+async function removeProfileLogo(){let s=getSetting('profile',{});s.logoImage='';await putSetting('profile',s);await loadAll()}
+async function removeIntroLogo(){let s=getSetting('intro',{});s.logoImage='';await putSetting('intro',s);await loadAll()}
+async function deleteProfileSection(){if(confirm('حذف إعدادات البروفايل؟')){await removeSetting('profile');await loadAll()}}
+async function deleteIntroSection(){if(confirm('حذف إعدادات شاشة البداية؟')){await removeSetting('intro');await loadAll()}}
+async function createProfileSection(){await putSetting('profile',{enabled:true,nameAr:'أطياف',nameEn:'ATYAAF STORE',mark:'أ',logoImage:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',fontFamily:'Tahoma, Arial, sans-serif',arabicSize:18,englishSize:12,markSize:28});await loadAll()}
+async function createIntroSection(){await putSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
+
 function simpleEditor(el,key){
  const sc=schemas[key],s=getSetting(key,{enabled:true});
  el.innerHTML=`<div class="grid">${sc.fields.map(([k,l,t])=>t==='area'?`<div class="field full"><label>${l}</label><textarea data-k="${k}" rows="5">${esc(s[k]||'')}</textarea></div>`:t==='bool'?`<div class="field"><label>${l}</label><select data-k="${k}"><option value="true" ${s[k]!==false?'selected':''}>ظاهر</option><option value="false" ${s[k]===false?'selected':''}>مخفي</option></select></div>`:`<div class="field"><label>${l}</label><input data-k="${k}" value="${esc(s[k]||'')}"></div>`).join('')}</div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveSimple('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
@@ -313,6 +369,8 @@ async function loadAll(){
     if(el) simpleEditor(el,k);
   });
    giftSectionEditor();
+   profileSectionEditor();
+   introSectionEditor();
   listEditor(benefitsEditor,"benefits",[
     {title:"منتجات أصلية",text:"اختيارات موثوقة بعناية"},
     {title:"شحن سريع",text:"توصيل آمن"},
@@ -328,7 +386,8 @@ async function loadAll(){
   stat("فشل الاتصال: "+(e?.message||String(e)),true);
  }
 }
-Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview});
+Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,
+saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection});
 window.saveProduct=saveProduct;
 setTimeout(()=>{
   const el=document.getElementById("status");

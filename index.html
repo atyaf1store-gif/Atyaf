@@ -732,8 +732,104 @@ document.addEventListener('DOMContentLoaded',()=>{
 }
 </style>
 
+
+<style id="atyaf-luxury-intro-v1">
+#atyafIntro{
+ position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;
+ background:linear-gradient(145deg,#0e3029 0%,#173f35 52%,#0b2923 100%);
+ overflow:hidden;opacity:1;visibility:visible;
+ transition:opacity .65s ease,visibility .65s ease;
+}
+#atyafIntro::before{
+ content:"";position:absolute;inset:-20%;pointer-events:none;
+ background:radial-gradient(circle at 50% 45%,rgba(196,145,91,.14),transparent 34%);
+}
+#atyafIntro.done{opacity:0;visibility:hidden;pointer-events:none}
+.atyaf-intro-stage{position:relative;width:min(92vw,760px);height:250px;display:grid;place-items:center}
+.atyaf-intro-logo{
+ position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+ width:76px;height:76px;border:1px solid rgba(201,151,99,.78);border-radius:50%;
+ display:grid;place-items:center;color:#d1a06c;font-family:Georgia,serif;font-size:35px;
+ opacity:0;animation:atyafMark 1.05s cubic-bezier(.2,.8,.2,1) 1.25s forwards;
+ box-shadow:0 0 0 1px rgba(255,255,255,.025) inset;
+}
+.atyaf-intro-word{
+ position:absolute;top:50%;left:50%;display:flex;direction:ltr;gap:.10em;
+ transform:translate(-50%,28px);white-space:nowrap;color:#f5eee4;
+ font-family:Georgia,"Times New Roman",serif;font-size:clamp(31px,8vw,58px);
+ letter-spacing:.17em;font-weight:500;
+}
+.atyaf-intro-letter{
+ display:inline-block;opacity:0;filter:blur(3px);
+ transform:translate3d(var(--dx),var(--dy),0) rotate(var(--rot));
+ animation:atyafLetter 1.05s cubic-bezier(.16,.9,.24,1) var(--delay) forwards;
+}
+.atyaf-intro-sub{
+ position:absolute;top:calc(50% + 78px);left:50%;transform:translateX(-50%);
+ color:#c99a69;font:600 10px/1.2 Arial,sans-serif;letter-spacing:.48em;
+ opacity:0;animation:atyafSub .7s ease 1.55s forwards;
+}
+.atyaf-intro-group{
+ animation:atyafRise .85s cubic-bezier(.2,.8,.2,1) 2.45s forwards;
+ transform-origin:center;
+}
+@keyframes atyafLetter{
+ 0%{opacity:0;filter:blur(3px);transform:translate3d(var(--dx),var(--dy),0) rotate(var(--rot))}
+ 70%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) rotate(0)}
+ 100%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) rotate(0)}
+}
+@keyframes atyafMark{from{opacity:0;transform:translate(-50%,-50%) scale(.72)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes atyafSub{to{opacity:.9}}
+@keyframes atyafRise{
+ from{transform:translateY(0);opacity:1}
+ to{transform:translateY(-58px);opacity:0}
+}
+@media(max-width:600px){
+ .atyaf-intro-stage{height:210px}
+ .atyaf-intro-logo{width:62px;height:62px;font-size:29px}
+ .atyaf-intro-word{font-size:36px;letter-spacing:.13em;transform:translate(-50%,24px)}
+ .atyaf-intro-sub{top:calc(50% + 66px);font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ .atyaf-intro-letter,.atyaf-intro-logo,.atyaf-intro-sub,.atyaf-intro-group{animation-duration:.01ms!important;animation-delay:0s!important}
+ #atyafIntro{transition-duration:.15s}
+}
+</style>
+
 </head>
 <body>
+
+<div id="atyafIntro" aria-hidden="true">
+ <div class="atyaf-intro-group">
+  <div class="atyaf-intro-stage">
+   <div class="atyaf-intro-logo">أ</div>
+   <div class="atyaf-intro-word" aria-label="ATYAAF">
+    <span class="atyaf-intro-letter" style="--dx:-150px;--dy:-170px;--rot:-22deg;--delay:.12s">A</span>
+    <span class="atyaf-intro-letter" style="--dx:95px;--dy:-210px;--rot:18deg;--delay:.22s">T</span>
+    <span class="atyaf-intro-letter" style="--dx:-70px;--dy:-245px;--rot:-14deg;--delay:.32s">Y</span>
+    <span class="atyaf-intro-letter" style="--dx:155px;--dy:-155px;--rot:21deg;--delay:.42s">A</span>
+    <span class="atyaf-intro-letter" style="--dx:-115px;--dy:-205px;--rot:-17deg;--delay:.52s">A</span>
+    <span class="atyaf-intro-letter" style="--dx:60px;--dy:-235px;--rot:15deg;--delay:.62s">F</span>
+   </div>
+   <div class="atyaf-intro-sub">STORE</div>
+  </div>
+ </div>
+</div>
+<script id="atyaf-luxury-intro-js">
+(()=>{
+ const intro=document.getElementById('atyafIntro');
+ if(!intro)return;
+ let closed=false;
+ const close=()=>{if(closed)return;closed=true;intro.classList.add('done');setTimeout(()=>intro.remove(),750)};
+ // One elegant entrance per browser tab; never blocks the store if loading is slow.
+ const seen=sessionStorage.getItem('atyaf_intro_seen');
+ if(seen){intro.remove();return}
+ sessionStorage.setItem('atyaf_intro_seen','1');
+ setTimeout(close,3350);
+ intro.addEventListener('click',close,{once:true});
+})();
+</script>
+
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
   <header class="header">
     <div class="container headrow atyaf-head-balanced">

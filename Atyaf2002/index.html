@@ -500,6 +500,123 @@ async function removeBrandImage(i){let b=getSetting('brands',{items:[]});if(b.it
 async function hideBrandItem(i){let b=getSetting('brands',{items:[]});if(b.items?.[i])b.items[i].hidden=!b.items[i].hidden;await putSetting('brands',b);await loadAll()}
 async function removeBrandItem(i){if(!confirm('حذف هذه الماركة؟'))return;let b=getSetting('brands',{items:[]});b.items.splice(i,1);await putSetting('brands',b);await loadAll()}
 
+
+function benefitsSectionEditor(){
+ const D={
+  enabled:true,sectionBackground:'#fbf8f2',gap:14,
+  columnsDesktop:4,columnsTablet:2,columnsMobile:2,
+  cardBackground:'#fffdfa',cardBorder:'#ffffff',cardBorderWidth:1,cardRadius:18,
+  cardPadding:22,cardMinHeight:128,cardShadow:'0 14px 38px rgba(23,53,46,.10)',
+  iconColor:'#b47a4f',iconSize:24,
+  titleColor:'#17352e',titleSize:16,titleWeight:700,
+  textColor:'#707b75',textSize:13,textWeight:400,
+  fontFamily:'Tahoma, Arial, sans-serif',
+  items:[
+   {icon:'✦',title:'منتجات أصلية',text:'اختيارات موثوقة بعناية',hidden:false},
+   {icon:'⌁',title:'شحن سريع',text:'توصيل آمن إلى بابك',hidden:false},
+   {icon:'♧',title:'تغليف فاخر',text:'هدية تليق بمن تحب',hidden:false},
+   {icon:'♡',title:'خدمة تهتم',text:'نحن هنا لمساعدتك',hidden:false}
+  ]
+ };
+ const raw=getSetting('benefits',{});
+ const v={...D,...raw,items:Array.isArray(raw.items)?raw.items:D.items};
+ const color=(key,label)=>`<div class="field"><label>${label}</label><div class="color-row"><input data-benefit="${key}" type="color" value="${esc(v[key])}"><input data-benefit-text="${key}" value="${esc(v[key])}"></div></div>`;
+ const num=(key,label,min,max)=>`<div class="field"><label>${label}</label><input data-benefit="${key}" type="number" min="${min}" max="${max}" value="${Number(v[key])}"></div>`;
+ benefitsEditor.innerHTML=`
+  <div class="toolbar">
+   <button class="btn" onclick="saveBenefitsSection()">حفظ إعدادات المزايا</button>
+   <button class="btn alt" onclick="addBenefitItem()">+ إضافة مربع</button>
+   <button class="btn alt" onclick="toggleBenefitsSection()">${v.enabled===false?'إظهار القسم':'إخفاء القسم'}</button>
+  </div>
+  <div class="card" style="margin-top:12px">
+   <h3>تصميم القسم والبطاقات</h3>
+   <div class="grid">
+    ${color('sectionBackground','لون خلفية منطقة المزايا')}
+    ${color('cardBackground','لون خلفية المربع')}
+    ${color('cardBorder','لون حدود المربع')}
+    ${color('iconColor','لون الأيقونة')}
+    ${color('titleColor','لون العنوان')}
+    ${color('textColor','لون الوصف')}
+    ${num('gap','المسافة بين المربعات px',0,60)}
+    ${num('columnsDesktop','عدد المربعات — كمبيوتر',1,6)}
+    ${num('columnsTablet','عدد المربعات — تابلت',1,4)}
+    ${num('columnsMobile','عدد المربعات — جوال',1,2)}
+    ${num('cardBorderWidth','سماكة الحدود px',0,8)}
+    ${num('cardRadius','استدارة الزوايا px',0,60)}
+    ${num('cardPadding','الحشو الداخلي px',0,60)}
+    ${num('cardMinHeight','أقل ارتفاع للمربع px',60,400)}
+    ${num('iconSize','حجم الأيقونة px',8,80)}
+    ${num('titleSize','حجم خط العنوان px',8,60)}
+    ${num('textSize','حجم خط الوصف px',7,48)}
+    <div class="field"><label>سماكة عنوان المربع</label><select data-benefit="titleWeight"><option value="400">عادي</option><option value="600">متوسط</option><option value="700">عريض</option><option value="800">عريض جدًا</option></select></div>
+    <div class="field"><label>سماكة الوصف</label><select data-benefit="textWeight"><option value="400">عادي</option><option value="500">متوسط</option><option value="600">عريض</option></select></div>
+    <div class="field"><label>نوع الخط</label><input data-benefit="fontFamily" value="${esc(v.fontFamily)}" placeholder="Tahoma, Arial, sans-serif"></div>
+    <div class="field"><label>ظل المربع CSS</label><input data-benefit="cardShadow" value="${esc(v.cardShadow)}"></div>
+   </div>
+  </div>
+  <div style="margin-top:12px">
+   ${v.items.map((it,i)=>`
+    <div class="card" style="margin-top:10px">
+     <h3>المربع ${i+1}</h3>
+     <div class="grid">
+      <div class="field"><label>الأيقونة / الرمز</label><input id="benefit_icon_${i}" value="${esc(it.icon||'')}"></div>
+      <div class="field"><label>العنوان</label><input id="benefit_title_${i}" value="${esc(it.title||'')}"></div>
+      <div class="field"><label>الوصف</label><input id="benefit_text_${i}" value="${esc(it.text||'')}"></div>
+     </div>
+     <div class="actions">
+      <button class="btn" onclick="saveBenefitItem(${i})">حفظ المربع</button>
+      <button class="btn alt" onclick="hideBenefitItem(${i})">${it.hidden?'إظهار':'إخفاء'}</button>
+      <button class="btn red" onclick="removeBenefitItem(${i})">حذف</button>
+     </div>
+    </div>`).join('')}
+  </div>`;
+ const tw=benefitsEditor.querySelector('[data-benefit="titleWeight"]'); if(tw)tw.value=String(v.titleWeight);
+ const xw=benefitsEditor.querySelector('[data-benefit="textWeight"]'); if(xw)xw.value=String(v.textWeight);
+ benefitsEditor.querySelectorAll('[data-benefit-text]').forEach(inp=>{
+   const key=inp.dataset.benefitText, picker=benefitsEditor.querySelector(`[data-benefit="${key}"][type="color"]`);
+   inp.addEventListener('input',()=>{if(/^#[0-9a-f]{6}$/i.test(inp.value)&&picker)picker.value=inp.value});
+   if(picker)picker.addEventListener('input',()=>inp.value=picker.value);
+ });
+}
+function readBenefitsDesign(){
+ const old=getSetting('benefits',{});
+ const out={...old};
+ benefitsEditor.querySelectorAll('[data-benefit]').forEach(el=>{
+  const k=el.dataset.benefit;
+  out[k]=el.type==='number'?Number(el.value):el.value;
+ });
+ benefitsEditor.querySelectorAll('[data-benefit-text]').forEach(el=>out[el.dataset.benefitText]=el.value.trim());
+ out.enabled=old.enabled!==false;
+ out.items=Array.isArray(old.items)?old.items:[];
+ return out;
+}
+async function saveBenefitsSection(){
+ try{await putSetting('benefits',readBenefitsDesign());stat('تم حفظ إعدادات مربعات المزايا ✓');await loadAll()}
+ catch(e){stat('فشل حفظ المزايا: '+(e?.message||e),true)}
+}
+async function addBenefitItem(){
+ const v=readBenefitsDesign();v.items.push({icon:'✦',title:'ميزة جديدة',text:'وصف الميزة',hidden:false});
+ await putSetting('benefits',v);await loadAll();
+}
+async function saveBenefitItem(i){
+ const v=readBenefitsDesign(),it=v.items[i]||{};
+ it.icon=document.getElementById(`benefit_icon_${i}`)?.value||'';
+ it.title=document.getElementById(`benefit_title_${i}`)?.value||'';
+ it.text=document.getElementById(`benefit_text_${i}`)?.value||'';
+ v.items[i]=it;await putSetting('benefits',v);await loadAll();
+}
+async function hideBenefitItem(i){
+ const v=readBenefitsDesign();if(v.items[i])v.items[i].hidden=!v.items[i].hidden;
+ await putSetting('benefits',v);await loadAll();
+}
+async function removeBenefitItem(i){
+ if(!confirm('حذف مربع الميزة؟'))return;
+ const v=readBenefitsDesign();v.items.splice(i,1);await putSetting('benefits',v);await loadAll();
+}
+async function toggleBenefitsSection(){
+ const v=readBenefitsDesign();v.enabled=!v.enabled;await putSetting('benefits',v);await loadAll();
+}
+
 function listEditor(el,key,defaults){
  let s=getSetting(key,{enabled:true,items:defaults}),items=Array.isArray(s.items)?s.items:[];
  el.innerHTML=`<div class="toolbar"><button class="btn" onclick="addListItem('${key}')">+ إضافة عنصر</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء القسم</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`+
@@ -597,12 +714,7 @@ async function loadAll(){
    brandSectionsManager();
    profileSectionEditor();
    introSectionEditor();
-  listEditor(benefitsEditor,"benefits",[
-    {title:"منتجات أصلية",text:"اختيارات موثوقة بعناية"},
-    {title:"شحن سريع",text:"توصيل آمن"},
-    {title:"تغليف فاخر",text:"هدية تليق بمن تحب"},
-    {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
-  ]);
+  benefitsSectionEditor();
   brandsSectionEditor();
   renderProducts();
   renderAllSettings();

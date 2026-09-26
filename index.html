@@ -1057,6 +1057,24 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
 @media(max-width:600px){#brands .brands{grid-template-columns:repeat(var(--brand-cols-m,2),minmax(0,1fr))!important}}
 </style>
 
+
+<style id="atyaf-independent-brand-products-css">
+.atyaf-brand-product-sections{width:100%}
+.atyaf-brand-products{padding-top:42px;padding-bottom:28px}
+.atyaf-brand-products+.atyaf-brand-products{border-top:1px solid var(--atyaf-border,#e4ddd2)}
+.atyaf-brand-products .atyaf-brand-products-grid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:22px
+}
+.atyaf-brand-products .section-head{align-items:end}
+.atyaf-brand-products .section-head h2{margin:0}
+.atyaf-brand-products .section-head p{margin-top:7px}
+@media(max-width:850px){.atyaf-brand-products .atyaf-brand-products-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+ .atyaf-brand-products{padding-top:30px;padding-bottom:20px}
+ .atyaf-brand-products .atyaf-brand-products-grid{grid-template-columns:1fr;gap:14px}
+}
+</style>
+
 </head>
 <body>
 
@@ -1151,6 +1169,7 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
     <section class="container benefits"><div class="benefit"><i>✦</i><b>منتجات أصلية</b><span>اختيارات موثوقة بعناية</span></div><div class="benefit"><i>⌁</i><b>شحن سريع</b><span>توصيل آمن إلى بابك</span></div><div class="benefit"><i>♧</i><b>تغليف فاخر</b><span>هدية تليق بمن تحب</span></div><div class="benefit"><i>♡</i><b>خدمة تهتم</b><span>نحن هنا لمساعدتك</span></div></section>
     <section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands"><button class="brand-card" onclick="filterBrand('أطياف')"><strong>أطياف</strong><span>ATYAAF</span></button><button class="brand-card" onclick="filterBrand('دار العود')"><strong>دار العود</strong><span>HOUSE OF OUD</span></button><button class="brand-card" onclick="filterBrand('نُبل')"><strong>نُبل</strong><span>NOBLE</span></button><button class="brand-card" onclick="filterBrand('سُلاف')"><strong>سُلاف</strong><span>SULAF</span></button><button class="brand-card" onclick="filterBrand('كل الماركات')"><strong>الكل</strong><span>VIEW ALL</span></button></div></section>
     <section class="section container" id="products" style="padding-top:20px"><div class="section-head"><div><h2>مختارات أطياف</h2><p id="resultText">منتجاتنا الأكثر حبًا</p></div><select id="sortSelect" onchange="renderProducts()" style="border:1px solid var(--line);background:#fffdfa;padding:10px 14px;border-radius:999px;color:var(--green)"><option value="featured">ترتيب: مميز</option><option value="price-low">السعر: الأقل</option><option value="price-high">السعر: الأعلى</option><option value="new">الأحدث</option></select></div><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all',this)">الكل</button><button class="chip" data-filter="oud" onclick="setFilter('oud',this)">عود</button><button class="chip" data-filter="musk" onclick="setFilter('musk',this)">مسك</button><button class="chip" data-filter="floral" onclick="setFilter('floral',this)">زهور</button><button class="chip" data-filter="sale" onclick="setFilter('sale',this)">عروض</button><button class="chip" data-filter="new" onclick="setFilter('new',this)">وصل حديثًا</button></div><div class="products" id="productGrid"></div></section>
+    <div id="atyafBrandProductSections" class="atyaf-brand-product-sections" aria-label="أقسام المنتجات حسب الماركة"></div>
     <section class="section container" id="scents"><div class="gift"><div><span class="eyebrow" style="color:#e8bb80">هدية تحمل شعورًا</span><h2>لأن أجمل الهدايا<br>تُحسّ قبل أن تُفتح</h2><p>اختر عطرك، أضف تغليفنا الفاخر، ودعنا نجهزها بعناية لتصل كما تتمنى.</p><button class="btn" onclick="openGift()">جهّز هديتك</button></div><div style="font-size:90px;color:#f2d19d80">✦</div></div></section>
 
 <!-- ATYAAF FULL WIDTH LOWER ADS START -->
@@ -1925,7 +1944,70 @@ window.addEventListener('load',()=>{
 })();
 </script>
 
-</body>
-</html>
+
+<script id="atyaf-independent-brand-products-js">
+(()=>{
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+ const norm=v=>String(v??'').trim().toLocaleLowerCase('ar');
+ const money=v=>{try{return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(Number(v)||0)}catch(_){return Number(v)||0}};
+ function productBrand(p){return String(p?.brand||p?.brand_name||p?.brandName||'').trim()}
+ function productName(p){return p?.name_ar||p?.name||p?.title||'منتج'}
+ function productImage(p){
+   if(Array.isArray(p?.images)&&p.images[0])return p.images[0];
+   return p?.image_url||p?.image||p?.thumbnail||''
+ }
+ function card(p){
+   const id=String(p?.id||'');
+   const name=productName(p),brand=productBrand(p),img=productImage(p);
+   const price=p?.sale_price??p?.price??0;
+   return `<article class="product-card">
+    <button class="fav" type="button" onclick="toggleFavorite('${esc(id)}')" aria-label="المفضلة">♡</button>
+    ${p?.featured?'<span class="badge">مميز</span>':''}
+    <div class="product-image">${img?`<img src="${esc(img)}" alt="${esc(name)}" loading="lazy">`:''}</div>
+    <div class="product-info">
+      <small>${esc(brand)}</small><h3>${esc(name)}</h3><div class="price">${money(price)} ر.س</div>
+      <div class="product-actions">
+       <button class="gift-btn" type="button" onclick="openGiftForProduct('${esc(id)}')">🎁</button>
+       <button class="view-btn" type="button" onclick="openProduct('${esc(id)}')">عرض</button>
+       <button class="add-btn" type="button" onclick="addToCart('${esc(id)}')">أضف للسلة</button>
+      </div>
+    </div>
+   </article>`;
+ }
+ function allProducts(){
+   for(const k of ['products','allProducts','atyafProducts','storeProducts']){
+     if(Array.isArray(window[k]))return window[k];
+   }
+   return [];
+ }
+ function brandSettings(){
+   const m=window.ATYAF_ADMIN_SETTINGS||{};
+   return m.brands||{};
+ }
+ function render(){
+   const host=document.getElementById('atyafBrandProductSections');if(!host)return;
+   const products=allProducts();if(!products.length){host.innerHTML='';return}
+   const bs=brandSettings();
+   let names=(Array.isArray(bs.items)?bs.items:[]).filter(x=>x&&x.hidden!==true).map(x=>String(x.title||x.name||'').trim()).filter(Boolean);
+   const actual=[...new Set(products.map(productBrand).filter(Boolean))];
+   actual.forEach(x=>{if(!names.some(n=>norm(n)===norm(x)))names.push(x)});
+   host.innerHTML=names.map(name=>{
+     const rows=products.filter(p=>norm(productBrand(p))===norm(name));
+     if(!rows.length)return '';
+     return `<section class="section container atyaf-brand-products" data-brand-section="${esc(name)}">
+       <div class="section-head"><div><h2>${esc(name)}</h2><p>منتجات ${esc(name)}</p></div>
+       <button class="link" type="button" onclick="filterBrand('${esc(name)}');document.getElementById('products')?.scrollIntoView({behavior:'smooth'})">عرض الكل ←</button></div>
+       <div class="atyaf-brand-products-grid">${rows.map(card).join('')}</div>
+     </section>`;
+   }).join('');
+ }
+ // Render after the store's own product/settings loaders have had time to populate.
+ document.addEventListener('atyaf:settings-applied',()=>setTimeout(render,120));
+ window.addEventListener('load',()=>{setTimeout(render,700);setTimeout(render,1800)});
+ window.addEventListener('focus',()=>setTimeout(render,120));
+ window.atyafRenderBrandProductSections=render;
+})();
+</script>
+
 </body>
 </html>

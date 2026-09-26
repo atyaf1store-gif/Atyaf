@@ -287,7 +287,7 @@ const BRAND_SECTION_DEFAULTS={
  buttonBackground:'#17352e',buttonText:'#ffffff',secondaryButtonBackground:'#ffffff',
  secondaryButtonText:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',
  titleSize:32,subtitleSize:14,productNameSize:18,brandTextSize:12,priceSize:18,
- buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,gap:18,sectionGap:42,
+ buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,productCardWidth:100,productCardHeight:0,gap:18,sectionGap:42,
  columnsDesktop:3,columnsTablet:2,columnsMobile:1
 };
 function bsColor(k,label,v){
@@ -321,6 +321,8 @@ function brandSectionsManager(){
  <div class="field"><label>ارتفاع صورة المنتج</label><input data-bs="imageHeight" type="number" min="160" max="700" value="${v.imageHeight}"></div>
  <div class="field"><label>عرض أيقونة/صورة المنتج %</label><input data-bs="productIconWidth" type="number" min="10" max="100" value="${v.productIconWidth}"><small class="muted">نسبة عرض الصورة داخل مساحة المنتج.</small></div>
  <div class="field"><label>ارتفاع أيقونة/صورة المنتج %</label><input data-bs="productIconHeight" type="number" min="10" max="100" value="${v.productIconHeight}"><small class="muted">نسبة ارتفاع الصورة داخل مساحة المنتج.</small></div>
+ <div class="field"><label>عرض بطاقة المنتج كاملة %</label><input data-bs="productCardWidth" type="number" min="35" max="100" value="${v.productCardWidth}"><small class="muted">يتحكم بعرض البطاقة كاملة: الصورة + الاسم + السعر + السلة + عرض + الهدية.</small></div>
+ <div class="field"><label>ارتفاع بطاقة المنتج كاملة px</label><input data-bs="productCardHeight" type="number" min="0" max="1200" value="${v.productCardHeight}"><small class="muted">0 = ارتفاع تلقائي. أي قيمة أخرى تحدد ارتفاع البطاقة كاملة.</small></div>
  <div class="field"><label>المسافة بين المنتجات</label><input data-bs="gap" type="number" min="0" max="60" value="${v.gap}"></div>
  <div class="field"><label>المسافة بين أقسام الماركات</label><input data-bs="sectionGap" type="number" min="0" max="100" value="${v.sectionGap}"></div>
  <div class="field"><label>عدد الأعمدة — الكمبيوتر</label><input data-bs="columnsDesktop" type="number" min="1" max="6" value="${v.columnsDesktop}"></div>

@@ -1048,6 +1048,15 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
 #atyafIntro{background:var(--atyaf-intro-bg)!important}
 </style>
 
+
+<style id="atyaf-brands-rich-controls">
+#brands .brands{gap:var(--brand-gap,14px)!important;grid-template-columns:repeat(var(--brand-cols-d,5),minmax(0,1fr))!important}
+#brands .brand-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;overflow:hidden}
+#brands .atyaf-brand-logo{display:block;background:transparent;border:0;border-radius:0;box-shadow:none;margin:0 auto 3px}
+@media(max-width:850px){#brands .brands{grid-template-columns:repeat(var(--brand-cols-t,3),minmax(0,1fr))!important}}
+@media(max-width:600px){#brands .brands{grid-template-columns:repeat(var(--brand-cols-m,2),minmax(0,1fr))!important}}
+</style>
+
 </head>
 <body>
 
@@ -1707,18 +1716,33 @@ window.addEventListener("focus",atyafLoadLowerAds);
     current.slice(items.length).forEach(x=>hide(x,true));
   }
   function applyBrands(s){
-    const sec=document.querySelector('#brands');
-    if(!sec)return;
+    const sec=document.querySelector('#brands');if(!sec)return;
     hide(sec,s?.enabled===false);
+    const head=sec.querySelector('.section-head'),h2=head?.querySelector('h2'),p=head?.querySelector('p'),link=head?.querySelector('.link');
+    if(h2)h2.textContent=s?.title||'تسوق حسب الماركة';
+    if(p)p.textContent=s?.subtitle??'علامات مختارة لعشاق التفاصيل';
+    if(link)link.textContent=s?.showAllText||'عرض الكل ←';
+    sec.style.background=s?.backgroundColor||'transparent';
+    sec.style.fontFamily=s?.fontFamily||'Tahoma, Arial, sans-serif';
+    if(h2){h2.style.color=s?.titleColor||'#17352e';h2.style.fontSize=(Number(s?.titleSize)||32)+'px';h2.style.fontFamily='inherit'}
+    if(p){p.style.color=s?.subtitleColor||'#707b75';p.style.fontSize=(Number(s?.subtitleSize)||14)+'px'}
+    if(link){link.style.color=s?.linkColor||'#b47a4f';link.style.fontSize=(Number(s?.linkSize)||14)+'px'}
+    const box=sec.querySelector('.brands');if(!box)return;
+    box.style.setProperty('--brand-gap',(Number(s?.gap)||14)+'px');
+    box.style.setProperty('--brand-cols-d',String(Math.max(1,Number(s?.columnsDesktop)||5)));
+    box.style.setProperty('--brand-cols-t',String(Math.max(1,Number(s?.columnsTablet)||3)));
+    box.style.setProperty('--brand-cols-m',String(Math.max(1,Number(s?.columnsMobile)||2)));
     const items=Array.isArray(s?.items)?s.items:[];
     if(!items.length)return;
-    const box=sec.querySelector('.brands');
-    if(!box)return;
     box.innerHTML=items.filter(x=>x?.hidden!==true).map(it=>{
-      const title=String(it.title||it.name||'');
-      const sub=String(it.text||it.subtitle||'');
+      const title=String(it.title||it.name||''),sub=String(it.text||it.subtitle||'');
       const safeTitle=title.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-      return `<button class="brand-card" onclick="filterBrand('${safeTitle}')"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(sub)}</span></button>`;
+      const img=String(it.image||'').trim();
+      return `<button class="brand-card" onclick="filterBrand('${safeTitle}')" style="background:${escapeHtml(s?.cardBackground||'#fffdfa')};border-color:${escapeHtml(s?.cardBorder||'#e4ddd2')};border-radius:${Number(s?.cardRadius)||18}px;padding:${Number(s?.cardPadding)||22}px">
+       ${img?`<img class="atyaf-brand-logo" src="${escapeHtml(img)}" alt="" style="width:auto;height:${Number(s?.logoSize)||54}px;max-width:90%;object-fit:contain">`:''}
+       <strong style="color:${escapeHtml(s?.brandNameColor||'#17352e')};font-size:${Number(s?.brandNameSize)||18}px">${escapeHtml(title)}</strong>
+       <span style="color:${escapeHtml(s?.brandSubColor||'#b47a4f')};font-size:${Number(s?.brandSubSize)||11}px">${escapeHtml(sub)}</span>
+      </button>`;
     }).join('');
   }
   function applyPolicies(s){
@@ -1901,5 +1925,7 @@ window.addEventListener('load',()=>{
 })();
 </script>
 
+</body>
+</html>
 </body>
 </html>

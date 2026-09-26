@@ -287,7 +287,7 @@ const BRAND_SECTION_DEFAULTS={
  buttonBackground:'#17352e',buttonText:'#ffffff',secondaryButtonBackground:'#ffffff',
  secondaryButtonText:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',
  titleSize:32,subtitleSize:14,productNameSize:18,brandTextSize:12,priceSize:18,
- buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,productCardWidth:100,productCardHeight:0,actionButtonHeight:46,cartButtonWidth:72,giftButtonWidth:24,actionGap:8,actionRadius:22,actionIconSize:20,cardImageShare:80,cardTextShare:10,cardActionsShare:10,catalogCardHeight:390,catalogImageHeight:300,catalogColumnsDesktop:5,catalogColumnsTablet:3,catalogColumnsMobile:2,gap:18,sectionGap:42,
+ buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,productCardWidth:100,productCardHeight:0,actionButtonHeight:46,cartButtonWidth:72,giftButtonWidth:24,actionGap:8,actionRadius:22,actionIconSize:20,cardImageShare:80,cardTextShare:10,cardActionsShare:10,catalogCardHeight:390,catalogImageHeight:300,catalogColumnsDesktop:5,catalogColumnsTablet:3,catalogColumnsMobile:2,badgeText:'مميز',badgeBackground:'#17352e',badgeTextColor:'#ffffff',badgeFontSize:12,badgeFontWeight:700,badgeRadius:8,badgePadX:10,badgePadY:6,badgeTop:8,badgeSide:8,gap:18,sectionGap:42,
  columnsDesktop:3,columnsTablet:2,columnsMobile:1
 };
 function bsColor(k,label,v){
@@ -337,6 +337,16 @@ function brandSectionsManager(){
  <div class="field"><label>عدد البطاقات — الكمبيوتر</label><input data-bs="catalogColumnsDesktop" type="number" min="2" max="6" value="${v.catalogColumnsDesktop}"></div>
  <div class="field"><label>عدد البطاقات — التابلت</label><input data-bs="catalogColumnsTablet" type="number" min="2" max="4" value="${v.catalogColumnsTablet}"></div>
  <div class="field"><label>عدد البطاقات — الجوال</label><input data-bs="catalogColumnsMobile" type="number" min="1" max="2" value="${v.catalogColumnsMobile}"></div>
+ <div class="field"><label>اسم الشارة</label><input data-bs="badgeText" value="${esc(v.badgeText)}" placeholder="جديد / مميز / حصري"></div>
+ <div class="field"><label>لون خلفية الشارة</label><div class="color-row"><input data-bs="badgeBackground" type="color" value="${esc(v.badgeBackground)}"><input data-bs-text="badgeBackground" value="${esc(v.badgeBackground)}"></div></div>
+ <div class="field"><label>لون نص الشارة</label><div class="color-row"><input data-bs="badgeTextColor" type="color" value="${esc(v.badgeTextColor)}"><input data-bs-text="badgeTextColor" value="${esc(v.badgeTextColor)}"></div></div>
+ <div class="field"><label>حجم خط الشارة px</label><input data-bs="badgeFontSize" type="number" min="8" max="28" value="${v.badgeFontSize}"></div>
+ <div class="field"><label>سماكة الخط</label><select data-bs="badgeFontWeight"><option value="400">عادي</option><option value="600">متوسط</option><option value="700">عريض</option><option value="800">عريض جدًا</option></select></div>
+ <div class="field"><label>استدارة الشارة px</label><input data-bs="badgeRadius" type="number" min="0" max="30" value="${v.badgeRadius}"></div>
+ <div class="field"><label>عرض/حشو الشارة px</label><input data-bs="badgePadX" type="number" min="4" max="30" value="${v.badgePadX}"></div>
+ <div class="field"><label>ارتفاع/حشو الشارة px</label><input data-bs="badgePadY" type="number" min="2" max="20" value="${v.badgePadY}"></div>
+ <div class="field"><label>بعدها من الأعلى px</label><input data-bs="badgeTop" type="number" min="0" max="40" value="${v.badgeTop}"></div>
+ <div class="field"><label>بعدها من الجانب px</label><input data-bs="badgeSide" type="number" min="0" max="40" value="${v.badgeSide}"></div>
  <div class="field"><label>المسافة بين المنتجات</label><input data-bs="gap" type="number" min="0" max="60" value="${v.gap}"></div>
  <div class="field"><label>المسافة بين أقسام الماركات</label><input data-bs="sectionGap" type="number" min="0" max="100" value="${v.sectionGap}"></div>
  <div class="field"><label>عدد الأعمدة — الكمبيوتر</label><input data-bs="columnsDesktop" type="number" min="1" max="6" value="${v.columnsDesktop}"></div>
@@ -344,7 +354,7 @@ function brandSectionsManager(){
  <div class="field"><label>عدد الأعمدة — الجوال</label><input data-bs="columnsMobile" type="number" min="1" max="2" value="${v.columnsMobile}"></div>
  </div>
  <div class="toolbar" style="margin-top:16px"><button class="btn" onclick="saveBrandSectionsManager()">حفظ إعدادات الأقسام</button><button class="btn alt" onclick="resetBrandSectionsManager()">استعادة الافتراضي</button></div>`;
- const ff=brandSectionsEditor.querySelector('[data-bs="fontFamily"]');if(ff)ff.value=v.fontFamily;
+ const ff=brandSectionsEditor.querySelector('[data-bs="fontFamily"]');if(ff)ff.value=v.fontFamily;const bw=brandSectionsEditor.querySelector('[data-bs="badgeFontWeight"]');if(bw)bw.value=String(v.badgeFontWeight);
  brandSectionsEditor.querySelectorAll('input[type="color"][data-bs]').forEach(p=>p.addEventListener('input',()=>{const t=brandSectionsEditor.querySelector(`[data-bs-text="${p.dataset.bs}"]`);if(t)t.value=p.value}));
 }
 async function saveBrandSectionsManager(){
@@ -353,7 +363,7 @@ async function saveBrandSectionsManager(){
   brandSectionsEditor.querySelectorAll('[data-bs]').forEach(x=>{
    let z=x.value,k=x.dataset.bs;
    if(k==='enabled')z=z==='true';
-   else if(!['fontFamily','backgroundColor','titleColor','subtitleColor','dividerColor','cardBackground','cardBorder','productNameColor','brandTextColor','priceColor','buttonBackground','buttonText','secondaryButtonBackground','secondaryButtonText'].includes(k))z=Number(z)||0;
+   else if(!['fontFamily','backgroundColor','titleColor','subtitleColor','dividerColor','cardBackground','cardBorder','productNameColor','brandTextColor','priceColor','buttonBackground','buttonText','secondaryButtonBackground','secondaryButtonText','badgeText','badgeBackground','badgeTextColor'].includes(k))z=Number(z)||0;
    v[k]=z;
   });
   await putSetting('brand_sections',v);await loadAll();stat('تم حفظ إعدادات أقسام الماركات ✓');

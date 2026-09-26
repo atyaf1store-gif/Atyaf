@@ -799,20 +799,26 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 <style id="atyaf-gift-admin-live-sync-v2">
 /* Values below are populated from settings.gift; existing store layout stays intact. */
-.gift-prep-banner{
+.gift-prep-banner,
+#scents .gift{
   background-color:var(--gift-bg,#fffdfa)!important;
   border-radius:var(--gift-radius,22px)!important;
   overflow:hidden!important;
 }
 .gift-prep-banner,
-.gift-prep-banner .banner-text{font-family:var(--gift-font,Tahoma,Arial,sans-serif)!important}
-.gift-prep-banner .banner-text h2{
+.gift-prep-banner .banner-text,
+#scents .gift{font-family:var(--gift-font,Tahoma,Arial,sans-serif)!important}
+.gift-prep-banner .banner-text h2,
+#scents .gift h2{
   color:var(--gift-title,#17352e)!important;
   font-size:var(--gift-title-size,32px)!important;
 }
-.gift-prep-banner .banner-text p{color:var(--gift-text,#17352e)!important;font-size:var(--gift-text-size,15px)!important}
+.gift-prep-banner .banner-text p,
+#scents .gift p{color:var(--gift-text,#17352e)!important;font-size:var(--gift-text-size,15px)!important}
 .gift-prep-banner .banner-text button,
-.gift-prep-banner .banner-text a{
+.gift-prep-banner .banner-text a,
+#scents .gift button,
+#scents .gift a{
   background:var(--gift-btn-bg,#17352e)!important;color:var(--gift-btn-text,#fff)!important;
 }
 </style>
@@ -822,7 +828,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  function first(root,selectors){for(const q of selectors){const e=root.querySelector(q);if(e)return e}return null}
  function applyGiftSetting(g){
    if(!g||typeof g!=='object')return;
-   const box=document.querySelector('.gift-prep-banner');
+   const box=document.querySelector('#scents .gift, .gift-prep-banner, [data-section="gift"]');
    if(!box)return;
 
    box.style.display=g.enabled===false?'none':'';
@@ -843,6 +849,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    if(title && g.title!=null)title.textContent=g.title;
    if(desc && g.text!=null)desc.textContent=g.text;
    if(kicker && g.kicker!=null)kicker.textContent=g.kicker;
+   if(kicker)kicker.style.color=g.accentColor||'#b47a4f';
    if(btn){
      if(g.button!=null)btn.textContent=g.button;
      if(g.link){
@@ -853,21 +860,26 @@ document.addEventListener('DOMContentLoaded',()=>{
 
    const image=String(g.image||g.image_url||'').trim();
    if(image){
-     let img=box.querySelector('img');
-     if(img){
-       img.src=image;
-       img.style.objectFit=g.imageFit||'cover';
-       img.style.objectPosition=g.imagePosition||'center';
-     }else{
-       box.style.backgroundImage=`url("${image.replace(/"/g,'%22')}")`;
-       box.style.backgroundSize=g.imageFit||'cover';
-       box.style.backgroundPosition=g.imagePosition||'center';
-       box.style.backgroundRepeat='no-repeat';
+     let img=box.querySelector('img.atyaf-gift-admin-image, img');
+     if(!img){
+       const visual=box.children[1]||box;
+       visual.innerHTML='';
+       img=document.createElement('img');
+       img.className='atyaf-gift-admin-image';
+       img.alt=g.title||'هدية أطياف';
+       visual.appendChild(img);
      }
+     img.src=image;
+     img.style.width='100%';
+     img.style.height='100%';
+     img.style.maxHeight='360px';
+     img.style.display='block';
+     img.style.objectFit=g.imageFit||'cover';
+     img.style.objectPosition=g.imagePosition||'center';
+     img.style.borderRadius=(Number(g.borderRadius)||0)+'px';
    }else{
-     const img=box.querySelector('img');
-     if(img)img.removeAttribute('src');
-     box.style.backgroundImage='none';
+     const img=box.querySelector('img.atyaf-gift-admin-image');
+     if(img)img.remove();
    }
    window.ATYAF_GIFT_SETTINGS=g;
  }

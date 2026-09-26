@@ -30,7 +30,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <button class="active" data-tab="dashboard">الرئيسية</button>
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
-<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
+<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="brandSections">إدارة أقسام الماركات</button><button data-tab="products">المنتجات</button>
 <button data-tab="gift">قسم الهدية</button><button data-tab="storeColors">ألوان المتجر</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="allsettings">كل الإعدادات</button>
 </div></aside><main>
@@ -48,6 +48,11 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <section id="nav" class="panel"><div class="card section-editor"><h2>روابط القائمة الرئيسية</h2><div id="navEditor"></div></div></section>
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
+<section id="brandSections" class="panel"><div class="card section-editor">
+<h2>إدارة أقسام الماركات</h2>
+<p class="muted">هذه الإعدادات تتحكم في أقسام المنتجات المنفصلة: إبراق، عساف، وأي ماركة أخرى.</p>
+<div id="brandSectionsEditor"></div>
+</div></section>
 <section id="products" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
 <section id="storeColors" class="panel"><div class="card section-editor"><h2>ألوان المتجر</h2><p class="muted">تحكم مركزي بألوان واجهة المتجر وشاشة البداية. إعدادات الألوان الخاصة داخل الأقسام المستقلة مثل الهدية تبقى مستقلة.</p><div id="storeColorsEditor"></div></div></section>
@@ -94,6 +99,7 @@ const giftEditor=document.getElementById('giftEditor');
 const profileEditor=document.getElementById('profileEditor');
 const introEditor=document.getElementById('introEditor');
 const storeColorsEditor=document.getElementById('storeColorsEditor');
+const brandSectionsEditor=document.getElementById('brandSectionsEditor');
 const productRows=document.getElementById('productRows');
 const settingRows=document.getElementById('settingRows');
 const productDialog=document.getElementById('productDialog');
@@ -272,6 +278,70 @@ async function deleteIntroSection(){if(confirm('حذف إعدادات شاشة �
 async function createProfileSection(){await putSetting('profile',{enabled:true,nameAr:'أطياف',nameEn:'ATYAAF STORE',mark:'أ',logoImage:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',fontFamily:'Tahoma, Arial, sans-serif',arabicSize:18,englishSize:12,markSize:28});await loadAll()}
 async function createIntroSection(){await putSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
 
+
+
+const BRAND_SECTION_DEFAULTS={
+ enabled:true,backgroundColor:'#fffdfa',titleColor:'#17352e',subtitleColor:'#707b75',
+ dividerColor:'#e4ddd2',cardBackground:'#fffdfa',cardBorder:'#e4ddd2',
+ productNameColor:'#17352e',brandTextColor:'#b47a4f',priceColor:'#17352e',
+ buttonBackground:'#17352e',buttonText:'#ffffff',secondaryButtonBackground:'#ffffff',
+ secondaryButtonText:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',
+ titleSize:32,subtitleSize:14,productNameSize:18,brandTextSize:12,priceSize:18,
+ buttonSize:14,cardRadius:18,imageHeight:360,gap:18,sectionGap:42,
+ columnsDesktop:3,columnsTablet:2,columnsMobile:1
+};
+function bsColor(k,label,v){
+ return `<div class="field"><label>${label}</label><div class="color-row"><input data-bs="${k}" type="color" value="${esc(v)}"><input data-bs-text="${k}" value="${esc(v)}"></div></div>`;
+}
+function brandSectionsManager(){
+ const v={...BRAND_SECTION_DEFAULTS,...getSetting('brand_sections',{})};
+ brandSectionsEditor.innerHTML=`<div class="grid">
+ <div class="field"><label>الحالة</label><select data-bs="enabled"><option value="true" ${v.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${v.enabled===false?'selected':''}>مخفي</option></select></div>
+ <div class="field"><label>الخط</label><select data-bs="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
+ ${bsColor('backgroundColor','خلفية الأقسام',v.backgroundColor)}
+ ${bsColor('titleColor','لون عنوان الماركة',v.titleColor)}
+ ${bsColor('subtitleColor','لون وصف القسم',v.subtitleColor)}
+ ${bsColor('dividerColor','لون الفاصل بين الأقسام',v.dividerColor)}
+ ${bsColor('cardBackground','خلفية بطاقة المنتج',v.cardBackground)}
+ ${bsColor('cardBorder','حدود بطاقة المنتج',v.cardBorder)}
+ ${bsColor('productNameColor','لون اسم المنتج',v.productNameColor)}
+ ${bsColor('brandTextColor','لون اسم الماركة داخل البطاقة',v.brandTextColor)}
+ ${bsColor('priceColor','لون السعر',v.priceColor)}
+ ${bsColor('buttonBackground','لون زر أضف للسلة',v.buttonBackground)}
+ ${bsColor('buttonText','نص زر أضف للسلة',v.buttonText)}
+ ${bsColor('secondaryButtonBackground','خلفية زر عرض',v.secondaryButtonBackground)}
+ ${bsColor('secondaryButtonText','نص زر عرض',v.secondaryButtonText)}
+ <div class="field"><label>حجم عنوان الماركة</label><input data-bs="titleSize" type="number" min="16" max="80" value="${v.titleSize}"></div>
+ <div class="field"><label>حجم وصف القسم</label><input data-bs="subtitleSize" type="number" min="9" max="36" value="${v.subtitleSize}"></div>
+ <div class="field"><label>حجم اسم المنتج</label><input data-bs="productNameSize" type="number" min="10" max="42" value="${v.productNameSize}"></div>
+ <div class="field"><label>حجم اسم الماركة داخل البطاقة</label><input data-bs="brandTextSize" type="number" min="8" max="30" value="${v.brandTextSize}"></div>
+ <div class="field"><label>حجم السعر</label><input data-bs="priceSize" type="number" min="10" max="40" value="${v.priceSize}"></div>
+ <div class="field"><label>حجم نص الأزرار</label><input data-bs="buttonSize" type="number" min="9" max="28" value="${v.buttonSize}"></div>
+ <div class="field"><label>استدارة البطاقات</label><input data-bs="cardRadius" type="number" min="0" max="60" value="${v.cardRadius}"></div>
+ <div class="field"><label>ارتفاع صورة المنتج</label><input data-bs="imageHeight" type="number" min="160" max="700" value="${v.imageHeight}"></div>
+ <div class="field"><label>المسافة بين المنتجات</label><input data-bs="gap" type="number" min="0" max="60" value="${v.gap}"></div>
+ <div class="field"><label>المسافة بين أقسام الماركات</label><input data-bs="sectionGap" type="number" min="0" max="100" value="${v.sectionGap}"></div>
+ <div class="field"><label>عدد الأعمدة — الكمبيوتر</label><input data-bs="columnsDesktop" type="number" min="1" max="6" value="${v.columnsDesktop}"></div>
+ <div class="field"><label>عدد الأعمدة — التابلت</label><input data-bs="columnsTablet" type="number" min="1" max="4" value="${v.columnsTablet}"></div>
+ <div class="field"><label>عدد الأعمدة — الجوال</label><input data-bs="columnsMobile" type="number" min="1" max="2" value="${v.columnsMobile}"></div>
+ </div>
+ <div class="toolbar" style="margin-top:16px"><button class="btn" onclick="saveBrandSectionsManager()">حفظ إعدادات الأقسام</button><button class="btn alt" onclick="resetBrandSectionsManager()">استعادة الافتراضي</button></div>`;
+ const ff=brandSectionsEditor.querySelector('[data-bs="fontFamily"]');if(ff)ff.value=v.fontFamily;
+ brandSectionsEditor.querySelectorAll('input[type="color"][data-bs]').forEach(p=>p.addEventListener('input',()=>{const t=brandSectionsEditor.querySelector(`[data-bs-text="${p.dataset.bs}"]`);if(t)t.value=p.value}));
+}
+async function saveBrandSectionsManager(){
+ try{
+  const v={...BRAND_SECTION_DEFAULTS};
+  brandSectionsEditor.querySelectorAll('[data-bs]').forEach(x=>{
+   let z=x.value,k=x.dataset.bs;
+   if(k==='enabled')z=z==='true';
+   else if(!['fontFamily','backgroundColor','titleColor','subtitleColor','dividerColor','cardBackground','cardBorder','productNameColor','brandTextColor','priceColor','buttonBackground','buttonText','secondaryButtonBackground','secondaryButtonText'].includes(k))z=Number(z)||0;
+   v[k]=z;
+  });
+  await putSetting('brand_sections',v);await loadAll();stat('تم حفظ إعدادات أقسام الماركات ✓');
+ }catch(e){stat(e?.message||String(e),true)}
+}
+async function resetBrandSectionsManager(){if(!confirm('استعادة الإعدادات الافتراضية؟'))return;await putSetting('brand_sections',{...BRAND_SECTION_DEFAULTS});await loadAll()}
 
 const STORE_COLOR_DEFAULTS={
  pageBackground:'#fffdfa',surfaceBackground:'#ffffff',topbarBackground:'#17352e',
@@ -496,6 +566,7 @@ async function loadAll(){
   });
    giftSectionEditor();
    storeColorsSectionEditor();
+   brandSectionsManager();
    profileSectionEditor();
    introSectionEditor();
   listEditor(benefitsEditor,"benefits",[
@@ -514,7 +585,7 @@ async function loadAll(){
  }
 }
 Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,saveStoreColors,resetStoreColors,
-saveBrandsStyle,addBrandItem,saveBrandItem,removeBrandImage,hideBrandItem,removeBrandItem,
+saveBrandsStyle,addBrandItem,saveBrandItem,removeBrandImage,hideBrandItem,removeBrandItem,saveBrandSectionsManager,resetBrandSectionsManager,
 saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection});
 window.saveProduct=saveProduct;
 setTimeout(()=>{

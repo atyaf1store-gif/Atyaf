@@ -287,7 +287,7 @@ const BRAND_SECTION_DEFAULTS={
  buttonBackground:'#17352e',buttonText:'#ffffff',secondaryButtonBackground:'#ffffff',
  secondaryButtonText:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',
  titleSize:32,subtitleSize:14,productNameSize:18,brandTextSize:12,priceSize:18,
- buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,productCardWidth:100,productCardHeight:0,actionButtonHeight:46,cartButtonWidth:72,giftButtonWidth:24,actionGap:8,actionRadius:22,actionIconSize:20,cardImageShare:80,cardTextShare:10,cardActionsShare:10,gap:18,sectionGap:42,
+ buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,productCardWidth:100,productCardHeight:0,actionButtonHeight:46,cartButtonWidth:72,giftButtonWidth:24,actionGap:8,actionRadius:22,actionIconSize:20,cardImageShare:80,cardTextShare:10,cardActionsShare:10,catalogCardHeight:390,catalogImageHeight:300,catalogColumnsDesktop:5,catalogColumnsTablet:3,catalogColumnsMobile:2,gap:18,sectionGap:42,
  columnsDesktop:3,columnsTablet:2,columnsMobile:1
 };
 function bsColor(k,label,v){
@@ -332,6 +332,11 @@ function brandSectionsManager(){
  <div class="field"><label>مساحة صورة المنتج %</label><input data-bs="cardImageShare" type="number" min="50" max="90" value="${v.cardImageShare}"><small class="muted">الافتراضي 80% من ارتفاع البطاقة كاملة.</small></div>
  <div class="field"><label>مساحة النصوص %</label><input data-bs="cardTextShare" type="number" min="5" max="30" value="${v.cardTextShare}"><small class="muted">اسم الماركة + اسم المنتج + السعر. الافتراضي 10%.</small></div>
  <div class="field"><label>مساحة الأزرار %</label><input data-bs="cardActionsShare" type="number" min="5" max="30" value="${v.cardActionsShare}"><small class="muted">أضف للسلة + شراء كهدية. الافتراضي 10%.</small></div>
+ <div class="field"><label>ارتفاع بطاقة العرض الجديدة px</label><input data-bs="catalogCardHeight" type="number" min="280" max="650" value="${v.catalogCardHeight}"></div>
+ <div class="field"><label>ارتفاع مساحة الصورة px</label><input data-bs="catalogImageHeight" type="number" min="180" max="520" value="${v.catalogImageHeight}"></div>
+ <div class="field"><label>عدد البطاقات — الكمبيوتر</label><input data-bs="catalogColumnsDesktop" type="number" min="2" max="6" value="${v.catalogColumnsDesktop}"></div>
+ <div class="field"><label>عدد البطاقات — التابلت</label><input data-bs="catalogColumnsTablet" type="number" min="2" max="4" value="${v.catalogColumnsTablet}"></div>
+ <div class="field"><label>عدد البطاقات — الجوال</label><input data-bs="catalogColumnsMobile" type="number" min="1" max="2" value="${v.catalogColumnsMobile}"></div>
  <div class="field"><label>المسافة بين المنتجات</label><input data-bs="gap" type="number" min="0" max="60" value="${v.gap}"></div>
  <div class="field"><label>المسافة بين أقسام الماركات</label><input data-bs="sectionGap" type="number" min="0" max="100" value="${v.sectionGap}"></div>
  <div class="field"><label>عدد الأعمدة — الكمبيوتر</label><input data-bs="columnsDesktop" type="number" min="1" max="6" value="${v.columnsDesktop}"></div>

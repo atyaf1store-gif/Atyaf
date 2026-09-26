@@ -796,6 +796,103 @@ document.addEventListener('DOMContentLoaded',()=>{
 }
 </style>
 
+
+<style id="atyaf-gift-admin-live-sync-v2">
+/* Values below are populated from settings.gift; existing store layout stays intact. */
+.gift-prep-banner{
+  background-color:var(--gift-bg,#fffdfa)!important;
+  border-radius:var(--gift-radius,22px)!important;
+  overflow:hidden!important;
+}
+.gift-prep-banner,
+.gift-prep-banner .banner-text{font-family:var(--gift-font,Tahoma,Arial,sans-serif)!important}
+.gift-prep-banner .banner-text h2{
+  color:var(--gift-title,#17352e)!important;
+  font-size:var(--gift-title-size,32px)!important;
+}
+.gift-prep-banner .banner-text p{color:var(--gift-text,#17352e)!important;font-size:var(--gift-text-size,15px)!important}
+.gift-prep-banner .banner-text button,
+.gift-prep-banner .banner-text a{
+  background:var(--gift-btn-bg,#17352e)!important;color:var(--gift-btn-text,#fff)!important;
+}
+</style>
+<script id="atyaf-gift-admin-live-sync-js">
+(()=>{
+ const css=(el,k,v)=>{if(el&&v!==undefined&&v!==null&&v!=='')el.style.setProperty(k,String(v))};
+ function first(root,selectors){for(const q of selectors){const e=root.querySelector(q);if(e)return e}return null}
+ function applyGiftSetting(g){
+   if(!g||typeof g!=='object')return;
+   const box=document.querySelector('.gift-prep-banner');
+   if(!box)return;
+
+   box.style.display=g.enabled===false?'none':'';
+   css(box,'--gift-bg',g.backgroundColor||'#fffdfa');
+   css(box,'--gift-title',g.textColor||'#17352e');
+   css(box,'--gift-text',g.textColor||'#17352e');
+   css(box,'--gift-btn-bg',g.buttonColor||g.accentColor||'#17352e');
+   css(box,'--gift-btn-text',g.buttonTextColor||'#ffffff');
+   css(box,'--gift-font',g.fontFamily||'Tahoma, Arial, sans-serif');
+   css(box,'--gift-title-size',(Number(g.titleSize)||32)+'px');
+   css(box,'--gift-text-size',(Number(g.textSize)||15)+'px');
+   css(box,'--gift-radius',(Number(g.borderRadius)||0)+'px');
+
+   const title=first(box,['.banner-text h2','h2','h3']);
+   const desc=first(box,['.banner-text p','p']);
+   const kicker=first(box,['.kicker','.eyebrow','small']);
+   const btn=first(box,['.banner-text button','.banner-text a','button','a.btn']);
+   if(title && g.title!=null)title.textContent=g.title;
+   if(desc && g.text!=null)desc.textContent=g.text;
+   if(kicker && g.kicker!=null)kicker.textContent=g.kicker;
+   if(btn){
+     if(g.button!=null)btn.textContent=g.button;
+     if(g.link){
+       if(btn.tagName==='A')btn.href=g.link;
+       else btn.onclick=()=>{location.href=g.link};
+     }
+   }
+
+   const image=String(g.image||g.image_url||'').trim();
+   if(image){
+     let img=box.querySelector('img');
+     if(img){
+       img.src=image;
+       img.style.objectFit=g.imageFit||'cover';
+       img.style.objectPosition=g.imagePosition||'center';
+     }else{
+       box.style.backgroundImage=`url("${image.replace(/"/g,'%22')}")`;
+       box.style.backgroundSize=g.imageFit||'cover';
+       box.style.backgroundPosition=g.imagePosition||'center';
+       box.style.backgroundRepeat='no-repeat';
+     }
+   }else{
+     const img=box.querySelector('img');
+     if(img)img.removeAttribute('src');
+     box.style.backgroundImage='none';
+   }
+   window.ATYAF_GIFT_SETTINGS=g;
+ }
+ async function loadGiftSetting(){
+   try{
+     const db=window.atyafDb;
+     if(!db)return;
+     const {data,error}=await db.from('settings').select('id,key,value,updated_at')
+       .eq('key','gift').order('updated_at',{ascending:false,nullsFirst:false})
+       .order('id',{ascending:false}).limit(1);
+     if(error)throw error;
+     const row=Array.isArray(data)?data[0]:null;
+     let g=row?.value||{};
+     if(typeof g==='string'){try{g=JSON.parse(g)}catch(_){g={}}}
+     applyGiftSetting(g);
+   }catch(e){console.warn('ATYAAF gift settings:',e)}
+ }
+ window.atyafApplyGiftSetting=applyGiftSetting;
+ window.atyafLoadGiftSetting=loadGiftSetting;
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(loadGiftSetting,0));
+ window.addEventListener('focus',loadGiftSetting);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadGiftSetting()});
+})();
+</script>
+
 </head>
 <body>
 
@@ -1551,5 +1648,17 @@ document.addEventListener("DOMContentLoaded",()=>{
 <script>
 window.addEventListener('load',()=>setTimeout(loadCartFromSupabase,700));
 </script>
+
+<script id="atyaf-gift-sync-retry">
+window.addEventListener('load',()=>{
+ let n=0;
+ const t=setInterval(()=>{
+   n++;
+   if(window.atyafDb && window.atyafLoadGiftSetting){clearInterval(t);window.atyafLoadGiftSetting()}
+   else if(n>=20)clearInterval(t);
+ },250);
+});
+</script>
+
 </body>
 </html>

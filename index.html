@@ -1003,6 +1003,29 @@ document.addEventListener('DOMContentLoaded',()=>{
 }
 </style>
 
+
+<style id="atyaf-profile-admin-size-control-final">
+/* حجم لوجو البروفايل يتبع markSize من الإدارة */
+.atyaf-profile .atyaf-profile-image-slot img,
+.atyaf-mobile-profile .atyaf-profile-image-slot img{
+ height:var(--atyaf-profile-logo-size,48px)!important;
+ width:auto!important;
+ max-width:min(45vw,220px)!important;
+ max-height:none!important;
+ object-fit:contain!important;
+}
+@media(max-width:600px){
+ .atyaf-mobile-profile,
+ .atyaf-mobile-profile .atyaf-profile-image-slot{
+   height:auto!important;min-height:42px!important;
+ }
+ .atyaf-mobile-profile .atyaf-profile-image-slot img{
+   height:var(--atyaf-profile-logo-size,42px)!important;
+   max-width:min(42vw,150px)!important;
+ }
+}
+</style>
+
 </head>
 <body>
 
@@ -1051,6 +1074,8 @@ document.addEventListener('DOMContentLoaded',()=>{
        .order('id',{ascending:false}).limit(1);
      if(error)throw error;
      const p=parse(data?.[0]?.value);
+     const profileLogoSize=Math.max(24,Math.min(180,Number(p?.markSize)||48));
+     document.documentElement.style.setProperty('--atyaf-profile-logo-size',profileLogoSize+'px');
      const url=imageUrl(p);
      applyHeaderProfile(p,url);
      if(!url||!introSlot){closeIntro();return}
@@ -1817,6 +1842,8 @@ window.addEventListener('load',()=>{
        .order('id',{ascending:false}).limit(1);
      if(error)throw error;
      const p=parse(data?.[0]?.value);
+     const profileLogoSize=Math.max(24,Math.min(180,Number(p?.markSize)||48));
+     document.documentElement.style.setProperty('--atyaf-profile-logo-size',profileLogoSize+'px');
      const url=String(p?.logoImage||p?.profileImage||p?.image||p?.imageUrl||p?.logo||p?.logoUrl||'').trim();
 
      document.querySelectorAll('.atyaf-profile-image-slot').forEach(slot=>{

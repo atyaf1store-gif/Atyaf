@@ -1747,5 +1747,122 @@ window.addEventListener('load',()=>{
 })();
 </script>
 
+
+<style id="atyaf-profile-transparent-final-v3">
+/* البروفايل: بدون دائرة، شفاف، العربي يمين والإنجليزي يسار */
+.atyaf-profile,.atyaf-mobile-profile{
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  border-radius:0!important;padding:0!important;min-width:0!important;
+  display:grid!important;grid-template-columns:minmax(58px,auto) auto minmax(58px,auto)!important;
+  align-items:center!important;justify-content:center!important;gap:10px!important;
+  direction:rtl!important;text-decoration:none!important;
+}
+.atyaf-profile .ar,.atyaf-mobile-profile .ar{
+  grid-column:1!important;text-align:left!important;white-space:nowrap!important;
+}
+.atyaf-profile .en,.atyaf-mobile-profile .en{
+  grid-column:3!important;text-align:right!important;white-space:nowrap!important;
+}
+.atyaf-profile .mark,.atyaf-mobile-profile .mark{
+  grid-column:2!important;grid-row:1!important;
+  width:auto!important;height:auto!important;min-width:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;padding:0!important;margin:0!important;
+  display:grid!important;place-items:center!important;
+}
+.atyaf-profile .mark:not(:has(img)),.atyaf-mobile-profile .mark:not(:has(img)){
+  font-size:0!important;width:0!important;gap:0!important;
+}
+.atyaf-profile .atyaf-profile-admin-logo,.atyaf-mobile-profile .atyaf-profile-admin-logo{
+  width:auto!important;height:44px!important;max-width:72px!important;max-height:44px!important;
+  object-fit:contain!important;background:transparent!important;border:0!important;border-radius:0!important;
+}
+@media(max-width:850px){
+ .atyaf-profile,.atyaf-mobile-profile{gap:7px!important;grid-template-columns:minmax(46px,auto) auto minmax(46px,auto)!important}
+ .atyaf-profile .atyaf-profile-admin-logo,.atyaf-mobile-profile .atyaf-profile-admin-logo{height:38px!important;max-height:38px!important;max-width:58px!important}
+}
+@media(max-width:430px){
+ .atyaf-profile,.atyaf-mobile-profile{gap:5px!important;grid-template-columns:minmax(38px,auto) auto minmax(38px,auto)!important}
+ .atyaf-profile .ar,.atyaf-mobile-profile .ar{font-size:min(var(--atyaf-profile-ar,16px),16px)!important}
+ .atyaf-profile .en,.atyaf-mobile-profile .en{font-size:min(var(--atyaf-profile-en,11px),11px)!important}
+}
+</style>
+<script id="atyaf-profile-intro-hard-fix-v3">
+(()=>{
+ const DBWAIT=()=>window.atyafDb;
+ const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
+ async function getLatest(key){
+   const db=DBWAIT(); if(!db)return {};
+   const {data,error}=await db.from('settings').select('id,key,value,updated_at')
+    .eq('key',key).order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
+   if(error)throw error; return parse(data?.[0]?.value);
+ }
+ function ensureProfile(){
+   let p=document.querySelector('.atyaf-mobile-profile,.atyaf-profile');
+   if(p)return p;
+   const head=document.querySelector('.atyaf-head-balanced,.headrow,.header .container');
+   if(!head)return null;
+   p=document.createElement('a');p.href='#';p.className='atyaf-mobile-profile';
+   p.onclick=e=>{e.preventDefault();if(typeof window.openCustomerCenter==='function')window.openCustomerCenter()};
+   p.innerHTML='<span class="ar"></span><span class="mark"></span><span class="en"></span>';
+   head.appendChild(p);return p;
+ }
+ function applyProfile(p){
+   if(!p||typeof p!=='object')return;
+   let els=[...document.querySelectorAll('.atyaf-mobile-profile,.atyaf-profile')];
+   if(!els.length){const x=ensureProfile();if(x)els=[x]}
+   els.forEach(el=>{
+     el.style.display=p.enabled===false?'none':'grid';
+     el.style.setProperty('--atyaf-profile-font',p.fontFamily||'Tahoma, Arial, sans-serif');
+     el.style.setProperty('--atyaf-profile-text',p.textColor||'#17352e');
+     el.style.setProperty('--atyaf-profile-accent',p.accentColor||'#b47a4f');
+     el.style.setProperty('--atyaf-profile-ar',(Number(p.arabicSize)||18)+'px');
+     el.style.setProperty('--atyaf-profile-en',(Number(p.englishSize)||12)+'px');
+     let ar=el.querySelector('.ar'),en=el.querySelector('.en'),mark=el.querySelector('.mark');
+     if(!ar){ar=document.createElement('span');ar.className='ar';el.prepend(ar)}
+     if(!mark){mark=document.createElement('span');mark.className='mark';el.appendChild(mark)}
+     if(!en){en=document.createElement('span');en.className='en';el.appendChild(en)}
+     ar.textContent=p.nameAr||'أطياف'; en.textContent=p.nameEn||'ATYAAF STORE';
+     if(p.logoImage)mark.innerHTML='<img class="atyaf-profile-admin-logo" src="'+String(p.logoImage).replace(/"/g,'&quot;')+'" alt="">';
+     else mark.innerHTML='';
+   });
+ }
+ async function syncProfile(){try{applyProfile(await getLatest('profile'))}catch(e){console.warn('profile sync',e)}}
+ window.atyafSyncProfileFinal=syncProfile;
+ window.addEventListener('load',()=>setTimeout(syncProfile,500));
+ window.addEventListener('focus',syncProfile);
+ setInterval(()=>{if(!document.hidden)syncProfile()},10000);
+})();
+</script>
+<script id="atyaf-intro-every-refresh-v3">
+/* شاشة البداية يجب أن تظهر في كل تحديث للصفحة، لا تستخدم sessionStorage */
+(()=>{
+ sessionStorage.removeItem('atyaf_intro_seen');
+ sessionStorage.removeItem('atyaf_intro_seen_v2');
+ async function rebuild(){
+   let tries=0;
+   while(!window.atyafDb && tries++<20)await new Promise(r=>setTimeout(r,100));
+   if(!window.atyafDb)return;
+   try{
+     const {data,error}=await window.atyafDb.from('settings').select('id,key,value,updated_at')
+       .eq('key','intro').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
+     if(error)throw error;
+     let cfg=data?.[0]?.value||{};if(typeof cfg==='string'){try{cfg=JSON.parse(cfg)}catch(_){cfg={}}}
+     if(cfg.enabled===false)return;
+     let old=document.getElementById('atyafIntro');if(old)old.remove();
+     const intro=document.createElement('div');intro.id='atyafIntro';intro.setAttribute('aria-hidden','true');
+     intro.style.cssText='position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:'+(cfg.backgroundColor||'#17352e')+';overflow:hidden;';
+     const name=String(cfg.name||'ATYAAF'),letters=[...name].map((c,i)=>`<span class="atyaf-intro-letter" style="--dx:${i%2?95:-110}px;--dy:${-160-(i%3)*35}px;--rot:${i%2?18:-17}deg;--delay:${.12+i*.10}s">${c===' '?'&nbsp;':c}</span>`).join('');
+     const logo=cfg.logoImage?`<img src="${String(cfg.logoImage).replace(/"/g,'&quot;')}" alt="" style="max-width:90px;max-height:90px;object-fit:contain">`:`<span style="font-size:${Number(cfg.markSize)||35}px;color:${cfg.accentColor||'#c99a69'}">${cfg.mark||''}</span>`;
+     intro.innerHTML=`<div class="atyaf-intro-group" style="text-align:center;font-family:${cfg.fontFamily||'Georgia, serif'}">${logo}<div class="atyaf-intro-word" style="font-size:${Number(cfg.letterSize)||58}px;color:${cfg.textColor||'#f5eee4'}">${letters}</div><div class="atyaf-intro-sub" style="color:${cfg.accentColor||'#c99a69'}">${cfg.sub||''}</div></div>`;
+     document.body.appendChild(intro);
+     const duration=Math.max(1500,Number(cfg.duration)||3350);
+     setTimeout(()=>{intro.style.transition='opacity .65s ease,transform .65s ease';intro.style.opacity='0';intro.style.transform='translateY(-36px)';setTimeout(()=>intro.remove(),700)},duration);
+   }catch(e){console.warn('intro refresh sync',e)}
+ }
+ window.addEventListener('load',()=>setTimeout(rebuild,50));
+})();
+</script>
+
 </body>
 </html>

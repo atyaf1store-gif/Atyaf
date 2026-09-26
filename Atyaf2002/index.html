@@ -31,7 +31,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
 <button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
-<button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
+<button data-tab="gift">قسم الهدية</button><button data-tab="storeColors">ألوان المتجر</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="allsettings">كل الإعدادات</button>
 </div></aside><main>
 <div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><button class="btn alt" onclick="loadAll()">↻ تحديث</button></div>
@@ -50,6 +50,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
 <section id="products" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
+<section id="storeColors" class="panel"><div class="card section-editor"><h2>ألوان المتجر</h2><p class="muted">تحكم مركزي بألوان واجهة المتجر وشاشة البداية. إعدادات الألوان الخاصة داخل الأقسام المستقلة مثل الهدية تبقى مستقلة.</p><div id="storeColorsEditor"></div></div></section>
 <section id="footer" class="panel"><div class="card section-editor"><h2>الفوتر والتواصل</h2><div id="footerEditor"></div></div></section>
 <section id="policies" class="panel"><div class="card section-editor"><h2>السياسات والنصوص</h2><div id="policiesEditor"></div></div></section>
 <section id="allsettings" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">كل إعدادات قاعدة البيانات</h2><button class="btn" onclick="editAny()">+ إضافة إعداد</button></div><div style="overflow:auto"><table><thead><tr><th>المفتاح</th><th>القيمة</th><th>إجراءات</th></tr></thead><tbody id="settingRows"></tbody></table></div></div></section>
@@ -92,6 +93,7 @@ const brandsEditor=document.getElementById('brandsEditor');
 const giftEditor=document.getElementById('giftEditor');
 const profileEditor=document.getElementById('profileEditor');
 const introEditor=document.getElementById('introEditor');
+const storeColorsEditor=document.getElementById('storeColorsEditor');
 const productRows=document.getElementById('productRows');
 const settingRows=document.getElementById('settingRows');
 const productDialog=document.getElementById('productDialog');
@@ -270,6 +272,55 @@ async function deleteIntroSection(){if(confirm('حذف إعدادات شاشة �
 async function createProfileSection(){await putSetting('profile',{enabled:true,nameAr:'أطياف',nameEn:'ATYAAF STORE',mark:'أ',logoImage:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',fontFamily:'Tahoma, Arial, sans-serif',arabicSize:18,englishSize:12,markSize:28});await loadAll()}
 async function createIntroSection(){await putSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
 
+
+const STORE_COLOR_DEFAULTS={
+ pageBackground:'#fffdfa',surfaceBackground:'#ffffff',topbarBackground:'#17352e',
+ topbarText:'#ffffff',headerBackground:'#fffdfa',navBackground:'#fffdfa',
+ primaryText:'#17352e',secondaryText:'#707b75',accent:'#b47a4f',
+ border:'#e4ddd2',searchBackground:'#f5f1ea',iconBackground:'#fffdfa',
+ iconColor:'#17352e',cardBackground:'#fffdfa',buttonBackground:'#17352e',
+ buttonText:'#ffffff',footerBackground:'#17352e',footerText:'#ffffff',
+ introBackground:'#17352e'
+};
+function storeColorField(k,label,v){
+ return `<div class="field"><label>${label}</label><div class="color-row"><input data-store-color="${k}" type="color" value="${esc(v)}"><input data-store-color-text="${k}" value="${esc(v)}"></div></div>`;
+}
+function storeColorsSectionEditor(){
+ const c={...STORE_COLOR_DEFAULTS,...getSetting('store_colors',{})};
+ const fields=[
+ ['pageBackground','خلفية المتجر'],['surfaceBackground','خلفية الأقسام العامة'],
+ ['topbarBackground','خلفية الشريط العلوي'],['topbarText','نص الشريط العلوي'],
+ ['headerBackground','خلفية الهيدر'],['navBackground','خلفية قائمة الأقسام'],
+ ['primaryText','النص الأساسي'],['secondaryText','النص الثانوي'],
+ ['accent','اللون المميز / النحاسي'],['border','الحدود والفواصل'],
+ ['searchBackground','خلفية البحث'],['iconBackground','خلفية الأيقونات'],
+ ['iconColor','لون الأيقونات'],['cardBackground','خلفية البطاقات'],
+ ['buttonBackground','خلفية الأزرار'],['buttonText','نص الأزرار'],
+ ['footerBackground','خلفية الفوتر'],['footerText','نص الفوتر'],
+ ['introBackground','خلفية شاشة البداية']
+ ];
+ storeColorsEditor.innerHTML=`<div class="grid">${fields.map(x=>storeColorField(x[0],x[1],c[x[0]])).join('')}</div>
+ <div class="toolbar" style="margin-top:16px"><button class="btn" onclick="saveStoreColors()">حفظ ألوان المتجر</button><button class="btn alt" onclick="resetStoreColors()">استعادة الألوان الافتراضية</button></div>`;
+ storeColorsEditor.querySelectorAll('input[type="color"][data-store-color]').forEach(p=>p.addEventListener('input',()=>{
+   const t=storeColorsEditor.querySelector(`[data-store-color-text="${p.dataset.storeColor}"]`);if(t)t.value=p.value;
+ }));
+ storeColorsEditor.querySelectorAll('[data-store-color-text]').forEach(t=>t.addEventListener('change',()=>{
+   const p=storeColorsEditor.querySelector(`[data-store-color="${t.dataset.storeColorText}"]`);
+   if(p && /^#[0-9a-f]{6}$/i.test(t.value.trim()))p.value=t.value.trim();
+ }));
+}
+async function saveStoreColors(){
+ try{
+  const value={...STORE_COLOR_DEFAULTS};
+  storeColorsEditor.querySelectorAll('[data-store-color]').forEach(x=>value[x.dataset.storeColor]=x.value);
+  await putSetting('store_colors',value);await loadAll();stat('تم حفظ ألوان المتجر ✓');
+ }catch(e){stat('فشل حفظ الألوان: '+(e?.message||String(e)),true)}
+}
+async function resetStoreColors(){
+ if(!confirm('استعادة الألوان الافتراضية للمتجر؟'))return;
+ try{await putSetting('store_colors',{...STORE_COLOR_DEFAULTS});await loadAll();stat('تمت استعادة الألوان الافتراضية ✓')}catch(e){stat(e?.message||String(e),true)}
+}
+
 function simpleEditor(el,key){
  const sc=schemas[key],s=getSetting(key,{enabled:true});
  el.innerHTML=`<div class="grid">${sc.fields.map(([k,l,t])=>t==='area'?`<div class="field full"><label>${l}</label><textarea data-k="${k}" rows="5">${esc(s[k]||'')}</textarea></div>`:t==='bool'?`<div class="field"><label>${l}</label><select data-k="${k}"><option value="true" ${s[k]!==false?'selected':''}>ظاهر</option><option value="false" ${s[k]===false?'selected':''}>مخفي</option></select></div>`:`<div class="field"><label>${l}</label><input data-k="${k}" value="${esc(s[k]||'')}"></div>`).join('')}</div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveSimple('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
@@ -369,6 +420,7 @@ async function loadAll(){
     if(el) simpleEditor(el,k);
   });
    giftSectionEditor();
+   storeColorsSectionEditor();
    profileSectionEditor();
    introSectionEditor();
   listEditor(benefitsEditor,"benefits",[
@@ -386,7 +438,7 @@ async function loadAll(){
   stat("فشل الاتصال: "+(e?.message||String(e)),true);
  }
 }
-Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,
+Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,saveStoreColors,resetStoreColors,
 saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection});
 window.saveProduct=saveProduct;
 setTimeout(()=>{

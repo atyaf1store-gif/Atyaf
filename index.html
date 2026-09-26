@@ -1273,6 +1273,54 @@ footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-foo
 }
 </style>
 
+
+<style id="atyaf-benefits-complete-controls-v1">
+section.benefits,.benefits{
+ background:var(--benefit-section-bg,transparent)!important;
+ grid-template-columns:repeat(var(--benefit-cols-d,4),minmax(0,1fr))!important;
+ gap:var(--benefit-gap,14px)!important
+}
+section.benefits>.benefit,.benefits>.benefit{
+ min-height:var(--benefit-min-h,128px)!important;
+ padding:var(--benefit-padding,22px)!important;
+ background:var(--benefit-card-bg,#fffdfa)!important;
+ border:var(--benefit-border-w,1px) solid var(--benefit-border,#fff)!important;
+ border-radius:var(--benefit-radius,18px)!important;
+ box-shadow:var(--benefit-shadow,0 14px 38px rgba(23,53,46,.10))!important;
+ font-family:var(--benefit-font,Tahoma,Arial,sans-serif)!important
+}
+section.benefits>.benefit i,.benefits>.benefit i{
+ color:var(--benefit-icon-color,#b47a4f)!important;
+ font-size:var(--benefit-icon-size,24px)!important
+}
+section.benefits>.benefit b,.benefits>.benefit b{
+ color:var(--benefit-title-color,#17352e)!important;
+ font-size:var(--benefit-title-size,16px)!important;
+ font-weight:var(--benefit-title-weight,700)!important
+}
+section.benefits>.benefit span,.benefits>.benefit span{
+ color:var(--benefit-text-color,#707b75)!important;
+ font-size:var(--benefit-text-size,13px)!important;
+ font-weight:var(--benefit-text-weight,400)!important
+}
+@media(max-width:850px){
+ section.benefits,.benefits{grid-template-columns:repeat(var(--benefit-cols-t,2),minmax(0,1fr))!important}
+}
+@media(max-width:600px){
+ section.benefits,.benefits{
+  grid-template-columns:repeat(var(--benefit-cols-m,2),minmax(0,1fr))!important;
+  gap:var(--benefit-gap,14px)!important
+ }
+ section.benefits>.benefit,.benefits>.benefit{
+  min-height:var(--benefit-min-h,128px)!important;
+  padding:var(--benefit-padding,22px)!important
+ }
+ section.benefits>.benefit i,.benefits>.benefit i{font-size:var(--benefit-icon-size,24px)!important}
+ section.benefits>.benefit b,.benefits>.benefit b{font-size:var(--benefit-title-size,16px)!important}
+ section.benefits>.benefit span,.benefits>.benefit span{font-size:var(--benefit-text-size,13px)!important}
+}
+</style>
+
 </head>
 <body>
 
@@ -1933,26 +1981,44 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const sec=document.querySelector('section.benefits,.benefits');
     if(!sec)return;
     hide(sec,s?.enabled===false);
+
+    const n=(v,d,min,max)=>Math.max(min,Math.min(max,Number(v??d)||d));
+    sec.style.setProperty('--benefit-section-bg',s?.sectionBackground||'#fbf8f2');
+    sec.style.setProperty('--benefit-gap',n(s?.gap,14,0,60)+'px');
+    sec.style.setProperty('--benefit-cols-d',n(s?.columnsDesktop,4,1,6));
+    sec.style.setProperty('--benefit-cols-t',n(s?.columnsTablet,2,1,4));
+    sec.style.setProperty('--benefit-cols-m',n(s?.columnsMobile,2,1,2));
+    sec.style.setProperty('--benefit-card-bg',s?.cardBackground||'#fffdfa');
+    sec.style.setProperty('--benefit-border',s?.cardBorder||'#ffffff');
+    sec.style.setProperty('--benefit-border-w',n(s?.cardBorderWidth,1,0,8)+'px');
+    sec.style.setProperty('--benefit-radius',n(s?.cardRadius,18,0,60)+'px');
+    sec.style.setProperty('--benefit-padding',n(s?.cardPadding,22,0,60)+'px');
+    sec.style.setProperty('--benefit-min-h',n(s?.cardMinHeight,128,60,400)+'px');
+    sec.style.setProperty('--benefit-shadow',s?.cardShadow||'0 14px 38px rgba(23,53,46,.10)');
+    sec.style.setProperty('--benefit-icon-color',s?.iconColor||'#b47a4f');
+    sec.style.setProperty('--benefit-icon-size',n(s?.iconSize,24,8,80)+'px');
+    sec.style.setProperty('--benefit-title-color',s?.titleColor||'#17352e');
+    sec.style.setProperty('--benefit-title-size',n(s?.titleSize,16,8,60)+'px');
+    sec.style.setProperty('--benefit-title-weight',n(s?.titleWeight,700,400,900));
+    sec.style.setProperty('--benefit-text-color',s?.textColor||'#707b75');
+    sec.style.setProperty('--benefit-text-size',n(s?.textSize,13,7,48)+'px');
+    sec.style.setProperty('--benefit-text-weight',n(s?.textWeight,400,300,800));
+    sec.style.setProperty('--benefit-font',s?.fontFamily||'Tahoma, Arial, sans-serif');
+
     const items=Array.isArray(s?.items)?s.items:[];
     if(!items.length)return;
-
-    // Preserve the existing card design, but let Admin control title/text/icon/visibility.
     const current=[...sec.querySelectorAll(':scope > .benefit')];
     items.forEach((it,i)=>{
       let card=current[i];
       if(!card){
-        card=document.createElement('div');
-        card.className='benefit';
-        card.innerHTML='<i>✦</i><b></b><span></span>';
-        sec.appendChild(card);
+        card=document.createElement('div');card.className='benefit';
+        card.innerHTML='<i>✦</i><b></b><span></span>';sec.appendChild(card);
       }
       hide(card,it?.hidden===true);
-      const icon=card.querySelector('i');
-      const title=card.querySelector('b,strong,h3,h4');
-      const desc=card.querySelector('span,p,small');
-      if(icon && (it.icon||it.symbol||it.textIcon)) icon.textContent=it.icon||it.symbol||it.textIcon;
-      if(title) title.textContent=it.title||it.name||'';
-      if(desc) desc.textContent=it.text||it.description||'';
+      const icon=card.querySelector('i'),title=card.querySelector('b,strong,h3,h4'),desc=card.querySelector('span,p,small');
+      if(icon)icon.textContent=it.icon||it.symbol||it.textIcon||'✦';
+      if(title)title.textContent=it.title||it.name||'';
+      if(desc)desc.textContent=it.text||it.description||'';
     });
     current.slice(items.length).forEach(x=>hide(x,true));
   }

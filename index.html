@@ -1897,14 +1897,29 @@ section.benefits>.benefit span,.benefits>.benefit span{
           .select('product_id,quantity,is_gift,gift_data')
           .eq('session_id',cartSessionId());
         if(error) throw error;
-        state.cart=(data||[]).map(x=>({
-          id:String(x.product_id),qty:Number(x.quantity)||1,
+
+        const remote=(data||[]).map(x=>({
+          id:String(x.product_id),qty:Math.max(1,Number(x.quantity)||1),
           gift:!!x.is_gift,
           giftWrap:x.gift_data?.wrap||'',
           giftWrapPrice:Number(x.gift_data?.price||0)
         }));
-        save(); renderCart();
-      }catch(e){console.warn('ATYAAF cart load:',e)}
+
+        // السلة المحلية هي الأساس. ندمج معها بيانات Supabase ولا نمسحها إذا كانت القاعدة فارغة.
+        const merged=new Map((state.cart||[]).map(x=>[String(x.id),{
+          ...x,id:String(x.id),qty:Math.max(1,Number(x.qty)||1)
+        }]));
+        remote.forEach(x=>{
+          const local=merged.get(String(x.id));
+          merged.set(String(x.id),local ? {...x,...local,qty:Math.max(Number(local.qty)||1,Number(x.qty)||1)} : x);
+        });
+        state.cart=[...merged.values()];
+        save();renderCart();
+      }catch(e){
+        console.warn('ATYAAF cart load:',e);
+        // عند فشل Supabase تبقى السلة المحلية عاملة.
+        save();renderCart();
+      }
     }
     async function syncCartItem(item){
       if(!window.atyafDb) return false;
@@ -1930,7 +1945,11 @@ section.benefits>.benefit span,.benefits>.benefit span{
 
     const money=n=>new Intl.NumberFormat('ar-SA').format(n)+' ر.س';
     function save(){localStorage.setItem('atyaaf-cart',JSON.stringify(state.cart));localStorage.setItem('atyaaf-favs',JSON.stringify(state.favs));updateCounts()}
-    function updateCounts(){document.getElementById('cartCount').textContent=state.cart.reduce((a,x)=>a+x.qty,0);document.getElementById('favCount').textContent=state.favs.length}
+    function updateCounts(){
+      const c=document.getElementById('cartCount'),f=document.getElementById('favCount');
+      if(c)c.textContent=state.cart.reduce((a,x)=>a+(Number(x.qty)||0),0);
+      if(f)f.textContent=state.favs.length;
+    }
     function renderProducts(){window.ATYAAF_LIVE_PRODUCTS=products;let q=(document.getElementById('searchInput').value||'').trim().toLowerCase(), list=products.filter(p=>(state.filter==='all'||p.tags.includes(state.filter))&&(state.brand==='كل الماركات'||p.brand===state.brand)&&(!q||[p.name,p.brand,p.desc].join(' ').toLowerCase().includes(q)));let sort=document.getElementById('sortSelect').value;if(sort==='price-low')list.sort((a,b)=>a.price-b.price);if(sort==='price-high')list.sort((a,b)=>b.price-a.price);if(sort==='new')list.sort((a,b)=>b.id-a.id);document.getElementById('resultText').textContent=q?`نتائج البحث عن «${q}»`:state.brand==='كل الماركات'?'منتجاتنا الأكثر حبًا':`منتجات ${state.brand}`;document.getElementById('productGrid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">لم نعثر على ما تبحث عنه. جرّب كلمة أخرى أو تصفح كل المنتجات.</div>';updateCounts()}
     function card(p){let liked=state.favs.map(String).includes(String(p.id));let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product" data-product-id="${p.id}"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav('${p.id}')">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="product-actions"><button class="btn btn-primary" onclick="addCart('${p.id}')">أضف للسلة</button><button class="btn btn-outline" onclick="quickView('${p.id}')">عرض</button><button class="gift-buy-btn" onclick="buyAsGift('${p.id}')" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
     function setFilter(f,el){state.filter=f;document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderProducts()}
@@ -1980,17 +1999,23 @@ section.benefits>.benefit span,.benefits>.benefit span{
 }
 function closeFavorites(){document.getElementById('favoritesModal')?.classList.remove('open')}
     async function addCart(id){
-      id=String(id);
+      id=String(id||'').trim();
+      if(!id)return;
       let item=state.cart.find(x=>String(x.id)===id);
-      item?item.qty++:state.cart.push(item={id,qty:1});
-      save(); renderCart();
-      try{
-        await syncCartItem(item);
-        showMessage('أضيف إلى السلة','تمت إضافة المنتج إلى سلتك بنجاح.');
-      }catch(e){
-        console.error('Add cart:',e);
-        showMessage('تعذر مزامنة السلة','تم حفظ المنتج على هذا الجهاز، لكن تعذر مزامنته مع قاعدة البيانات.');
+      if(item)item.qty=Math.max(1,Number(item.qty)||1)+1;
+      else{
+        item={id,qty:1};
+        state.cart.push(item);
       }
+      save();
+      renderCart();
+      // لا نجعل قاعدة البيانات شرطاً لعمل السلة.
+      if(window.atyafDb){
+        try{await syncCartItem(item)}
+        catch(e){console.warn('ATYAAF cart sync:',e)}
+      }
+      showMessage('أضيف إلى السلة','تمت إضافة المنتج إلى سلتك بنجاح.');
+      return true;
     }
     async function changeQty(id,delta){
       id=String(id);
@@ -2099,29 +2124,63 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
     async function submitOrder(e){
   e.preventDefault();
   if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا قبل تأكيد الطلب.');
-  const form=e.target, fields=[...form.querySelectorAll('input,textarea,select')];
+
+  const form=e.target;
+  const get=name=>String(form.elements?.[name]?.value||'').trim();
+  const fields=[...form.querySelectorAll('input,textarea,select')];
   const order={
-    customer_name:fields[0]?.value||'', phone:fields[1]?.value||'',
-    city:fields[2]?.value||'', area:fields[3]?.value||'',
-    address:fields[4]?.value||'', notes:fields[5]?.value||'',
-    items:state.cart, total:checkoutPayable(), status:'new'
+    customer_name:get('name')||get('customer_name')||fields[0]?.value||'',
+    phone:get('phone')||fields[1]?.value||'',
+    city:get('city')||fields[2]?.value||'',
+    area:get('area')||fields[3]?.value||'',
+    address:get('address')||fields[4]?.value||'',
+    notes:get('notes')||fields[5]?.value||'',
+    items:state.cart.map(x=>({...x})),
+    total:checkoutPayable(),
+    status:'new'
   };
-  const couponSnapshot=atyafAppliedCoupon?{code:String(atyafAppliedCoupon.code||''),discount:calculateCouponDiscount(atyafAppliedCoupon,cartTotal()),subtotal:cartTotal()}:null;
-  if(couponSnapshot){order.notes=(order.notes?order.notes+'\n':'')+'كوبون: '+couponSnapshot.code+' | الخصم: '+couponSnapshot.discount+' | قبل الخصم: '+couponSnapshot.subtotal;}
-  let no='ATY-'+Math.floor(10000+Math.random()*89999);
+
+  const couponSnapshot=atyafAppliedCoupon?{
+    code:String(atyafAppliedCoupon.code||''),
+    discount:calculateCouponDiscount(atyafAppliedCoupon,cartTotal()),
+    subtotal:cartTotal()
+  }:null;
+
+  let no='ATY-'+Date.now().toString().slice(-8);
+  const whatsappOrder={...order,items:order.items.map(x=>({...x}))};
+
+  // جهز رابط واتساب فوراً حتى لا يعتمد إرسال الطلب على نجاح Supabase.
+  const waMessage=buildWhatsAppOrderMessage(whatsappOrder,no,couponSnapshot);
+  const waUrl='https://wa.me/'+ATYAAF_WHATSAPP_NUMBER+'?text='+encodeURIComponent(waMessage);
+
   try{
-    if(atyafDb){
-      const {data,error}=await atyafDb.from('orders').insert(order).select('id').single();
-      if(error)throw error;
-      if(data?.id)no='ATY-'+data.id;
+    if(window.atyafDb){
+      const dbOrder={...order};
+      if(couponSnapshot){
+        dbOrder.notes=(dbOrder.notes?dbOrder.notes+'\n':'')+
+          'كوبون: '+couponSnapshot.code+' | الخصم: '+couponSnapshot.discount+
+          ' | قبل الخصم: '+couponSnapshot.subtotal;
+      }
+      try{
+        const {data,error}=await window.atyafDb.from('orders').insert(dbOrder).select('id').single();
+        if(error)throw error;
+        if(data?.id)no='ATY-'+data.id;
+      }catch(dbErr){
+        console.warn('Order database save:',dbErr);
+        // لا نوقف واتساب بسبب خطأ قاعدة البيانات.
+      }
     }
+
     saveLocalOrder({number:no,status:'new',total:order.total,date:new Date().toLocaleString('ar'),items:order.items});
-    const whatsappOrder={...order,items:order.items.map(x=>({...x}))};
-    state.cart=[];save();closeCheckout();form.reset();
-    sendOrderToWhatsApp(whatsappOrder,no,couponSnapshot);
+
+    // افتح واتساب أولاً، ثم نظف السلة.
+    window.location.assign(waUrl);
+    state.cart=[];
+    save();
+    form.reset();
   }catch(err){
-    console.warn('Order save:',err);
-    showMessage('تعذر إرسال الطلب','لم يتم حفظ الطلب. تحقق من اتصال المتجر وجدول orders ثم حاول مرة أخرى.');
+    console.error('Checkout:',err);
+    showMessage('تعذر إتمام الطلب','حدث خطأ غير متوقع. السلة ما زالت محفوظة، حاول مرة أخرى.');
   }
 }
     function quickView(id){

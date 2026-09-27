@@ -71,6 +71,18 @@
 }
 /* ATYAAF FULL WIDTH LOWER ADS CSS END */
 
+
+.atyaf-cart-close{width:42px;height:42px;border:1px solid #dfe4ea;border-radius:12px;background:#fff;font-size:25px;display:grid;place-items:center}
+.atyaf-cart-head-actions{display:flex;align-items:center;gap:12px}
+.atyaf-coupon-box{border-top:1px solid #edf0f3;margin-top:16px;padding-top:16px}
+.atyaf-coupon-title{font-size:13px;font-weight:800;margin-bottom:8px}
+.atyaf-coupon-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.atyaf-coupon-input{width:100%;height:46px;border:1px solid #dfe4ea;border-radius:11px;padding:0 12px;text-transform:uppercase;outline:none}
+.atyaf-coupon-input:focus{border-color:#c99622}
+.atyaf-coupon-apply{min-width:82px;border-radius:11px;background:#202b38;color:#fff;font-weight:800;padding:0 14px}
+.atyaf-coupon-msg{font-size:12px;margin-top:8px;min-height:18px;color:#657185}
+.atyaf-discount-line{display:none}.atyaf-discount-line.show{display:flex}.atyaf-discount-line strong{color:#16884e}
+body.atyaf-cart-page-open{overflow:hidden}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1648,7 +1660,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
 .atyaf-coupon-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}.atyaf-coupon-row input{text-transform:uppercase}.atyaf-coupon-row .btn{min-width:92px;height:44px;padding:8px 16px}.atyaf-coupon-message{min-height:22px;margin-top:6px;font-size:12px}.atyaf-coupon-message.ok{color:#18704f}.atyaf-coupon-message.err{color:#a33c32}.atyaf-checkout-summary{margin:4px 0 14px;padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:var(--cream)}.atyaf-checkout-summary>div{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:13px}.atyaf-checkout-summary #checkoutDiscountRow{color:#18704f}.atyaf-checkout-summary .atyaf-checkout-final{margin-top:7px;padding-top:9px;border-top:1px solid var(--line);font-size:15px;color:var(--green)}@media(max-width:480px){.atyaf-coupon-row{grid-template-columns:1fr auto}.atyaf-coupon-row .btn{min-width:78px;padding-inline:11px}.atyaf-checkout-summary{padding:11px 12px}}
 </style>
 <style id="atyaf-cart-page-whatsapp-v2">
-#atyafCartPage{display:none;background:#fbfaf5;min-height:70vh;padding:42px 0 70px}#atyafCartPage.open{display:block}
+#atyafCartPage{display:none;position:fixed;inset:0;z-index:10050;background:#fbfaf5;min-height:100vh;height:100dvh;overflow-y:auto;padding:28px 0 70px}#atyafCartPage.open{display:block}
 .atyaf-cart-page-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:28px}.atyaf-cart-page-title{display:flex;align-items:center;gap:12px}.atyaf-cart-page-title h2{font-size:clamp(27px,4vw,40px);margin:0}.atyaf-cart-bag{color:#d6a522;font-size:28px}
 .atyaf-cart-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(310px,.8fr);gap:34px;align-items:start}.atyaf-cart-items{display:grid;gap:14px}
 .atyaf-cart-row{display:grid;grid-template-columns:94px minmax(0,1fr) auto;gap:18px;align-items:center;background:#fff;border:1px solid #dfe4ea;border-radius:18px;padding:18px;box-shadow:0 3px 9px #102a2509}
@@ -1769,10 +1781,10 @@ section.benefits>.benefit span,.benefits>.benefit span{
   <footer id="contact"><div class="container"><div class="footer-grid"><div><div class="footer-brand">أطياف ستور</div><p style="color:#9db3a6;font-size:13px">عطور مختارة بعناية، لتصنع لحظات تبقى.</p></div><div><h3>المتجر</h3><a href="#products">كل المنتجات</a><a href="#brands">الماركات</a><a href="#scents">الهدايا</a></div><div><h3>خدمة العملاء</h3><a href="javascript:void(0)" onclick="showContactInfo()">تواصل معنا</a><a href="javascript:void(0)" onclick="showShippingInfo()">الشحن والتوصيل</a><a href="javascript:void(0)" onclick="showReturnsInfo()">الاستبدال والاسترجاع</a></div><div><h3>تابعنا</h3><a href="javascript:void(0)" onclick="openSocial('instagram')">Instagram</a><a href="javascript:void(0)" onclick="openSocial('tiktok')">TikTok</a><a href="javascript:void(0)" onclick="openSocial('whatsapp')">WhatsApp</a></div></div><div class="copyright"><span>© 2026 ATYAAF STORE. جميع الحقوق محفوظة.</span><span>صُنع بذوق ✦</span></div></div></footer>
   <div class="drawer" id="cartDrawer" onclick="if(event.target===this)closeCart()"><div class="drawer-panel"><button class="close" onclick="closeCart()">×</button><h2>سلة مشترياتك</h2><div class="cart-list" id="cartList"></div><div class="cart-foot"><div class="total"><span>الإجمالي</span><span id="cartTotal">0 ر.س</span></div><button class="btn btn-primary" style="width:100%" onclick="openCheckout()">متابعة الطلب</button></div></div></div>
   <section id="atyafCartPage" aria-label="سلة التسوق"><div class="container">
-<div class="atyaf-cart-page-head"><div class="atyaf-cart-page-title"><span class="atyaf-cart-bag">▣</span><h2>سلة التسوق</h2></div><b id="atyafCartPageCount">0 منتجات</b></div>
+<div class="atyaf-cart-page-head"><div class="atyaf-cart-page-title"><span class="atyaf-cart-bag">▣</span><h2>سلة التسوق</h2></div><div class="atyaf-cart-head-actions"><b id="atyafCartPageCount">0 منتجات</b><button class="atyaf-cart-close" type="button" onclick="atyafCloseCartPage()" aria-label="إغلاق">×</button></div></div>
 <div class="atyaf-cart-layout"><div><div id="atyafCartPageItems" class="atyaf-cart-items"></div><button class="atyaf-clear-cart" type="button" onclick="atyafClearCart()">🗑 إفراغ السلة</button></div>
 <aside class="atyaf-order-summary"><h3>ملخص الطلب</h3><div class="atyaf-summary-line"><span>المجموع الفرعي</span><strong id="atyafCartSubtotal">0 ر.س</strong></div><div class="atyaf-summary-line"><span>التوصيل</span><span>يحدد حسب الموقع</span></div><div class="atyaf-summary-line atyaf-summary-total"><span>الإجمالي</span><strong id="atyafCartFinalTotal">0 ر.س</strong></div>
-<div class="atyaf-delivery-note">التالي: أدخل عنوان التوصيل</div><textarea id="atyafWhatsAppAddress" class="atyaf-address-box" placeholder="المدينة، الحي، الشارع..."></textarea>
+<div class="atyaf-coupon-box"><div class="atyaf-coupon-title">كوبون الخصم</div><div class="atyaf-coupon-row"><input id="atyafCartCouponInput" class="atyaf-coupon-input" placeholder="أدخل كود الخصم"><button class="atyaf-coupon-apply" type="button" onclick="atyafApplyCartCoupon()">تطبيق</button></div><div id="atyafCartCouponMsg" class="atyaf-coupon-msg"></div></div><div id="atyafCartDiscountLine" class="atyaf-summary-line atyaf-discount-line"><span>الخصم</span><strong id="atyafCartDiscount">0 ر.س</strong></div><div class="atyaf-delivery-note">التالي: أدخل عنوان التوصيل</div><textarea id="atyafWhatsAppAddress" class="atyaf-address-box" placeholder="المدينة، الحي، الشارع..."></textarea>
 <div class="atyaf-method-title">طريقة الطلب</div><div class="atyaf-whatsapp-method"><span style="font-size:25px">◉</span><div><b>عبر واتساب</b><small>أرسل تفاصيل طلبك مباشرة لتأكيده مع فريقنا</small></div></div>
 <button class="atyaf-whatsapp-send" type="button" onclick="atyafSendCartDirectWhatsApp()">◉ إرسال الطلب عبر واتساب</button></aside></div></div></section>
   <div class="modal" id="checkoutModal" onclick="if(event.target===this)closeCheckout()"><div class="modal-card"><button class="close" onclick="closeCheckout()">×</button><h2>إتمام الطلب</h2><div class="notice">الدفع عند الاستلام متاح في النسخة التجريبية.</div><form onsubmit="submitOrder(event)"><div class="form-grid"><div class="field"><label>الاسم الكامل</label><input required placeholder="اكتب اسمك" /></div><div class="field"><label>رقم الهاتف</label><input required type="tel" placeholder="05xxxxxxxx" /></div><div class="field"><label>المدينة</label><input required placeholder="الرياض" /></div><div class="field"><label>المنطقة</label><input placeholder="الحي" /></div><div class="field full"><label>العنوان بالتفصيل</label><textarea required rows="2" placeholder="الشارع، المبنى، رقم الشقة"></textarea></div><div class="field full"><label>ملاحظات الطلب</label><textarea rows="2" placeholder="أي تفاصيل إضافية..."></textarea></div><div class="field full atyaf-coupon-field"><label>كود الخصم</label><div class="atyaf-coupon-row"><input id="couponCode" type="text" autocomplete="off" placeholder="أدخل كود الكوبون" oninput="clearCouponMessage(false)"/><button class="btn btn-outline" type="button" id="applyCouponBtn" onclick="applyCoupon()">تطبيق</button></div><div id="couponMessage" class="atyaf-coupon-message" aria-live="polite"></div></div></div><div id="checkoutSummary" class="atyaf-checkout-summary"><div><span>المجموع</span><b id="checkoutSubtotal">0 ر.س</b></div><div id="checkoutDiscountRow" hidden><span>خصم الكوبون</span><b id="checkoutDiscount">− 0 ر.س</b></div><div class="atyaf-checkout-final"><span>الإجمالي</span><b id="checkoutFinalTotal">0 ر.س</b></div></div><button class="btn btn-primary" style="width:100%" type="submit">تأكيد الطلب — <span id="checkoutTotal">0 ر.س</span></button></form></div></div>
@@ -2899,7 +2911,7 @@ window.addEventListener('load',()=>{
  const WA='967774523109';
  const money=n=>(Number(n)||0).toFixed(2).replace(/\.00$/,'')+' ر.س';
  const productOf=id=>(state.products||[]).find(p=>String(p.id)===String(id));
- window.atyafOpenCartPage=function(){const page=document.getElementById('atyafCartPage');if(!page)return;page.classList.add('open');renderAtyafCartPage();page.scrollIntoView({behavior:'smooth',block:'start'})};
+ window.atyafOpenCartPage=function(){const page=document.getElementById('atyafCartPage');if(!page)return;document.getElementById('cartDrawer')?.classList.remove('open');page.classList.add('open');document.body.classList.add('atyaf-cart-page-open');renderAtyafCartPage();page.scrollTop=0};window.atyafCloseCartPage=function(){document.getElementById('atyafCartPage')?.classList.remove('open');document.body.classList.remove('atyaf-cart-page-open')};
  window.renderAtyafCartPage=function(){
   const box=document.getElementById('atyafCartPageItems');if(!box)return;
   const count=(state.cart||[]).reduce((a,x)=>a+(Number(x.qty)||0),0);
@@ -2909,11 +2921,49 @@ window.addEventListener('load',()=>{
    return `<article class="atyaf-cart-row"><div class="atyaf-cart-img">${img?`<img src="${img}" alt="">`:''}</div><div><h3>${p.name||p.title||'منتج'}</h3><div class="atyaf-cart-price">${money(price)}</div><div class="atyaf-cart-qty"><button type="button" onclick="atyafCartPageQty('${String(x.id)}',-1)">−</button><b>${q}</b><button type="button" onclick="atyafCartPageQty('${String(x.id)}',1)">＋</button></div></div><button class="atyaf-cart-remove" type="button" onclick="atyafCartPageRemove('${String(x.id)}')">🗑</button></article>`
   }).join('');
   const sub=typeof cartTotal==='function'?cartTotal():0,fin=typeof checkoutPayable==='function'?checkoutPayable():sub;
-  const a=document.getElementById('atyafCartSubtotal'),b=document.getElementById('atyafCartFinalTotal');if(a)a.textContent=money(sub);if(b)b.textContent=money(fin)
+  const discount=Math.max(0,sub-fin);
+  const a=document.getElementById('atyafCartSubtotal'),b=document.getElementById('atyafCartFinalTotal'),dl=document.getElementById('atyafCartDiscountLine'),dv=document.getElementById('atyafCartDiscount');
+  if(a)a.textContent=money(sub);if(b)b.textContent=money(fin);if(dv)dv.textContent='- '+money(discount);if(dl)dl.classList.toggle('show',discount>0)
  };
  window.atyafCartPageQty=async function(id,d){const x=state.cart.find(v=>String(v.id)===String(id));if(!x)return;const n=(Number(x.qty)||1)+d;if(n<=0)return atyafCartPageRemove(id);x.qty=n;save();renderCart();renderAtyafCartPage();if(window.atyafDb){try{await syncCartItem(x)}catch(e){console.warn(e)}}};
  window.atyafCartPageRemove=async function(id){const x=state.cart.find(v=>String(v.id)===String(id));state.cart=state.cart.filter(v=>String(v.id)!==String(id));save();renderCart();renderAtyafCartPage();if(window.atyafDb&&x){try{await window.atyafDb.from('cart_items').delete().eq('session_id',cartSessionId()).eq('product_id',String(id))}catch(e){console.warn(e)}}};
  window.atyafClearCart=async function(){state.cart=[];save();renderCart();renderAtyafCartPage();if(window.atyafDb){try{await window.atyafDb.from('cart_items').delete().eq('session_id',cartSessionId())}catch(e){console.warn(e)}}};
+ window.atyafApplyCartCoupon=async function(){
+  const input=document.getElementById('atyafCartCouponInput'),msg=document.getElementById('atyafCartCouponMsg');
+  const code=String(input?.value||'').trim().toUpperCase();
+  if(!code){if(msg){msg.textContent='أدخل كود الكوبون.';msg.style.color='#b36a00'}return}
+  if(msg){msg.textContent='جارٍ التحقق من الكوبون...';msg.style.color='#657185'}
+  try{
+    // Use the store's existing coupon system if present.
+    const original=document.getElementById('atyafCouponInput');
+    if(original)original.value=code;
+    if(typeof applyAtyafCoupon==='function'){
+      await applyAtyafCoupon();
+    }else if(typeof applyCoupon==='function'){
+      await applyCoupon();
+    }else{
+      // Direct validation against the existing coupons table as a compatibility fallback.
+      if(!window.atyafDb)throw new Error('قاعدة البيانات غير متاحة');
+      const {data,error}=await window.atyafDb.from('coupons').select('*').eq('code',code).eq('active',true).maybeSingle();
+      if(error)throw error;if(!data)throw new Error('الكوبون غير صحيح أو غير فعال');
+      const sub=typeof cartTotal==='function'?cartTotal():0;
+      if(Number(data.min_order_amount||0)>sub)throw new Error('الحد الأدنى لهذا الكوبون '+money(data.min_order_amount));
+      let d=data.discount_type==='fixed'?Number(data.discount_value||0):sub*Number(data.discount_value||0)/100;
+      if(data.max_discount!=null)d=Math.min(d,Number(data.max_discount)||d);
+      window.atyafAppliedCoupon=data;
+      // checkoutPayable in this store reads atyafAppliedCoupon/calculateCouponDiscount.
+    }
+    if(typeof atyafAppliedCoupon!=='undefined'&&atyafAppliedCoupon){
+      if(msg){msg.textContent='تم تطبيق الكوبون بنجاح.';msg.style.color='#16884e'}
+    }else{
+      if(msg){msg.textContent='لم يتم تطبيق الكوبون. تحقق من الكود وشروطه.';msg.style.color='#b42318'}
+    }
+    renderAtyafCartPage();
+  }catch(err){
+    if(msg){msg.textContent=err?.message||'تعذر التحقق من الكوبون.';msg.style.color='#b42318'}
+    renderAtyafCartPage();
+  }
+ };
  window.atyafSendCartDirectWhatsApp=function(){
   if(!state.cart?.length)return showMessage('السلة فارغة','أضف منتجًا قبل إرسال الطلب.');
   const address=String(document.getElementById('atyafWhatsAppAddress')?.value||'').trim();if(!address){document.getElementById('atyafWhatsAppAddress')?.focus();return showMessage('عنوان التوصيل','أدخل المدينة والحي والشارع أولًا.')}
@@ -2924,6 +2974,7 @@ window.addEventListener('load',()=>{
   window.location.href='https://wa.me/'+WA+'?text='+encodeURIComponent(lines.join('\n'))
  };
  document.addEventListener('click',e=>{const btn=e.target.closest('[data-store-action="cart"],#cartBtn,[onclick*="openCart"]');if(!btn)return;e.preventDefault();e.stopPropagation();document.getElementById('cartDrawer')?.classList.remove('open');atyafOpenCartPage()},true);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')atyafCloseCartPage()});
  document.addEventListener('DOMContentLoaded',()=>{try{renderAtyafCartPage()}catch(e){}});
 })();
 </script>

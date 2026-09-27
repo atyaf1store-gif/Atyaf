@@ -2059,6 +2059,43 @@ async function removeCartItem(id){
   try{await deleteCartItemFromSupabase(id)}catch(e){console.error('Remove cart:',e)}
 }
 function openCart(){renderCart();document.getElementById('cartDrawer').classList.add('open')};function closeCart(){document.getElementById('cartDrawer').classList.remove('open')};function openCheckout(){if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا واحدًا على الأقل قبل متابعة الطلب.');atyafAppliedCoupon=null;const ci=document.getElementById('couponCode');if(ci)ci.value='';clearCouponMessage(true);updateCheckoutTotals();closeCart();document.getElementById('checkoutModal').classList.add('open')};function closeCheckout(){document.getElementById('checkoutModal').classList.remove('open')}
+    const ATYAAF_WHATSAPP_NUMBER='967774523109';
+    function buildWhatsAppOrderMessage(order,orderNo,couponSnapshot){
+      const lines=['طلب جديد من ATYAAF STORE','رقم الطلب: '+orderNo,''];
+      lines.push('المنتجات:');
+      (order.items||[]).forEach((x,i)=>{
+        const p=products.find(p=>String(p.id)===String(x.id));
+        const name=p?.name||('منتج '+String(x.id));
+        const unit=Number(p?.price||0);
+        const wrap=Number(x.giftWrapPrice||0);
+        lines.push((i+1)+'. '+name+' × '+Number(x.qty||1)+' — '+couponMoney(unit*Number(x.qty||1)+wrap));
+        if(x.gift) lines.push('   🎁 '+String(x.giftWrap||'تغليف هدية')+(wrap?' — '+couponMoney(wrap):''));
+      });
+      lines.push('');
+      lines.push('المجموع قبل الخصم: '+couponMoney(couponSnapshot?.subtotal??cartTotal()));
+      if(couponSnapshot){
+        lines.push('الكوبون: '+couponSnapshot.code);
+        lines.push('الخصم: − '+couponMoney(couponSnapshot.discount));
+      }
+      lines.push('الإجمالي النهائي: '+couponMoney(order.total));
+      lines.push('');
+      lines.push('بيانات العميل:');
+      lines.push('الاسم: '+order.customer_name);
+      lines.push('الهاتف: '+order.phone);
+      lines.push('المدينة: '+order.city);
+      if(order.area) lines.push('المنطقة/الحي: '+order.area);
+      lines.push('العنوان: '+order.address);
+      if(order.notes){
+        const cleanNotes=String(order.notes).split('\nكوبون:')[0].trim();
+        if(cleanNotes) lines.push('ملاحظات: '+cleanNotes);
+      }
+      return lines.join('\n');
+    }
+    function sendOrderToWhatsApp(order,orderNo,couponSnapshot){
+      const message=buildWhatsAppOrderMessage(order,orderNo,couponSnapshot);
+      window.location.href='https://wa.me/'+ATYAAF_WHATSAPP_NUMBER+'?text='+encodeURIComponent(message);
+    }
+
     async function submitOrder(e){
   e.preventDefault();
   if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا قبل تأكيد الطلب.');
@@ -2079,8 +2116,9 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
       if(data?.id)no='ATY-'+data.id;
     }
     saveLocalOrder({number:no,status:'new',total:order.total,date:new Date().toLocaleString('ar'),items:order.items});
+    const whatsappOrder={...order,items:order.items.map(x=>({...x}))};
     state.cart=[];save();closeCheckout();form.reset();
-    showMessage('تم استلام طلبك','رقم الطلب '+no+' — تم حفظه في طلباتي والفواتير.');
+    sendOrderToWhatsApp(whatsappOrder,no,couponSnapshot);
   }catch(err){
     console.warn('Order save:',err);
     showMessage('تعذر إرسال الطلب','لم يتم حفظ الطلب. تحقق من اتصال المتجر وجدول orders ثم حاول مرة أخرى.');

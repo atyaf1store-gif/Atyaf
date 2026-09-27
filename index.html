@@ -1674,6 +1674,13 @@ section.benefits>.benefit span,.benefits>.benefit span{
 .atyaf-whatsapp-send{width:100%;margin-top:18px;min-height:54px;border-radius:13px;background:#25D366;color:#fff;font-size:16px;font-weight:800;box-shadow:0 8px 18px #25d36625}.atyaf-cart-empty-page{background:#fff;border:1px solid var(--line);border-radius:18px;padding:48px 20px;text-align:center;color:var(--muted)}
 @media(max-width:780px){#atyafCartPage{padding:26px 0 50px}.atyaf-cart-layout{grid-template-columns:1fr;gap:20px}.atyaf-order-summary{position:static}.atyaf-cart-row{grid-template-columns:76px minmax(0,1fr) auto;gap:10px;padding:12px}.atyaf-cart-img{width:76px;height:86px}}
 @media(max-width:420px){.atyaf-cart-row h3{font-size:13px}.atyaf-cart-price{font-size:13px}.atyaf-cart-qty{gap:9px}.atyaf-cart-qty button{width:38px;height:36px}.atyaf-order-summary{padding:18px}}
+
+#atyafCartPage .atyaf-cart-layout{direction:rtl}
+#atyafCartPage .atyaf-cart-items,#atyafCartPage .atyaf-cart-row{direction:rtl}
+#atyafCartPage .atyaf-order-summary{direction:rtl}
+@media(min-width:781px){
+ #atyafCartPage .atyaf-cart-layout{grid-template-columns:minmax(0,1.45fr) minmax(310px,.8fr)}
+}
 </style>
 </head>
 <body>
@@ -2039,7 +2046,15 @@ function closeFavorites(){document.getElementById('favoritesModal')?.classList.r
       let item=state.cart.find(x=>String(x.id)===id);
       if(item)item.qty=Math.max(1,Number(item.qty)||1)+1;
       else{
+        const p=(state.products||[]).find(v=>String(v.id)===id)||
+          (Array.isArray(window.products)?window.products.find(v=>String(v.id)===id):null)||
+          (Array.isArray(window.storeProducts)?window.storeProducts.find(v=>String(v.id)===id):null);
         item={id,qty:1};
+        if(p){
+          item.name=p.name||p.title||'';
+          item.price=Number(p.price)||0;
+          item.image_url=p.image_url||p.image||p.img||'';
+        }
         state.cart.push(item);
       }
       save();
@@ -2910,15 +2925,40 @@ window.addEventListener('load',()=>{
 (function(){
  const WA='967774523109';
  const money=n=>(Number(n)||0).toFixed(2).replace(/\.00$/,'')+' ر.س';
- const productOf=id=>(state.products||[]).find(p=>String(p.id)===String(id));
+ const productOf=id=>{
+  id=String(id);
+  const pools=[
+    state.products,
+    window.products,
+    window.storeProducts,
+    window.ATYAF_PRODUCTS,
+    window.atyafProducts
+  ].filter(Array.isArray);
+  for(const pool of pools){
+    const p=pool.find(v=>String(v?.id??v?.product_id)===id);
+    if(p)return p;
+  }
+  const item=(state.cart||[]).find(v=>String(v.id)===id);
+  if(item&&(item.name||item.title||item.price||item.image||item.image_url))return item;
+  return null;
+};
+const cartProductView=x=>{
+  const p=productOf(x.id)||{};
+  return {
+    id:String(x.id),
+    name:p.name||p.title||x.name||x.title||'منتج',
+    price:Number(p.price??x.price??0)||0,
+    image:p.image_url||p.image||p.img||x.image_url||x.image||x.img||''
+  };
+};
  window.atyafOpenCartPage=function(){const page=document.getElementById('atyafCartPage');if(!page)return;document.getElementById('cartDrawer')?.classList.remove('open');page.classList.add('open');document.body.classList.add('atyaf-cart-page-open');renderAtyafCartPage();page.scrollTop=0};window.atyafCloseCartPage=function(){document.getElementById('atyafCartPage')?.classList.remove('open');document.body.classList.remove('atyaf-cart-page-open')};
  window.renderAtyafCartPage=function(){
   const box=document.getElementById('atyafCartPageItems');if(!box)return;
   const count=(state.cart||[]).reduce((a,x)=>a+(Number(x.qty)||0),0);
   const ce=document.getElementById('atyafCartPageCount');if(ce)ce.textContent=count+' '+(count===1?'منتج':'منتجات');
   box.innerHTML=!state.cart?.length?'<div class="atyaf-cart-empty-page">السلة فارغة حاليًا.</div>':state.cart.map(x=>{
-   const p=productOf(x.id);if(!p)return '';const img=p.image_url||p.image||p.img||'',q=Math.max(1,Number(x.qty)||1),price=Number(p.price)||0;
-   return `<article class="atyaf-cart-row"><div class="atyaf-cart-img">${img?`<img src="${img}" alt="">`:''}</div><div><h3>${p.name||p.title||'منتج'}</h3><div class="atyaf-cart-price">${money(price)}</div><div class="atyaf-cart-qty"><button type="button" onclick="atyafCartPageQty('${String(x.id)}',-1)">−</button><b>${q}</b><button type="button" onclick="atyafCartPageQty('${String(x.id)}',1)">＋</button></div></div><button class="atyaf-cart-remove" type="button" onclick="atyafCartPageRemove('${String(x.id)}')">🗑</button></article>`
+   const p=cartProductView(x),img=p.image,q=Math.max(1,Number(x.qty)||1),price=Number(p.price)||0;
+   return `<article class="atyaf-cart-row"><div class="atyaf-cart-img">${img?`<img src="${img}" alt="${p.name}">`:''}</div><div><h3>${p.name}</h3><div class="atyaf-cart-price">${money(price)}</div><div class="atyaf-cart-qty"><button type="button" aria-label="نقص الكمية" onclick="atyafCartPageQty('${String(x.id)}',-1)">−</button><b>${q}</b><button type="button" aria-label="زيادة الكمية" onclick="atyafCartPageQty('${String(x.id)}',1)">＋</button></div></div><button class="atyaf-cart-remove" type="button" aria-label="حذف المنتج" onclick="atyafCartPageRemove('${String(x.id)}')">🗑</button></article>`
   }).join('');
   const sub=typeof cartTotal==='function'?cartTotal():0,fin=typeof checkoutPayable==='function'?checkoutPayable():sub;
   const discount=Math.max(0,sub-fin);
@@ -2967,7 +3007,7 @@ window.addEventListener('load',()=>{
  window.atyafSendCartDirectWhatsApp=function(){
   if(!state.cart?.length)return showMessage('السلة فارغة','أضف منتجًا قبل إرسال الطلب.');
   const address=String(document.getElementById('atyafWhatsAppAddress')?.value||'').trim();if(!address){document.getElementById('atyafWhatsAppAddress')?.focus();return showMessage('عنوان التوصيل','أدخل المدينة والحي والشارع أولًا.')}
-  const lines=['*طلب جديد — ATYAAF STORE*','','*المنتجات:*'];state.cart.forEach((x,i)=>{const p=productOf(x.id);if(!p)return;const q=Math.max(1,Number(x.qty)||1),pr=Number(p.price)||0;lines.push(`${i+1}. ${p.name||p.title||'منتج'} × ${q} — ${money(pr*q)}`);if(x.gift)lines.push('   🎁 تغليف هدية'+(x.giftWrap?' — '+x.giftWrap:''))});
+  const lines=['*طلب جديد — ATYAAF STORE*','','*المنتجات:*'];state.cart.forEach((x,i)=>{const p=cartProductView(x);const q=Math.max(1,Number(x.qty)||1),pr=Number(p.price)||0;lines.push(`${i+1}. ${p.name} × ${q} — ${money(pr*q)}`);if(x.gift)lines.push('   🎁 تغليف هدية'+(x.giftWrap?' — '+x.giftWrap:''))});
   const sub=typeof cartTotal==='function'?cartTotal():0,fin=typeof checkoutPayable==='function'?checkoutPayable():sub;lines.push('',`المجموع الفرعي: ${money(sub)}`);
   if(typeof atyafAppliedCoupon!=='undefined'&&atyafAppliedCoupon){const d=typeof calculateCouponDiscount==='function'?calculateCouponDiscount(atyafAppliedCoupon,sub):0;lines.push(`الكوبون: ${atyafAppliedCoupon.code||''}`,`الخصم: ${money(d)}`)}
   lines.push(`*الإجمالي: ${money(fin)}*`,'',`📍 عنوان التوصيل: ${address}`,'','أرغب في تأكيد هذا الطلب.');

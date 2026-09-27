@@ -1643,12 +1643,6 @@ section.benefits>.benefit span,.benefits>.benefit span{
 }
 </style>
 
-
-<style id="atyaf-benefits-admin-only-source-v1">
-section.benefits,.benefits{visibility:hidden}
-section.benefits[data-benefits-ready="1"],.benefits[data-benefits-ready="1"]{visibility:visible}
-</style>
-
 </head>
 <body>
 
@@ -1740,7 +1734,7 @@ section.benefits[data-benefits-ready="1"],.benefits[data-benefits-ready="1"]{vis
   </header>
   <main id="store">
     <section class="hero-ad" id="home" aria-label="إعلانات المتجر"><div class="hero-ad-track" id="heroAdTrack"></div><div class="hero-ad-dots" id="heroAdDots"></div></section>
-    <section class="container benefits"><div class="benefit"><i>✦</i><b>منتجات أصلية</b><span>اختيارات موثوقة بعناية</span></div><div class="benefit"><i>⌁</i><b>شحن سريع</b><span>توصيل آمن إلى بابك</span></div><div class="benefit"><i>♧</i><b>تغليف فاخر</b><span>هدية تليق بمن تحب</span></div><div class="benefit"><i>♡</i><b>خدمة تهتم</b><span>نحن هنا لمساعدتك</span></div></section>
+    <section class="container benefits" style="display:none" aria-hidden="true"></section>
     <section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands"><button class="brand-card" onclick="filterBrand('أطياف')"><strong>أطياف</strong><span>ATYAAF</span></button><button class="brand-card" onclick="filterBrand('دار العود')"><strong>دار العود</strong><span>HOUSE OF OUD</span></button><button class="brand-card" onclick="filterBrand('نُبل')"><strong>نُبل</strong><span>NOBLE</span></button><button class="brand-card" onclick="filterBrand('سُلاف')"><strong>سُلاف</strong><span>SULAF</span></button><button class="brand-card" onclick="filterBrand('كل الماركات')"><strong>الكل</strong><span>VIEW ALL</span></button></div></section>
     <section class="section container" id="products" style="padding-top:20px"><div class="section-head"><div><h2>مختارات أطياف</h2><p id="resultText">منتجاتنا الأكثر حبًا</p></div><select id="sortSelect" onchange="renderProducts()" style="border:1px solid var(--line);background:#fffdfa;padding:10px 14px;border-radius:999px;color:var(--green)"><option value="featured">ترتيب: مميز</option><option value="price-low">السعر: الأقل</option><option value="price-high">السعر: الأعلى</option><option value="new">الأحدث</option></select></div><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all',this)">الكل</button><button class="chip" data-filter="oud" onclick="setFilter('oud',this)">عود</button><button class="chip" data-filter="musk" onclick="setFilter('musk',this)">مسك</button><button class="chip" data-filter="floral" onclick="setFilter('floral',this)">زهور</button><button class="chip" data-filter="sale" onclick="setFilter('sale',this)">عروض</button><button class="chip" data-filter="new" onclick="setFilter('new',this)">وصل حديثًا</button></div><div class="products" id="productGrid"></div></section>
     <div id="atyafBrandProductSections" class="atyaf-brand-product-sections" aria-label="أقسام المنتجات حسب الماركة"></div>
@@ -2309,16 +2303,13 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const sec=document.querySelector('section.benefits,.benefits');
     if(!sec)return;
 
-    // لا نعرض أي مربعات افتراضية. الإدارة هي المصدر الوحيد للمزايا.
-    const items=Array.isArray(s?.items) ? s.items.filter(it=>it && it.hidden!==true) : [];
-    if(s?.enabled===false || items.length===0){
-      sec.innerHTML='';
-      sec.removeAttribute('data-benefits-ready');
-      sec.style.setProperty('display','none','important');
-      return;
-    }
-    sec.style.removeProperty('display');
-    sec.setAttribute('data-benefits-ready','1');
+    // الإدارة هي المصدر الوحيد للمزايا: إذا لم توجد عناصر محفوظة فلا نعرض أي بطاقات افتراضية.
+    const items=Array.isArray(s?.items)?s.items:[];
+    const visibleItems=items.filter(it=>it && it.hidden!==true);
+    const shouldShow=s?.enabled!==false && visibleItems.length>0;
+    hide(sec,!shouldShow);
+    sec.setAttribute('aria-hidden',shouldShow?'false':'true');
+    if(!shouldShow){ sec.innerHTML=''; return; }
 
     const n=(v,d,min,max)=>Math.max(min,Math.min(max,Number(v??d)||d));
     sec.style.setProperty('--benefit-section-bg',s?.sectionBackground||'#fbf8f2');
@@ -2343,32 +2334,58 @@ window.addEventListener("focus",atyafLoadLowerAds);
     sec.style.setProperty('--benefit-text-weight',n(s?.textWeight,400,300,800));
     sec.style.setProperty('--benefit-font',s?.fontFamily||'Tahoma, Arial, sans-serif');
 
-    // إعادة بناء القسم حصريًا من العناصر المحفوظة في الإدارة.
-    sec.innerHTML=items.map(it=>`
-      <div class="benefit">
-        <i>${esc(it.icon||it.symbol||it.textIcon||'')}</i>
-        <b>${esc(it.title||it.name||'')}</b>
-        <span>${esc(it.text||it.description||'')}</span>
-      </div>`).join('');
+    const current=[...sec.querySelectorAll(':scope > .benefit')];
+    visibleItems.forEach((it,i)=>{
+      let card=current[i];
+      if(!card){
+        card=document.createElement('div');card.className='benefit';
+        card.innerHTML='<i>✦</i><b></b><span></span>';sec.appendChild(card);
+      }
+      hide(card,it?.hidden===true);
+      const icon=card.querySelector('i'),title=card.querySelector('b,strong,h3,h4'),desc=card.querySelector('span,p,small');
+      if(icon)icon.textContent=it.icon||it.symbol||it.textIcon||'✦';
+      if(title)title.textContent=it.title||it.name||'';
+      if(desc)desc.textContent=it.text||it.description||'';
+    });
+    current.slice(visibleItems.length).forEach(x=>x.remove());
+
+    // تطبيق مباشر على العناصر حتى لا تتغلب قواعد الجوال القديمة على إعدادات الإدارة.
+    const cards=[...sec.querySelectorAll(':scope > .benefit')].filter(x=>x.style.display!=='none');
+    sec.style.setProperty('background',s?.sectionBackground||'#fbf8f2','important');
+    sec.style.setProperty('gap',n(s?.gap,14,0,60)+'px','important');
 
     const vw=window.innerWidth||document.documentElement.clientWidth||390;
     const cols=vw<=600?n(s?.columnsMobile,2,1,2):(vw<=850?n(s?.columnsTablet,2,1,4):n(s?.columnsDesktop,4,1,6));
-    sec.style.setProperty('background',s?.sectionBackground||'#fbf8f2','important');
-    sec.style.setProperty('gap',n(s?.gap,14,0,60)+'px','important');
     sec.style.setProperty('grid-template-columns',`repeat(${cols},minmax(0,1fr))`,'important');
 
-    [...sec.querySelectorAll(':scope > .benefit')].forEach(card=>{
+    cards.forEach(card=>{
       card.style.setProperty('background',s?.cardBackground||'#fffdfa','important');
-      card.style.setProperty('border',`${n(s?.cardBorderWidth,1,0,8)}px solid ${s?.cardBorder||'#ffffff'}`,'important');
+      card.style.setProperty('border-color',s?.cardBorder||'#ffffff','important');
+      card.style.setProperty('border-width',n(s?.cardBorderWidth,1,0,8)+'px','important');
+      card.style.setProperty('border-style','solid','important');
       card.style.setProperty('border-radius',n(s?.cardRadius,18,0,60)+'px','important');
       card.style.setProperty('padding',n(s?.cardPadding,22,0,60)+'px','important');
       card.style.setProperty('min-height',n(s?.cardMinHeight,128,60,400)+'px','important');
       card.style.setProperty('box-shadow',s?.cardShadow||'0 14px 38px rgba(23,53,46,.10)','important');
       card.style.setProperty('font-family',s?.fontFamily||'Tahoma, Arial, sans-serif','important');
-      const icon=card.querySelector('i'),title=card.querySelector('b'),desc=card.querySelector('span');
-      if(icon){icon.style.setProperty('color',s?.iconColor||'#b47a4f','important');icon.style.setProperty('font-size',n(s?.iconSize,24,8,80)+'px','important')}
-      if(title){title.style.setProperty('color',s?.titleColor||'#17352e','important');title.style.setProperty('font-size',n(s?.titleSize,16,8,60)+'px','important');title.style.setProperty('font-weight',n(s?.titleWeight,700,400,900),'important')}
-      if(desc){desc.style.setProperty('color',s?.textColor||'#707b75','important');desc.style.setProperty('font-size',n(s?.textSize,13,7,48)+'px','important');desc.style.setProperty('font-weight',n(s?.textWeight,400,300,800),'important')}
+
+      const icon=card.querySelector('i');
+      if(icon){
+        icon.style.setProperty('color',s?.iconColor||'#b47a4f','important');
+        icon.style.setProperty('font-size',n(s?.iconSize,24,8,80)+'px','important');
+      }
+      const title=card.querySelector('b,strong,h3,h4');
+      if(title){
+        title.style.setProperty('color',s?.titleColor||'#17352e','important');
+        title.style.setProperty('font-size',n(s?.titleSize,16,8,60)+'px','important');
+        title.style.setProperty('font-weight',n(s?.titleWeight,700,400,900),'important');
+      }
+      const desc=card.querySelector('span,p,small');
+      if(desc){
+        desc.style.setProperty('color',s?.textColor||'#707b75','important');
+        desc.style.setProperty('font-size',n(s?.textSize,13,7,48)+'px','important');
+        desc.style.setProperty('font-weight',n(s?.textWeight,400,300,800),'important');
+      }
     });
   }
   window.atyafApplyBenefits=applyBenefits;
@@ -2434,7 +2451,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(map.nav)applyNav(map.nav);
       if(map.gift)applyGift(map.gift);
       if(map.footer)applyFooter(map.footer);
-      if(map.benefits)applyBenefits(map.benefits);
+      applyBenefits(map.benefits||null);
       window.__ATYAAF_LAST_BENEFITS_SETTINGS=map.benefits||null;
       if(map.brands)applyBrands(map.brands);
       if(map.policies)applyPolicies(map.policies);

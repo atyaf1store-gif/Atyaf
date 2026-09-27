@@ -1643,6 +1643,10 @@ section.benefits>.benefit span,.benefits>.benefit span{
 }
 </style>
 
+
+<style id="atyaf-functional-coupons-v1">
+.atyaf-coupon-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}.atyaf-coupon-row input{text-transform:uppercase}.atyaf-coupon-row .btn{min-width:92px;height:44px;padding:8px 16px}.atyaf-coupon-message{min-height:22px;margin-top:6px;font-size:12px}.atyaf-coupon-message.ok{color:#18704f}.atyaf-coupon-message.err{color:#a33c32}.atyaf-checkout-summary{margin:4px 0 14px;padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:var(--cream)}.atyaf-checkout-summary>div{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:13px}.atyaf-checkout-summary #checkoutDiscountRow{color:#18704f}.atyaf-checkout-summary .atyaf-checkout-final{margin-top:7px;padding-top:9px;border-top:1px solid var(--line);font-size:15px;color:var(--green)}@media(max-width:480px){.atyaf-coupon-row{grid-template-columns:1fr auto}.atyaf-coupon-row .btn{min-width:78px;padding-inline:11px}.atyaf-checkout-summary{padding:11px 12px}}
+</style>
 </head>
 <body>
 
@@ -1748,7 +1752,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
   <section class="admin" id="admin"><div class="container"><div class="section-head"><div><span class="eyebrow">مساحة الإدارة</span><h2>لوحة أطياف</h2><p>تحكم سريع بالمحتوى والإعدادات — نسخة تفاعلية تجريبية</p></div><button class="btn btn-outline" onclick="closeAdmin()">العودة للمتجر</button></div><div class="admin-grid"><aside class="admin-nav"><button class="active">نظرة عامة</button><button>المنتجات</button><button>الطلبات</button><button>التصميم</button></aside><div><div class="stat-grid"><div class="stat"><span>طلبات اليوم</span><b>٢٤</b><small>+١٨٪ عن أمس</small></div><div class="stat"><span>إجمالي المنتجات</span><b id="adminProducts">6</b><small>منشورة ونشطة</small></div><div class="stat"><span>المبيعات</span><b>١٢٫٨K</b><small>ر.س هذا الشهر</small></div></div><div class="admin-card" style="margin-top:18px"><h3>إعدادات سريعة</h3><div class="settings-row"><span>شريط الإعلانات العلوي</span><button class="switch on" id="switchTop" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>عرض قسم الهدايا</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>الوضع التجريبي للطلبات</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="notice">ملاحظة: هذه نسخة HTML مستقلة. ربط Supabase والدفع الحقيقي يحتاج طبقة خادم ومفاتيح بيئة آمنة.</div></div></div></div></section>
   <footer id="contact"><div class="container"><div class="footer-grid"><div><div class="footer-brand">أطياف ستور</div><p style="color:#9db3a6;font-size:13px">عطور مختارة بعناية، لتصنع لحظات تبقى.</p></div><div><h3>المتجر</h3><a href="#products">كل المنتجات</a><a href="#brands">الماركات</a><a href="#scents">الهدايا</a></div><div><h3>خدمة العملاء</h3><a href="javascript:void(0)" onclick="showContactInfo()">تواصل معنا</a><a href="javascript:void(0)" onclick="showShippingInfo()">الشحن والتوصيل</a><a href="javascript:void(0)" onclick="showReturnsInfo()">الاستبدال والاسترجاع</a></div><div><h3>تابعنا</h3><a href="javascript:void(0)" onclick="openSocial('instagram')">Instagram</a><a href="javascript:void(0)" onclick="openSocial('tiktok')">TikTok</a><a href="javascript:void(0)" onclick="openSocial('whatsapp')">WhatsApp</a></div></div><div class="copyright"><span>© 2026 ATYAAF STORE. جميع الحقوق محفوظة.</span><span>صُنع بذوق ✦</span></div></div></footer>
   <div class="drawer" id="cartDrawer" onclick="if(event.target===this)closeCart()"><div class="drawer-panel"><button class="close" onclick="closeCart()">×</button><h2>سلة مشترياتك</h2><div class="cart-list" id="cartList"></div><div class="cart-foot"><div class="total"><span>الإجمالي</span><span id="cartTotal">0 ر.س</span></div><button class="btn btn-primary" style="width:100%" onclick="openCheckout()">متابعة الطلب</button></div></div></div>
-  <div class="modal" id="checkoutModal" onclick="if(event.target===this)closeCheckout()"><div class="modal-card"><button class="close" onclick="closeCheckout()">×</button><h2>إتمام الطلب</h2><div class="notice">الدفع عند الاستلام متاح في النسخة التجريبية.</div><form onsubmit="submitOrder(event)"><div class="form-grid"><div class="field"><label>الاسم الكامل</label><input required placeholder="اكتب اسمك" /></div><div class="field"><label>رقم الهاتف</label><input required type="tel" placeholder="05xxxxxxxx" /></div><div class="field"><label>المدينة</label><input required placeholder="الرياض" /></div><div class="field"><label>المنطقة</label><input placeholder="الحي" /></div><div class="field full"><label>العنوان بالتفصيل</label><textarea required rows="2" placeholder="الشارع، المبنى، رقم الشقة"></textarea></div><div class="field full"><label>ملاحظات الطلب</label><textarea rows="2" placeholder="أي تفاصيل إضافية..."></textarea></div></div><button class="btn btn-primary" style="width:100%" type="submit">تأكيد الطلب — <span id="checkoutTotal">0 ر.س</span></button></form></div></div>
+  <div class="modal" id="checkoutModal" onclick="if(event.target===this)closeCheckout()"><div class="modal-card"><button class="close" onclick="closeCheckout()">×</button><h2>إتمام الطلب</h2><div class="notice">الدفع عند الاستلام متاح في النسخة التجريبية.</div><form onsubmit="submitOrder(event)"><div class="form-grid"><div class="field"><label>الاسم الكامل</label><input required placeholder="اكتب اسمك" /></div><div class="field"><label>رقم الهاتف</label><input required type="tel" placeholder="05xxxxxxxx" /></div><div class="field"><label>المدينة</label><input required placeholder="الرياض" /></div><div class="field"><label>المنطقة</label><input placeholder="الحي" /></div><div class="field full"><label>العنوان بالتفصيل</label><textarea required rows="2" placeholder="الشارع، المبنى، رقم الشقة"></textarea></div><div class="field full"><label>ملاحظات الطلب</label><textarea rows="2" placeholder="أي تفاصيل إضافية..."></textarea></div><div class="field full atyaf-coupon-field"><label>كود الخصم</label><div class="atyaf-coupon-row"><input id="couponCode" type="text" autocomplete="off" placeholder="أدخل كود الكوبون" oninput="clearCouponMessage(false)"/><button class="btn btn-outline" type="button" id="applyCouponBtn" onclick="applyCoupon()">تطبيق</button></div><div id="couponMessage" class="atyaf-coupon-message" aria-live="polite"></div></div></div><div id="checkoutSummary" class="atyaf-checkout-summary"><div><span>المجموع</span><b id="checkoutSubtotal">0 ر.س</b></div><div id="checkoutDiscountRow" hidden><span>خصم الكوبون</span><b id="checkoutDiscount">− 0 ر.س</b></div><div class="atyaf-checkout-final"><span>الإجمالي</span><b id="checkoutFinalTotal">0 ر.س</b></div></div><button class="btn btn-primary" style="width:100%" type="submit">تأكيد الطلب — <span id="checkoutTotal">0 ر.س</span></button></form></div></div>
   <div class="modal" id="giftModal" onclick="if(event.target===this)closeGift()"><div class="modal-card"><button class="close" onclick="closeGift()">×</button><h2>جهّز هديتك</h2><p style="color:var(--muted)">أضف تغليفًا فاخرًا إلى سلتك، وسنجهزها بعناية.</p><div class="gift-options"><label class="brand-card" style="display:block;text-align:right;cursor:pointer"><input type="radio" name="wrap" value="25" checked /> تغليف أطياف الكريمي <b style="float:left">25 ر.س</b></label><label class="brand-card" style="display:block;text-align:right;cursor:pointer;margin-top:10px"><input type="radio" name="wrap" value="45" /> صندوق المناسبات الفاخر <b style="float:left">45 ر.س</b></label></div><button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="addGift()">إضافة للسلة</button></div></div>
   
 
@@ -2002,6 +2006,40 @@ function closeFavorites(){document.getElementById('favoritesModal')?.classList.r
       try{await syncCartItem(x)}catch(e){console.error(e)}
     }
     function cartTotal(){return state.cart.reduce((sum,x)=>{let p=products.find(p=>String(p.id)===String(x.id));return sum+(p?p.price*x.qty:0)+Number(x.giftWrapPrice||0)},0)}
+    let atyafAppliedCoupon=null;
+    function couponMoney(n){return money(Math.max(0,Number(n)||0))}
+    function calculateCouponDiscount(coupon,subtotal){
+      if(!coupon)return 0;
+      const type=String(coupon.discount_type||coupon.type||'percent').toLowerCase();
+      const value=Math.max(0,Number(coupon.discount_value??coupon.value??0)||0);
+      let d=(type==='fixed'||type==='amount')?value:(subtotal*value/100);
+      const cap=Number(coupon.max_discount||0);if(cap>0)d=Math.min(d,cap);
+      return Math.min(subtotal,Math.max(0,d));
+    }
+    function checkoutPayable(){const sub=cartTotal(),d=calculateCouponDiscount(atyafAppliedCoupon,sub);return Math.max(0,sub-d)}
+    function updateCheckoutTotals(){
+      const sub=cartTotal(),d=calculateCouponDiscount(atyafAppliedCoupon,sub),total=Math.max(0,sub-d);
+      const a=document.getElementById('checkoutSubtotal'),dr=document.getElementById('checkoutDiscountRow'),dv=document.getElementById('checkoutDiscount'),ft=document.getElementById('checkoutFinalTotal'),ct=document.getElementById('checkoutTotal');
+      if(a)a.textContent=couponMoney(sub);if(dr)dr.hidden=!(d>0);if(dv)dv.textContent='− '+couponMoney(d);if(ft)ft.textContent=couponMoney(total);if(ct)ct.textContent=couponMoney(total);
+    }
+    function clearCouponMessage(clearApplied=true){const m=document.getElementById('couponMessage');if(m){m.textContent='';m.className='atyaf-coupon-message'}if(clearApplied){atyafAppliedCoupon=null;updateCheckoutTotals()}}
+    async function applyCoupon(){
+      const input=document.getElementById('couponCode'),btn=document.getElementById('applyCouponBtn'),msg=document.getElementById('couponMessage');
+      const code=String(input?.value||'').trim().toUpperCase();if(!code){if(msg){msg.textContent='أدخل كود الكوبون أولاً.';msg.className='atyaf-coupon-message err'}return}
+      if(!atyafDb){if(msg){msg.textContent='تعذر الاتصال بنظام الكوبونات.';msg.className='atyaf-coupon-message err'}return}
+      if(btn){btn.disabled=true;btn.textContent='جارٍ التحقق…'}
+      try{
+        const {data,error}=await atyafDb.from('coupons').select('*').eq('code',code).eq('active',true).limit(1).maybeSingle();if(error)throw error;
+        if(!data)throw new Error('INVALID');
+        const now=Date.now(),start=data.starts_at?new Date(data.starts_at).getTime():0,end=data.ends_at?new Date(data.ends_at).getTime():0;
+        if(start&&now<start)throw new Error('NOT_STARTED');if(end&&now>end)throw new Error('EXPIRED');
+        const limit=Number(data.usage_limit||0),used=Number(data.used_count||0);if(limit>0&&used>=limit)throw new Error('LIMIT');
+        const subtotal=cartTotal(),min=Number(data.min_order||0);if(min>0&&subtotal<min)throw new Error('MIN:'+min);
+        const discount=calculateCouponDiscount(data,subtotal);if(!(discount>0))throw new Error('INVALID');
+        atyafAppliedCoupon=data;updateCheckoutTotals();if(msg){msg.textContent='تم تطبيق الكوبون — وفرت '+couponMoney(discount);msg.className='atyaf-coupon-message ok'}
+      }catch(err){atyafAppliedCoupon=null;updateCheckoutTotals();let t='الكوبون غير صالح أو غير متاح.';const m=String(err?.message||'');if(m==='EXPIRED')t='انتهت صلاحية هذا الكوبون.';else if(m==='NOT_STARTED')t='هذا الكوبون لم يبدأ بعد.';else if(m==='LIMIT')t='تم الوصول إلى الحد الأقصى لاستخدام هذا الكوبون.';else if(m.startsWith('MIN:'))t='الحد الأدنى لهذا الكوبون '+couponMoney(Number(m.split(':')[1]));if(msg){msg.textContent=t;msg.className='atyaf-coupon-message err'}console.warn('Coupon:',err)}
+      finally{if(btn){btn.disabled=false;btn.textContent='تطبيق'}}
+    }
     function renderCart(){
   const el=document.getElementById('cartList');
   el.innerHTML=state.cart.length?state.cart.map(x=>{
@@ -2012,6 +2050,7 @@ function closeFavorites(){document.getElementById('favoritesModal')?.classList.r
   }).join(''):'<div class="empty">السلة فارغة<br><a href="#products" onclick="closeCart()" class="link">ابدأ التسوق</a></div>';
   document.getElementById('cartTotal').textContent=money(cartTotal());
   document.getElementById('checkoutTotal').textContent=money(cartTotal());
+  updateCheckoutTotals();
 }
 async function removeCartItem(id){
   id=String(id);
@@ -2019,7 +2058,7 @@ async function removeCartItem(id){
   save();renderCart();
   try{await deleteCartItemFromSupabase(id)}catch(e){console.error('Remove cart:',e)}
 }
-function openCart(){renderCart();document.getElementById('cartDrawer').classList.add('open')};function closeCart(){document.getElementById('cartDrawer').classList.remove('open')};function openCheckout(){if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا واحدًا على الأقل قبل متابعة الطلب.');closeCart();document.getElementById('checkoutModal').classList.add('open')};function closeCheckout(){document.getElementById('checkoutModal').classList.remove('open')}
+function openCart(){renderCart();document.getElementById('cartDrawer').classList.add('open')};function closeCart(){document.getElementById('cartDrawer').classList.remove('open')};function openCheckout(){if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا واحدًا على الأقل قبل متابعة الطلب.');atyafAppliedCoupon=null;const ci=document.getElementById('couponCode');if(ci)ci.value='';clearCouponMessage(true);updateCheckoutTotals();closeCart();document.getElementById('checkoutModal').classList.add('open')};function closeCheckout(){document.getElementById('checkoutModal').classList.remove('open')}
     async function submitOrder(e){
   e.preventDefault();
   if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا قبل تأكيد الطلب.');
@@ -2028,8 +2067,10 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
     customer_name:fields[0]?.value||'', phone:fields[1]?.value||'',
     city:fields[2]?.value||'', area:fields[3]?.value||'',
     address:fields[4]?.value||'', notes:fields[5]?.value||'',
-    items:state.cart, total:cartTotal(), status:'new'
+    items:state.cart, total:checkoutPayable(), status:'new'
   };
+  const couponSnapshot=atyafAppliedCoupon?{code:String(atyafAppliedCoupon.code||''),discount:calculateCouponDiscount(atyafAppliedCoupon,cartTotal()),subtotal:cartTotal()}:null;
+  if(couponSnapshot){order.notes=(order.notes?order.notes+'\n':'')+'كوبون: '+couponSnapshot.code+' | الخصم: '+couponSnapshot.discount+' | قبل الخصم: '+couponSnapshot.subtotal;}
   let no='ATY-'+Math.floor(10000+Math.random()*89999);
   try{
     if(atyafDb){

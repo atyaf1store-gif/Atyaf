@@ -2073,13 +2073,26 @@ function closeFavorites(){document.getElementById('favoritesModal')?.classList.r
     function cartTotal(){return state.cart.reduce((sum,x)=>{let p=products.find(p=>String(p.id)===String(x.id));return sum+(p?p.price*x.qty:0)+Number(x.giftWrapPrice||0)},0)}
     let atyafAppliedCoupon=null;
     function couponMoney(n){return money(Math.max(0,Number(n)||0))}
+    function couponEligibleSubtotal(coupon){
+      const all=coupon?.applies_to_all!==false;
+      const sections=Array.isArray(coupon?.applicable_sections)?coupon.applicable_sections.map(x=>String(x).trim().toLowerCase()).filter(Boolean):[];
+      if(all||!sections.length)return cartTotal();
+      return state.cart.reduce((sum,x)=>{
+        const p=products.find(v=>String(v.id)===String(x.id));if(!p)return sum;
+        const keys=[p.brand,p.category,p.section,p.brand_key,p.category_key].map(v=>String(v||'').trim().toLowerCase()).filter(Boolean);
+        if(!keys.some(k=>sections.includes(k)))return sum;
+        return sum+(Number(p.price)||0)*(Number(x.qty)||1)+Number(x.giftWrapPrice||0);
+      },0);
+    }
     function calculateCouponDiscount(coupon,subtotal){
       if(!coupon)return 0;
-      const type=String(coupon.discount_type||coupon.type||'percent').toLowerCase();
+      const eligible=Math.min(Number(subtotal)||0,couponEligibleSubtotal(coupon));
+      if(!(eligible>0))return 0;
+      const type=String(coupon.discount_type||coupon.type||'percentage').toLowerCase();
       const value=Math.max(0,Number(coupon.discount_value??coupon.value??0)||0);
-      let d=(type==='fixed'||type==='amount')?value:(subtotal*value/100);
+      let d=(type==='fixed'||type==='amount')?value:(eligible*value/100);
       const cap=Number(coupon.max_discount||0);if(cap>0)d=Math.min(d,cap);
-      return Math.min(subtotal,Math.max(0,d));
+      return Math.min(eligible,Math.max(0,d));
     }
     function checkoutPayable(){const sub=cartTotal(),d=calculateCouponDiscount(atyafAppliedCoupon,sub);return Math.max(0,sub-d)}
     function updateCheckoutTotals(){
@@ -2096,13 +2109,13 @@ function closeFavorites(){document.getElementById('favoritesModal')?.classList.r
       try{
         const {data,error}=await atyafDb.from('coupons').select('*').eq('code',code).eq('active',true).limit(1).maybeSingle();if(error)throw error;
         if(!data)throw new Error('INVALID');
-        const now=Date.now(),start=data.starts_at?new Date(data.starts_at).getTime():0,end=data.ends_at?new Date(data.ends_at).getTime():0;
+        const now=Date.now(),start=data.starts_at?new Date(data.starts_at).getTime():0,end=data.expires_at?new Date(data.expires_at).getTime():0;
         if(start&&now<start)throw new Error('NOT_STARTED');if(end&&now>end)throw new Error('EXPIRED');
         const limit=Number(data.usage_limit||0),used=Number(data.used_count||0);if(limit>0&&used>=limit)throw new Error('LIMIT');
-        const subtotal=cartTotal(),min=Number(data.min_order||0);if(min>0&&subtotal<min)throw new Error('MIN:'+min);
-        const discount=calculateCouponDiscount(data,subtotal);if(!(discount>0))throw new Error('INVALID');
+        const subtotal=cartTotal(),min=Number(data.min_order_amount||0);if(min>0&&subtotal<min)throw new Error('MIN:'+min);
+        const eligible=couponEligibleSubtotal(data);if(!(eligible>0))throw new Error('SECTION');const discount=calculateCouponDiscount(data,subtotal);if(!(discount>0))throw new Error('INVALID');
         atyafAppliedCoupon=data;updateCheckoutTotals();if(msg){msg.textContent='تم تطبيق الكوبون — وفرت '+couponMoney(discount);msg.className='atyaf-coupon-message ok'}
-      }catch(err){atyafAppliedCoupon=null;updateCheckoutTotals();let t='الكوبون غير صالح أو غير متاح.';const m=String(err?.message||'');if(m==='EXPIRED')t='انتهت صلاحية هذا الكوبون.';else if(m==='NOT_STARTED')t='هذا الكوبون لم يبدأ بعد.';else if(m==='LIMIT')t='تم الوصول إلى الحد الأقصى لاستخدام هذا الكوبون.';else if(m.startsWith('MIN:'))t='الحد الأدنى لهذا الكوبون '+couponMoney(Number(m.split(':')[1]));if(msg){msg.textContent=t;msg.className='atyaf-coupon-message err'}console.warn('Coupon:',err)}
+      }catch(err){atyafAppliedCoupon=null;updateCheckoutTotals();let t='الكوبون غير صالح أو غير متاح.';const m=String(err?.message||'');if(m==='EXPIRED')t='انتهت صلاحية هذا الكوبون.';else if(m==='NOT_STARTED')t='هذا الكوبون لم يبدأ بعد.';else if(m==='LIMIT')t='تم الوصول إلى الحد الأقصى لاستخدام هذا الكوبون.';else if(m==='SECTION')t='هذا الكوبون لا ينطبق على المنتجات الموجودة في السلة.';else if(m.startsWith('MIN:'))t='الحد الأدنى لهذا الكوبون '+couponMoney(Number(m.split(':')[1]));if(msg){msg.textContent=t;msg.className='atyaf-coupon-message err'}console.warn('Coupon:',err)}
       finally{if(btn){btn.disabled=false;btn.textContent='تطبيق'}}
     }
     function renderCart(){
@@ -2961,7 +2974,7 @@ const cartProductView=x=>{
       const {data,error}=await window.atyafDb.from('coupons').select('*').eq('code',code).eq('active',true).maybeSingle();
       if(error)throw error;if(!data)throw new Error('الكوبون غير صحيح أو غير فعال');
       const sub=typeof cartTotal==='function'?cartTotal():0;
-      if(Number(data.min_order_amount||0)>sub)throw new Error('الحد الأدنى لهذا الكوبون '+money(data.min_order_amount));
+      if(Number(data.min_order_amount||0)>sub)throw new Error('الحد الأدنى لهذا الكوبون '+money(data.min_order_amount));if(typeof couponEligibleSubtotal==='function'&&couponEligibleSubtotal(data)<=0)throw new Error('هذا الكوبون لا ينطبق على المنتجات الموجودة في السلة');
       let d=data.discount_type==='fixed'?Number(data.discount_value||0):sub*Number(data.discount_value||0)/100;
       if(data.max_discount!=null)d=Math.min(d,Number(data.max_discount)||d);
       window.atyafAppliedCoupon=data;

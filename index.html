@@ -1681,6 +1681,30 @@ section.benefits>.benefit span,.benefits>.benefit span{
  #atyafCartPage .atyaf-cart-layout{grid-template-columns:minmax(0,1.45fr) minmax(310px,.8fr)}
 }
 </style>
+
+<style id="atyaf-header-icons-only-final">
+.atyaf-head-balanced{grid-template-columns:1fr auto 1fr!important;grid-template-areas:"right profile left"!important;direction:rtl!important;position:relative!important}
+.atyaf-head-right{grid-area:right!important;justify-self:start!important;display:flex!important;direction:rtl!important}
+.atyaf-profile{grid-area:profile!important;justify-self:center!important}
+.atyaf-head-left{grid-area:left!important;justify-self:end!important;display:flex!important;direction:rtl!important;position:relative!important}
+.atyaf-head-search{display:none!important}
+.atyaf-search-popover{display:none;position:absolute;top:calc(100% + 10px);left:0;width:min(360px,82vw);background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 7px 5px 12px;box-shadow:0 12px 34px #0002;z-index:120;direction:rtl;align-items:center;gap:6px}
+.atyaf-search-popover.open{display:flex}
+.atyaf-search-popover input{width:100%;min-width:0;border:0;outline:0;background:transparent;padding:9px 10px;color:var(--ink)}
+.atyaf-search-popover button{width:32px;height:32px;border-radius:50%;background:var(--cream);color:var(--ink);font-size:20px}
+@media(max-width:850px){
+ .atyaf-head-balanced{min-height:82px!important;height:82px!important;padding:8px 0!important;grid-template-columns:1fr auto 1fr!important;grid-template-areas:"right profile left"!important;gap:8px!important}
+ .atyaf-head-balanced>.menu-btn{display:none!important}
+ .atyaf-head-right,.atyaf-head-left{gap:5px!important}
+ .atyaf-head-right .customer-tool,.atyaf-head-left .customer-tool{width:40px!important;height:40px!important;min-width:40px!important;font-size:18px!important}
+ .atyaf-search-popover{position:fixed;top:94px;left:12px;right:12px;width:auto}
+}
+@media(max-width:430px){
+ .atyaf-head-balanced{grid-template-columns:1fr 74px 1fr!important}
+ .atyaf-head-right .customer-tool,.atyaf-head-left .customer-tool{width:37px!important;height:37px!important;min-width:37px!important;font-size:17px!important}
+ .atyaf-head-right,.atyaf-head-left{gap:3px!important}
+}
+</style>
 </head>
 <body>
 
@@ -1756,15 +1780,21 @@ section.benefits>.benefit span,.benefits>.benefit span{
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
   <header class="header">
     <div class="container headrow atyaf-head-balanced">
-      <div class="actions atyaf-head-actions customer-tools">
-<button class="customer-tool" data-store-action="cart" title="السلة">🛍<span class="tool-count" id="cartCount">0</span></button>
-<button class="customer-tool" data-store-action="favorites" title="المفضلة">♡<span class="tool-count" id="favCount">0</span></button>
-<button class="customer-tool" data-store-action="gifts" title="الهدايا">🎁</button>
+      <div class="actions atyaf-head-right customer-tools" aria-label="السلة والمفضلة">
+<button class="customer-tool" data-store-action="cart" title="السلة" aria-label="السلة">🛍<span class="tool-count" id="cartCount">0</span></button>
+<button class="customer-tool" data-store-action="favorites" title="المفضلة" aria-label="المفضلة">♡<span class="tool-count" id="favCount">0</span></button>
 </div>
 <a class="brand atyaf-profile" href="javascript:void(0)" onclick="openCustomerCenter()" title="بروفايل المتجر">
-        <span class="brand-mark atyaf-profile-image-slot" aria-hidden="true"></span>
-      </a>
-      <div class="search atyaf-head-search"><span>⌕</span><input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." /></div>
+  <span class="brand-mark atyaf-profile-image-slot" aria-hidden="true"></span>
+</a>
+<div class="actions atyaf-head-left customer-tools" aria-label="الهدايا والبحث">
+  <button class="customer-tool" data-store-action="gifts" title="الهدايا" aria-label="الهدايا">🎁</button>
+  <button class="customer-tool atyaf-search-toggle" type="button" title="البحث" aria-label="البحث" onclick="toggleHeaderSearch(event)">⌕</button>
+  <div class="atyaf-search-popover" id="atyafSearchPopover">
+    <input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." autocomplete="off" />
+    <button type="button" onclick="closeHeaderSearch()" aria-label="إغلاق البحث">×</button>
+  </div>
+</div>
     </div>
     <nav class="nav" id="nav"><div class="container navrow"><a href="#home">الرئيسية</a><a href="#brands">الماركات</a><a href="#products">الأكثر مبيعًا</a><a href="#products">وصل حديثًا</a><a href="#products">العروض</a><a href="#scents">الروائح</a><a href="#contact">تواصل معنا</a></div></nav>
   </header>
@@ -3018,6 +3048,18 @@ const cartProductView=x=>{
  document.addEventListener('keydown',e=>{if(e.key==='Escape')atyafCloseCartPage()});
  document.addEventListener('DOMContentLoaded',()=>{try{renderAtyafCartPage()}catch(e){}});
 })();
+</script>
+
+<script id="atyaf-header-search-icon-js">
+function toggleHeaderSearch(e){
+  if(e)e.stopPropagation();
+  const p=document.getElementById('atyafSearchPopover');if(!p)return;
+  p.classList.toggle('open');
+  if(p.classList.contains('open'))setTimeout(()=>document.getElementById('searchInput')?.focus(),30);
+}
+function closeHeaderSearch(){document.getElementById('atyafSearchPopover')?.classList.remove('open')}
+document.addEventListener('click',function(e){const p=document.getElementById('atyafSearchPopover');if(p?.classList.contains('open')&&!p.contains(e.target)&&!e.target.closest('.atyaf-search-toggle'))closeHeaderSearch()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHeaderSearch()});
 </script>
 </body>
 </html>

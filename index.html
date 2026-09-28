@@ -528,7 +528,6 @@ input,select,textarea,button{font:inherit}
 
   /* Header tools stay aligned and transparent. Hide duplicate tracking icon because it moved left. */
   .atyaf-head-actions{grid-column:1/-1!important;grid-row:2!important;justify-self:center!important}
-  .atyaf-head-actions [data-store-action="tracking"]{display:grid!important}
 }
 @media(max-width:380px){
   .atyaf-mobile-profile{max-width:205px;gap:6px}
@@ -1761,8 +1760,6 @@ section.benefits>.benefit span,.benefits>.benefit span{
 <button class="customer-tool" data-store-action="cart" title="السلة">🛍<span class="tool-count" id="cartCount">0</span></button>
 <button class="customer-tool" data-store-action="favorites" title="المفضلة">♡<span class="tool-count" id="favCount">0</span></button>
 <button class="customer-tool" data-store-action="gifts" title="الهدايا">🎁</button>
-<button class="customer-tool" data-store-action="invoices" title="طلباتي والفواتير">▤</button>
-<button class="customer-tool" data-store-action="tracking" title="تتبع الطلب">⌖</button>
 </div>
 <a class="brand atyaf-profile" href="javascript:void(0)" onclick="openCustomerCenter()" title="بروفايل المتجر">
         <span class="brand-mark atyaf-profile-image-slot" aria-hidden="true"></span>
@@ -1799,17 +1796,8 @@ section.benefits>.benefit span,.benefits>.benefit span{
   
 
 
-<div class="modal" id="customerCenterModal" onclick="if(event.target===this)closeCustomerCenter()"><div class="modal-card" style="width:min(560px,96vw)"><button class="close" onclick="closeCustomerCenter()">×</button><h2>حساب العميل</h2><div class="account-sheet"><button class="account-action" onclick="closeCustomerCenter();openCart()">🛍 <span><b>السلة</b><small style="display:block;color:var(--muted)">مراجعة المنتجات وإتمام الطلب</small></span></button><button class="account-action" onclick="closeCustomerCenter();showFavorites()">♡ <span><b>المفضلة</b><small style="display:block;color:var(--muted)">المنتجات المحفوظة</small></span></button><button class="account-action" onclick="closeCustomerCenter();openInvoices()">▤ <span><b>طلباتي والفواتير</b><small style="display:block;color:var(--muted)">سجل الطلبات والفواتير</small></span></button><button class="account-action" onclick="closeCustomerCenter();openOrderTracking()">⌖ <span><b>تتبع الطلب</b><small style="display:block;color:var(--muted)">معرفة حالة الطلب</small></span></button><button class="account-action" onclick="closeCustomerCenter();openGiftCenter()">🎁 <span><b>الهدايا</b><small style="display:block;color:var(--muted)">شراء منتج كهدية</small></span></button></div></div></div>
-<div class="modal" id="invoicesModal" onclick="if(event.target===this)closeInvoices()"><div class="modal-card" style="width:min(680px,96vw)"><button class="close" onclick="closeInvoices()">×</button><h2>طلباتي والفواتير</h2><div id="ordersList" class="orders-list"></div></div></div>
-<div class="modal" id="trackingModal" onclick="if(event.target===this)closeOrderTracking()">
-  <div class="modal-card" style="width:min(520px,96vw)">
-    <button class="close" onclick="closeOrderTracking()">×</button>
-    <h2>تتبع الطلب</h2>
-    <p style="color:var(--muted)">أدخل رقم طلبك لمعرفة حالته.</p>
-    <div class="field"><label>رقم الطلب</label><input id="trackingNumber" placeholder="مثال: ATY-12345"></div>
-    <button class="btn btn-primary" style="width:100%" onclick="trackOrder()">تتبع الآن</button>
-    <div id="trackingResult" class="notice" style="display:none;margin-top:14px"></div>
-  </div>
+<div class="modal" id="customerCenterModal" onclick="if(event.target===this)closeCustomerCenter()"><div class="modal-card" style="width:min(560px,96vw)"><button class="close" onclick="closeCustomerCenter()">×</button><h2>حساب العميل</h2><div class="account-sheet"><button class="account-action" onclick="closeCustomerCenter();openCart()">🛍 <span><b>السلة</b><small style="display:block;color:var(--muted)">مراجعة المنتجات وإتمام الطلب</small></span></button><button class="account-action" onclick="closeCustomerCenter();showFavorites()">♡ <span><b>المفضلة</b><small style="display:block;color:var(--muted)">المنتجات المحفوظة</small></span></button><button class="account-action" onclick="closeCustomerCenter();openGiftCenter()">🎁 <span><b>الهدايا</b><small style="display:block;color:var(--muted)">شراء منتج كهدية</small></span></button></div></div></div>
+</div>
 </div>
 
 <div class="modal" id="favoritesModal" onclick="if(event.target===this)closeFavorites()">
@@ -2267,36 +2255,9 @@ function openCustomerCenter(){document.getElementById('customerCenterModal')?.cl
 function closeCustomerCenter(){document.getElementById('customerCenterModal')?.classList.remove('open')}
 function getLocalOrders(){try{return JSON.parse(localStorage.getItem('atyaf_orders')||'[]')}catch(e){return []}}
 function saveLocalOrder(o){const a=getLocalOrders();a.unshift(o);localStorage.setItem('atyaf_orders',JSON.stringify(a.slice(0,30)))}
-function openInvoices(){const box=document.getElementById('ordersList'),a=getLocalOrders(),names={new:'جديد',pending:'قيد المراجعة',processing:'قيد التجهيز',shipped:'تم الشحن',delivered:'تم التسليم',cancelled:'ملغي'};box.innerHTML=a.length?a.map(o=>`<div class="order-card"><div class="order-card-head"><b>${escapeHtml(o.number||'طلب')}</b><span class="status-pill">${escapeHtml(names[o.status]||o.status||'جديد')}</span></div><small>${escapeHtml(o.date||'')}</small><div>الإجمالي: <b>${money(Number(o.total||0))}</b></div><button class="btn btn-outline" style="margin-top:9px" onclick="document.getElementById('trackingNumber').value='${escapeHtml(o.number||'')}';closeInvoices();openOrderTracking();trackOrder()">تتبع الطلب</button></div>`).join(''):'<div class="empty">لا توجد طلبات محفوظة بعد.</div>';document.getElementById('invoicesModal')?.classList.add('open')}
-function closeInvoices(){document.getElementById('invoicesModal')?.classList.remove('open')}
 function openGiftCenter(){document.getElementById('products')?.scrollIntoView({behavior:'smooth'});showMessage('شراء كهدية','اختر المنتج واضغط زر 🎁 ثم اختر التغليف.')}
 
-function openOrderTracking(){
-  document.getElementById('trackingResult').style.display='none';
-  document.getElementById('trackingModal').classList.add('open');
-}
-function closeOrderTracking(){document.getElementById('trackingModal')?.classList.remove('open')}
-async function trackOrder(){
-  const input=document.getElementById('trackingNumber');
-  const box=document.getElementById('trackingResult');
-  const raw=(input.value||'').trim();
-  if(!raw){box.style.display='block';box.textContent='أدخل رقم الطلب أولًا.';return}
-  const id=raw.replace(/^ATY-/i,'').trim();
-  box.style.display='block';box.textContent='جاري البحث عن الطلب...';
-  try{
-    if(!atyafDb)throw new Error('no db');
-    let q=atyafDb.from('orders').select('id,status,created_at').limit(1);
-    q=/^\\d+$/.test(id)?q.eq('id',Number(id)):q.eq('order_number',raw);
-    const {data,error}=await q;
-    if(error)throw error;
-    if(!data?.length){box.textContent='لم يتم العثور على طلب بهذا الرقم.';return}
-    const o=data[0], names={new:'جديد',pending:'قيد المراجعة',processing:'قيد التجهيز',shipped:'تم الشحن',delivered:'تم التسليم',cancelled:'ملغي'};
-    box.innerHTML=`<b>الطلب ATY-${escapeHtml(o.id)}</b><br>الحالة: ${escapeHtml(names[o.status]||o.status||'قيد المراجعة')}`;
-  }catch(e){
-    console.warn('Order tracking:',e);
-    box.textContent='تعذر جلب حالة الطلب حاليًا.';
-  }
-}
+
 
 function openInfoModal(title,html){
   document.getElementById('infoModalTitle').textContent=title;
@@ -2701,8 +2662,6 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(a==='cart') return openCart();
       if(a==='favorites') return showFavorites();
       if(a==='gifts') return openGiftCenter();
-      if(a==='invoices') return openInvoices();
-      if(a==='tracking') return openOrderTracking();
     }
 
     const el=e.target.closest('.product .btn-primary,.product .btn-outline,.product .gift-buy-btn,.product .favorite');
@@ -2719,8 +2678,8 @@ document.addEventListener("DOMContentLoaded",()=>{
   // Make the important functions explicitly global for Safari/GitHub Pages.
   Object.assign(window,{
     addCart,quickView,buyAsGift,toggleFav,showFavorites,openCart,closeCart,
-    openGift,closeGift,addGift,openGiftCenter,openOrderTracking,closeOrderTracking,
-    trackOrder,openInvoices,closeInvoices,openCustomerCenter,closeCustomerCenter,
+    openGift,closeGift,addGift,openGiftCenter,
+    openCustomerCenter,closeCustomerCenter,
     openCheckout,closeCheckout,submitOrder,changeQty,removeCartItem
   });
 })();

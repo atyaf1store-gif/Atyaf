@@ -2046,7 +2046,9 @@ function closeFavorites(){document.getElementById('favoritesModal')?.classList.r
       let item=state.cart.find(x=>String(x.id)===id);
       if(item)item.qty=Math.max(1,Number(item.qty)||1)+1;
       else{
-        const p=(state.products||[]).find(v=>String(v.id)===id)||
+        const p=(typeof products!=='undefined'&&Array.isArray(products)?products.find(v=>String(v.id)===id):null)||
+          (Array.isArray(window.ATYAAF_LIVE_PRODUCTS)?window.ATYAAF_LIVE_PRODUCTS.find(v=>String(v.id)===id):null)||
+          (Array.isArray(state.products)?state.products.find(v=>String(v.id)===id):null)||
           (Array.isArray(window.products)?window.products.find(v=>String(v.id)===id):null)||
           (Array.isArray(window.storeProducts)?window.storeProducts.find(v=>String(v.id)===id):null);
         item={id,qty:1};
@@ -2928,6 +2930,8 @@ window.addEventListener('load',()=>{
  const productOf=id=>{
   id=String(id);
   const pools=[
+    window.ATYAAF_LIVE_PRODUCTS,
+    (typeof products!=='undefined'?products:null),
     state.products,
     window.products,
     window.storeProducts,
@@ -2954,6 +2958,17 @@ const cartProductView=x=>{
  window.atyafOpenCartPage=function(){const page=document.getElementById('atyafCartPage');if(!page)return;document.getElementById('cartDrawer')?.classList.remove('open');page.classList.add('open');document.body.classList.add('atyaf-cart-page-open');renderAtyafCartPage();page.scrollTop=0};window.atyafCloseCartPage=function(){document.getElementById('atyafCartPage')?.classList.remove('open');document.body.classList.remove('atyaf-cart-page-open')};
  window.renderAtyafCartPage=function(){
   const box=document.getElementById('atyafCartPageItems');if(!box)return;
+  // أصلح بيانات العناصر القديمة المحفوظة قبل إضافة snapshot للمنتج.
+  let hydrated=false;
+  (state.cart||[]).forEach(x=>{
+    const p=productOf(x.id);
+    if(!p)return;
+    const name=p.name||p.title||'', price=Number(p.price)||0, image=p.image||p.image_url||p.img||'';
+    if(name && (!x.name||x.name==='منتج')){x.name=name;hydrated=true}
+    if(price && !Number(x.price)){x.price=price;hydrated=true}
+    if(image && !(x.image_url||x.image)){x.image_url=image;hydrated=true}
+  });
+  if(hydrated)save();
   const count=(state.cart||[]).reduce((a,x)=>a+(Number(x.qty)||0),0);
   const ce=document.getElementById('atyafCartPageCount');if(ce)ce.textContent=count+' '+(count===1?'منتج':'منتجات');
   box.innerHTML=!state.cart?.length?'<div class="atyaf-cart-empty-page">السلة فارغة حاليًا.</div>':state.cart.map(x=>{

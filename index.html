@@ -2959,36 +2959,50 @@ const cartProductView=x=>{
   const input=document.getElementById('atyafCartCouponInput'),msg=document.getElementById('atyafCartCouponMsg');
   const code=String(input?.value||'').trim().toUpperCase();
   if(!code){if(msg){msg.textContent='أدخل كود الكوبون.';msg.style.color='#b36a00'}return}
+  if(!window.atyafDb){if(msg){msg.textContent='تعذر الاتصال بنظام الكوبونات.';msg.style.color='#b42318'}return}
   if(msg){msg.textContent='جارٍ التحقق من الكوبون...';msg.style.color='#657185'}
   try{
-    // Use the store's existing coupon system if present.
-    const original=document.getElementById('atyafCouponInput');
-    if(original)original.value=code;
-    if(typeof applyAtyafCoupon==='function'){
-      await applyAtyafCoupon();
-    }else if(typeof applyCoupon==='function'){
-      await applyCoupon();
-    }else{
-      // Direct validation against the existing coupons table as a compatibility fallback.
-      if(!window.atyafDb)throw new Error('قاعدة البيانات غير متاحة');
-      const {data,error}=await window.atyafDb.from('coupons').select('*').eq('code',code).eq('active',true).maybeSingle();
-      if(error)throw error;if(!data)throw new Error('الكوبون غير صحيح أو غير فعال');
-      const sub=typeof cartTotal==='function'?cartTotal():0;
-      if(Number(data.min_order_amount||0)>sub)throw new Error('الحد الأدنى لهذا الكوبون '+money(data.min_order_amount));if(typeof couponEligibleSubtotal==='function'&&couponEligibleSubtotal(data)<=0)throw new Error('هذا الكوبون لا ينطبق على المنتجات الموجودة في السلة');
-      let d=data.discount_type==='fixed'?Number(data.discount_value||0):sub*Number(data.discount_value||0)/100;
-      if(data.max_discount!=null)d=Math.min(d,Number(data.max_discount)||d);
-      window.atyafAppliedCoupon=data;
-      // checkoutPayable in this store reads atyafAppliedCoupon/calculateCouponDiscount.
-    }
-    if(typeof atyafAppliedCoupon!=='undefined'&&atyafAppliedCoupon){
-      if(msg){msg.textContent='تم تطبيق الكوبون بنجاح.';msg.style.color='#16884e'}
-    }else{
-      if(msg){msg.textContent='لم يتم تطبيق الكوبون. تحقق من الكود وشروطه.';msg.style.color='#b42318'}
-    }
+    // تحقق مباشر من Supabase من نفس شاشة السلة، بدون الاعتماد على حقل كوبون مخفي آخر.
+    let {data,error}=await window.atyafDb.from('coupons')
+      .select('*').ilike('code',code).eq('active',true).limit(1).maybeSingle();
+    if(error)throw error;
+    if(!data)throw new Error('الكوبون غير موجود أو غير مفعّل.');
+
+    const now=Date.now();
+    const start=data.starts_at?new Date(data.starts_at).getTime():0;
+    const end=data.expires_at?new Date(data.expires_at).getTime():0;
+    if(start&&now<start)throw new Error('هذا الكوبون لم يبدأ بعد.');
+    if(end&&now>end)throw new Error('انتهت صلاحية هذا الكوبون.');
+
+    const limit=Number(data.usage_limit||0),used=Number(data.used_count||0);
+    if(limit>0&&used>=limit)throw new Error('تم الوصول إلى الحد الأقصى لاستخدام هذا الكوبون.');
+
+    const sub=cartTotal();
+    const min=Number(data.min_order_amount||0);
+    if(min>0&&sub<min)throw new Error('الحد الأدنى لهذا الكوبون '+couponMoney(min));
+
+    const eligible=couponEligibleSubtotal(data);
+    if(!(eligible>0))throw new Error('هذا الكوبون لا ينطبق على المنتجات الموجودة في السلة.');
+
+    const discount=calculateCouponDiscount(data,sub);
+    if(!(discount>0))throw new Error('قيمة الخصم في هذا الكوبون غير صالحة.');
+
+    atyafAppliedCoupon=data;
+    updateCheckoutTotals();
     renderAtyafCartPage();
+    if(msg){
+      msg.textContent='تم تطبيق الكوبون — وفرت '+couponMoney(discount);
+      msg.style.color='#16884e';
+    }
   }catch(err){
-    if(msg){msg.textContent=err?.message||'تعذر التحقق من الكوبون.';msg.style.color='#b42318'}
+    atyafAppliedCoupon=null;
+    updateCheckoutTotals();
     renderAtyafCartPage();
+    if(msg){
+      msg.textContent=String(err?.message||'تعذر التحقق من الكوبون.');
+      msg.style.color='#b42318';
+    }
+    console.warn('ATYAAF cart coupon:',err);
   }
  };
  window.atyafSendCartDirectWhatsApp=function(){

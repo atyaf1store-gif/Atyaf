@@ -16,6 +16,7 @@ main{padding:28px;min-width:0}h1,h2,h3{color:var(--g)}.top{display:flex;align-it
 table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;font-size:13px}th{color:var(--muted)}.actions{display:flex;gap:5px;flex-wrap:wrap}.muted{color:var(--muted);font-size:12px}
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.media{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.media img,.media video{width:100%;height:110px;object-fit:cover;border-radius:8px}.upload{border:2px dashed #cfc4b6;border-radius:14px;padding:18px;text-align:center;background:#faf7f1}.upload input{border:0;background:none}
 .section-editor{border-right:4px solid var(--c)}.switch{display:flex;gap:8px;align-items:center}dialog{border:0;border-radius:18px;width:min(800px,95vw);padding:0;max-height:92vh}dialog::backdrop{background:#102a2588}.modal{padding:20px;max-height:92vh;overflow:auto}.close{border:0;width:34px;height:34px;border-radius:50%;float:left}
+.coupon-scope{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:8px}.coupon-scope label{display:flex;gap:8px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}.coupon-scope input{width:auto}
 @media(max-width:850px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.nav{display:flex;overflow:auto}.nav button{width:auto;white-space:nowrap}main{padding:14px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}table{display:block;overflow:auto}}
 
 /* محرر الهدية المستقل */
@@ -30,7 +31,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <button class="active" data-tab="dashboard">الرئيسية</button>
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
-<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="brandSections">إدارة أقسام الماركات</button><button data-tab="products">المنتجات</button>
+<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="brandSections">إدارة أقسام الماركات</button><button data-tab="products">المنتجات</button><button data-tab="coupons">الكوبونات</button>
 <button data-tab="gift">قسم الهدية</button><button data-tab="storeColors">ألوان المتجر</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="allsettings">كل الإعدادات</button>
 </div></aside><main>
@@ -54,6 +55,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <div id="brandSectionsEditor"></div>
 </div></section>
 <section id="products" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
+<section id="coupons" class="panel"><div class="card"><div class="toolbar"><div class="grow"><h2 style="margin:0 0 5px">إدارة الكوبونات</h2><div class="muted">إضافة وتعديل وحذف الكوبونات وتحديد أقسام/ماركات المنتجات التي ينطبق عليها كل كوبون.</div></div><button class="btn" onclick="editCoupon()">+ إضافة كوبون</button></div><div id="couponStatus" class="muted" style="margin:12px 0"></div><div style="overflow:auto"><table><thead><tr><th>الكود</th><th>الخصم</th><th>الأقسام</th><th>الصلاحية</th><th>الاستخدام</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="couponRows"></tbody></table></div></div></section>
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
 <section id="storeColors" class="panel"><div class="card section-editor"><h2>ألوان المتجر</h2><p class="muted">تحكم مركزي بألوان واجهة المتجر وشاشة البداية. إعدادات الألوان الخاصة داخل الأقسام المستقلة مثل الهدية تبقى مستقلة.</p><div id="storeColorsEditor"></div></div></section>
 <section id="footer" class="panel"><div class="card section-editor"><h2>الفوتر والتواصل</h2><div id="footerEditor"></div></div></section>
@@ -69,6 +71,20 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field"><label>نشط/مخفي</label><select id="pActive"><option value="true">ظاهر</option><option value="false">مخفي</option></select></div>
 <div class="field"><label>ترتيب</label><input id="pSort" type="number"></div><div class="field full upload"><label>صورة المنتج — رفع مباشر</label><input id="pImageFile" type="file" accept="image/*"><div id="pImagePreview"></div></div>
 </div><div class="toolbar" style="margin-top:12px"><button type="button" class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
+
+<dialog id="couponDialog"><div class="modal"><button class="close" onclick="couponDialog.close()">×</button><h2 id="couponDialogTitle">الكوبون</h2><input type="hidden" id="cId"><div class="grid">
+<div class="field"><label>كود الكوبون</label><input id="cCode" autocomplete="off" placeholder="مثال: ATYAAF10"></div>
+<div class="field"><label>الحالة</label><select id="cActive"><option value="true">مفعّل</option><option value="false">معطّل</option></select></div>
+<div class="field"><label>نوع الخصم</label><select id="cType"><option value="percentage">نسبة مئوية %</option><option value="fixed">مبلغ ثابت ر.س</option></select></div>
+<div class="field"><label>قيمة الخصم</label><input id="cValue" type="number" min="0" step="0.01"></div>
+<div class="field"><label>الحد الأدنى للطلب</label><input id="cMin" type="number" min="0" step="0.01" value="0"></div>
+<div class="field"><label>الحد الأقصى للخصم</label><input id="cMax" type="number" min="0" step="0.01" placeholder="اتركه فارغًا بدون حد"></div>
+<div class="field"><label>حد مرات الاستخدام</label><input id="cLimit" type="number" min="1" step="1" placeholder="اتركه فارغًا بدون حد"></div>
+<div class="field"><label>عدد مرات الاستخدام الحالي</label><input id="cUsed" type="number" min="0" step="1" value="0"></div>
+<div class="field"><label>يبدأ في</label><input id="cStart" type="datetime-local"></div>
+<div class="field"><label>ينتهي في</label><input id="cEnd" type="datetime-local"></div>
+<div class="field full"><label>الأقسام التي ينطبق عليها الكوبون</label><div class="coupon-scope"><label><input type="checkbox" id="cAll" onchange="toggleCouponAllScope()"> جميع المنتجات</label><span id="couponScopeOptions" style="display:contents"></span></div><small class="muted">عند اختيار «جميع المنتجات» يتجاهل المتجر تحديد الماركات. وإلا يطبق الخصم فقط على منتجات الماركات المحددة.</small></div>
+</div><div class="toolbar" style="margin-top:14px"><button type="button" class="btn" onclick="saveCoupon()">حفظ الكوبون</button><button type="button" class="btn red" id="couponDeleteBtn" onclick="deleteCoupon()">حذف الكوبون</button></div></div></dialog>
 
 <script>
 const SUPABASE_PROJECT_URL = String("https://zgvkiqoxmtifuvgcmrqc.supabase.co").trim();
@@ -89,7 +105,7 @@ try{
   console.error("Supabase init:",e);
   setTimeout(()=>stat("خطأ الاتصال: "+(e?.message||String(e)),true),0);
 }
-const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[];
+const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[],COUPONS=[];
 
 const heroEditor=document.getElementById('heroEditor');
 const lowerEditor=document.getElementById('lowerEditor');
@@ -113,6 +129,8 @@ const pActive=document.getElementById('pActive');
 const pSort=document.getElementById('pSort');
 const pImageFile=document.getElementById('pImageFile');
 const pImagePreview=document.getElementById('pImagePreview');
+const couponRows=document.getElementById('couponRows');
+const couponDialog=document.getElementById('couponDialog');
 
 
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.tab).classList.add('active')});
@@ -683,6 +701,48 @@ async function saveProduct(){
 async function deleteProduct(){if(pId.value)await quickDeleteProduct(pId.value);productDialog.close()}
 async function quickDeleteProduct(id){if(!confirm('حذف المنتج؟'))return;let r=await db.from('products').delete().eq('id',id);if(r.error)return stat(r.error.message,true);await loadAll()}
 
+function couponSections(){
+ const names=new Set();
+ PRODUCTS.forEach(p=>{const b=String(p.brand||'').trim();if(b)names.add(b)});
+ const brands=getSetting('brands',{});(Array.isArray(brands.items)?brands.items:[]).forEach(x=>{const n=String(x.title||x.name||'').trim();if(n)names.add(n)});
+ return [...names].sort((a,b)=>a.localeCompare(b,'ar'));
+}
+function couponDateInput(v){if(!v)return '';const d=new Date(v);if(Number.isNaN(d.getTime()))return '';const z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
+function couponDateDb(v){return v?new Date(v).toISOString():null}
+function couponScopeText(c){if(c.applies_to_all!==false)return 'جميع المنتجات';const a=Array.isArray(c.applicable_sections)?c.applicable_sections:[];return a.length?a.join('، '):'—'}
+function renderCoupons(){
+ if(!couponRows)return;
+ couponRows.innerHTML=COUPONS.map(c=>{const type=c.discount_type==='fixed'?`${Number(c.discount_value||0)} ر.س`:`${Number(c.discount_value||0)}%`;const dates=[c.starts_at?`من ${new Date(c.starts_at).toLocaleDateString('ar')}`:'',c.expires_at?`إلى ${new Date(c.expires_at).toLocaleDateString('ar')}`:''].filter(Boolean).join(' ')||'بدون مدة';const use=c.usage_limit==null?`${Number(c.used_count||0)} / ∞`:`${Number(c.used_count||0)} / ${Number(c.usage_limit)}`;return `<tr><td><b>${esc(c.code||'')}</b></td><td>${esc(type)}</td><td>${esc(couponScopeText(c))}</td><td>${esc(dates)}</td><td>${esc(use)}</td><td>${c.active===false?'معطّل':'مفعّل'}</td><td class="actions"><button class="btn alt" onclick='editCoupon(${JSON.stringify(String(c.id||''))})'>تعديل</button><button class="btn red" onclick='quickDeleteCoupon(${JSON.stringify(String(c.id||''))})'>حذف</button></td></tr>`}).join('');
+ if(!COUPONS.length)couponRows.innerHTML='<tr><td colspan="7" class="muted">لا توجد كوبونات حتى الآن.</td></tr>';
+}
+function toggleCouponAllScope(){const all=document.getElementById('cAll')?.checked;document.querySelectorAll('#couponScopeOptions input[type=checkbox]').forEach(x=>{x.disabled=all;if(all)x.checked=false})}
+function editCoupon(id=''){
+ const c=COUPONS.find(x=>String(x.id)===String(id))||{};
+ cId.value=c.id||'';cCode.value=c.code||'';cActive.value=String(c.active!==false);cType.value=c.discount_type||'percentage';cValue.value=c.discount_value??'';cMin.value=c.min_order_amount??0;cMax.value=c.max_discount??'';cLimit.value=c.usage_limit??'';cUsed.value=c.used_count??0;cStart.value=couponDateInput(c.starts_at);cEnd.value=couponDateInput(c.expires_at);
+ const selected=Array.isArray(c.applicable_sections)?c.applicable_sections:[];const all=c.applies_to_all!==false;document.getElementById('cAll').checked=all;
+ document.getElementById('couponScopeOptions').innerHTML=couponSections().map((n,i)=>`<label><input type="checkbox" data-coupon-section value="${esc(n)}" ${selected.includes(n)?'checked':''}> ${esc(n)}</label>`).join('')||'<span class="muted">أضف ماركات للمنتجات أولًا لتظهر هنا.</span>';
+ toggleCouponAllScope();document.getElementById('couponDeleteBtn').style.display=id?'':'none';document.getElementById('couponDialogTitle').textContent=id?'تعديل الكوبون':'إضافة كوبون';couponDialog.showModal();
+}
+async function saveCoupon(){
+ try{
+  const id=String(cId.value||'').trim(),code=cCode.value.trim().toUpperCase();if(!code)throw new Error('كود الكوبون مطلوب');
+  const duplicate=COUPONS.find(x=>String(x.code||'').trim().toUpperCase()===code&&String(x.id)!==id);if(duplicate)throw new Error('كود الكوبون مستخدم مسبقًا');
+  const value=Number(cValue.value);if(!(value>0))throw new Error('قيمة الخصم يجب أن تكون أكبر من صفر');if(cType.value==='percentage'&&value>100)throw new Error('نسبة الخصم لا يمكن أن تتجاوز 100%');
+  const all=document.getElementById('cAll').checked,sections=[...document.querySelectorAll('[data-coupon-section]:checked')].map(x=>x.value);if(!all&&!sections.length)throw new Error('اختر قسمًا واحدًا على الأقل أو اختر جميع المنتجات');
+  const row={code,discount_type:cType.value,discount_value:value,min_order_amount:Number(cMin.value)||0,max_discount:cMax.value===''?null:Number(cMax.value),usage_limit:cLimit.value===''?null:Number(cLimit.value),used_count:Number(cUsed.value)||0,starts_at:couponDateDb(cStart.value),expires_at:couponDateDb(cEnd.value),active:cActive.value==='true',applies_to_all:all,applicable_sections:all?[]:sections,updated_at:new Date().toISOString()};
+  if(row.starts_at&&row.expires_at&&new Date(row.expires_at)<=new Date(row.starts_at))throw new Error('تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية');
+  let q=id?await db.from('coupons').update(row).eq('id',id).select('*'):await db.from('coupons').insert(row).select('*');if(q.error)throw q.error;
+  couponDialog.close();await loadCoupons();stat('تم حفظ الكوبون بنجاح ✓');
+ }catch(e){stat('فشل حفظ الكوبون: '+(e?.message||String(e)),true)}
+}
+async function deleteCoupon(){if(cId.value)await quickDeleteCoupon(cId.value);couponDialog.close()}
+async function quickDeleteCoupon(id){if(!id||!confirm('حذف هذا الكوبون نهائيًا؟'))return;const r=await db.from('coupons').delete().eq('id',id);if(r.error)return stat('فشل حذف الكوبون: '+r.error.message,true);await loadCoupons();stat('تم حذف الكوبون ✓')}
+async function loadCoupons(){
+ const el=document.getElementById('couponStatus');
+ try{const r=await db.from('coupons').select('*').order('created_at',{ascending:false});if(r.error)throw r.error;COUPONS=r.data||[];if(el)el.textContent=`تم تحميل ${COUPONS.length} كوبون`;renderCoupons()}
+ catch(e){COUPONS=[];renderCoupons();if(el)el.textContent='تعذر تحميل جدول coupons: '+(e?.message||e);console.error('coupons:',e)}
+}
+
 function renderAllSettings(){settingRows.innerHTML=SETTINGS.map(s=>`<tr><td><b>${esc(s.key)}</b></td><td>${esc(pretty(s.value)).slice(0,220)}</td><td class="actions"><button class="btn alt" onclick='editAny(${JSON.stringify(s.key)})'>تعديل</button><button class="btn red" onclick='removeAny(${JSON.stringify(s.key)})'>حذف</button></td></tr>`).join('')}
 function editAny(key=''){let s=SETTINGS.find(x=>x.key===key);jsonOldKey.value=key;jsonKey.value=key;jsonValue.value=s?pretty(s.value):'';jsonTitle.textContent=key?'تعديل '+key:'إضافة إعداد';jsonDialog.showModal()}
 async function saveAny(){let old=jsonOldKey.value,k=jsonKey.value.trim(),v=parse(jsonValue.value);if(old&&old!==k)await removeSetting(old);await putSetting(k,v);jsonDialog.close();await loadAll()}
@@ -702,6 +762,7 @@ async function loadAll(){
 
   SETTINGS=settingsReq.data||[];
   PRODUCTS=productsReq.data||[];
+  await loadCoupons();
 
   adEditor(heroEditor,"hero_ads","الإعلان العلوي");
   adEditor(lowerEditor,"bottom_ads","الإعلان السفلي");
@@ -726,7 +787,7 @@ async function loadAll(){
 }
 Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,saveStoreColors,resetStoreColors,
 saveBrandsStyle,addBrandItem,saveBrandItem,removeBrandImage,hideBrandItem,removeBrandItem,saveBrandSectionsManager,resetBrandSectionsManager,
-saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection});
+saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection,editCoupon,saveCoupon,deleteCoupon,quickDeleteCoupon,toggleCouponAllScope});
 window.saveProduct=saveProduct;
 setTimeout(()=>{
   const el=document.getElementById("status");

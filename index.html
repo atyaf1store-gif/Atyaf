@@ -1898,9 +1898,17 @@ section.benefits>.benefit span,.benefits>.benefit span{
       {id:6,name:'شرارة',brand:'نُبل',price:279,old:0,tags:['floral'],label:'مميز',tone:'#b77d3d',desc:'حمضيات مشرقة، زهور بيضاء، وعنبر.'}
     ];
     /* ===== ATYAAF STORE CONNECTIONS — transferred from the original store ===== */
-    const ATYAF_SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
+    const ATYAF_SUPABASE_ORIGIN="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
+    const ATYAF_SUPABASE_URL="https://atyaf.atyaf1store.workers.dev";
     const ATYAF_SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
-    const atyafDb=window.supabase?.createClient ? window.supabase.createClient(ATYAF_SUPABASE_URL,ATYAF_SUPABASE_KEY) : null;
+    const atyafDb=window.supabase?.createClient ? window.supabase.createClient(ATYAF_SUPABASE_URL,ATYAF_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}) : null;
+    window.atyafProxyMediaUrl=function(url){
+      const value=String(url||'').trim();
+      if(!value)return '';
+      return value.startsWith(ATYAF_SUPABASE_ORIGIN+'/storage/v1/object/public/')
+        ? ATYAF_SUPABASE_URL+value.slice(ATYAF_SUPABASE_ORIGIN.length)
+        : value;
+    };
     window.atyafDb=atyafDb;
     let atyafGeneralSettings={};
 
@@ -1909,9 +1917,9 @@ section.benefits>.benefit span,.benefits>.benefit span{
       if(typeof images==='string'){try{images=JSON.parse(images)}catch(e){images=[]}}
       if(!Array.isArray(images))images=[];
       const first=images[0];
-      if(typeof first==='string')return first;
-      if(first&&typeof first==='object')return first.url||first.src||first.publicUrl||first.public_url||'';
-      return row?.image_url||row?.image||row?.thumbnail||'';
+      if(typeof first==='string')return window.atyafProxyMediaUrl(first);
+      if(first&&typeof first==='object')return window.atyafProxyMediaUrl(first.url||first.src||first.publicUrl||first.public_url||'');
+      return window.atyafProxyMediaUrl(row?.image_url||row?.image||row?.thumbnail||'');
     }
     function mapSupabaseProduct(row,index){
       const price=Number(row.price??row.sale_price??0);
@@ -1951,7 +1959,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
     function safeLink(value){let v=String(value||'#products').trim();return /^(https?:|#|\/)/i.test(v)?v:'#products'}
     /* ===== شاشة الإعلان الرئيسية: تقرأ نفس إعدادات Supabase القديمة ===== */
     let heroAdTimer=null,heroAdIndex=0,heroAdSlides=[];
-    function atyafMediaUrl(item){if(!item)return '';if(typeof item==='string')return item.trim();return String(item.url||item.src||item.publicUrl||item.public_url||item.image||item.image_url||item.video||item.video_url||item.path||item.file||'').trim()}
+    function atyafMediaUrl(item){if(!item)return '';const u=typeof item==='string'?item.trim():String(item.url||item.src||item.publicUrl||item.public_url||item.image||item.image_url||item.video||item.video_url||item.path||item.file||'').trim();return window.atyafProxyMediaUrl?window.atyafProxyMediaUrl(u):u}
     function normalizeHeroAd(raw){
       let x=raw;if(typeof x==='string'){try{x=JSON.parse(x)}catch(e){x={}}}if(!x||typeof x!=='object')x={};
       let media=x.media??x.medias??x.slides??x.images??x.files??x.items??x.urls??[];
@@ -3174,5 +3182,31 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHeaderSearch()}
 })();
 </script>
 
+
+<script id="atyaf-cloudflare-storage-url-guard">
+(()=>{
+  const rewrite=el=>{
+    if(!el||!window.atyafProxyMediaUrl)return;
+    for(const attr of ['src','poster']){
+      if(!el.hasAttribute?.(attr))continue;
+      const old=el.getAttribute(attr)||'', next=window.atyafProxyMediaUrl(old);
+      if(next&&next!==old)el.setAttribute(attr,next);
+    }
+    const style=el.getAttribute?.('style')||'';
+    if(style.includes('zgvkiqoxmtifuvgcmrqc.supabase.co/storage/v1/object/public/')){
+      el.setAttribute('style',style.replaceAll('https://zgvkiqoxmtifuvgcmrqc.supabase.co/storage/v1/object/public/','https://atyaf.atyaf1store.workers.dev/storage/v1/object/public/'));
+    }
+  };
+  const scan=root=>{
+    if(root?.nodeType===1)rewrite(root);
+    root?.querySelectorAll?.('[src],[poster],[style]').forEach(rewrite);
+  };
+  document.addEventListener('DOMContentLoaded',()=>scan(document));
+  new MutationObserver(ms=>ms.forEach(m=>{
+    if(m.type==='attributes')rewrite(m.target);
+    m.addedNodes.forEach(scan);
+  })).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src','poster','style']});
+})();
+</script>
 </body>
 </html>

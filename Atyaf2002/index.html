@@ -69,7 +69,22 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <section id="nav" class="panel"><div class="card section-editor"><h2>روابط القائمة الرئيسية</h2><div id="navEditor"></div></div></section>
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
-<section id="products" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
+<section id="products" class="panel">
+<div class="card" id="atyafBulkProducts" style="margin-bottom:18px">
+ <h2>مساعد إضافة المنتجات</h2>
+ <p>اكتب أمر المنتجات، وسيجهز حتى 10 منتجات في المرة الواحدة. راجعها ثم اضغط إضافة المنتجات.</p>
+ <textarea id="atyafBulkCommand" rows="9" style="width:100%;box-sizing:border-box" placeholder="مثال:
+أضف 3 منتجات:
+1) الاسم: عطر A | الماركة: عساف | السعر: 99 | السعر القديم: 120 | الوصف: عطر فاخر
+2) الاسم: عطر B | الماركة: دخوني | السعر: 85
+3) الاسم: عطر C | الماركة: إبراق | السعر: 110"></textarea>
+ <div class="toolbar" style="margin-top:12px">
+  <button class="btn alt" type="button" onclick="atyafPrepareBulkProducts()">تحليل الأمر</button>
+  <button class="btn" id="atyafBulkAddBtn" type="button" onclick="atyafAddBulkProducts()" disabled>إضافة المنتجات</button>
+ </div>
+ <div id="atyafBulkPreview" style="margin-top:12px"></div>
+</div>
+<div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
 <section id="footer" class="panel"><div class="card section-editor"><h2>الفوتر والتواصل</h2><div id="footerEditor"></div></div></section>
 <section id="policies" class="panel"><div class="card section-editor"><h2>السياسات والنصوص</h2><div id="policiesEditor"></div></div></section>
@@ -505,6 +520,68 @@ loadAll();
   }catch(e){console.error('ATYAAF password change:',e);stat('تعذر تغيير كلمة المرور.',true)}
  };
  render();
+})();
+</script>
+
+
+<script id="atyaf-bulk-products-js">
+(()=>{
+ let pending=[];
+ const val=(line,names)=>{
+  for(const name of names){
+   const m=line.match(new RegExp('(?:^|[|،,;])\\s*'+name+'\\s*[:：=-]\\s*([^|،,;]+)','i'));
+   if(m)return m[1].trim();
+  }return '';
+ };
+ const num=v=>{const n=Number(String(v||'').replace(/[^\d.]/g,''));return Number.isFinite(n)?n:0};
+ function parseLine(line){
+  line=String(line||'').replace(/^\s*(?:\d+[\)\].-]?|[-•])\s*/,'').trim();
+  if(!line)return null;
+  let name=val(line,['الاسم','اسم المنتج','name']);
+  const brand=val(line,['الماركة','العلامة','brand']);
+  const price=num(val(line,['السعر','price']));
+  const old=num(val(line,['السعر القديم','قبل','old_price','old']));
+  const description=val(line,['الوصف','description','desc']);
+  const sort=num(val(line,['الترتيب','sort_order','sort']));
+  if(!name){
+   const first=line.split(/[|،,;]/)[0].trim();
+   if(first&&!/^(أضف|اضف|إضافة|اضافة)\b/.test(first))name=first.replace(/^الاسم\s*[:：=-]\s*/,'').trim();
+  }
+  if(!name)return null;
+  return {name,brand,price,old_price:old,description,image_url:'',is_active:true,sort_order:sort};
+ }
+ function parseCommand(text){
+  const lines=String(text||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  const rows=[];
+  for(const line of lines){
+   if(/^(أضف|اضف|إضافة|اضافة)\s+\d*\s*منتج/.test(line))continue;
+   const p=parseLine(line);if(p)rows.push(p);
+   if(rows.length===10)break;
+  }
+  return rows;
+ }
+ function preview(){
+  const box=document.getElementById('atyafBulkPreview'),btn=document.getElementById('atyafBulkAddBtn');
+  if(!pending.length){box.innerHTML='<div style="color:#9b3d34">لم أجد منتجات بصيغة واضحة. استخدم المثال الظاهر في الحقل.</div>';btn.disabled=true;return}
+  box.innerHTML='<div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>السعر القديم</th></tr></thead><tbody>'+
+   pending.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.brand)}</td><td>${esc(p.price)}</td><td>${esc(p.old_price)}</td></tr>`).join('')+
+   '</tbody></table></div><p>جاهز: '+pending.length+' من أصل 10 كحد أقصى.</p>';
+  btn.disabled=false;
+ }
+ window.atyafPrepareBulkProducts=()=>{pending=parseCommand(document.getElementById('atyafBulkCommand').value);preview()};
+ window.atyafAddBulkProducts=async()=>{
+  if(!pending.length)return;
+  const btn=document.getElementById('atyafBulkAddBtn');btn.disabled=true;btn.textContent='جاري الإضافة…';
+  try{
+   stat('جاري إضافة '+pending.length+' منتجات…');
+   const {data,error}=await db.from('products').insert(pending).select('*');
+   if(error)throw error;
+   stat('تمت إضافة '+(data?.length||pending.length)+' منتجات ✓');
+   pending=[];document.getElementById('atyafBulkCommand').value='';document.getElementById('atyafBulkPreview').innerHTML='';
+   await loadAll();
+  }catch(e){console.error('ATYAAF bulk products:',e);stat('تعذر إضافة المنتجات. راجع البيانات وأعد المحاولة.',true)}
+  finally{btn.disabled=false;btn.textContent='إضافة المنتجات'}
+ };
 })();
 </script>
 

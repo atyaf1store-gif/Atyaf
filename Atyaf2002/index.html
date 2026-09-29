@@ -70,18 +70,18 @@ const SUPABASE_PUBLISHABLE_KEY = String("sb_publishable_sEmW4aedA_jNmXACWZUwIg_a
 let db=null;
 try{
   if(!window.supabase || typeof window.supabase.createClient!=="function"){
-    throw new Error("مكتبة Supabase لم تُحمّل. تحقق من اتصال الإنترنت أو CDN.");
+    throw new Error("تعذر بدء الاتصال. أعد المحاولة.");
   }
   const parsedProjectUrl = new window.URL(SUPABASE_PROJECT_URL);
   if(parsedProjectUrl.protocol!=="https:" || !parsedProjectUrl.hostname.endsWith(".supabase.co")){
-    throw new Error("رابط مشروع Supabase غير صالح: "+SUPABASE_PROJECT_URL);
+    throw new Error("تعذر بدء الاتصال.");
   }
   db=window.supabase.createClient(SUPABASE_PROJECT_URL,SUPABASE_PUBLISHABLE_KEY,{
     auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
   });
 }catch(e){
-  console.error("Supabase init:",e);
-  setTimeout(()=>stat("خطأ الاتصال: "+(e?.message||String(e)),true),0);
+  console.error("ATYAAF connection:",e);
+  setTimeout(()=>stat("تعذر الاتصال. اضغط تحديث للمحاولة مرة أخرى.",true),0);
 }
 const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[];
 
@@ -351,43 +351,58 @@ async function saveAny(){let old=jsonOldKey.value,k=jsonKey.value.trim(),v=parse
 async function deleteAny(){let k=jsonOldKey.value||jsonKey.value;if(k&&confirm('حذف '+k+'؟')){await removeSetting(k);jsonDialog.close();await loadAll()}}
 async function removeAny(k){if(confirm('حذف '+k+'؟')){await removeSetting(k);await loadAll()}}
 
-async function loadAll(){
+async function atyafWithTimeout(promise,ms=6500){
+ let timer;
  try{
-  if(!db) throw new Error("لم يتم إنشاء اتصال Supabase.");
-  stat("جاري اختبار الاتصال بـ Supabase…");
-
-  const settingsReq=await db.from("settings").select("*").order("updated_at",{ascending:false});
-  if(settingsReq.error) throw new Error("settings: "+settingsReq.error.message);
-
-  const productsReq=await db.from("products").select("*").order("sort_order",{ascending:true});
-  if(productsReq.error) throw new Error("products: "+productsReq.error.message);
-
-  SETTINGS=settingsReq.data||[];
-  PRODUCTS=productsReq.data||[];
-
-  adEditor(heroEditor,"hero_ads","الإعلان العلوي");
-  adEditor(lowerEditor,"bottom_ads","الإعلان السفلي");
-  ["topbar","header","nav","footer","policies"].forEach(k=>{
-    const el=document.getElementById(k+"Editor");
-    if(el) simpleEditor(el,k);
-  });
-   giftSectionEditor();
-   profileSectionEditor();
-   introSectionEditor();
-  listEditor(benefitsEditor,"benefits",[
-    {title:"منتجات أصلية",text:"اختيارات موثوقة بعناية"},
-    {title:"شحن سريع",text:"توصيل آمن"},
-    {title:"تغليف فاخر",text:"هدية تليق بمن تحب"},
-    {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
+  return await Promise.race([
+   promise,
+   new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error("TIMEOUT")),ms)})
   ]);
-  listEditor(brandsEditor,"brands",[{title:"أطياف",text:"ATYAAF"}]);
-  renderProducts();
-  renderAllSettings();
-  stat("متصل بـ Supabase ✓ — تم تحميل "+PRODUCTS.length+" منتج");
- }catch(e){
-  console.error("loadAll:",e);
-  stat("فشل الاتصال: "+(e?.message||String(e)),true);
+ }finally{clearTimeout(timer)}
+}
+async function atyafLoadData(){
+ const [settingsReq,productsReq]=await Promise.all([
+  atyafWithTimeout(db.from("settings").select("*").order("updated_at",{ascending:false})),
+  atyafWithTimeout(db.from("products").select("*").order("sort_order",{ascending:true}))
+ ]);
+ if(settingsReq.error)throw settingsReq.error;
+ if(productsReq.error)throw productsReq.error;
+ return [settingsReq.data||[],productsReq.data||[]];
+}
+function atyafRenderAdmin(){
+ adEditor(heroEditor,"hero_ads","الإعلان العلوي");
+ adEditor(lowerEditor,"bottom_ads","الإعلان السفلي");
+ ["topbar","header","nav","footer","policies"].forEach(k=>{
+  const el=document.getElementById(k+"Editor");if(el)simpleEditor(el,k);
+ });
+ giftSectionEditor();profileSectionEditor();introSectionEditor();
+ listEditor(benefitsEditor,"benefits",[
+  {title:"منتجات أصلية",text:"اختيارات موثوقة بعناية"},
+  {title:"شحن سريع",text:"توصيل آمن"},
+  {title:"تغليف فاخر",text:"هدية تليق بمن تحب"},
+  {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
+ ]);
+ listEditor(brandsEditor,"brands",[{title:"أطياف",text:"ATYAAF"}]);
+ renderProducts();renderAllSettings();
+}
+async function loadAll(){
+ if(!db){stat("تعذر الاتصال. اضغط تحديث للمحاولة مرة أخرى.",true);return}
+ stat("جاري التحديث…");
+ let lastError=null;
+ for(let attempt=0;attempt<2;attempt++){
+  try{
+   const [settings,products]=await atyafLoadData();
+   SETTINGS=settings;PRODUCTS=products;
+   atyafRenderAdmin();
+   stat("تم التحديث ✓");
+   return;
+  }catch(e){
+   lastError=e;
+   console.error("ATYAAF admin load attempt "+(attempt+1),e);
+   if(attempt===0)await new Promise(r=>setTimeout(r,450));
+  }
  }
+ stat("تعذر تحميل البيانات. تحقق من الاتصال ثم اضغط تحديث.",true);
 }
 Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,
 saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection});
@@ -395,7 +410,7 @@ window.saveProduct=saveProduct;
 setTimeout(()=>{
   const el=document.getElementById("status");
   if(el && el.textContent.includes("جاري الاتصال")){
-    stat("الاتصال لم يبدأ — تحقق من تحميل مكتبة Supabase",true);
+    stat("تعذر الاتصال. اضغط تحديث للمحاولة مرة أخرى.",true);
   }
 },6000);
 loadAll();

@@ -449,59 +449,46 @@ loadAll();
 </script>
 <script id="atyaf-admin-lock-js">
 (()=>{
- const KEY='admin_lock';
+ const LOCAL='atyaf_admin_lock_v2',SESSION='atyaf_admin_unlocked';
  const $=id=>document.getElementById(id);
- const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
+ const readLocal=()=>{try{return JSON.parse(localStorage.getItem(LOCAL)||'null')}catch(_){return null}};
+ const writeLocal=v=>localStorage.setItem(LOCAL,JSON.stringify(v));
  async function hash(v){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
- async function getLock(){
-  if(!window.db&&!window.atyafDb)return null;
-  const c=window.db||window.atyafDb;
-  try{const {data,error}=await c.from('settings').select('value,updated_at').eq('key',KEY).order('updated_at',{ascending:false,nullsFirst:false}).limit(1);if(error)throw error;return parse(data?.[0]?.value)}catch(e){console.error('ATYAAF lock read:',e);return null}
- }
- async function saveLock(value){
-  const c=window.db||window.atyafDb;if(!c)throw new Error('NO_CONNECTION');
-  const {data}=await c.from('settings').select('id').eq('key',KEY).order('updated_at',{ascending:false,nullsFirst:false}).limit(1);
-  let q;
-  if(data?.[0]?.id)q=await c.from('settings').update({value}).eq('id',data[0].id);
-  else q=await c.from('settings').insert({key:KEY,value});
-  if(q.error)throw q.error;
- }
- function unlock(){document.body.classList.remove('atyaf-admin-locked');$('atyafAdminLock').hidden=true;sessionStorage.setItem('atyaf_admin_unlocked','1')}
- async function boot(){
-  if(sessionStorage.getItem('atyaf_admin_unlocked')==='1'){unlock();return}
-  let cfg=null;
-  for(let i=0;i<20&&!cfg;i++){cfg=await getLock();if(!cfg)await new Promise(r=>setTimeout(r,250))}
-  const setup=!cfg?.hash;
-  $('atyafLockTitle').textContent=setup?'إنشاء كلمة مرور الإدارة':'قفل الإدارة';
-  $('atyafLockHint').textContent=setup?'هذه أول مرة. أنشئ كلمة مرور لصفحة الإدارة.':'أدخل كلمة المرور لفتح لوحة الإدارة.';
-  $('atyafLockPass2').hidden=!setup;
-  $('atyafLockBtn').textContent=setup?'حفظ وفتح الإدارة':'فتح الإدارة';
+ function unlock(){document.body.classList.remove('atyaf-admin-locked');$('atyafAdminLock').hidden=true;sessionStorage.setItem(SESSION,'1')}
+ function setupUI(){
+  const cfg=readLocal(),first=!cfg?.hash;
+  $('atyafLockTitle').textContent=first?'إنشاء كلمة مرور الإدارة':'قفل الإدارة';
+  $('atyafLockHint').textContent=first?'هذه أول مرة. أنشئ كلمة مرور لصفحة الإدارة.':'أدخل كلمة المرور لفتح لوحة الإدارة.';
+  $('atyafLockPass2').hidden=!first;
+  $('atyafLockBtn').textContent=first?'حفظ وفتح الإدارة':'فتح الإدارة';
   $('atyafLockBtn').onclick=async()=>{
    const p=$('atyafLockPass').value,msg=$('atyafLockMsg');msg.textContent='';
    if(p.length<6){msg.textContent='استخدم كلمة مرور من 6 أحرف أو أرقام على الأقل.';return}
    try{
-    if(setup){
+    if(first){
      if(p!==$('atyafLockPass2').value){msg.textContent='كلمتا المرور غير متطابقتين.';return}
-     await saveLock({hash:await hash(p),updatedAt:new Date().toISOString()});unlock();
+     writeLocal({hash:await hash(p),createdAt:new Date().toISOString()});
+     unlock();
     }else if(await hash(p)===cfg.hash)unlock();
     else msg.textContent='كلمة المرور غير صحيحة.';
-   }catch(e){console.error('ATYAAF lock:',e);msg.textContent='تعذر حفظ أو التحقق من القفل. أعد المحاولة.'}
+   }catch(e){console.error('ATYAAF lock:',e);msg.textContent='تعذر حفظ القفل على هذا الجهاز. تحقق من إعدادات المتصفح وأعد المحاولة.'}
   };
   $('atyafLockPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('atyafLockBtn').click()});
+  $('atyafLockPass2').addEventListener('keydown',e=>{if(e.key==='Enter')$('atyafLockBtn').click()});
  }
  window.changeAdminPassword=async()=>{
-  const cur=$('lockCurrent')?.value||'',n=$('lockNew')?.value||'',c=$('lockConfirm')?.value||'';
+  const cfg=readLocal(),cur=$('lockCurrent')?.value||'',n=$('lockNew')?.value||'',c=$('lockConfirm')?.value||'';
+  if(!cfg?.hash)return stat('لم يتم إنشاء كلمة مرور على هذا الجهاز بعد.',true);
   if(n.length<6)return stat('كلمة المرور الجديدة يجب أن تكون 6 أحرف أو أرقام على الأقل.',true);
   if(n!==c)return stat('تأكيد كلمة المرور الجديدة غير مطابق.',true);
   try{
-   const cfg=await getLock();
-   if(cfg?.hash && await hash(cur)!==cfg.hash)return stat('كلمة المرور الحالية غير صحيحة.',true);
-   await saveLock({hash:await hash(n),updatedAt:new Date().toISOString()});
+   if(await hash(cur)!==cfg.hash)return stat('كلمة المرور الحالية غير صحيحة.',true);
+   writeLocal({hash:await hash(n),updatedAt:new Date().toISOString()});
    $('lockCurrent').value=$('lockNew').value=$('lockConfirm').value='';
    stat('تم تغيير كلمة مرور الإدارة ✓');
   }catch(e){console.error('ATYAAF password change:',e);stat('تعذر تغيير كلمة المرور. أعد المحاولة.',true)}
  };
- window.addEventListener('load',()=>setTimeout(boot,80));
+ if(sessionStorage.getItem(SESSION)==='1') unlock(); else setupUI();
 })();
 </script>
 

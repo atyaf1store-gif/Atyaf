@@ -16,7 +16,6 @@ main{padding:28px;min-width:0}h1,h2,h3{color:var(--g)}.top{display:flex;align-it
 table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;font-size:13px}th{color:var(--muted)}.actions{display:flex;gap:5px;flex-wrap:wrap}.muted{color:var(--muted);font-size:12px}
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.media{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.media img,.media video{width:100%;height:110px;object-fit:cover;border-radius:8px}.upload{border:2px dashed #cfc4b6;border-radius:14px;padding:18px;text-align:center;background:#faf7f1}.upload input{border:0;background:none}
 .section-editor{border-right:4px solid var(--c)}.switch{display:flex;gap:8px;align-items:center}dialog{border:0;border-radius:18px;width:min(800px,95vw);padding:0;max-height:92vh}dialog::backdrop{background:#102a2588}.modal{padding:20px;max-height:92vh;overflow:auto}.close{border:0;width:34px;height:34px;border-radius:50%;float:left}
-.coupon-scope{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:8px}.coupon-scope label{display:flex;gap:8px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}.coupon-scope input{width:auto}
 @media(max-width:850px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.nav{display:flex;overflow:auto}.nav button{width:auto;white-space:nowrap}main{padding:14px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}table{display:block;overflow:auto}}
 
 /* محرر الهدية المستقل */
@@ -31,8 +30,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <button class="active" data-tab="dashboard">الرئيسية</button>
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
-<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="brandSections">إدارة أقسام الماركات</button><button data-tab="products">المنتجات</button><button data-tab="coupons">الكوبونات</button>
-<button data-tab="gift">قسم الهدية</button><button data-tab="storeColors">ألوان المتجر</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
+<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
+<button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="allsettings">كل الإعدادات</button>
 </div></aside><main>
 <div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><button class="btn alt" onclick="loadAll()">↻ تحديث</button></div>
@@ -49,15 +48,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <section id="nav" class="panel"><div class="card section-editor"><h2>روابط القائمة الرئيسية</h2><div id="navEditor"></div></div></section>
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
-<section id="brandSections" class="panel"><div class="card section-editor">
-<h2>إدارة أقسام الماركات</h2>
-<p class="muted">هذه الإعدادات تتحكم في أقسام المنتجات المنفصلة: إبراق، عساف، وأي ماركة أخرى.</p>
-<div id="brandSectionsEditor"></div>
-</div></section>
 <section id="products" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
-<section id="coupons" class="panel"><div class="card"><div class="toolbar"><div class="grow"><h2 style="margin:0 0 5px">إدارة الكوبونات</h2><div class="muted">إضافة وتعديل وحذف الكوبونات وتحديد أقسام/ماركات المنتجات التي ينطبق عليها كل كوبون.</div></div><button class="btn" onclick="editCoupon()">+ إضافة كوبون</button></div><div id="couponStatus" class="muted" style="margin:12px 0"></div><div style="overflow:auto"><table><thead><tr><th>الكود</th><th>الخصم</th><th>الأقسام</th><th>الصلاحية</th><th>الاستخدام</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="couponRows"></tbody></table></div></div></section>
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
-<section id="storeColors" class="panel"><div class="card section-editor"><h2>ألوان المتجر</h2><p class="muted">تحكم مركزي بألوان واجهة المتجر وشاشة البداية. إعدادات الألوان الخاصة داخل الأقسام المستقلة مثل الهدية تبقى مستقلة.</p><div id="storeColorsEditor"></div></div></section>
 <section id="footer" class="panel"><div class="card section-editor"><h2>الفوتر والتواصل</h2><div id="footerEditor"></div></div></section>
 <section id="policies" class="panel"><div class="card section-editor"><h2>السياسات والنصوص</h2><div id="policiesEditor"></div></div></section>
 <section id="allsettings" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">كل إعدادات قاعدة البيانات</h2><button class="btn" onclick="editAny()">+ إضافة إعداد</button></div><div style="overflow:auto"><table><thead><tr><th>المفتاح</th><th>القيمة</th><th>إجراءات</th></tr></thead><tbody id="settingRows"></tbody></table></div></div></section>
@@ -71,20 +63,6 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field"><label>نشط/مخفي</label><select id="pActive"><option value="true">ظاهر</option><option value="false">مخفي</option></select></div>
 <div class="field"><label>ترتيب</label><input id="pSort" type="number"></div><div class="field full upload"><label>صورة المنتج — رفع مباشر</label><input id="pImageFile" type="file" accept="image/*"><div id="pImagePreview"></div></div>
 </div><div class="toolbar" style="margin-top:12px"><button type="button" class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
-
-<dialog id="couponDialog"><div class="modal"><button class="close" onclick="couponDialog.close()">×</button><h2 id="couponDialogTitle">الكوبون</h2><input type="hidden" id="cId"><div class="grid">
-<div class="field"><label>كود الكوبون</label><input id="cCode" autocomplete="off" placeholder="مثال: ATYAAF10"></div>
-<div class="field"><label>الحالة</label><select id="cActive"><option value="true">مفعّل</option><option value="false">معطّل</option></select></div>
-<div class="field"><label>نوع الخصم</label><select id="cType"><option value="percentage">نسبة مئوية %</option><option value="fixed">مبلغ ثابت ر.س</option></select></div>
-<div class="field"><label>قيمة الخصم</label><input id="cValue" type="number" min="0" step="0.01"></div>
-<div class="field"><label>الحد الأدنى للطلب</label><input id="cMin" type="number" min="0" step="0.01" value="0"></div>
-<div class="field"><label>الحد الأقصى للخصم</label><input id="cMax" type="number" min="0" step="0.01" placeholder="اتركه فارغًا بدون حد"></div>
-<div class="field"><label>حد مرات الاستخدام</label><input id="cLimit" type="number" min="1" step="1" placeholder="اتركه فارغًا بدون حد"></div>
-<div class="field"><label>عدد مرات الاستخدام الحالي</label><input id="cUsed" type="number" min="0" step="1" value="0"></div>
-<div class="field"><label>يبدأ في</label><input id="cStart" type="datetime-local"></div>
-<div class="field"><label>ينتهي في</label><input id="cEnd" type="datetime-local"></div>
-<div class="field full"><label>الأقسام التي ينطبق عليها الكوبون</label><div class="coupon-scope"><label><input type="checkbox" id="cAll" onchange="toggleCouponAllScope()"> جميع المنتجات</label><span id="couponScopeOptions" style="display:contents"></span></div><small class="muted">عند اختيار «جميع المنتجات» يتجاهل المتجر تحديد الماركات. وإلا يطبق الخصم فقط على منتجات الماركات المحددة.</small></div>
-</div><div class="toolbar" style="margin-top:14px"><button type="button" class="btn" onclick="saveCoupon()">حفظ الكوبون</button><button type="button" class="btn red" id="couponDeleteBtn" onclick="deleteCoupon()">حذف الكوبون</button></div></div></dialog>
 
 <script>
 const SUPABASE_PROJECT_URL = String("https://zgvkiqoxmtifuvgcmrqc.supabase.co").trim();
@@ -105,7 +83,7 @@ try{
   console.error("Supabase init:",e);
   setTimeout(()=>stat("خطأ الاتصال: "+(e?.message||String(e)),true),0);
 }
-const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[],COUPONS=[];
+const BUCKET='store-media'; let SETTINGS=[],PRODUCTS=[];
 
 const heroEditor=document.getElementById('heroEditor');
 const lowerEditor=document.getElementById('lowerEditor');
@@ -114,8 +92,6 @@ const brandsEditor=document.getElementById('brandsEditor');
 const giftEditor=document.getElementById('giftEditor');
 const profileEditor=document.getElementById('profileEditor');
 const introEditor=document.getElementById('introEditor');
-const storeColorsEditor=document.getElementById('storeColorsEditor');
-const brandSectionsEditor=document.getElementById('brandSectionsEditor');
 const productRows=document.getElementById('productRows');
 const settingRows=document.getElementById('settingRows');
 const productDialog=document.getElementById('productDialog');
@@ -129,8 +105,6 @@ const pActive=document.getElementById('pActive');
 const pSort=document.getElementById('pSort');
 const pImageFile=document.getElementById('pImageFile');
 const pImagePreview=document.getElementById('pImagePreview');
-const couponRows=document.getElementById('couponRows');
-const couponDialog=document.getElementById('couponDialog');
 
 
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.tab).classList.add('active')});
@@ -247,21 +221,18 @@ async function createGiftSection(){try{if(SETTINGS.some(x=>x.key==='gift')&&!con
 
 function colorField(k,label,val){return `<div class="field"><label>${label}</label><div class="color-row"><input data-v="${k}" type="color" value="${esc(val)}"><input value="${esc(val)}" readonly></div></div>`}
 function profileSectionEditor(){
- const s=getSetting('profile',{enabled:true,nameAr:'أطياف',nameEn:'ATYAAF STORE',mark:'أ',logoImage:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',fontFamily:'Tahoma, Arial, sans-serif',arabicSize:18,englishSize:12,markSize:28});
+ const s=getSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',barBackgroundColor:'#000000',barText:'مرحبا بكم',barTextColor:'#ffffff',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64});
  profileEditor.innerHTML=`<div class="grid">
  <div class="field"><label>الحالة</label><select data-v="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
- <div class="field"><label>اسم المتجر بالعربي</label><input data-v="nameAr" value="${esc(s.nameAr||'')}"></div>
- <div class="field"><label>اسم المتجر بالإنجليزي</label><input data-v="nameEn" value="${esc(s.nameEn||'')}"></div>
- <div class="field"><label>حرف/رمز الشعار</label><input data-v="mark" value="${esc(s.mark||'أ')}"></div>
- ${colorField('backgroundColor','لون الخلفية',s.backgroundColor||'#fffdfa')}
- ${colorField('textColor','لون الاسم',s.textColor||'#17352e')}
- ${colorField('accentColor','لون الشعار',s.accentColor||'#b47a4f')}
+ ${colorField('backgroundColor','لون خلفية الهيدر',s.backgroundColor||'#000000')}
+ ${colorField('barBackgroundColor','لون الشريط العلوي',s.barBackgroundColor||'#000000')}
+ ${colorField('barTextColor','لون نص الشريط',s.barTextColor||'#ffffff')}
+ <div class="field full"><label>نص الشريط العلوي</label><input data-v="barText" value="${esc(s.barText||'مرحبا بكم')}"></div>
  <div class="field"><label>الخط</label><select data-v="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
- <div class="field"><label>حجم العربي</label><input data-v="arabicSize" type="number" value="${Number(s.arabicSize||18)}"></div>
- <div class="field"><label>حجم الإنجليزي</label><input data-v="englishSize" type="number" value="${Number(s.englishSize||12)}"></div>
- <div class="field"><label>حجم الشعار</label><input data-v="markSize" type="number" value="${Number(s.markSize||28)}"></div>
- <div class="field full upload"><b>صورة/لوجو البروفايل — رفع مباشر</b><input id="profileLogoFile" type="file" accept="image/*">${s.logoImage?`<div style="margin-top:9px"><img src="${esc(s.logoImage)}" style="max-width:160px;max-height:120px;border-radius:12px"><br><button class="btn red" type="button" onclick="removeProfileLogo()">حذف الصورة فقط</button></div>`:''}</div>
- </div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveProfileSection()">حفظ</button><button class="btn alt" onclick="toggleSection('profile')">إظهار/إخفاء</button><button class="btn copper" onclick="createProfileSection()">+ إضافة/إنشاء</button><button class="btn red" onclick="deleteProfileSection()">حذف القسم</button></div>`;
+ <div class="field"><label>حجم البروفايل للهاتف px</label><input data-v="phoneSize" type="number" min="24" max="140" value="${Number(s.phoneSize||42)}"></div>
+ <div class="field"><label>حجم البروفايل للآيباد/التابلت px</label><input data-v="tabletSize" type="number" min="30" max="180" value="${Number(s.tabletSize||64)}"></div>
+ <div class="field full upload"><b>صورة البروفايل — رفع مباشر</b><input id="profileLogoFile" type="file" accept="image/*">${s.logoImage?`<div style="margin-top:9px"><img src="${esc(s.logoImage)}" style="max-width:180px;max-height:130px;object-fit:contain"><br><button class="btn red" type="button" onclick="removeProfileLogo()">حذف الصورة فقط</button></div>`:''}</div>
+ </div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveProfileSection()">حفظ</button></div>`;
  const ff=profileEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Tahoma, Arial, sans-serif';
 }
 function introSectionEditor(){
@@ -285,355 +256,28 @@ function introSectionEditor(){
 }
 function readVisualEditor(el,key){
  const old=getSetting(key,{}),o={...old};
- el.querySelectorAll('[data-v]').forEach(x=>{let v=x.value;if(x.dataset.v==='enabled'||x.dataset.v==='showOnce')v=v==='true';else if(['arabicSize','englishSize','markSize','letterSize','duration'].includes(x.dataset.v))v=Number(v)||0;o[x.dataset.v]=v});return o;
+ el.querySelectorAll('[data-v]').forEach(x=>{let v=x.value;if(x.dataset.v==='enabled'||x.dataset.v==='showOnce')v=v==='true';else if(['arabicSize','englishSize','markSize','letterSize','duration','phoneSize','tabletSize'].includes(x.dataset.v))v=Number(v)||0;o[x.dataset.v]=v});return o;
 }
-async function saveProfileSection(){try{let v=readVisualEditor(profileEditor,'profile'),f=document.getElementById('profileLogoFile')?.files?.[0];if(f)v.logoImage=(await uploadFiles([f],'profile'))[0]||v.logoImage||'';await putSetting('profile',v);await loadAll();stat('تم حفظ البروفايل واسم المتجر ✓')}catch(e){stat(e.message,true)}}
+async function saveProfileSection(){try{
+ let old=getSetting('profile',{}),v=readVisualEditor(profileEditor,'profile'),f=document.getElementById('profileLogoFile')?.files?.[0];
+ if(f)v.logoImage=(await uploadFiles([f],'profile'))[0]||old.logoImage||'';
+ else v.logoImage=old.logoImage||'';
+ delete v.nameAr;delete v.nameEn;delete v.mark;delete v.textColor;delete v.accentColor;delete v.arabicSize;delete v.englishSize;delete v.markSize;
+ await putSetting('profile',v);await loadAll();stat('تم حفظ صورة البروفايل والخلفية والشريط والخط والحجوم ✓')
+}catch(e){stat(e.message,true)}}
 async function saveIntroSection(){try{let v=readVisualEditor(introEditor,'intro'),f=document.getElementById('introLogoFile')?.files?.[0];if(f)v.logoImage=(await uploadFiles([f],'intro'))[0]||v.logoImage||'';await putSetting('intro',v);await loadAll();stat('تم حفظ شاشة البداية ✓')}catch(e){stat(e.message,true)}}
 async function removeProfileLogo(){let s=getSetting('profile',{});s.logoImage='';await putSetting('profile',s);await loadAll()}
 async function removeIntroLogo(){let s=getSetting('intro',{});s.logoImage='';await putSetting('intro',s);await loadAll()}
 async function deleteProfileSection(){if(confirm('حذف إعدادات البروفايل؟')){await removeSetting('profile');await loadAll()}}
 async function deleteIntroSection(){if(confirm('حذف إعدادات شاشة البداية؟')){await removeSetting('intro');await loadAll()}}
-async function createProfileSection(){await putSetting('profile',{enabled:true,nameAr:'أطياف',nameEn:'ATYAAF STORE',mark:'أ',logoImage:'',backgroundColor:'#fffdfa',textColor:'#17352e',accentColor:'#b47a4f',fontFamily:'Tahoma, Arial, sans-serif',arabicSize:18,englishSize:12,markSize:28});await loadAll()}
+async function createProfileSection(){await putSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',barBackgroundColor:'#000000',barText:'مرحبا بكم',barTextColor:'#ffffff',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64});await loadAll()}
 async function createIntroSection(){await putSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
-
-
-
-const BRAND_SECTION_DEFAULTS={
- enabled:true,backgroundColor:'#fffdfa',titleColor:'#17352e',subtitleColor:'#707b75',
- dividerColor:'#e4ddd2',cardBackground:'#fffdfa',cardBorder:'#e4ddd2',
- productNameColor:'#17352e',brandTextColor:'#b47a4f',priceColor:'#17352e',
- buttonBackground:'#17352e',buttonText:'#ffffff',secondaryButtonBackground:'#ffffff',
- secondaryButtonText:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',
- titleSize:32,subtitleSize:14,productNameSize:18,brandTextSize:12,priceSize:18,
- buttonSize:14,cardRadius:18,imageHeight:360,productIconWidth:100,productIconHeight:100,productCardWidth:100,productCardHeight:0,actionButtonHeight:46,cartButtonWidth:72,giftButtonWidth:24,actionGap:8,actionRadius:22,actionIconSize:20,cardImageShare:80,cardTextShare:10,cardActionsShare:10,catalogCardHeight:390,catalogImageHeight:300,catalogColumnsDesktop:5,catalogColumnsTablet:3,catalogColumnsMobile:2,badgeText:'مميز',badgeBackground:'#17352e',badgeTextColor:'#ffffff',badgeFontSize:12,badgeFontWeight:700,badgeRadius:8,badgePadX:10,badgePadY:6,badgeTop:8,badgeSide:8,gap:18,sectionGap:42,
- columnsDesktop:3,columnsTablet:2,columnsMobile:1
-};
-function bsColor(k,label,v){
- return `<div class="field"><label>${label}</label><div class="color-row"><input data-bs="${k}" type="color" value="${esc(v)}"><input data-bs-text="${k}" value="${esc(v)}"></div></div>`;
-}
-function brandSectionsManager(){
- const v={...BRAND_SECTION_DEFAULTS,...getSetting('brand_sections',{})};
- brandSectionsEditor.innerHTML=`<div class="grid">
- <div class="field"><label>الحالة</label><select data-bs="enabled"><option value="true" ${v.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${v.enabled===false?'selected':''}>مخفي</option></select></div>
- <div class="field"><label>الخط</label><select data-bs="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
- ${bsColor('backgroundColor','خلفية الأقسام',v.backgroundColor)}
- ${bsColor('titleColor','لون عنوان الماركة',v.titleColor)}
- ${bsColor('subtitleColor','لون وصف القسم',v.subtitleColor)}
- ${bsColor('dividerColor','لون الفاصل بين الأقسام',v.dividerColor)}
- ${bsColor('cardBackground','خلفية بطاقة المنتج',v.cardBackground)}
- ${bsColor('cardBorder','حدود بطاقة المنتج',v.cardBorder)}
- ${bsColor('productNameColor','لون اسم المنتج',v.productNameColor)}
- ${bsColor('brandTextColor','لون اسم الماركة داخل البطاقة',v.brandTextColor)}
- ${bsColor('priceColor','لون السعر',v.priceColor)}
- ${bsColor('buttonBackground','لون زر أضف للسلة',v.buttonBackground)}
- ${bsColor('buttonText','نص زر أضف للسلة',v.buttonText)}
- ${bsColor('secondaryButtonBackground','خلفية زر عرض',v.secondaryButtonBackground)}
- ${bsColor('secondaryButtonText','نص زر عرض',v.secondaryButtonText)}
- <div class="field"><label>حجم عنوان الماركة</label><input data-bs="titleSize" type="number" min="16" max="80" value="${v.titleSize}"></div>
- <div class="field"><label>حجم وصف القسم</label><input data-bs="subtitleSize" type="number" min="9" max="36" value="${v.subtitleSize}"></div>
- <div class="field"><label>حجم اسم المنتج</label><input data-bs="productNameSize" type="number" min="8" max="72" value="${v.productNameSize}"></div>
- <div class="field"><label>حجم اسم الماركة داخل البطاقة</label><input data-bs="brandTextSize" type="number" min="7" max="48" value="${v.brandTextSize}"></div>
- <div class="field"><label>حجم السعر</label><input data-bs="priceSize" type="number" min="8" max="64" value="${v.priceSize}"></div>
- <div class="field"><label>حجم نص الأزرار</label><input data-bs="buttonSize" type="number" min="8" max="42" value="${v.buttonSize}"></div>
- <div class="field"><label>استدارة البطاقات</label><input data-bs="cardRadius" type="number" min="0" max="60" value="${v.cardRadius}"></div>
- <div class="field"><label>ارتفاع صورة المنتج</label><input data-bs="imageHeight" type="number" min="160" max="700" value="${v.imageHeight}"></div>
- <div class="field"><label>عرض أيقونة/صورة المنتج %</label><input data-bs="productIconWidth" type="number" min="10" max="100" value="${v.productIconWidth}"><small class="muted">نسبة عرض الصورة داخل مساحة المنتج.</small></div>
- <div class="field"><label>ارتفاع أيقونة/صورة المنتج %</label><input data-bs="productIconHeight" type="number" min="10" max="100" value="${v.productIconHeight}"><small class="muted">نسبة ارتفاع الصورة داخل مساحة المنتج.</small></div>
- <div class="field"><label>عرض بطاقة المنتج كاملة %</label><input data-bs="productCardWidth" type="number" min="35" max="100" value="${v.productCardWidth}"><small class="muted">يتحكم بعرض البطاقة كاملة: الصورة + الاسم + السعر + السلة + عرض + الهدية.</small></div>
- <div class="field"><label>ارتفاع بطاقة المنتج كاملة px</label><input data-bs="productCardHeight" type="number" min="0" max="1200" value="${v.productCardHeight}"><small class="muted">0 = ارتفاع تلقائي. أي قيمة أخرى تحدد ارتفاع البطاقة كاملة.</small></div>
- <div class="field"><label>ارتفاع زري السلة والهدية px</label><input data-bs="actionButtonHeight" type="number" min="30" max="90" value="${v.actionButtonHeight}"></div>
- <div class="field"><label>عرض زر أضف للسلة %</label><input data-bs="cartButtonWidth" type="number" min="40" max="85" value="${v.cartButtonWidth}"></div>
- <div class="field"><label>عرض زر شراء كهدية %</label><input data-bs="giftButtonWidth" type="number" min="12" max="45" value="${v.giftButtonWidth}"></div>
- <div class="field"><label>المسافة بين الزرين px</label><input data-bs="actionGap" type="number" min="0" max="30" value="${v.actionGap}"></div>
- <div class="field"><label>استدارة الزرين px</label><input data-bs="actionRadius" type="number" min="0" max="50" value="${v.actionRadius}"></div>
- <div class="field"><label>حجم رمز الهدية px</label><input data-bs="actionIconSize" type="number" min="12" max="40" value="${v.actionIconSize}"></div>
- <div class="field"><label>مساحة صورة المنتج %</label><input data-bs="cardImageShare" type="number" min="50" max="90" value="${v.cardImageShare}"><small class="muted">الافتراضي 80% من ارتفاع البطاقة كاملة.</small></div>
- <div class="field"><label>مساحة النصوص %</label><input data-bs="cardTextShare" type="number" min="5" max="30" value="${v.cardTextShare}"><small class="muted">اسم الماركة + اسم المنتج + السعر. الافتراضي 10%.</small></div>
- <div class="field"><label>مساحة الأزرار %</label><input data-bs="cardActionsShare" type="number" min="5" max="30" value="${v.cardActionsShare}"><small class="muted">أضف للسلة + شراء كهدية. الافتراضي 10%.</small></div>
- <div class="field"><label>ارتفاع بطاقة العرض الجديدة px</label><input data-bs="catalogCardHeight" type="number" min="280" max="650" value="${v.catalogCardHeight}"></div>
- <div class="field"><label>ارتفاع مساحة الصورة px</label><input data-bs="catalogImageHeight" type="number" min="180" max="520" value="${v.catalogImageHeight}"></div>
- <div class="field"><label>عدد البطاقات — الكمبيوتر</label><input data-bs="catalogColumnsDesktop" type="number" min="2" max="6" value="${v.catalogColumnsDesktop}"></div>
- <div class="field"><label>عدد البطاقات — التابلت</label><input data-bs="catalogColumnsTablet" type="number" min="2" max="4" value="${v.catalogColumnsTablet}"></div>
- <div class="field"><label>عدد البطاقات — الجوال</label><input data-bs="catalogColumnsMobile" type="number" min="1" max="2" value="${v.catalogColumnsMobile}"></div>
- <div class="field"><label>اسم الشارة</label><input data-bs="badgeText" value="${esc(v.badgeText)}" placeholder="جديد / مميز / حصري"></div>
- <div class="field"><label>لون خلفية الشارة</label><div class="color-row"><input data-bs="badgeBackground" type="color" value="${esc(v.badgeBackground)}"><input data-bs-text="badgeBackground" value="${esc(v.badgeBackground)}"></div></div>
- <div class="field"><label>لون نص الشارة</label><div class="color-row"><input data-bs="badgeTextColor" type="color" value="${esc(v.badgeTextColor)}"><input data-bs-text="badgeTextColor" value="${esc(v.badgeTextColor)}"></div></div>
- <div class="field"><label>حجم خط الشارة px</label><input data-bs="badgeFontSize" type="number" min="8" max="28" value="${v.badgeFontSize}"></div>
- <div class="field"><label>سماكة الخط</label><select data-bs="badgeFontWeight"><option value="400">عادي</option><option value="600">متوسط</option><option value="700">عريض</option><option value="800">عريض جدًا</option></select></div>
- <div class="field"><label>استدارة الشارة px</label><input data-bs="badgeRadius" type="number" min="0" max="30" value="${v.badgeRadius}"></div>
- <div class="field"><label>عرض/حشو الشارة px</label><input data-bs="badgePadX" type="number" min="4" max="30" value="${v.badgePadX}"></div>
- <div class="field"><label>ارتفاع/حشو الشارة px</label><input data-bs="badgePadY" type="number" min="2" max="20" value="${v.badgePadY}"></div>
- <div class="field"><label>بعدها من الأعلى px</label><input data-bs="badgeTop" type="number" min="0" max="40" value="${v.badgeTop}"></div>
- <div class="field"><label>بعدها من الجانب px</label><input data-bs="badgeSide" type="number" min="0" max="40" value="${v.badgeSide}"></div>
- <div class="field"><label>المسافة بين المنتجات</label><input data-bs="gap" type="number" min="0" max="60" value="${v.gap}"></div>
- <div class="field"><label>المسافة بين أقسام الماركات</label><input data-bs="sectionGap" type="number" min="0" max="100" value="${v.sectionGap}"></div>
- <div class="field"><label>عدد الأعمدة — الكمبيوتر</label><input data-bs="columnsDesktop" type="number" min="1" max="6" value="${v.columnsDesktop}"></div>
- <div class="field"><label>عدد الأعمدة — التابلت</label><input data-bs="columnsTablet" type="number" min="1" max="4" value="${v.columnsTablet}"></div>
- <div class="field"><label>عدد الأعمدة — الجوال</label><input data-bs="columnsMobile" type="number" min="1" max="2" value="${v.columnsMobile}"></div>
- </div>
- <div class="toolbar" style="margin-top:16px"><button class="btn" onclick="saveBrandSectionsManager()">حفظ إعدادات الأقسام</button><button class="btn alt" onclick="resetBrandSectionsManager()">استعادة الافتراضي</button></div>`;
- const ff=brandSectionsEditor.querySelector('[data-bs="fontFamily"]');if(ff)ff.value=v.fontFamily;const bw=brandSectionsEditor.querySelector('[data-bs="badgeFontWeight"]');if(bw)bw.value=String(v.badgeFontWeight);
- brandSectionsEditor.querySelectorAll('input[type="color"][data-bs]').forEach(p=>p.addEventListener('input',()=>{const t=brandSectionsEditor.querySelector(`[data-bs-text="${p.dataset.bs}"]`);if(t)t.value=p.value}));
-}
-async function saveBrandSectionsManager(){
- try{
-  const v={...BRAND_SECTION_DEFAULTS};
-  brandSectionsEditor.querySelectorAll('[data-bs]').forEach(x=>{
-   let z=x.value,k=x.dataset.bs;
-   if(k==='enabled')z=z==='true';
-   else if(!['fontFamily','backgroundColor','titleColor','subtitleColor','dividerColor','cardBackground','cardBorder','productNameColor','brandTextColor','priceColor','buttonBackground','buttonText','secondaryButtonBackground','secondaryButtonText','badgeText','badgeBackground','badgeTextColor'].includes(k))z=Number(z)||0;
-   v[k]=z;
-  });
-  await putSetting('brand_sections',v);await loadAll();stat('تم حفظ إعدادات أقسام الماركات ✓');
- }catch(e){stat(e?.message||String(e),true)}
-}
-async function resetBrandSectionsManager(){if(!confirm('استعادة الإعدادات الافتراضية؟'))return;await putSetting('brand_sections',{...BRAND_SECTION_DEFAULTS});await loadAll()}
-
-const STORE_COLOR_DEFAULTS={
- pageBackground:'#fffdfa',surfaceBackground:'#ffffff',topbarBackground:'#17352e',
- topbarText:'#ffffff',headerBackground:'#fffdfa',navBackground:'#fffdfa',
- primaryText:'#17352e',secondaryText:'#707b75',accent:'#b47a4f',
- border:'#e4ddd2',searchBackground:'#f5f1ea',iconBackground:'#fffdfa',
- iconColor:'#17352e',cardBackground:'#fffdfa',buttonBackground:'#17352e',
- buttonText:'#ffffff',footerBackground:'#17352e',footerText:'#ffffff',
- introBackground:'#17352e'
-};
-function storeColorField(k,label,v){
- return `<div class="field"><label>${label}</label><div class="color-row"><input data-store-color="${k}" type="color" value="${esc(v)}"><input data-store-color-text="${k}" value="${esc(v)}"></div></div>`;
-}
-function storeColorsSectionEditor(){
- const c={...STORE_COLOR_DEFAULTS,...getSetting('store_colors',{})};
- const fields=[
- ['pageBackground','خلفية المتجر'],['surfaceBackground','خلفية الأقسام العامة'],
- ['topbarBackground','خلفية الشريط العلوي'],['topbarText','نص الشريط العلوي'],
- ['headerBackground','خلفية الهيدر'],['navBackground','خلفية قائمة الأقسام'],
- ['primaryText','النص الأساسي'],['secondaryText','النص الثانوي'],
- ['accent','اللون المميز / النحاسي'],['border','الحدود والفواصل'],
- ['searchBackground','خلفية البحث'],['iconBackground','خلفية الأيقونات'],
- ['iconColor','لون الأيقونات'],['cardBackground','خلفية البطاقات'],
- ['buttonBackground','خلفية الأزرار'],['buttonText','نص الأزرار'],
- ['footerBackground','خلفية الفوتر'],['footerText','نص الفوتر'],
- ['introBackground','خلفية شاشة البداية']
- ];
- storeColorsEditor.innerHTML=`<div class="grid">${fields.map(x=>storeColorField(x[0],x[1],c[x[0]])).join('')}</div>
- <div class="toolbar" style="margin-top:16px"><button class="btn" onclick="saveStoreColors()">حفظ ألوان المتجر</button><button class="btn alt" onclick="resetStoreColors()">استعادة الألوان الافتراضية</button></div>`;
- storeColorsEditor.querySelectorAll('input[type="color"][data-store-color]').forEach(p=>p.addEventListener('input',()=>{
-   const t=storeColorsEditor.querySelector(`[data-store-color-text="${p.dataset.storeColor}"]`);if(t)t.value=p.value;
- }));
- storeColorsEditor.querySelectorAll('[data-store-color-text]').forEach(t=>t.addEventListener('change',()=>{
-   const p=storeColorsEditor.querySelector(`[data-store-color="${t.dataset.storeColorText}"]`);
-   if(p && /^#[0-9a-f]{6}$/i.test(t.value.trim()))p.value=t.value.trim();
- }));
-}
-async function saveStoreColors(){
- try{
-  const value={...STORE_COLOR_DEFAULTS};
-  storeColorsEditor.querySelectorAll('[data-store-color]').forEach(x=>value[x.dataset.storeColor]=x.value);
-  await putSetting('store_colors',value);await loadAll();stat('تم حفظ ألوان المتجر ✓');
- }catch(e){stat('فشل حفظ الألوان: '+(e?.message||String(e)),true)}
-}
-async function resetStoreColors(){
- if(!confirm('استعادة الألوان الافتراضية للمتجر؟'))return;
- try{await putSetting('store_colors',{...STORE_COLOR_DEFAULTS});await loadAll();stat('تمت استعادة الألوان الافتراضية ✓')}catch(e){stat(e?.message||String(e),true)}
-}
 
 function simpleEditor(el,key){
  const sc=schemas[key],s=getSetting(key,{enabled:true});
  el.innerHTML=`<div class="grid">${sc.fields.map(([k,l,t])=>t==='area'?`<div class="field full"><label>${l}</label><textarea data-k="${k}" rows="5">${esc(s[k]||'')}</textarea></div>`:t==='bool'?`<div class="field"><label>${l}</label><select data-k="${k}"><option value="true" ${s[k]!==false?'selected':''}>ظاهر</option><option value="false" ${s[k]===false?'selected':''}>مخفي</option></select></div>`:`<div class="field"><label>${l}</label><input data-k="${k}" value="${esc(s[k]||'')}"></div>`).join('')}</div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveSimple('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
 }
 async function saveSimple(key,card){let s=getSetting(key,{});card.querySelectorAll('[data-k]').forEach(x=>s[x.dataset.k]=x.tagName==='SELECT'?x.value==='true':x.value);await putSetting(key,s);await loadAll();stat('تم حفظ '+schemas[key].title)}
-
-
-function brandColor(k,label,v){
- return `<div class="field"><label>${label}</label><div class="color-row"><input data-brand-style="${k}" type="color" value="${esc(v)}"><input data-brand-style-text="${k}" value="${esc(v)}"></div></div>`;
-}
-function brandsSectionEditor(){
- const d={enabled:true,title:'تسوق حسب الماركة',subtitle:'علامات مختارة لعشاق التفاصيل',showAllText:'عرض الكل ←',
- backgroundColor:'#fffdfa',titleColor:'#17352e',subtitleColor:'#707b75',linkColor:'#b47a4f',
- cardBackground:'#fffdfa',cardBorder:'#e4ddd2',brandNameColor:'#17352e',brandSubColor:'#b47a4f',
- fontFamily:'Tahoma, Arial, sans-serif',titleSize:32,subtitleSize:14,linkSize:14,
- brandNameSize:18,brandSubSize:11,logoSize:54,cardRadius:18,cardPadding:22,gap:14,
- columnsDesktop:5,columnsTablet:3,columnsMobile:2,items:[]};
- const b={...d,...getSetting('brands',{})}; b.items=Array.isArray(b.items)?b.items:[];
- brandsEditor.innerHTML=`<div class="grid">
-  <div class="field"><label>الحالة</label><select data-brand-style="enabled"><option value="true" ${b.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${b.enabled===false?'selected':''}>مخفي</option></select></div>
-  <div class="field"><label>عنوان القسم</label><input data-brand-style="title" value="${esc(b.title)}"></div>
-  <div class="field"><label>الوصف</label><input data-brand-style="subtitle" value="${esc(b.subtitle)}"></div>
-  <div class="field"><label>نص عرض الكل</label><input data-brand-style="showAllText" value="${esc(b.showAllText)}"></div>
-  ${brandColor('backgroundColor','خلفية القسم',b.backgroundColor)}
-  ${brandColor('titleColor','لون العنوان',b.titleColor)}
-  ${brandColor('subtitleColor','لون الوصف',b.subtitleColor)}
-  ${brandColor('linkColor','لون عرض الكل',b.linkColor)}
-  ${brandColor('cardBackground','خلفية بطاقة الماركة',b.cardBackground)}
-  ${brandColor('cardBorder','حدود بطاقة الماركة',b.cardBorder)}
-  ${brandColor('brandNameColor','لون اسم الماركة',b.brandNameColor)}
-  ${brandColor('brandSubColor','لون النص الصغير',b.brandSubColor)}
-  <div class="field"><label>الخط</label><select data-brand-style="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
-  <div class="field"><label>حجم عنوان القسم</label><input data-brand-style="titleSize" type="number" min="16" max="80" value="${Number(b.titleSize)}"></div>
-  <div class="field"><label>حجم الوصف</label><input data-brand-style="subtitleSize" type="number" min="9" max="36" value="${Number(b.subtitleSize)}"></div>
-  <div class="field"><label>حجم عرض الكل</label><input data-brand-style="linkSize" type="number" min="9" max="32" value="${Number(b.linkSize)}"></div>
-  <div class="field"><label>حجم اسم الماركة</label><input data-brand-style="brandNameSize" type="number" min="10" max="42" value="${Number(b.brandNameSize)}"></div>
-  <div class="field"><label>حجم النص الصغير</label><input data-brand-style="brandSubSize" type="number" min="8" max="30" value="${Number(b.brandSubSize)}"></div>
-  <div class="field"><label>حجم صورة/أيقونة الماركة</label><input data-brand-style="logoSize" type="number" min="20" max="180" value="${Number(b.logoSize)}"></div>
-  <div class="field"><label>استدارة البطاقات</label><input data-brand-style="cardRadius" type="number" min="0" max="60" value="${Number(b.cardRadius)}"></div>
-  <div class="field"><label>المساحة داخل البطاقة</label><input data-brand-style="cardPadding" type="number" min="4" max="60" value="${Number(b.cardPadding)}"></div>
-  <div class="field"><label>المسافة بين البطاقات</label><input data-brand-style="gap" type="number" min="0" max="50" value="${Number(b.gap)}"></div>
-  <div class="field"><label>أعمدة الكمبيوتر</label><input data-brand-style="columnsDesktop" type="number" min="1" max="8" value="${Number(b.columnsDesktop)}"></div>
-  <div class="field"><label>أعمدة التابلت</label><input data-brand-style="columnsTablet" type="number" min="1" max="6" value="${Number(b.columnsTablet)}"></div>
-  <div class="field"><label>أعمدة الجوال</label><input data-brand-style="columnsMobile" type="number" min="1" max="3" value="${Number(b.columnsMobile)}"></div>
- </div>
- <div class="toolbar" style="margin:16px 0"><button class="btn" onclick="saveBrandsStyle()">حفظ إعدادات القسم</button><button class="btn copper" onclick="addBrandItem()">+ إضافة ماركة</button><button class="btn alt" onclick="toggleSection('brands')">إظهار/إخفاء</button></div>
- <div>${b.items.map((x,i)=>`<div class="card" style="margin-top:12px">
-  <div class="grid">
-   <div class="field"><label>اسم الماركة</label><input id="brand_title_${i}" value="${esc(x.title||x.name||'')}"></div>
-   <div class="field"><label>النص الصغير</label><input id="brand_text_${i}" value="${esc(x.text||x.subtitle||'')}"></div>
-   <div class="field full upload"><b>صورة/أيقونة الماركة — رفع مباشر</b><input id="brand_file_${i}" type="file" accept="image/*"><small class="muted">ترفع مباشرة إلى Storage؛ لا تحتاج رابط.</small>
-   ${x.image?`<div style="margin-top:9px"><img src="${esc(x.image)}" style="max-width:120px;max-height:90px;object-fit:contain;background:transparent"><br><button class="btn red" type="button" onclick="removeBrandImage(${i})">حذف الصورة فقط</button></div>`:''}</div>
-  </div>
-  <div class="actions"><button class="btn" onclick="saveBrandItem(${i})">حفظ الماركة</button><button class="btn alt" onclick="hideBrandItem(${i})">${x.hidden?'إظهار':'إخفاء'}</button><button class="btn red" onclick="removeBrandItem(${i})">حذف</button></div>
- </div>`).join('')}</div>`;
- const ff=brandsEditor.querySelector('[data-brand-style="fontFamily"]');if(ff)ff.value=b.fontFamily;
- brandsEditor.querySelectorAll('input[type="color"][data-brand-style]').forEach(p=>p.addEventListener('input',()=>{const t=brandsEditor.querySelector(`[data-brand-style-text="${p.dataset.brandStyle}"]`);if(t)t.value=p.value}));
-}
-function readBrandsStyle(){
- const old=getSetting('brands',{}),v={...old};
- brandsEditor.querySelectorAll('[data-brand-style]').forEach(x=>{
-  let z=x.value,k=x.dataset.brandStyle;
-  if(k==='enabled')z=z==='true';
-  else if(['titleSize','subtitleSize','linkSize','brandNameSize','brandSubSize','logoSize','cardRadius','cardPadding','gap','columnsDesktop','columnsTablet','columnsMobile'].includes(k))z=Number(z)||0;
-  v[k]=z;
- });return v;
-}
-async function saveBrandsStyle(){try{await putSetting('brands',readBrandsStyle());await loadAll();stat('تم حفظ جميع إعدادات قسم الماركات ✓')}catch(e){stat(e.message,true)}}
-async function addBrandItem(){let b=getSetting('brands',{enabled:true,items:[]});b.items=Array.isArray(b.items)?b.items:[];b.items.push({title:'ماركة جديدة',text:'',image:'',hidden:false});await putSetting('brands',b);await loadAll()}
-async function saveBrandItem(i){
- try{
-  let b=getSetting('brands',{items:[]});b.items=Array.isArray(b.items)?b.items:[];
-  let x={...(b.items[i]||{})};x.title=document.getElementById(`brand_title_${i}`).value.trim();x.text=document.getElementById(`brand_text_${i}`).value.trim();
-  const f=document.getElementById(`brand_file_${i}`)?.files?.[0];if(f)x.image=(await uploadFiles([f],'brands'))[0]||x.image||'';
-  b.items[i]=x;await putSetting('brands',b);await loadAll();stat('تم حفظ الماركة ورفع الصورة مباشرة ✓');
- }catch(e){stat(e.message,true)}
-}
-async function removeBrandImage(i){let b=getSetting('brands',{items:[]});if(b.items?.[i])b.items[i].image='';await putSetting('brands',b);await loadAll()}
-async function hideBrandItem(i){let b=getSetting('brands',{items:[]});if(b.items?.[i])b.items[i].hidden=!b.items[i].hidden;await putSetting('brands',b);await loadAll()}
-async function removeBrandItem(i){if(!confirm('حذف هذه الماركة؟'))return;let b=getSetting('brands',{items:[]});b.items.splice(i,1);await putSetting('brands',b);await loadAll()}
-
-
-function benefitsSectionEditor(){
- const D={
-  enabled:true,sectionBackground:'#fbf8f2',gap:14,
-  columnsDesktop:4,columnsTablet:2,columnsMobile:2,
-  cardBackground:'#fffdfa',cardBorder:'#ffffff',cardBorderWidth:1,cardRadius:18,
-  cardPadding:22,cardMinHeight:128,cardShadow:'0 14px 38px rgba(23,53,46,.10)',
-  iconColor:'#b47a4f',iconSize:24,
-  titleColor:'#17352e',titleSize:16,titleWeight:700,
-  textColor:'#707b75',textSize:13,textWeight:400,
-  fontFamily:'Tahoma, Arial, sans-serif',
-  items:[
-   {icon:'✦',title:'منتجات أصلية',text:'اختيارات موثوقة بعناية',hidden:false},
-   {icon:'⌁',title:'شحن سريع',text:'توصيل آمن إلى بابك',hidden:false},
-   {icon:'♧',title:'تغليف فاخر',text:'هدية تليق بمن تحب',hidden:false},
-   {icon:'♡',title:'خدمة تهتم',text:'نحن هنا لمساعدتك',hidden:false}
-  ]
- };
- const raw=getSetting('benefits',{});
- const v={...D,...raw,items:Array.isArray(raw.items)?raw.items:D.items};
- const color=(key,label)=>`<div class="field"><label>${label}</label><div class="color-row"><input data-benefit="${key}" type="color" value="${esc(v[key])}"><input data-benefit-text="${key}" value="${esc(v[key])}"></div></div>`;
- const num=(key,label,min,max)=>`<div class="field"><label>${label}</label><input data-benefit="${key}" type="number" min="${min}" max="${max}" value="${Number(v[key])}"></div>`;
- benefitsEditor.innerHTML=`
-  <div class="toolbar">
-   <button class="btn" onclick="saveBenefitsSection()">حفظ إعدادات المزايا</button>
-   <button class="btn alt" onclick="addBenefitItem()">+ إضافة مربع</button>
-   <button class="btn alt" onclick="toggleBenefitsSection()">${v.enabled===false?'إظهار القسم':'إخفاء القسم'}</button>
-  </div>
-  <div class="card" style="margin-top:12px">
-   <h3>تصميم القسم والبطاقات</h3>
-   <div class="grid">
-    ${color('sectionBackground','لون خلفية منطقة المزايا')}
-    ${color('cardBackground','لون خلفية المربع')}
-    ${color('cardBorder','لون حدود المربع')}
-    ${color('iconColor','لون الأيقونة')}
-    ${color('titleColor','لون العنوان')}
-    ${color('textColor','لون الوصف')}
-    ${num('gap','المسافة بين المربعات px',0,60)}
-    ${num('columnsDesktop','عدد المربعات — كمبيوتر',1,6)}
-    ${num('columnsTablet','عدد المربعات — تابلت',1,4)}
-    ${num('columnsMobile','عدد المربعات — جوال',1,2)}
-    ${num('cardBorderWidth','سماكة الحدود px',0,8)}
-    ${num('cardRadius','استدارة الزوايا px',0,60)}
-    ${num('cardPadding','الحشو الداخلي px',0,60)}
-    ${num('cardMinHeight','أقل ارتفاع للمربع px',60,400)}
-    ${num('iconSize','حجم الأيقونة px',8,80)}
-    ${num('titleSize','حجم خط العنوان px',8,60)}
-    ${num('textSize','حجم خط الوصف px',7,48)}
-    <div class="field"><label>سماكة عنوان المربع</label><select data-benefit="titleWeight"><option value="400">عادي</option><option value="600">متوسط</option><option value="700">عريض</option><option value="800">عريض جدًا</option></select></div>
-    <div class="field"><label>سماكة الوصف</label><select data-benefit="textWeight"><option value="400">عادي</option><option value="500">متوسط</option><option value="600">عريض</option></select></div>
-    <div class="field"><label>نوع الخط</label><input data-benefit="fontFamily" value="${esc(v.fontFamily)}" placeholder="Tahoma, Arial, sans-serif"></div>
-    <div class="field"><label>ظل المربع CSS</label><input data-benefit="cardShadow" value="${esc(v.cardShadow)}"></div>
-   </div>
-  </div>
-  <div style="margin-top:12px">
-   ${v.items.map((it,i)=>`
-    <div class="card" style="margin-top:10px">
-     <h3>المربع ${i+1}</h3>
-     <div class="grid">
-      <div class="field"><label>الأيقونة / الرمز</label><input id="benefit_icon_${i}" value="${esc(it.icon||'')}"></div>
-      <div class="field"><label>العنوان</label><input id="benefit_title_${i}" value="${esc(it.title||'')}"></div>
-      <div class="field"><label>الوصف</label><input id="benefit_text_${i}" value="${esc(it.text||'')}"></div>
-     </div>
-     <div class="actions">
-      <button class="btn" onclick="saveBenefitItem(${i})">حفظ المربع</button>
-      <button class="btn alt" onclick="hideBenefitItem(${i})">${it.hidden?'إظهار':'إخفاء'}</button>
-      <button class="btn red" onclick="removeBenefitItem(${i})">حذف</button>
-     </div>
-    </div>`).join('')}
-  </div>`;
- const tw=benefitsEditor.querySelector('[data-benefit="titleWeight"]'); if(tw)tw.value=String(v.titleWeight);
- const xw=benefitsEditor.querySelector('[data-benefit="textWeight"]'); if(xw)xw.value=String(v.textWeight);
- benefitsEditor.querySelectorAll('[data-benefit-text]').forEach(inp=>{
-   const key=inp.dataset.benefitText, picker=benefitsEditor.querySelector(`[data-benefit="${key}"][type="color"]`);
-   inp.addEventListener('input',()=>{if(/^#[0-9a-f]{6}$/i.test(inp.value)&&picker)picker.value=inp.value});
-   if(picker)picker.addEventListener('input',()=>inp.value=picker.value);
- });
-}
-function readBenefitsDesign(){
- const old=getSetting('benefits',{});
- const out={...old};
- benefitsEditor.querySelectorAll('[data-benefit]').forEach(el=>{
-  const k=el.dataset.benefit;
-  out[k]=el.type==='number'?Number(el.value):el.value;
- });
- benefitsEditor.querySelectorAll('[data-benefit-text]').forEach(el=>out[el.dataset.benefitText]=el.value.trim());
- out.enabled=old.enabled!==false;
- out.items=Array.isArray(old.items)?old.items:[];
- return out;
-}
-async function saveBenefitsSection(){
- try{await putSetting('benefits',readBenefitsDesign());stat('تم حفظ إعدادات مربعات المزايا ✓');await loadAll()}
- catch(e){stat('فشل حفظ المزايا: '+(e?.message||e),true)}
-}
-async function addBenefitItem(){
- const v=readBenefitsDesign();v.items.push({icon:'✦',title:'ميزة جديدة',text:'وصف الميزة',hidden:false});
- await putSetting('benefits',v);await loadAll();
-}
-async function saveBenefitItem(i){
- const v=readBenefitsDesign(),it=v.items[i]||{};
- it.icon=document.getElementById(`benefit_icon_${i}`)?.value||'';
- it.title=document.getElementById(`benefit_title_${i}`)?.value||'';
- it.text=document.getElementById(`benefit_text_${i}`)?.value||'';
- v.items[i]=it;await putSetting('benefits',v);await loadAll();
-}
-async function hideBenefitItem(i){
- const v=readBenefitsDesign();if(v.items[i])v.items[i].hidden=!v.items[i].hidden;
- await putSetting('benefits',v);await loadAll();
-}
-async function removeBenefitItem(i){
- if(!confirm('حذف مربع الميزة؟'))return;
- const v=readBenefitsDesign();v.items.splice(i,1);await putSetting('benefits',v);await loadAll();
-}
-async function toggleBenefitsSection(){
- const v=readBenefitsDesign();v.enabled=!v.enabled;await putSetting('benefits',v);await loadAll();
-}
 
 function listEditor(el,key,defaults){
  let s=getSetting(key,{enabled:true,items:defaults}),items=Array.isArray(s.items)?s.items:[];
@@ -701,48 +345,6 @@ async function saveProduct(){
 async function deleteProduct(){if(pId.value)await quickDeleteProduct(pId.value);productDialog.close()}
 async function quickDeleteProduct(id){if(!confirm('حذف المنتج؟'))return;let r=await db.from('products').delete().eq('id',id);if(r.error)return stat(r.error.message,true);await loadAll()}
 
-function couponSections(){
- const names=new Set();
- PRODUCTS.forEach(p=>{const b=String(p.brand||'').trim();if(b)names.add(b)});
- const brands=getSetting('brands',{});(Array.isArray(brands.items)?brands.items:[]).forEach(x=>{const n=String(x.title||x.name||'').trim();if(n)names.add(n)});
- return [...names].sort((a,b)=>a.localeCompare(b,'ar'));
-}
-function couponDateInput(v){if(!v)return '';const d=new Date(v);if(Number.isNaN(d.getTime()))return '';const z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
-function couponDateDb(v){return v?new Date(v).toISOString():null}
-function couponScopeText(c){if(c.applies_to_all!==false)return 'جميع المنتجات';const a=Array.isArray(c.applicable_sections)?c.applicable_sections:[];return a.length?a.join('، '):'—'}
-function renderCoupons(){
- if(!couponRows)return;
- couponRows.innerHTML=COUPONS.map(c=>{const type=c.discount_type==='fixed'?`${Number(c.discount_value||0)} ر.س`:`${Number(c.discount_value||0)}%`;const dates=[c.starts_at?`من ${new Date(c.starts_at).toLocaleDateString('ar')}`:'',c.expires_at?`إلى ${new Date(c.expires_at).toLocaleDateString('ar')}`:''].filter(Boolean).join(' ')||'بدون مدة';const use=c.usage_limit==null?`${Number(c.used_count||0)} / ∞`:`${Number(c.used_count||0)} / ${Number(c.usage_limit)}`;return `<tr><td><b>${esc(c.code||'')}</b></td><td>${esc(type)}</td><td>${esc(couponScopeText(c))}</td><td>${esc(dates)}</td><td>${esc(use)}</td><td>${c.active===false?'معطّل':'مفعّل'}</td><td class="actions"><button class="btn alt" onclick='editCoupon(${JSON.stringify(String(c.id||''))})'>تعديل</button><button class="btn red" onclick='quickDeleteCoupon(${JSON.stringify(String(c.id||''))})'>حذف</button></td></tr>`}).join('');
- if(!COUPONS.length)couponRows.innerHTML='<tr><td colspan="7" class="muted">لا توجد كوبونات حتى الآن.</td></tr>';
-}
-function toggleCouponAllScope(){const all=document.getElementById('cAll')?.checked;document.querySelectorAll('#couponScopeOptions input[type=checkbox]').forEach(x=>{x.disabled=all;if(all)x.checked=false})}
-function editCoupon(id=''){
- const c=COUPONS.find(x=>String(x.id)===String(id))||{};
- cId.value=c.id||'';cCode.value=c.code||'';cActive.value=String(c.active!==false);cType.value=c.discount_type||'percentage';cValue.value=c.discount_value??'';cMin.value=c.min_order_amount??0;cMax.value=c.max_discount??'';cLimit.value=c.usage_limit??'';cUsed.value=c.used_count??0;cStart.value=couponDateInput(c.starts_at);cEnd.value=couponDateInput(c.expires_at);
- const selected=Array.isArray(c.applicable_sections)?c.applicable_sections:[];const all=c.applies_to_all!==false;document.getElementById('cAll').checked=all;
- document.getElementById('couponScopeOptions').innerHTML=couponSections().map((n,i)=>`<label><input type="checkbox" data-coupon-section value="${esc(n)}" ${selected.includes(n)?'checked':''}> ${esc(n)}</label>`).join('')||'<span class="muted">أضف ماركات للمنتجات أولًا لتظهر هنا.</span>';
- toggleCouponAllScope();document.getElementById('couponDeleteBtn').style.display=id?'':'none';document.getElementById('couponDialogTitle').textContent=id?'تعديل الكوبون':'إضافة كوبون';couponDialog.showModal();
-}
-async function saveCoupon(){
- try{
-  const id=String(cId.value||'').trim(),code=cCode.value.trim().toUpperCase();if(!code)throw new Error('كود الكوبون مطلوب');
-  const duplicate=COUPONS.find(x=>String(x.code||'').trim().toUpperCase()===code&&String(x.id)!==id);if(duplicate)throw new Error('كود الكوبون مستخدم مسبقًا');
-  const value=Number(cValue.value);if(!(value>0))throw new Error('قيمة الخصم يجب أن تكون أكبر من صفر');if(cType.value==='percentage'&&value>100)throw new Error('نسبة الخصم لا يمكن أن تتجاوز 100%');
-  const all=document.getElementById('cAll').checked,sections=[...document.querySelectorAll('[data-coupon-section]:checked')].map(x=>x.value);if(!all&&!sections.length)throw new Error('اختر قسمًا واحدًا على الأقل أو اختر جميع المنتجات');
-  const row={code,discount_type:cType.value,discount_value:value,min_order_amount:Number(cMin.value)||0,max_discount:cMax.value===''?null:Number(cMax.value),usage_limit:cLimit.value===''?null:Number(cLimit.value),used_count:Number(cUsed.value)||0,starts_at:couponDateDb(cStart.value),expires_at:couponDateDb(cEnd.value),active:cActive.value==='true',applies_to_all:all,applicable_sections:all?[]:sections,updated_at:new Date().toISOString()};
-  if(row.starts_at&&row.expires_at&&new Date(row.expires_at)<=new Date(row.starts_at))throw new Error('تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية');
-  let q=id?await db.from('coupons').update(row).eq('id',id).select('*'):await db.from('coupons').insert(row).select('*');if(q.error)throw q.error;
-  couponDialog.close();await loadCoupons();stat('تم حفظ الكوبون بنجاح ✓');
- }catch(e){stat('فشل حفظ الكوبون: '+(e?.message||String(e)),true)}
-}
-async function deleteCoupon(){if(cId.value)await quickDeleteCoupon(cId.value);couponDialog.close()}
-async function quickDeleteCoupon(id){if(!id||!confirm('حذف هذا الكوبون نهائيًا؟'))return;const r=await db.from('coupons').delete().eq('id',id);if(r.error)return stat('فشل حذف الكوبون: '+r.error.message,true);await loadCoupons();stat('تم حذف الكوبون ✓')}
-async function loadCoupons(){
- const el=document.getElementById('couponStatus');
- try{const r=await db.from('coupons').select('*').order('created_at',{ascending:false});if(r.error)throw r.error;COUPONS=r.data||[];if(el)el.textContent=`تم تحميل ${COUPONS.length} كوبون`;renderCoupons()}
- catch(e){COUPONS=[];renderCoupons();if(el)el.textContent='تعذر تحميل جدول coupons: '+(e?.message||e);console.error('coupons:',e)}
-}
-
 function renderAllSettings(){settingRows.innerHTML=SETTINGS.map(s=>`<tr><td><b>${esc(s.key)}</b></td><td>${esc(pretty(s.value)).slice(0,220)}</td><td class="actions"><button class="btn alt" onclick='editAny(${JSON.stringify(s.key)})'>تعديل</button><button class="btn red" onclick='removeAny(${JSON.stringify(s.key)})'>حذف</button></td></tr>`).join('')}
 function editAny(key=''){let s=SETTINGS.find(x=>x.key===key);jsonOldKey.value=key;jsonKey.value=key;jsonValue.value=s?pretty(s.value):'';jsonTitle.textContent=key?'تعديل '+key:'إضافة إعداد';jsonDialog.showModal()}
 async function saveAny(){let old=jsonOldKey.value,k=jsonKey.value.trim(),v=parse(jsonValue.value);if(old&&old!==k)await removeSetting(old);await putSetting(k,v);jsonDialog.close();await loadAll()}
@@ -762,7 +364,6 @@ async function loadAll(){
 
   SETTINGS=settingsReq.data||[];
   PRODUCTS=productsReq.data||[];
-  await loadCoupons();
 
   adEditor(heroEditor,"hero_ads","الإعلان العلوي");
   adEditor(lowerEditor,"bottom_ads","الإعلان السفلي");
@@ -771,12 +372,15 @@ async function loadAll(){
     if(el) simpleEditor(el,k);
   });
    giftSectionEditor();
-   storeColorsSectionEditor();
-   brandSectionsManager();
    profileSectionEditor();
    introSectionEditor();
-  benefitsSectionEditor();
-  brandsSectionEditor();
+  listEditor(benefitsEditor,"benefits",[
+    {title:"منتجات أصلية",text:"اختيارات موثوقة بعناية"},
+    {title:"شحن سريع",text:"توصيل آمن"},
+    {title:"تغليف فاخر",text:"هدية تليق بمن تحب"},
+    {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
+  ]);
+  listEditor(brandsEditor,"brands",[{title:"أطياف",text:"ATYAAF"}]);
   renderProducts();
   renderAllSettings();
   stat("متصل بـ Supabase ✓ — تم تحميل "+PRODUCTS.length+" منتج");
@@ -785,9 +389,8 @@ async function loadAll(){
   stat("فشل الاتصال: "+(e?.message||String(e)),true);
  }
 }
-Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,saveStoreColors,resetStoreColors,
-saveBrandsStyle,addBrandItem,saveBrandItem,removeBrandImage,hideBrandItem,removeBrandItem,saveBrandSectionsManager,resetBrandSectionsManager,
-saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection,editCoupon,saveCoupon,deleteCoupon,quickDeleteCoupon,toggleCouponAllScope});
+Object.assign(window,{saveGiftSection,removeGiftImage,deleteGiftSection,createGiftSection,syncGiftPreview,
+saveProfileSection,saveIntroSection,removeProfileLogo,removeIntroLogo,deleteProfileSection,deleteIntroSection,createProfileSection,createIntroSection});
 window.saveProduct=saveProduct;
 setTimeout(()=>{
   const el=document.getElementById("status");

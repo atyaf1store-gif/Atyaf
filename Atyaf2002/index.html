@@ -70,19 +70,21 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
 <section id="products" class="panel">
-<div class="card" id="atyafBulkProducts" style="margin-bottom:18px">
- <h2>مساعد إضافة المنتجات</h2>
- <p>اكتب أمر المنتجات، وسيجهز حتى 10 منتجات في المرة الواحدة. راجعها ثم اضغط إضافة المنتجات.</p>
- <textarea id="atyafBulkCommand" rows="9" style="width:100%;box-sizing:border-box" placeholder="مثال:
-أضف 3 منتجات:
-1) الاسم: عطر A | الماركة: عساف | السعر: 99 | السعر القديم: 120 | الوصف: عطر فاخر
-2) الاسم: عطر B | الماركة: دخوني | السعر: 85
-3) الاسم: عطر C | الماركة: إبراق | السعر: 110"></textarea>
- <div class="toolbar" style="margin-top:12px">
-  <button class="btn alt" type="button" onclick="atyafPrepareBulkProducts()">تحليل الأمر</button>
-  <button class="btn" id="atyafBulkAddBtn" type="button" onclick="atyafAddBulkProducts()" disabled>إضافة المنتجات</button>
+<div class="card" id="atyafAiProducts" style="margin-bottom:18px">
+ <h2>مساعد المنتجات بالذكاء الاصطناعي</h2>
+ <p>ارفع حتى 10 صور، ثم اكتب للمساعد الأسعار والماركات وأي تفاصيل تعرفها. سيجهز كل منتج للمراجعة قبل الإضافة.</p>
+ <div class="grid">
+  <div class="field full upload"><label>صور المنتجات — حتى 10 صور</label><input id="atyafAiImages" type="file" accept="image/*" multiple><div id="atyafAiImageList"></div></div>
+  <div class="field full"><label>أمرك للمساعد</label><textarea id="atyafAiPrompt" rows="7" placeholder="مثال: هذه 5 عطور من عساف. الصور بالترتيب. الأول اسمه ... وسعره 100 والقديم 120، الثاني سعره 85... اكتب وصفًا احترافيًا لكل منتج ولا تخترع سعرًا غير الذي أعطيك."></textarea></div>
  </div>
- <div id="atyafBulkPreview" style="margin-top:12px"></div>
+ <div class="toolbar" style="margin-top:12px">
+  <button class="btn" id="atyafAiAnalyzeBtn" type="button" onclick="atyafAiAnalyzeProducts()">تحليل الصور وتجهيز المنتجات</button>
+ </div>
+ <div id="atyafAiStatus" style="margin-top:10px"></div>
+ <div id="atyafAiPreview" style="margin-top:14px"></div>
+</div>
+
+<div id="atyafBulkPreview" style="margin-top:12px"></div>
 </div>
 <div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
@@ -524,65 +526,72 @@ loadAll();
 </script>
 
 
-<script id="atyaf-bulk-products-js">
+
+
+
+<script id="atyaf-ai-products-js">
 (()=>{
- let pending=[];
- const val=(line,names)=>{
-  for(const name of names){
-   const m=line.match(new RegExp('(?:^|[|،,;])\\s*'+name+'\\s*[:：=-]\\s*([^|،,;]+)','i'));
-   if(m)return m[1].trim();
-  }return '';
- };
- const num=v=>{const n=Number(String(v||'').replace(/[^\d.]/g,''));return Number.isFinite(n)?n:0};
- function parseLine(line){
-  line=String(line||'').replace(/^\s*(?:\d+[\)\].-]?|[-•])\s*/,'').trim();
-  if(!line)return null;
-  let name=val(line,['الاسم','اسم المنتج','name']);
-  const brand=val(line,['الماركة','العلامة','brand']);
-  const price=num(val(line,['السعر','price']));
-  const old=num(val(line,['السعر القديم','قبل','old_price','old']));
-  const description=val(line,['الوصف','description','desc']);
-  const sort=num(val(line,['الترتيب','sort_order','sort']));
-  if(!name){
-   const first=line.split(/[|،,;]/)[0].trim();
-   if(first&&!/^(أضف|اضف|إضافة|اضافة)\b/.test(first))name=first.replace(/^الاسم\s*[:：=-]\s*/,'').trim();
-  }
-  if(!name)return null;
-  return {name,brand,price,old_price:old,description,image_url:'',is_active:true,sort_order:sort};
+ let draft=[],files=[];
+ const $=id=>document.getElementById(id);
+ const html=v=>esc(v??'');
+ const file64=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]);r.onerror=no;r.readAsDataURL(f)});
+ function renderFiles(){
+  $('atyafAiImageList').innerHTML=files.map((f,i)=>`<div style="display:inline-block;margin:7px;text-align:center"><img src="${URL.createObjectURL(f)}" style="width:72px;height:72px;object-fit:cover;border-radius:10px"><small style="display:block">صورة ${i+1}</small></div>`).join('');
  }
- function parseCommand(text){
-  const lines=String(text||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
-  const rows=[];
-  for(const line of lines){
-   if(/^(أضف|اضف|إضافة|اضافة)\s+\d*\s*منتج/.test(line))continue;
-   const p=parseLine(line);if(p)rows.push(p);
-   if(rows.length===10)break;
-  }
-  return rows;
+ $('atyafAiImages')?.addEventListener('change',e=>{files=[...e.target.files].slice(0,10);renderFiles()});
+ function renderDraft(){
+  const box=$('atyafAiPreview');
+  if(!draft.length){box.innerHTML='';return}
+  box.innerHTML=`<h3>راجع المنتجات قبل الإضافة</h3>${draft.map((p,i)=>`
+   <div class="card" style="margin:10px 0;padding:14px">
+    <div class="grid">
+     <div class="field"><label>الاسم</label><input data-ai="${i}" data-k="name" value="${html(p.name)}"></div>
+     <div class="field"><label>الماركة/القسم</label><input data-ai="${i}" data-k="brand" value="${html(p.brand)}"></div>
+     <div class="field"><label>السعر</label><input type="number" data-ai="${i}" data-k="price" value="${Number(p.price)||0}"></div>
+     <div class="field"><label>السعر القديم</label><input type="number" data-ai="${i}" data-k="old_price" value="${Number(p.old_price)||0}"></div>
+     <div class="field full"><label>الوصف والتفاصيل</label><textarea data-ai="${i}" data-k="description">${html(p.description)}</textarea></div>
+    </div>
+   </div>`).join('')}
+   <div class="toolbar"><button class="btn" type="button" onclick="atyafAiSaveDraft()">اعتماد وإضافة ${draft.length} منتجات</button></div>`;
+  box.querySelectorAll('[data-ai]').forEach(el=>el.oninput=()=>{const i=+el.dataset.ai,k=el.dataset.k;draft[i][k]=(k==='price'||k==='old_price')?Number(el.value)||0:el.value});
  }
- function preview(){
-  const box=document.getElementById('atyafBulkPreview'),btn=document.getElementById('atyafBulkAddBtn');
-  if(!pending.length){box.innerHTML='<div style="color:#9b3d34">لم أجد منتجات بصيغة واضحة. استخدم المثال الظاهر في الحقل.</div>';btn.disabled=true;return}
-  box.innerHTML='<div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>السعر القديم</th></tr></thead><tbody>'+
-   pending.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.brand)}</td><td>${esc(p.price)}</td><td>${esc(p.old_price)}</td></tr>`).join('')+
-   '</tbody></table></div><p>جاهز: '+pending.length+' من أصل 10 كحد أقصى.</p>';
-  btn.disabled=false;
- }
- window.atyafPrepareBulkProducts=()=>{pending=parseCommand(document.getElementById('atyafBulkCommand').value);preview()};
- window.atyafAddBulkProducts=async()=>{
-  if(!pending.length)return;
-  const btn=document.getElementById('atyafBulkAddBtn');btn.disabled=true;btn.textContent='جاري الإضافة…';
+ window.atyafAiAnalyzeProducts=async()=>{
+  const prompt=$('atyafAiPrompt').value.trim(),btn=$('atyafAiAnalyzeBtn'),status=$('atyafAiStatus');
+  if(!files.length)return status.textContent='ارفع صورة واحدة على الأقل.';
+  if(!prompt)return status.textContent='اكتب للمساعد معلومات المنتجات والأسعار أولًا.';
+  btn.disabled=true;btn.textContent='جاري التحليل…';status.textContent='يتم تحليل الصور وتجهيز المنتجات…';
   try{
-   stat('جاري إضافة '+pending.length+' منتجات…');
-   const {data,error}=await db.from('products').insert(pending).select('*');
-   if(error)throw error;
-   stat('تمت إضافة '+(data?.length||pending.length)+' منتجات ✓');
-   pending=[];document.getElementById('atyafBulkCommand').value='';document.getElementById('atyafBulkPreview').innerHTML='';
-   await loadAll();
-  }catch(e){console.error('ATYAAF bulk products:',e);stat('تعذر إضافة المنتجات. راجع البيانات وأعد المحاولة.',true)}
-  finally{btn.disabled=false;btn.textContent='إضافة المنتجات'}
+   const parts=[{text:`أنت مساعد إدخال منتجات لمتجر ATYAAF. عدد الصور ${files.length} وبنفس ترتيب المنتجات. اتبع معلومات المستخدم حرفيًا ولا تخترع أسعارًا أو أسماء ماركات لم يذكرها. يمكنك صياغة وصف عربي احترافي اعتمادًا على الصورة والمعلومات. أعد JSON فقط بالشكل {"products":[{"image_index":1,"name":"","brand":"","price":0,"old_price":0,"description":""}]}. يجب أن يكون عدد المنتجات مطابقًا للصور وبحد أقصى 10.\n\nأمر المستخدم:\n${prompt}`}];
+   for(const f of files)parts.push({inline_data:{mime_type:f.type||'image/jpeg',data:await file64(f)}});
+   const endpoint=String(window.ATYAAF_AI_ENDPOINT||localStorage.getItem('atyaf_ai_endpoint')||'').trim();
+   if(!endpoint)throw new Error('NO_ENDPOINT');
+   const res=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({parts})});
+   if(!res.ok)throw new Error('AI_'+res.status);
+   const out=await res.json();
+   const raw=out.products?out:(out.data||out.result||out);
+   draft=(raw.products||[]).slice(0,10).map((p,i)=>({...p,image_index:Number(p.image_index)||i+1}));
+   if(!draft.length)throw new Error('EMPTY');
+   renderDraft();status.textContent='تم تجهيز '+draft.length+' منتجات. راجعها ثم اعتمد الإضافة.';
+  }catch(e){console.error('ATYAAF AI products:',e);status.textContent=e.message==='NO_ENDPOINT'?'المساعد يحتاج ربط عنوان الوسيط الآمن أولًا.':'تعذر تحليل المنتجات الآن. أعد المحاولة.'}
+  finally{btn.disabled=false;btn.textContent='تحليل الصور وتجهيز المنتجات'}
+ };
+ window.atyafAiSaveDraft=async()=>{
+  if(!draft.length)return;
+  const status=$('atyafAiStatus');
+  try{
+   status.textContent='جاري رفع الصور وإضافة المنتجات…';
+   const rows=[];
+   for(let i=0;i<draft.length;i++){
+    const p=draft[i],f=files[Math.max(0,(Number(p.image_index)||i+1)-1)];
+    const image=f?(await uploadFiles([f],'products'))[0]:'';
+    rows.push({name:String(p.name||'').trim(),brand:String(p.brand||'').trim(),price:Number(p.price)||0,old_price:Number(p.old_price)||0,description:String(p.description||'').trim(),image_url:image,is_active:true,sort_order:PRODUCTS.length+i+1});
+   }
+   if(rows.some(x=>!x.name))throw new Error('NAME');
+   const {data,error}=await db.from('products').insert(rows).select('*');if(error)throw error;
+   status.textContent='تمت إضافة '+(data?.length||rows.length)+' منتجات ✓';
+   draft=[];files=[];$('atyafAiImages').value='';$('atyafAiPrompt').value='';$('atyafAiImageList').innerHTML='';$('atyafAiPreview').innerHTML='';await loadAll();
+  }catch(e){console.error('ATYAAF AI save:',e);status.textContent='تعذر اعتماد المنتجات. لم يتم إخفاء المسودة؛ راجعها وأعد المحاولة.'}
  };
 })();
 </script>
-
 </body></html>

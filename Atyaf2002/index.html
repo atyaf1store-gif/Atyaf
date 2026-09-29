@@ -25,14 +25,35 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 .gift-admin-preview .gift-kicker{font-size:12px;margin-bottom:7px}.gift-admin-preview h3{margin:0 0 9px;font-size:30px}.gift-admin-preview p{margin:0 0 14px;line-height:1.8}
 .gift-admin-preview .gift-preview-btn{border:0;border-radius:10px;padding:10px 17px}.color-row{display:grid;grid-template-columns:72px 1fr;gap:8px;align-items:center}.color-row input[type=color]{height:42px;padding:3px}
 @media(max-width:650px){.gift-admin-preview{grid-template-columns:1fr}.gift-admin-preview .gift-pic{min-height:190px}.gift-admin-preview .gift-copy{padding:20px}}
-</style></head><body>
+</style></head><body class="atyaf-admin-locked">
+<style id="atyaf-admin-lock-css">
+#atyafAdminLock{position:fixed;inset:0;z-index:999999;background:#f7f4ee;display:grid;place-items:center;padding:22px;font-family:Tahoma,Arial,sans-serif}
+#atyafAdminLock[hidden]{display:none!important}
+.atyaf-lock-card{width:min(430px,100%);background:#fff;border:1px solid #e3dbcf;border-radius:20px;padding:24px;box-shadow:0 18px 55px rgba(0,0,0,.12);direction:rtl}
+.atyaf-lock-card h2{margin:0 0 8px;color:#17352e}.atyaf-lock-card p{color:#68736f;line-height:1.7}
+.atyaf-lock-card input{width:100%;box-sizing:border-box;padding:13px;border:1px solid #d9d1c6;border-radius:12px;font:inherit;margin:7px 0}
+.atyaf-lock-card button{width:100%;padding:13px;border:0;border-radius:12px;background:#17352e;color:#fff;font:700 15px Tahoma,Arial,sans-serif;margin-top:8px}
+#atyafLockMsg{min-height:24px;color:#a43f35;margin-top:8px}
+body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-locked>.layout{visibility:hidden!important}
+</style>
+<div id="atyafAdminLock">
+ <div class="atyaf-lock-card">
+  <h2 id="atyafLockTitle">قفل الإدارة</h2>
+  <p id="atyafLockHint">أدخل كلمة المرور لفتح لوحة الإدارة.</p>
+  <input id="atyafLockPass" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+  <input id="atyafLockPass2" type="password" placeholder="تأكيد كلمة المرور" autocomplete="new-password" hidden>
+  <button id="atyafLockBtn" type="button">فتح الإدارة</button>
+  <div id="atyafLockMsg"></div>
+ </div>
+</div>
+
 <div class="app"><aside><div class="logo">ATYAAF PRO</div><div class="sub">إدارة كاملة لكل تفصيل في المتجر</div><div class="nav">
 <button class="active" data-tab="dashboard">الرئيسية</button>
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
 <button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
 <button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
-<button data-tab="allsettings">كل الإعدادات</button>
+<button data-tab="adminlock">قفل الإدارة</button>
 </div></aside><main>
 <div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><button class="btn alt" onclick="loadAll()">↻ تحديث</button></div>
 <div id="status" class="status">جاري الاتصال…</div>
@@ -52,7 +73,18 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
 <section id="footer" class="panel"><div class="card section-editor"><h2>الفوتر والتواصل</h2><div id="footerEditor"></div></div></section>
 <section id="policies" class="panel"><div class="card section-editor"><h2>السياسات والنصوص</h2><div id="policiesEditor"></div></div></section>
-<section id="allsettings" class="panel"><div class="card"><div class="toolbar"><h2 class="grow">كل إعدادات قاعدة البيانات</h2><button class="btn" onclick="editAny()">+ إضافة إعداد</button></div><div style="overflow:auto"><table><thead><tr><th>المفتاح</th><th>القيمة</th><th>إجراءات</th></tr></thead><tbody id="settingRows"></tbody></table></div></div></section>
+
+<section id="adminlock" class="panel"><div class="card section-editor">
+<h2>قفل صفحة الإدارة</h2>
+<p>يمكنك تغيير كلمة المرور من هنا. لن تظهر كلمة المرور نفسها بعد حفظها.</p>
+<div class="grid">
+ <div class="field"><label>كلمة المرور الحالية</label><input id="lockCurrent" type="password" autocomplete="current-password"></div>
+ <div class="field"><label>كلمة المرور الجديدة</label><input id="lockNew" type="password" autocomplete="new-password"></div>
+ <div class="field"><label>تأكيد كلمة المرور الجديدة</label><input id="lockConfirm" type="password" autocomplete="new-password"></div>
+</div>
+<div class="toolbar" style="margin-top:14px"><button class="btn" type="button" onclick="changeAdminPassword()">تغيير كلمة المرور</button></div>
+</div></section>
+
 </main></div>
 
 <dialog id="jsonDialog"><div class="modal"><button class="close" onclick="jsonDialog.close()">×</button><h2 id="jsonTitle">تعديل</h2><input type="hidden" id="jsonOldKey"><div class="field"><label>المفتاح</label><input id="jsonKey"></div><div class="field" style="margin-top:10px"><label>المحتوى JSON أو نص</label><textarea id="jsonValue" rows="16"></textarea></div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="saveAny()">حفظ</button><button class="btn red" onclick="deleteAny()">حذف</button></div></div></dialog>
@@ -383,7 +415,7 @@ function atyafRenderAdmin(){
   {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
  ]);
  listEditor(brandsEditor,"brands",[{title:"أطياف",text:"ATYAAF"}]);
- renderProducts();renderAllSettings();
+ renderProducts();
 }
 async function loadAll(){
  if(!db){stat("تعذر الاتصال. اضغط تحديث للمحاولة مرة أخرى.",true);return}
@@ -414,4 +446,63 @@ setTimeout(()=>{
   }
 },6000);
 loadAll();
-</script></body></html>
+</script>
+<script id="atyaf-admin-lock-js">
+(()=>{
+ const KEY='admin_lock';
+ const $=id=>document.getElementById(id);
+ const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
+ async function hash(v){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+ async function getLock(){
+  if(!window.db&&!window.atyafDb)return null;
+  const c=window.db||window.atyafDb;
+  try{const {data,error}=await c.from('settings').select('value,updated_at').eq('key',KEY).order('updated_at',{ascending:false,nullsFirst:false}).limit(1);if(error)throw error;return parse(data?.[0]?.value)}catch(e){console.error('ATYAAF lock read:',e);return null}
+ }
+ async function saveLock(value){
+  const c=window.db||window.atyafDb;if(!c)throw new Error('NO_CONNECTION');
+  const {data}=await c.from('settings').select('id').eq('key',KEY).order('updated_at',{ascending:false,nullsFirst:false}).limit(1);
+  let q;
+  if(data?.[0]?.id)q=await c.from('settings').update({value}).eq('id',data[0].id);
+  else q=await c.from('settings').insert({key:KEY,value});
+  if(q.error)throw q.error;
+ }
+ function unlock(){document.body.classList.remove('atyaf-admin-locked');$('atyafAdminLock').hidden=true;sessionStorage.setItem('atyaf_admin_unlocked','1')}
+ async function boot(){
+  if(sessionStorage.getItem('atyaf_admin_unlocked')==='1'){unlock();return}
+  let cfg=null;
+  for(let i=0;i<20&&!cfg;i++){cfg=await getLock();if(!cfg)await new Promise(r=>setTimeout(r,250))}
+  const setup=!cfg?.hash;
+  $('atyafLockTitle').textContent=setup?'إنشاء كلمة مرور الإدارة':'قفل الإدارة';
+  $('atyafLockHint').textContent=setup?'هذه أول مرة. أنشئ كلمة مرور لصفحة الإدارة.':'أدخل كلمة المرور لفتح لوحة الإدارة.';
+  $('atyafLockPass2').hidden=!setup;
+  $('atyafLockBtn').textContent=setup?'حفظ وفتح الإدارة':'فتح الإدارة';
+  $('atyafLockBtn').onclick=async()=>{
+   const p=$('atyafLockPass').value,msg=$('atyafLockMsg');msg.textContent='';
+   if(p.length<6){msg.textContent='استخدم كلمة مرور من 6 أحرف أو أرقام على الأقل.';return}
+   try{
+    if(setup){
+     if(p!==$('atyafLockPass2').value){msg.textContent='كلمتا المرور غير متطابقتين.';return}
+     await saveLock({hash:await hash(p),updatedAt:new Date().toISOString()});unlock();
+    }else if(await hash(p)===cfg.hash)unlock();
+    else msg.textContent='كلمة المرور غير صحيحة.';
+   }catch(e){console.error('ATYAAF lock:',e);msg.textContent='تعذر حفظ أو التحقق من القفل. أعد المحاولة.'}
+  };
+  $('atyafLockPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('atyafLockBtn').click()});
+ }
+ window.changeAdminPassword=async()=>{
+  const cur=$('lockCurrent')?.value||'',n=$('lockNew')?.value||'',c=$('lockConfirm')?.value||'';
+  if(n.length<6)return stat('كلمة المرور الجديدة يجب أن تكون 6 أحرف أو أرقام على الأقل.',true);
+  if(n!==c)return stat('تأكيد كلمة المرور الجديدة غير مطابق.',true);
+  try{
+   const cfg=await getLock();
+   if(cfg?.hash && await hash(cur)!==cfg.hash)return stat('كلمة المرور الحالية غير صحيحة.',true);
+   await saveLock({hash:await hash(n),updatedAt:new Date().toISOString()});
+   $('lockCurrent').value=$('lockNew').value=$('lockConfirm').value='';
+   stat('تم تغيير كلمة مرور الإدارة ✓');
+  }catch(e){console.error('ATYAAF password change:',e);stat('تعذر تغيير كلمة المرور. أعد المحاولة.',true)}
+ };
+ window.addEventListener('load',()=>setTimeout(boot,80));
+})();
+</script>
+
+</body></html>

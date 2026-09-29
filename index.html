@@ -1898,17 +1898,9 @@ section.benefits>.benefit span,.benefits>.benefit span{
       {id:6,name:'شرارة',brand:'نُبل',price:279,old:0,tags:['floral'],label:'مميز',tone:'#b77d3d',desc:'حمضيات مشرقة، زهور بيضاء، وعنبر.'}
     ];
     /* ===== ATYAAF STORE CONNECTIONS — transferred from the original store ===== */
-    const ATYAF_SUPABASE_ORIGIN="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
-    const ATYAF_SUPABASE_URL="https://atyaf.atyaf1store.workers.dev";
+    const ATYAF_SUPABASE_URL="https://zgvkiqoxmtifuvgcmrqc.supabase.co";
     const ATYAF_SUPABASE_KEY="sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl";
-    const atyafDb=window.supabase?.createClient ? window.supabase.createClient(ATYAF_SUPABASE_URL,ATYAF_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}) : null;
-    window.atyafProxyMediaUrl=function(url){
-      const value=String(url||'').trim();
-      if(!value)return '';
-      return value.startsWith(ATYAF_SUPABASE_ORIGIN+'/storage/v1/object/public/')
-        ? ATYAF_SUPABASE_URL+value.slice(ATYAF_SUPABASE_ORIGIN.length)
-        : value;
-    };
+    const atyafDb=window.supabase?.createClient ? window.supabase.createClient(ATYAF_SUPABASE_URL,ATYAF_SUPABASE_KEY) : null;
     window.atyafDb=atyafDb;
     let atyafGeneralSettings={};
 
@@ -1917,9 +1909,9 @@ section.benefits>.benefit span,.benefits>.benefit span{
       if(typeof images==='string'){try{images=JSON.parse(images)}catch(e){images=[]}}
       if(!Array.isArray(images))images=[];
       const first=images[0];
-      if(typeof first==='string')return window.atyafProxyMediaUrl(first);
-      if(first&&typeof first==='object')return window.atyafProxyMediaUrl(first.url||first.src||first.publicUrl||first.public_url||'');
-      return window.atyafProxyMediaUrl(row?.image_url||row?.image||row?.thumbnail||'');
+      if(typeof first==='string')return first;
+      if(first&&typeof first==='object')return first.url||first.src||first.publicUrl||first.public_url||'';
+      return row?.image_url||row?.image||row?.thumbnail||'';
     }
     function mapSupabaseProduct(row,index){
       const price=Number(row.price??row.sale_price??0);
@@ -1959,7 +1951,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
     function safeLink(value){let v=String(value||'#products').trim();return /^(https?:|#|\/)/i.test(v)?v:'#products'}
     /* ===== شاشة الإعلان الرئيسية: تقرأ نفس إعدادات Supabase القديمة ===== */
     let heroAdTimer=null,heroAdIndex=0,heroAdSlides=[];
-    function atyafMediaUrl(item){if(!item)return '';const u=typeof item==='string'?item.trim():String(item.url||item.src||item.publicUrl||item.public_url||item.image||item.image_url||item.video||item.video_url||item.path||item.file||'').trim();return window.atyafProxyMediaUrl?window.atyafProxyMediaUrl(u):u}
+    function atyafMediaUrl(item){if(!item)return '';if(typeof item==='string')return item.trim();return String(item.url||item.src||item.publicUrl||item.public_url||item.image||item.image_url||item.video||item.video_url||item.path||item.file||'').trim()}
     function normalizeHeroAd(raw){
       let x=raw;if(typeof x==='string'){try{x=JSON.parse(x)}catch(e){x={}}}if(!x||typeof x!=='object')x={};
       let media=x.media??x.medias??x.slides??x.images??x.files??x.items??x.urls??[];
@@ -3183,30 +3175,136 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHeaderSearch()}
 </script>
 
 
-<script id="atyaf-cloudflare-storage-url-guard">
-(()=>{
-  const rewrite=el=>{
-    if(!el||!window.atyafProxyMediaUrl)return;
-    for(const attr of ['src','poster']){
-      if(!el.hasAttribute?.(attr))continue;
-      const old=el.getAttribute(attr)||'', next=window.atyafProxyMediaUrl(old);
-      if(next&&next!==old)el.setAttribute(attr,next);
-    }
-    const style=el.getAttribute?.('style')||'';
-    if(style.includes('zgvkiqoxmtifuvgcmrqc.supabase.co/storage/v1/object/public/')){
-      el.setAttribute('style',style.replaceAll('https://zgvkiqoxmtifuvgcmrqc.supabase.co/storage/v1/object/public/','https://atyaf.atyaf1store.workers.dev/storage/v1/object/public/'));
-    }
-  };
-  const scan=root=>{
-    if(root?.nodeType===1)rewrite(root);
-    root?.querySelectorAll?.('[src],[poster],[style]').forEach(rewrite);
-  };
-  document.addEventListener('DOMContentLoaded',()=>scan(document));
-  new MutationObserver(ms=>ms.forEach(m=>{
-    if(m.type==='attributes')rewrite(m.target);
-    m.addedNodes.forEach(scan);
-  })).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src','poster','style']});
-})();
-</script>
+
+<style id="atyaf-responsive-authoritative-final-v4">
+/* ATYAAF — authoritative responsive correction only. Keeps the adopted design and functionality. */
+html,body{max-width:100%;overflow-x:hidden}
+.header,.topbar,.hero-ad,#store,footer{max-width:100%}
+
+/* Tablet: preserve the same header composition without wrapping or old search layouts. */
+@media (min-width:601px) and (max-width:1100px){
+  .headrow.atyaf-head-balanced{
+    display:grid!important;
+    grid-template-columns:minmax(150px,1fr) auto minmax(150px,1fr)!important;
+    grid-template-areas:"right profile left"!important;
+    min-height:82px!important;height:auto!important;
+    padding:8px 0!important;gap:12px!important;
+  }
+  .atyaf-head-right{grid-area:right!important;justify-self:start!important;position:static!important;transform:none!important}
+  .atyaf-profile{grid-area:profile!important;justify-self:center!important;display:flex!important}
+  .atyaf-head-left{grid-area:left!important;justify-self:end!important;position:relative!important;transform:none!important}
+  .atyaf-head-search,.headrow>.search,.menu-btn,.atyaf-mobile-track,.atyaf-mobile-profile{display:none!important}
+  .header .nav{display:block!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important}
+  .header .nav::-webkit-scrollbar{display:none!important}
+  .header .navrow{display:flex!important;flex-flow:row nowrap!important;width:max-content!important;min-width:100%!important;justify-content:center!important;gap:clamp(16px,2.5vw,28px)!important;padding:10px 14px!important}
+  .header .navrow>a{flex:0 0 auto!important;white-space:nowrap!important}
+}
+
+/* Phone: one clean header row — cart/favorites | profile image | gift/search. */
+@media (max-width:600px){
+  .container{width:calc(100% - 20px)!important;max-width:100%!important;margin-inline:auto!important}
+  .topbar{position:relative!important;inset:auto!important;min-height:34px!important;padding:6px 38px 6px 12px!important;font-size:11px!important;line-height:1.5!important;text-align:center!important}
+  .topbar button{position:absolute!important;right:10px!important;top:50%!important;transform:translateY(-50%)!important}
+  .header{position:sticky!important;top:0!important;inset-inline:0!important;background:var(--atyaf-profile-header-bg,#000)!important;z-index:40!important}
+  .headrow.atyaf-head-balanced{
+    position:relative!important;display:grid!important;
+    grid-template-columns:minmax(82px,1fr) minmax(70px,32vw) minmax(82px,1fr)!important;
+    grid-template-areas:"right profile left"!important;
+    align-items:center!important;width:100%!important;
+    height:72px!important;min-height:72px!important;
+    padding:7px 0!important;margin:0 auto!important;gap:6px!important;
+  }
+  .atyaf-profile{display:none!important}
+  .atyaf-mobile-profile{
+    grid-area:profile!important;display:flex!important;position:static!important;
+    transform:none!important;inset:auto!important;justify-self:center!important;
+    align-items:center!important;justify-content:center!important;
+    width:100%!important;max-width:32vw!important;height:58px!important;
+    margin:0!important;padding:0!important;z-index:2!important;
+  }
+  .atyaf-mobile-profile .atyaf-profile-image-slot{
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    width:100%!important;height:100%!important;max-width:100%!important;
+  }
+  .atyaf-mobile-profile .atyaf-profile-image-slot img{
+    display:block!important;width:auto!important;
+    height:min(var(--atyaf-profile-phone-size,42px),54px)!important;
+    max-width:100%!important;max-height:54px!important;object-fit:contain!important;
+  }
+  .atyaf-head-right,.atyaf-head-left{
+    position:static!important;inset:auto!important;transform:none!important;
+    display:flex!important;align-items:center!important;width:auto!important;
+    max-width:100%!important;margin:0!important;padding:0!important;gap:5px!important;z-index:3!important;
+  }
+  .atyaf-head-right{grid-area:right!important;justify-self:start!important;justify-content:flex-start!important}
+  .atyaf-head-left{grid-area:left!important;justify-self:end!important;justify-content:flex-end!important}
+  .atyaf-head-right .customer-tool,.atyaf-head-left .customer-tool{
+    width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;
+    flex:0 0 38px!important;margin:0!important;padding:0!important;
+  }
+  .atyaf-head-right .atyaf-svg,.atyaf-head-left .atyaf-svg{width:21px!important;height:21px!important;min-width:21px!important;min-height:21px!important}
+  .atyaf-head-search,.headrow>.search,.menu-btn,.atyaf-mobile-track{display:none!important}
+
+  /* Keep section names in one horizontal swipe row; never the old vertical menu. */
+  .header .nav{
+    display:block!important;width:100%!important;max-width:100%!important;
+    overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;
+    scrollbar-width:none!important;background:var(--paper,#fffdfa)!important;
+    border-top:1px solid var(--line)!important;border-bottom:1px solid var(--line)!important;
+  }
+  .header .nav::-webkit-scrollbar{display:none!important}
+  .header .nav .container.navrow,.header .navrow{
+    display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+    align-items:center!important;justify-content:flex-start!important;
+    width:max-content!important;min-width:max-content!important;max-width:none!important;
+    gap:6px!important;padding:7px 10px!important;margin:0!important;
+  }
+  .header .navrow>a{
+    display:inline-flex!important;flex:0 0 auto!important;width:auto!important;min-width:max-content!important;
+    align-items:center!important;justify-content:center!important;white-space:nowrap!important;
+    padding:6px 11px!important;margin:0!important;border:1px solid var(--line)!important;
+    border-radius:999px!important;background:var(--paper,#fffdfa)!important;color:var(--ink)!important;
+    font-size:11px!important;line-height:1.35!important;text-decoration:none!important;
+  }
+
+  /* Hero keeps the adopted full-width ad design and scales naturally on phones. */
+  .hero-ad{width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:16/10!important;margin:0!important;overflow:hidden!important}
+  .hero-ad-track,.hero-ad-slide{width:100%!important;height:100%!important;min-height:0!important}
+  .hero-ad-slide img,.hero-ad-slide video{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+
+  .section{padding:34px 0!important}
+  .section-head{gap:10px!important}
+  .brands{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  .products{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .product{min-width:0!important}
+  .product-visual{height:auto!important;min-height:0!important;aspect-ratio:1/1!important}
+  .product-visual>img{width:100%!important;height:100%!important;object-fit:contain!important;padding:10px!important}
+  .product-info{padding:11px!important}
+  .product-info h3{font-size:14px!important;line-height:1.4!important}
+  .price{font-size:15px!important}
+  .gift{padding:26px 18px!important;border-radius:20px!important}
+  .gift h2{font-size:27px!important}
+  .footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+
+  /* Search remains icon-only until opened. */
+  .atyaf-search-popover{
+    position:fixed!important;top:118px!important;left:10px!important;right:10px!important;
+    width:auto!important;max-width:none!important;z-index:150!important;
+  }
+}
+
+@media (max-width:390px){
+  .container{width:calc(100% - 16px)!important}
+  .headrow.atyaf-head-balanced{grid-template-columns:minmax(76px,1fr) minmax(64px,28vw) minmax(76px,1fr)!important;height:68px!important;min-height:68px!important;gap:4px!important}
+  .atyaf-head-right,.atyaf-head-left{gap:3px!important}
+  .atyaf-head-right .customer-tool,.atyaf-head-left .customer-tool{width:35px!important;height:35px!important;min-width:35px!important;min-height:35px!important;flex-basis:35px!important}
+  .atyaf-mobile-profile{max-width:28vw!important;height:52px!important}
+  .atyaf-mobile-profile .atyaf-profile-image-slot img{height:min(var(--atyaf-profile-phone-size,40px),48px)!important;max-height:48px!important}
+  .header .navrow>a{font-size:10.5px!important;padding:6px 10px!important}
+  .products{gap:8px!important}
+  .product-info{padding:9px!important}
+}
+</style>
+
 </body>
 </html>

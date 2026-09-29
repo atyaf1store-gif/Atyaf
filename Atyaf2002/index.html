@@ -17,6 +17,8 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px s
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.media{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.media img,.media video{width:100%;height:110px;object-fit:cover;border-radius:8px}.upload{border:2px dashed #cfc4b6;border-radius:14px;padding:18px;text-align:center;background:#faf7f1}.upload input{border:0;background:none}
 .section-editor{border-right:4px solid var(--c)}.switch{display:flex;gap:8px;align-items:center}dialog{border:0;border-radius:18px;width:min(800px,95vw);padding:0;max-height:92vh}dialog::backdrop{background:#102a2588}.modal{padding:20px;max-height:92vh;overflow:auto}.close{border:0;width:34px;height:34px;border-radius:50%;float:left}
 @media(max-width:850px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.nav{display:flex;overflow:auto}.nav button{width:auto;white-space:nowrap}main{padding:14px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}table{display:block;overflow:auto}}
+.atyaf-product-add-card{padding:16px 18px}.atyaf-product-add-head{align-items:center}.atyaf-products-table{overflow:auto;margin-top:12px}#atyafAiProducts[hidden]{display:none!important}
+@media(max-width:650px){.atyaf-product-add-head .btn{flex:1 1 100%}.atyaf-product-add-head .grow{flex-basis:100%}#atyafAiProducts{padding:14px}}
 
 /* محرر الهدية المستقل */
 .gift-admin-preview{border:1px solid var(--line);border-radius:18px;overflow:hidden;min-height:230px;display:grid;grid-template-columns:minmax(180px,36%) 1fr;background:#fff;margin-top:14px}
@@ -70,23 +72,36 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
 <section id="products" class="panel">
-<div class="card" id="atyafAiProducts" style="margin-bottom:18px">
- <h2>مساعد المنتجات بالذكاء الاصطناعي</h2>
- <p>ارفع حتى 10 صور، ثم اكتب للمساعد الأسعار والماركات وأي تفاصيل تعرفها. سيجهز كل منتج للمراجعة قبل الإضافة.</p>
- <div class="grid">
+<div class="card atyaf-product-add-card">
+ <div class="toolbar atyaf-product-add-head">
+  <div class="grow">
+   <h2 style="margin:0 0 6px">إضافة المنتجات</h2>
+   <div class="muted">اختر الإضافة العادية لمنتج واحد، أو استخدم المساعد لعدة منتجات.</div>
+  </div>
+  <button class="btn" type="button" onclick="editProduct()">+ إضافة منتج بالحبة</button>
+  <button class="btn alt" id="atyafAiToggleBtn" type="button" onclick="atyafToggleAiProducts()">✦ إضافة بالذكاء الاصطناعي</button>
+ </div>
+</div>
+
+<div class="card" id="atyafAiProducts" hidden>
+ <div class="toolbar">
+  <div class="grow"><h2 style="margin:0 0 6px">مساعد المنتجات بالذكاء الاصطناعي</h2><div class="muted">حتى 10 صور في المرة الواحدة — راجع النتائج قبل اعتمادها.</div></div>
+  <button class="btn alt" type="button" onclick="atyafToggleAiProducts(false)">إغلاق</button>
+ </div>
+ <div class="grid" style="margin-top:14px">
   <div class="field full upload"><label>صور المنتجات — حتى 10 صور</label><input id="atyafAiImages" type="file" accept="image/*" multiple><div id="atyafAiImageList"></div></div>
-  <div class="field full"><label>أمرك للمساعد</label><textarea id="atyafAiPrompt" rows="7" placeholder="مثال: هذه 5 عطور من عساف. الصور بالترتيب. الأول اسمه ... وسعره 100 والقديم 120، الثاني سعره 85... اكتب وصفًا احترافيًا لكل منتج ولا تخترع سعرًا غير الذي أعطيك."></textarea></div>
+  <div class="field full"><label>أمرك للمساعد</label><textarea id="atyafAiPrompt" rows="5" placeholder="مثال: هذه 5 عطور من عساف، الصور بالترتيب. الأول اسمه ... وسعره 100 والقديم 120، الثاني سعره 85... اكتب وصفًا احترافيًا ولا تخترع سعرًا أو معلومة لم أعطك إياها."></textarea></div>
  </div>
- <div class="toolbar" style="margin-top:12px">
-  <button class="btn" id="atyafAiAnalyzeBtn" type="button" onclick="atyafAiAnalyzeProducts()">تحليل الصور وتجهيز المنتجات</button>
- </div>
- <div id="atyafAiStatus" style="margin-top:10px"></div>
+ <div class="toolbar" style="margin-top:12px"><button class="btn" id="atyafAiAnalyzeBtn" type="button" onclick="atyafAiAnalyzeProducts()">تحليل الصور وتجهيز المنتجات</button></div>
+ <div id="atyafAiStatus" class="muted" style="margin-top:10px"></div>
  <div id="atyafAiPreview" style="margin-top:14px"></div>
 </div>
 
-<div id="atyafBulkPreview" style="margin-top:12px"></div>
+<div class="card">
+ <div class="toolbar"><h2 class="grow" style="margin:0">المنتجات الحالية</h2><button class="btn" type="button" onclick="editProduct()">+ إضافة منتج</button></div>
+ <div class="atyaf-products-table"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div>
 </div>
-<div class="card"><div class="toolbar"><h2 class="grow">المنتجات</h2><button class="btn" onclick="editProduct()">+ إضافة منتج</button></div><div style="overflow:auto"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
+</section>
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
 <section id="footer" class="panel"><div class="card section-editor"><h2>الفوتر والتواصل</h2><div id="footerEditor"></div></div></section>
 <section id="policies" class="panel"><div class="card section-editor"><h2>السياسات والنصوص</h2><div id="policiesEditor"></div></div></section>
@@ -530,6 +545,15 @@ loadAll();
 
 
 <script id="atyaf-ai-products-js">
+window.ATYAAF_AI_ENDPOINT="https://atyaf.atyaf1store.workers.dev";
+window.atyafToggleAiProducts=(force)=>{
+ const box=document.getElementById('atyafAiProducts'),btn=document.getElementById('atyafAiToggleBtn');
+ if(!box)return;
+ const open=typeof force==='boolean'?force:box.hidden;
+ box.hidden=!open;
+ if(btn)btn.textContent=open?'✦ المساعد مفتوح':'✦ إضافة بالذكاء الاصطناعي';
+ if(open)box.scrollIntoView({behavior:'smooth',block:'start'});
+};
 (()=>{
  let draft=[],files=[];
  const $=id=>document.getElementById(id);
@@ -594,4 +618,3 @@ loadAll();
  };
 })();
 </script>
-</body></html>

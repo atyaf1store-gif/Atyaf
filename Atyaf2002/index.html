@@ -589,14 +589,20 @@ window.atyafToggleAiProducts=(force)=>{
    for(const f of files)parts.push({inline_data:{mime_type:f.type||'image/jpeg',data:await file64(f)}});
    const endpoint=String(window.ATYAAF_AI_ENDPOINT||localStorage.getItem('atyaf_ai_endpoint')||'').trim();
    if(!endpoint)throw new Error('NO_ENDPOINT');
-   const res=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({parts})});
-   if(!res.ok)throw new Error('AI_'+res.status);
-   const out=await res.json();
+   const aiUrl=endpoint.replace(/\/$/,'')+'/ai';
+   const res=await fetch(aiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({parts})});
+   const responseText=await res.text();
+   if(!res.ok)throw new Error('AI_'+res.status+': '+responseText.slice(0,180));
+   let out;try{out=JSON.parse(responseText)}catch(_){throw new Error('AI_BAD_JSON')}
    const raw=out.products?out:(out.data||out.result||out);
    draft=(raw.products||[]).slice(0,10).map((p,i)=>({...p,image_index:Number(p.image_index)||i+1}));
    if(!draft.length)throw new Error('EMPTY');
    renderDraft();status.textContent='تم تجهيز '+draft.length+' منتجات. راجعها ثم اعتمد الإضافة.';
-  }catch(e){console.error('ATYAAF AI products:',e);status.textContent=e.message==='NO_ENDPOINT'?'المساعد يحتاج ربط عنوان الوسيط الآمن أولًا.':'تعذر تحليل المنتجات الآن. أعد المحاولة.'}
+  }catch(e){
+   console.error('ATYAAF AI products:',e);
+   const m=String(e?.message||'');
+   status.textContent=m==='NO_ENDPOINT'?'المساعد يحتاج ربط عنوان الوسيط الآمن أولًا.':m.startsWith('AI_404')?'مسار الذكاء الاصطناعي /ai غير موجود في Worker.':m.startsWith('AI_401')||m.startsWith('AI_403')?'تعذر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من GEMINI_API_KEY في Worker.':m.startsWith('AI_413')?'حجم الصور كبير جدًا. قلّل حجم الصور ثم أعد المحاولة.':m.startsWith('AI_429')?'تم بلوغ حد الاستخدام المؤقت لخدمة الذكاء الاصطناعي. أعد المحاولة لاحقًا.':m==='AI_BAD_JSON'?'وصل رد غير صالح من Worker.':'تعذر تحليل المنتجات الآن. راجع سجل Worker ثم أعد المحاولة.';
+  }
   finally{btn.disabled=false;btn.textContent='تحليل الصور وتجهيز المنتجات'}
  };
  window.atyafAiSaveDraft=async()=>{
@@ -618,3 +624,4 @@ window.atyafToggleAiProducts=(force)=>{
  };
 })();
 </script>
+</body></html>

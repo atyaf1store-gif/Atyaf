@@ -353,6 +353,32 @@ async function saveListItem(key,i){let s=getSetting(key,{items:[]});s.items[i].t
 async function hideListItem(key,i){let s=getSetting(key,{items:[]});s.items[i].hidden=!s.items[i].hidden;await putSetting(key,s);await loadAll()}
 async function removeListItem(key,i){let s=getSetting(key,{items:[]});s.items.splice(i,1);await putSetting(key,s);await loadAll()}
 
+/* محرر الماركات: اسم + صورة + رمز/معرف الانتقال للقسم */
+function brandsSectionEditor(){
+ let s=getSetting('brands',{enabled:true,items:[]}),items=Array.isArray(s.items)?s.items:[];
+ brandsEditor.innerHTML=`<div class="toolbar"><button class="btn" onclick="addBrandItem()">+ إضافة ماركة</button><button class="btn alt" onclick="toggleSection('brands')">إظهار/إخفاء القسم</button><button class="btn red" onclick="deleteSection('brands')">حذف القسم</button></div>`+
+ items.map((x,i)=>`<div class="card" style="margin-top:10px"><div class="grid">
+  <div class="field"><label>اسم الماركة</label><input id="brand_title_${i}" value="${esc(x.title||x.name||'')}"></div>
+  <div class="field"><label>رمز/معرف الانتقال إلى القسم</label><input id="brand_text_${i}" value="${esc(x.text||x.icon||'')}" placeholder="مثال: ابرق أو abraq"><small class="muted">استخدم نفس اسم/معرف قسم منتجات الماركة في المتجر.</small></div>
+  <div class="field full upload"><label><b>صورة الماركة — رفع مباشر</b></label><input id="brand_image_${i}" type="file" accept="image/*">${x.image?`<div style="margin-top:10px"><img src="${esc(x.image)}" alt="${esc(x.title||'ماركة')}" style="width:150px;height:100px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:12px"></div>`:''}</div>
+ </div><div class="actions" style="margin-top:8px"><button class="btn" onclick="saveBrandItem(${i})">حفظ الماركة</button><button class="btn alt" onclick="hideListItem('brands',${i})">${x.hidden?'إظهار':'إخفاء'}</button><button class="btn red" onclick="removeListItem('brands',${i})">حذف</button></div></div>`).join('');
+}
+async function addBrandItem(){
+ try{let s=getSetting('brands',{enabled:true,items:[]});s.items=Array.isArray(s.items)?s.items:[];s.items.push({title:'ماركة جديدة',text:'',image:'',hidden:false});await putSetting('brands',s);await loadAll();stat('تمت إضافة ماركة جديدة — أدخل الاسم والرمز والصورة ثم احفظ ✓')}catch(e){stat('تعذر إضافة الماركة: '+(e?.message||String(e)),true)}
+}
+async function saveBrandItem(i){
+ try{
+  let s=getSetting('brands',{enabled:true,items:[]});s.items=Array.isArray(s.items)?s.items:[];if(!s.items[i])throw new Error('الماركة غير موجودة');
+  const title=document.getElementById(`brand_title_${i}`)?.value.trim()||'';
+  const text=document.getElementById(`brand_text_${i}`)?.value.trim()||title;
+  if(!title)throw new Error('اسم الماركة مطلوب');
+  let image=s.items[i].image||'';const f=document.getElementById(`brand_image_${i}`)?.files?.[0];
+  if(f){stat('جاري رفع صورة الماركة…');image=(await uploadFiles([f],'brands'))[0]||image}
+  s.items[i]={...s.items[i],title,text,image,hidden:!!s.items[i].hidden};
+  await putSetting('brands',s);await loadAll();stat('تم حفظ اسم الماركة وصورتها ورمز الانتقال ✓');
+ }catch(e){stat('فشل حفظ الماركة: '+(e?.message||String(e)),true)}
+}
+
 function renderProducts(){productRows.innerHTML=PRODUCTS.map(p=>`<tr><td>${esc(p.name||p.title||'')}</td><td>${esc(p.brand||'')}</td><td>${esc(p.price||0)}</td><td>${p.is_active===false?'مخفي':'ظاهر'}</td><td class="actions"><button class="btn alt" onclick='editProduct(${JSON.stringify(String(p.id))})'>تعديل</button><button class="btn red" onclick='quickDeleteProduct(${JSON.stringify(String(p.id))})'>حذف</button></td></tr>`).join('')}
 function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pDesc.value=p.description||p.desc||'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
 async function saveProduct(){
@@ -446,7 +472,7 @@ function atyafRenderAdmin(){
   {title:"تغليف فاخر",text:"هدية تليق بمن تحب"},
   {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
  ]);
- listEditor(brandsEditor,"brands",[{title:"أطياف",text:"ATYAAF"}]);
+ brandsSectionEditor();
  renderProducts();
 }
 async function loadAll(){

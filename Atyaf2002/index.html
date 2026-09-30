@@ -568,6 +568,7 @@ window.atyafToggleAiProducts=(force)=>{
   if(!draft.length){box.innerHTML='';return}
   box.innerHTML=`<h3>راجع المنتجات قبل الإضافة</h3>${draft.map((p,i)=>`
    <div class="card" style="margin:10px 0;padding:14px">
+    ${files[Math.max(0,(Number(p.image_index)||i+1)-1)]?`<div style="margin-bottom:12px"><img src="${URL.createObjectURL(files[Math.max(0,(Number(p.image_index)||i+1)-1)])}" alt="صورة المنتج ${i+1}" style="width:110px;height:110px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:12px"></div>`:''}
     <div class="grid">
      <div class="field"><label>الاسم</label><input data-ai="${i}" data-k="name" value="${html(p.name)}"></div>
      <div class="field"><label>الماركة/القسم</label><input data-ai="${i}" data-k="brand" value="${html(p.brand)}"></div>
@@ -576,7 +577,8 @@ window.atyafToggleAiProducts=(force)=>{
      <div class="field full"><label>الوصف والتفاصيل</label><textarea data-ai="${i}" data-k="description">${html(p.description)}</textarea></div>
     </div>
    </div>`).join('')}
-   <div class="toolbar"><button class="btn" type="button" onclick="atyafAiSaveDraft()">اعتماد وإضافة ${draft.length} منتجات</button></div>`;
+   <div class="toolbar"><button class="btn" type="button" onclick="atyafAiSaveDraft()">اعتماد وإضافة ${draft.length} منتجات</button></div>
+   <div id="atyafAiSaveStatus" class="muted" style="margin-top:10px;min-height:22px"></div>`;
   box.querySelectorAll('[data-ai]').forEach(el=>el.oninput=()=>{const i=+el.dataset.ai,k=el.dataset.k;draft[i][k]=(k==='price'||k==='old_price')?Number(el.value)||0:el.value});
  }
  window.atyafAiAnalyzeProducts=async()=>{
@@ -608,11 +610,16 @@ window.atyafToggleAiProducts=(force)=>{
  window.atyafAiSaveDraft=async()=>{
   if(!draft.length)return;
   const status=$('atyafAiStatus');
+  const localStatus=$('atyafAiSaveStatus');
   const saveBtn=$('atyafAiPreview')?.querySelector('.toolbar .btn');
+  const say=(msg,bad=false)=>{
+   if(status)status.textContent=msg;
+   if(localStatus){localStatus.textContent=msg;localStatus.style.color=bad?'#8b211b':'#17352e'}
+  };
   if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='جاري الاعتماد…'}
   try{
    if(!db)throw new Error('تعذر الاتصال بقاعدة البيانات. اضغط تحديث ثم أعد المحاولة.');
-   status.textContent='جاري رفع الصور وإضافة المنتجات…';
+   say('جاري رفع الصور وإضافة المنتجات…');
    const added=[];
    for(let i=0;i<draft.length;i++){
     const p=draft[i];
@@ -620,11 +627,10 @@ window.atyafToggleAiProducts=(force)=>{
     if(!name)throw new Error('اسم المنتج رقم '+(i+1)+' مطلوب.');
     const imageIndex=Math.max(1,Number(p.image_index)||i+1)-1;
     const f=files[imageIndex]||files[i];
-    let image='';
-    if(f){
-     status.textContent='جاري رفع صورة المنتج '+(i+1)+' من '+draft.length+'…';
-     image=(await uploadFiles([f],'products'))[0]||'';
-    }
+    if(!f)throw new Error('لم أجد صورة المنتج رقم '+(i+1)+'. أعد اختيار الصور ثم حللها من جديد.');
+    say('جاري رفع صورة المنتج '+(i+1)+' من '+draft.length+'…');
+    const image=(await atyafWithTimeout(uploadFiles([f],'products'),30000))[0]||'';
+    if(!image)throw new Error('لم يتم الحصول على رابط صورة المنتج رقم '+(i+1)+'.');
     const row={
      name,
      brand:String(p.brand||'').trim(),
@@ -635,24 +641,28 @@ window.atyafToggleAiProducts=(force)=>{
      is_active:true,
      sort_order:PRODUCTS.length+i+1
     };
-    status.textContent='جاري إضافة المنتج '+(i+1)+' من '+draft.length+'…';
-    const {data,error}=await db.from('products').insert(row).select('*');
+    say('تم رفع الصورة. جاري إضافة المنتج '+(i+1)+' من '+draft.length+'…');
+    const result=await atyafWithTimeout(db.from('products').insert(row).select('*'),20000);
+    const data=result?.data,error=result?.error;
     if(error)throw new Error('فشل المنتج '+(i+1)+' ('+name+'): '+(error.message||String(error)));
     if(!data||!data.length)throw new Error('لم يتم إنشاء المنتج '+(i+1)+' ('+name+'). تحقق من صلاحية INSERT في جدول products.');
     added.push(data[0]);
+    say('تمت إضافة '+added.length+' من '+draft.length+' منتجات…');
    }
-   status.textContent='تمت إضافة '+added.length+' منتجات بنجاح ✓';
+   say('تمت إضافة '+added.length+' منتجات مع صورها بنجاح ✓');
    draft=[];files=[];
    $('atyafAiImages').value='';
    $('atyafAiPrompt').value='';
    $('atyafAiImageList').innerHTML='';
-   $('atyafAiPreview').innerHTML='';
    await loadAll();
+   $('atyafAiPreview').innerHTML='<div class="status" style="margin:0">تمت إضافة '+added.length+' منتجات مع صورها بنجاح ✓</div>';
   }catch(e){
    console.error('ATYAAF AI save:',e);
-   status.textContent='فشل اعتماد المنتجات: '+(e?.message||String(e));
+   const msg=(e?.message==='TIMEOUT')?'انتهت مهلة الاتصال أثناء الرفع أو الحفظ. حاول مرة أخرى بصورة واحدة، وإذا تكرر الخطأ فراجع اتصال Supabase/Storage.':(e?.message||String(e));
+   say('فشل اعتماد المنتجات: '+msg,true);
+   alert('فشل اعتماد المنتجات:\n'+msg);
   }finally{
-   if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='اعتماد وإضافة '+draft.length+' منتجات'}
+   if(saveBtn && document.body.contains(saveBtn)){saveBtn.disabled=false;saveBtn.textContent='اعتماد وإضافة '+draft.length+' منتجات'}
   }
  };
 })();

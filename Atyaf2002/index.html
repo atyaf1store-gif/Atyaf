@@ -621,15 +621,17 @@ window.atyafToggleAiProducts=(force)=>{
    if(!db)throw new Error('تعذر الاتصال بقاعدة البيانات. اضغط تحديث ثم أعد المحاولة.');
    say('جاري رفع الصور وإضافة المنتجات…');
    const added=[];
+   const alreadySaved=draft.filter(p=>p._atyafSaved===true).length;
    for(let i=0;i<draft.length;i++){
     const p=draft[i];
+    if(p._atyafSaved===true)continue;
     const name=String(p.name||'').trim();
     if(!name)throw new Error('اسم المنتج رقم '+(i+1)+' مطلوب.');
     const imageIndex=Math.max(1,Number(p.image_index)||i+1)-1;
     const f=files[imageIndex]||files[i];
     if(!f)throw new Error('لم أجد صورة المنتج رقم '+(i+1)+'. أعد اختيار الصور ثم حللها من جديد.');
-    say('جاري رفع صورة المنتج '+(i+1)+' من '+draft.length+'…');
-    const image=(await atyafWithTimeout(uploadFiles([f],'products'),30000))[0]||'';
+    say('جاري رفع صورة المنتج '+(i+1)+' من '+draft.length+'… قد يستغرق الرفع وقتًا على الاتصال البطيء.');
+    const image=(await atyafWithTimeout(uploadFiles([f],'products'),120000))[0]||'';
     if(!image)throw new Error('لم يتم الحصول على رابط صورة المنتج رقم '+(i+1)+'.');
     const row={
      name,
@@ -642,14 +644,18 @@ window.atyafToggleAiProducts=(force)=>{
      sort_order:PRODUCTS.length+i+1
     };
     say('تم رفع الصورة. جاري إضافة المنتج '+(i+1)+' من '+draft.length+'…');
-    const result=await atyafWithTimeout(db.from('products').insert(row).select('*'),20000);
+    const result=await atyafWithTimeout(db.from('products').insert(row).select('*'),60000);
     const data=result?.data,error=result?.error;
     if(error)throw new Error('فشل المنتج '+(i+1)+' ('+name+'): '+(error.message||String(error)));
     if(!data||!data.length)throw new Error('لم يتم إنشاء المنتج '+(i+1)+' ('+name+'). تحقق من صلاحية INSERT في جدول products.');
+    p._atyafSaved=true;
+    p._atyafSavedId=String(data[0]?.id||'');
     added.push(data[0]);
-    say('تمت إضافة '+added.length+' من '+draft.length+' منتجات…');
+    const totalSaved=alreadySaved+added.length;
+    say('تمت إضافة '+totalSaved+' من '+draft.length+' منتجات…');
    }
-   say('تمت إضافة '+added.length+' منتجات مع صورها بنجاح ✓');
+   const totalSaved=draft.filter(p=>p._atyafSaved===true).length;
+   say('تمت إضافة '+totalSaved+' منتجات مع صورها بنجاح ✓');
    draft=[];files=[];
    $('atyafAiImages').value='';
    $('atyafAiPrompt').value='';
@@ -658,11 +664,19 @@ window.atyafToggleAiProducts=(force)=>{
    $('atyafAiPreview').innerHTML='<div class="status" style="margin:0">تمت إضافة '+added.length+' منتجات مع صورها بنجاح ✓</div>';
   }catch(e){
    console.error('ATYAAF AI save:',e);
-   const msg=(e?.message==='TIMEOUT')?'انتهت مهلة الاتصال أثناء الرفع أو الحفظ. حاول مرة أخرى بصورة واحدة، وإذا تكرر الخطأ فراجع اتصال Supabase/Storage.':(e?.message||String(e));
+   const savedCount=draft.filter(p=>p._atyafSaved===true).length;
+   const remaining=Math.max(0,draft.length-savedCount);
+   const msg=(e?.message==='TIMEOUT')
+    ?'انتهت مهلة الاتصال بعد الانتظار. تم حفظ '+savedCount+' من '+draft.length+' منتجات. اضغط الزر مرة أخرى لإكمال '+remaining+' منتجات متبقية فقط؛ لن يعيد المنتجات التي تم حفظها في هذه الجلسة.'
+    :(e?.message||String(e));
    say('فشل اعتماد المنتجات: '+msg,true);
    alert('فشل اعتماد المنتجات:\n'+msg);
   }finally{
-   if(saveBtn && document.body.contains(saveBtn)){saveBtn.disabled=false;saveBtn.textContent='اعتماد وإضافة '+draft.length+' منتجات'}
+   if(saveBtn && document.body.contains(saveBtn)){
+    const remaining=draft.filter(p=>p._atyafSaved!==true).length;
+    saveBtn.disabled=false;
+    saveBtn.textContent=remaining&&remaining<draft.length?'إكمال إضافة '+remaining+' منتجات متبقية':'اعتماد وإضافة '+draft.length+' منتجات';
+   }
   }
  };
 })();

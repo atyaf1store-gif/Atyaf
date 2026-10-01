@@ -41,10 +41,11 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <div id="atyafAdminLock">
  <div class="atyaf-lock-card">
   <h2 id="atyafLockTitle">قفل الإدارة</h2>
-  <p id="atyafLockHint">أدخل كلمة المرور لفتح لوحة الإدارة.</p>
+  <p id="atyafLockHint">سجّل الدخول بحساب الإدارة الآمن.</p>
+  <input id="atyafLockEmail" type="email" placeholder="بريد الإدارة" autocomplete="username">
   <input id="atyafLockPass" type="password" placeholder="كلمة المرور" autocomplete="current-password">
   <input id="atyafLockPass2" type="password" placeholder="تأكيد كلمة المرور" autocomplete="new-password" hidden>
-  <button id="atyafLockBtn" type="button">فتح الإدارة</button>
+  <button id="atyafLockBtn" type="button">دخول آمن</button>
   <div id="atyafLockMsg"></div>
  </div>
 </div>
@@ -57,7 +58,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="adminlock">قفل الإدارة</button>
 </div></aside><main>
-<div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><button class="btn alt" onclick="loadAll()">↻ تحديث</button></div>
+<div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><div class="toolbar"><button class="btn alt" onclick="loadAll()">↻ تحديث</button><button class="btn red" type="button" onclick="atyafAdminLogout()">تسجيل الخروج</button></div></div>
 <div id="status" class="status">جاري الاتصال…</div>
 
 <section id="dashboard" class="panel active"><div class="card"><h2>إدارة كاملة</h2><p>اختر أي قسم من القائمة. كل جزء يُحفظ مستقلاً في جدول <b>settings</b>، والوسائط تُرفع مباشرة إلى Supabase Storage بدون لصق روابط.</p></div></section>
@@ -518,66 +519,110 @@ setTimeout(()=>{
     stat("تعذر الاتصال. اضغط تحديث للمحاولة مرة أخرى.",true);
   }
 },6000);
-loadAll();
 </script>
 <script id="atyaf-admin-lock-js">
 (()=>{
- const LOCAL='atyaf_admin_lock_v3',SESSION='atyaf_admin_unlocked';
  const $=id=>document.getElementById(id);
- const read=()=>{try{return JSON.parse(localStorage.getItem(LOCAL)||'null')}catch(_){return null}};
- const write=v=>localStorage.setItem(LOCAL,JSON.stringify(v));
- function verifier(v){
-  let h1=2166136261>>>0,h2=2246822519>>>0;
-  const x='ATYAAF::'+String(v)+'::ADMIN';
-  for(let i=0;i<x.length;i++){const c=x.charCodeAt(i);h1=Math.imul(h1^c,16777619)>>>0;h2=Math.imul(h2^c,3266489917)>>>0}
-  return h1.toString(16).padStart(8,'0')+h2.toString(16).padStart(8,'0');
+ let authBusy=false;
+
+ function lock(){
+  document.body.classList.add('atyaf-admin-locked');
+  const box=$('atyafAdminLock');if(box)box.hidden=false;
  }
  function unlock(){
-  sessionStorage.setItem(SESSION,'1');
   document.body.classList.remove('atyaf-admin-locked');
   const box=$('atyafAdminLock');if(box)box.hidden=true;
  }
- function render(){
-  if(sessionStorage.getItem(SESSION)==='1'){unlock();return}
-  const cfg=read(),first=!cfg?.verifier;
-  $('atyafLockTitle').textContent=first?'إنشاء كلمة مرور الإدارة':'قفل الإدارة';
-  $('atyafLockHint').textContent=first?'هذه أول مرة. أنشئ كلمة مرور لصفحة الإدارة.':'أدخل كلمة المرور لفتح لوحة الإدارة.';
-  $('atyafLockPass2').hidden=!first;
-  $('atyafLockBtn').textContent=first?'حفظ وفتح الإدارة':'فتح الإدارة';
-  const submit=()=>{
-   const p=$('atyafLockPass').value,msg=$('atyafLockMsg');msg.textContent='';
-   if(p.length<6){msg.textContent='استخدم كلمة مرور من 6 أحرف أو أرقام على الأقل.';return}
-   if(first&&p!==$('atyafLockPass2').value){msg.textContent='كلمتا المرور غير متطابقتين.';return}
-   try{
-    if(first){
-     write({verifier:verifier(p),createdAt:Date.now()});
-     const check=read();
-     if(!check||check.verifier!==verifier(p))throw new Error('LOCAL_SAVE_FAILED');
-     unlock();
-    }else if(verifier(p)===cfg.verifier)unlock();
-    else msg.textContent='كلمة المرور غير صحيحة.';
-   }catch(e){
-    console.error('ATYAAF local lock:',e);
-    msg.textContent='تعذر حفظ القفل في المتصفح. تأكد أن التصفح الخاص غير مفعّل ثم أعد المحاولة.';
-   }
-  };
-  $('atyafLockBtn').onclick=submit;
-  $('atyafLockPass').onkeydown=e=>{if(e.key==='Enter')submit()};
-  $('atyafLockPass2').onkeydown=e=>{if(e.key==='Enter')submit()};
+ function msg(t,bad=true){
+  const el=$('atyafLockMsg');if(!el)return;
+  el.textContent=t||'';
+  el.style.color=bad?'#a43f35':'#17352e';
  }
- window.changeAdminPassword=()=>{
-  const cfg=read(),cur=$('lockCurrent')?.value||'',n=$('lockNew')?.value||'',c=$('lockConfirm')?.value||'';
-  if(!cfg?.verifier)return stat('لم يتم إنشاء كلمة مرور على هذا الجهاز بعد.',true);
-  if(verifier(cur)!==cfg.verifier)return stat('كلمة المرور الحالية غير صحيحة.',true);
-  if(n.length<6)return stat('كلمة المرور الجديدة يجب أن تكون 6 أحرف أو أرقام على الأقل.',true);
+ function friendlyAuthError(e){
+  const m=String(e?.message||e||'');
+  if(/invalid login credentials/i.test(m))return 'البريد أو كلمة المرور غير صحيحة.';
+  if(/email not confirmed/i.test(m))return 'يجب تأكيد بريد الإدارة أولًا.';
+  if(/failed to fetch|network|load failed/i.test(m))return 'تعذر الاتصال بخدمة تسجيل الدخول. تحقق من الإنترنت ثم أعد المحاولة.';
+  return m||'تعذر تسجيل الدخول.';
+ }
+ async function signIn(){
+  if(authBusy||!db)return;
+  const email=String($('atyafLockEmail')?.value||'').trim();
+  const password=String($('atyafLockPass')?.value||'');
+  if(!email)return msg('أدخل بريد الإدارة.');
+  if(!password)return msg('أدخل كلمة المرور.');
+  authBusy=true;
+  const btn=$('atyafLockBtn');
+  if(btn){btn.disabled=true;btn.textContent='جاري التحقق…'}
+  msg('',false);
+  try{
+   const {data,error}=await db.auth.signInWithPassword({email,password});
+   if(error)throw error;
+   if(!data?.session)throw new Error('لم يتم إنشاء جلسة إدارة.');
+   if($('atyafLockPass'))$('atyafLockPass').value='';
+   unlock();
+   await loadAll();
+  }catch(e){
+   console.error('ATYAAF secure login:',e);
+   lock();msg(friendlyAuthError(e));
+  }finally{
+   authBusy=false;
+   if(btn){btn.disabled=false;btn.textContent='دخول آمن'}
+  }
+ }
+ async function init(){
+  lock();
+  if(!db){msg('تعذر بدء الاتصال. أعد تحميل الصفحة.');return}
+  try{
+   const {data,error}=await db.auth.getSession();
+   if(error)throw error;
+   if(data?.session){
+    unlock();
+    await loadAll();
+   }else{
+    msg('',false);
+    $('atyafLockEmail')?.focus();
+   }
+  }catch(e){
+   console.error('ATYAAF auth init:',e);
+   lock();msg(friendlyAuthError(e));
+  }
+ }
+ window.atyafAdminLogout=async()=>{
+  try{if(db)await db.auth.signOut()}catch(e){console.error('ATYAAF logout:',e)}
+  SETTINGS=[];PRODUCTS=[];
+  lock();
+  if($('atyafLockPass'))$('atyafLockPass').value='';
+  stat('تم تسجيل الخروج من الإدارة ✓');
+ };
+ window.changeAdminPassword=async()=>{
+  if(!db)return stat('تعذر الاتصال بخدمة تسجيل الدخول.',true);
+  const cur=String($('lockCurrent')?.value||'');
+  const n=String($('lockNew')?.value||'');
+  const c=String($('lockConfirm')?.value||'');
+  if(n.length<8)return stat('كلمة المرور الجديدة يجب أن تكون 8 أحرف أو أرقام على الأقل.',true);
   if(n!==c)return stat('تأكيد كلمة المرور الجديدة غير مطابق.',true);
   try{
-   write({verifier:verifier(n),updatedAt:Date.now()});
+   const {data:{user},error:userError}=await db.auth.getUser();
+   if(userError||!user?.email)throw userError||new Error('جلسة الإدارة غير متاحة.');
+   const verify=await db.auth.signInWithPassword({email:user.email,password:cur});
+   if(verify.error)return stat('كلمة المرور الحالية غير صحيحة.',true);
+   const updated=await db.auth.updateUser({password:n});
+   if(updated.error)throw updated.error;
    $('lockCurrent').value=$('lockNew').value=$('lockConfirm').value='';
-   stat('تم تغيير كلمة مرور الإدارة ✓');
-  }catch(e){console.error('ATYAAF password change:',e);stat('تعذر تغيير كلمة المرور.',true)}
+   stat('تم تغيير كلمة مرور حساب الإدارة بأمان ✓');
+  }catch(e){
+   console.error('ATYAAF password change:',e);
+   stat('تعذر تغيير كلمة المرور: '+friendlyAuthError(e),true);
+  }
  };
- render();
+ $('atyafLockBtn').onclick=signIn;
+ $('atyafLockPass').onkeydown=e=>{if(e.key==='Enter')signIn()};
+ $('atyafLockEmail').onkeydown=e=>{if(e.key==='Enter')$('atyafLockPass')?.focus()};
+ db?.auth?.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_OUT'||!session)lock();
+ });
+ init();
 })();
 </script>
 
@@ -633,7 +678,9 @@ window.atyafToggleAiProducts=(force)=>{
    const endpoint=String(window.ATYAAF_AI_ENDPOINT||localStorage.getItem('atyaf_ai_endpoint')||'').trim();
    if(!endpoint)throw new Error('NO_ENDPOINT');
    const aiUrl=endpoint.replace(/\/$/,'')+'/ai';
-   const res=await fetch(aiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({parts})});
+   const {data:{session}}=await db.auth.getSession();
+   if(!session?.access_token)throw new Error('AUTH_REQUIRED');
+   const res=await fetch(aiUrl,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+session.access_token},body:JSON.stringify({parts})});
    const responseText=await res.text();
    if(!res.ok)throw new Error('AI_'+res.status+': '+responseText.slice(0,180));
    let out;try{out=JSON.parse(responseText)}catch(_){throw new Error('AI_BAD_JSON')}
@@ -644,7 +691,7 @@ window.atyafToggleAiProducts=(force)=>{
   }catch(e){
    console.error('ATYAAF AI products:',e);
    const m=String(e?.message||'');
-   status.textContent=m==='NO_ENDPOINT'?'المساعد يحتاج ربط عنوان الوسيط الآمن أولًا.':m.startsWith('AI_404')?'مسار الذكاء الاصطناعي /ai غير موجود في Worker.':m.startsWith('AI_401')||m.startsWith('AI_403')?'تعذر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من GEMINI_API_KEY في Worker.':m.startsWith('AI_413')?'حجم الصور كبير جدًا. قلّل حجم الصور ثم أعد المحاولة.':m.startsWith('AI_429')?'تم بلوغ حد الاستخدام المؤقت لخدمة الذكاء الاصطناعي. أعد المحاولة لاحقًا.':m==='AI_BAD_JSON'?'وصل رد غير صالح من Worker.':'تعذر تحليل المنتجات الآن. راجع سجل Worker ثم أعد المحاولة.';
+   status.textContent=m==='NO_ENDPOINT'?'المساعد يحتاج ربط عنوان الوسيط الآمن أولًا.':m==='AUTH_REQUIRED'?'انتهت جلسة الإدارة. سجّل الدخول من جديد.':m.startsWith('AI_404')?'مسار الذكاء الاصطناعي /ai غير موجود في Worker.':m.startsWith('AI_401')||m.startsWith('AI_403')?'تعذر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من GEMINI_API_KEY في Worker.':m.startsWith('AI_413')?'حجم الصور كبير جدًا. قلّل حجم الصور ثم أعد المحاولة.':m.startsWith('AI_429')?'تم بلوغ حد الاستخدام المؤقت لخدمة الذكاء الاصطناعي. أعد المحاولة لاحقًا.':m==='AI_BAD_JSON'?'وصل رد غير صالح من Worker.':'تعذر تحليل المنتجات الآن. راجع سجل Worker ثم أعد المحاولة.';
   }
   finally{btn.disabled=false;btn.textContent='تحليل الصور وتجهيز المنتجات'}
  };

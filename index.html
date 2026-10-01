@@ -1753,62 +1753,24 @@ section.benefits>.benefit span,.benefits>.benefit span{
 <script id="atyaf-luxury-intro-js">
 (()=>{
  const intro=document.getElementById('atyafIntro');
- const introSlot=document.getElementById('atyafIntroProfileImage');
+ const slot=document.getElementById('atyafIntroProfileImage');
  if(!intro)return;
-
  const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
- const imageUrl=p=>String(
-   p?.logoImage||p?.profileImage||p?.image||p?.imageUrl||p?.logo||p?.logoUrl||''
- ).trim();
-
- function applyHeaderProfile(p,url){
-
-   document.querySelectorAll('.atyaf-profile-image-slot').forEach(slot=>{
-     slot.textContent='';
-     if(url){
-       const img=document.createElement('img');
-       img.src=url;img.alt='';slot.replaceChildren(img);
-     }else slot.style.display='none';
-   });
- }
-
- function closeIntro(){
-   intro.classList.add('done');
-   setTimeout(()=>intro.remove(),750);
- }
-
- async function start(){
-   let tries=0;
-   while(!window.atyafDb && tries++<80) await new Promise(r=>setTimeout(r,100));
-   if(!window.atyafDb){closeIntro();return}
-   try{
-     const {data,error}=await window.atyafDb.from('settings')
-       .select('id,value,updated_at').eq('key','profile')
-       .order('updated_at',{ascending:false,nullsFirst:false})
-       .order('id',{ascending:false}).limit(1);
-     if(error)throw error;
-     const p=parse(data?.[0]?.value);
-     const profileLogoSize=Math.max(24,Math.min(180,Number(p?.markSize)||48));
-     document.documentElement.style.setProperty('--atyaf-profile-logo-size',profileLogoSize+'px');
-     const url=imageUrl(p);
-     applyHeaderProfile(p,url);
-     if(!url||!introSlot){closeIntro();return}
-
-     const img=new Image();
-     img.alt='';
-     img.onload=()=>{
-       introSlot.replaceChildren(img);
-       setTimeout(closeIntro,3000);
-     };
-     img.onerror=closeIntro;
-     img.src=url;
-   }catch(e){
-     console.warn('ATYAAF profile image:',e);
-     closeIntro();
-   }
- }
- start();
- intro.addEventListener('click',closeIntro,{once:true});
+ const close=()=>{intro.classList.add('done');setTimeout(()=>intro.remove(),750)};
+ const apply=raw=>{
+  const p=parse(raw); if(p.enabled===false){close();return}
+  intro.style.background=p.backgroundColor||'#17352e';
+  const url=String(p.logoImage||'').trim(); if(!slot){close();return}
+  slot.replaceChildren();
+  if(url){const img=new Image();img.alt='';img.onload=()=>{slot.replaceChildren(img);setTimeout(close,Math.max(1500,Math.min(10000,Number(p.duration)||3350)))};img.onerror=close;img.src=url;return}
+  const group=document.createElement('div');group.style.cssText='text-align:center;font-family:'+String(p.fontFamily||'Georgia, serif')+';color:'+String(p.textColor||'#f5eee4');
+  const name=document.createElement('div');name.textContent=String(p.name||'ATYAAF');name.style.cssText='font-size:'+Math.max(22,Math.min(100,Number(p.letterSize)||58))+'px;font-weight:700;letter-spacing:.12em';
+  const mark=document.createElement('div');mark.textContent=String(p.mark||'أ');mark.style.cssText='font-size:'+Math.max(20,Math.min(80,Number(p.markSize)||35))+'px;color:'+String(p.accentColor||'#c99a69')+';margin:6px 0';
+  const sub=document.createElement('div');sub.textContent=String(p.sub||'STORE');sub.style.cssText='font-size:12px;letter-spacing:.28em';
+  group.append(name,mark,sub);slot.append(group); setTimeout(close,Math.max(1500,Math.min(10000,Number(p.duration)||3350)));
+ };
+ async function load(){let tries=0;while(!window.atyafDb&&tries++<80)await new Promise(r=>setTimeout(r,100));if(!window.atyafDb){close();return}try{const {data,error}=await window.atyafDb.from('settings').select('id,value,updated_at').eq('key','intro').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);if(error)throw error;apply(data?.[0]?.value||{})}catch(e){console.warn('ATYAAF intro:',e);close()}}
+ load();intro.addEventListener('click',close,{once:true});
 })();
 </script>
 
@@ -2343,8 +2305,11 @@ function openInfoModal(title,html){
   document.getElementById('infoModal').classList.add('open');
 }
 function closeInfoModal(){document.getElementById('infoModal')?.classList.remove('open')}
-function showShippingInfo(){openInfoModal('الشحن والتوصيل','<p>تظهر هنا سياسة الشحن والتوصيل الخاصة بالمتجر. يمكن ربط النص من إعدادات الإدارة.</p>')}
-function showReturnsInfo(){openInfoModal('الاستبدال والاسترجاع','<p>تظهر هنا سياسة الاستبدال والاسترجاع الخاصة بالمتجر. يمكن ربط النص من إعدادات الإدارة.</p>')}
+function atyafPolicyHtml(v){return '<p>'+escapeHtml(String(v||'')).replace(/\n/g,'<br>')+'</p>'}
+function atyafOpenPolicy(key,title){const p=window.ATYAAF_POLICIES||window.ATYAF_ADMIN_SETTINGS?.policies||{};const v=String(p[key]||'').trim();openInfoModal(title,v?atyafPolicyHtml(v):'<p>لم تتم إضافة نص لهذه السياسة بعد.</p>')}
+window.atyafOpenPolicy=atyafOpenPolicy;
+function showShippingInfo(){atyafOpenPolicy('shipping','الشحن والتوصيل')}
+function showReturnsInfo(){atyafOpenPolicy('returns','الاستبدال والاسترجاع')}
 function showContactInfo(){
   const g=atyafGeneralSettings||{};
   const phone=g.phone||g.whatsapp||'';
@@ -2494,8 +2459,9 @@ window.addEventListener("focus",atyafLoadLowerAds);
   };
 
   function applyTopbar(s){
-    const el=findText([".announcement",".topbar",".top-bar",".promo-bar",".announcement-bar","header div"],"شحن مجاني");
-    if(!el)return; hide(el,s.enabled===false); setText(el,s.text);
+    const el=document.querySelector("#topbar")||document.querySelector(".topbar")||findText([".announcement",".top-bar",".promo-bar",".announcement-bar"],null);
+    if(!el)return; hide(el,s.enabled===false);
+    const text=el.querySelector("span")||el; if(s.text!=null)text.textContent=String(s.text);
   }
   function applyHeader(s){
     const header=$("header")||$(".header");
@@ -2508,8 +2474,14 @@ window.addEventListener("focus",atyafLoadLowerAds);
   function applyNav(s){
     const nav=$("#atyafManagedNav")||$("nav");
     if(!nav)return; hide(nav,s.enabled===false);
+    const row=nav.querySelector('.navrow')||nav;
+    if(Array.isArray(s.items)){
+      const safeTarget=v=>{v=String(v||'').trim();if(!v)return '#home';if(/^(https?:|\/|#)/i.test(v))return v;return '#'+v.replace(/^#+/,'')};
+      row.innerHTML=s.items.filter(x=>x&&x.hidden!==true).map(x=>`<a href="${safeTarget(x.target||x.section||x.id)}">${String(x.title||x.name||'')}</a>`).join('');
+      return;
+    }
     const map=[["home","الرئيسية"],["brands","الماركات"],["best","الأكثر مبيع"],["new","وصل حديث"],["offers","العروض"],["scents","الروائح"],["contact","تواصل معنا"]];
-    map.forEach(([k,old])=>{if(!s[k])return;const a=[...nav.querySelectorAll("a,button")].find(x=>x.textContent.includes(old));if(a)a.textContent=s[k]});
+    map.forEach(([k,old])=>{if(!s[k])return;const a=[...row.querySelectorAll("a,button")].find(x=>x.textContent.includes(old));if(a)a.textContent=s[k]});
   }
   function applyGift(s){
     let sec=$("#scents")||$(".gift-section")||$(".gift")||findText(["section"],"جهز هديتك")?.closest("section");
@@ -2649,11 +2621,13 @@ window.addEventListener("focus",atyafLoadLowerAds);
     }).join('');
   }
   function applyPolicies(s){
-    Object.entries(s||{}).forEach(([k,v])=>{
-      if(k==="enabled"||!v)return;
-      const el=document.querySelector(`[data-policy="${k}"]`);
-      if(el)el.textContent=v;
-    });
+    window.ATYAAF_POLICIES=s||{};
+    const footer=document.querySelector('footer .footer-grid'); if(!footer)return;
+    let box=document.getElementById('atyafPolicyLinks'); if(s?.enabled===false){if(box)box.remove();return}
+    if(!box){box=document.createElement('div');box.id='atyafPolicyLinks';footer.appendChild(box)}
+    const links=[['about','من نحن'],['privacy','سياسة الخصوصية'],['terms','الشروط والأحكام'],['shipping','الشحن والتوصيل'],['returns','الاستبدال والاسترجاع'],['customerService','خدمة العملاء']].filter(([k])=>String(s?.[k]||'').trim());
+    box.innerHTML=links.length?'<h3>السياسات</h3>'+links.map(([k,t])=>`<a href="javascript:void(0)" data-policy-key="${k}">${t}</a>`).join(''):'';
+    box.querySelectorAll('[data-policy-key]').forEach(a=>a.onclick=()=>window.atyafOpenPolicy?.(a.dataset.policyKey,a.textContent));
   }
   function applyAdAlias(key,s){
     // الشاشة العلوية في لوحة الإدارة محفوظة فعليًا تحت key = ads.
@@ -3105,7 +3079,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHeaderSearch()}
 .atyaf-profile-image-slot img{display:block!important;width:auto!important;object-fit:contain!important;background:transparent!important;border:0!important;box-shadow:none!important}
 @media(max-width:600px){.atyaf-profile-image-slot img,.atyaf-mobile-profile .atyaf-profile-image-slot img{height:var(--atyaf-profile-phone-size,42px)!important;max-height:none!important;max-width:min(42vw,180px)!important}}
 @media(min-width:601px) and (max-width:1100px){.atyaf-profile-image-slot img,.atyaf-mobile-profile .atyaf-profile-image-slot img{height:var(--atyaf-profile-tablet-size,64px)!important;max-height:none!important;max-width:min(34vw,240px)!important}}
-@media(min-width:1101px){.atyaf-profile-image-slot img{height:var(--atyaf-profile-tablet-size,64px)!important;max-height:none!important;max-width:240px!important}}
+@media(min-width:1101px){.atyaf-profile-image-slot img{height:var(--atyaf-profile-desktop-size,64px)!important;max-height:none!important;max-width:280px!important}}
 </style>
 <script id="atyaf-profile-image-only-responsive-js">
 (()=>{
@@ -3118,8 +3092,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHeaderSearch()}
   r.style.setProperty('--atyaf-profile-font',p.fontFamily||'Tahoma, Arial, sans-serif');
   r.style.setProperty('--atyaf-profile-phone-size',Math.max(24,Math.min(140,Number(p.phoneSize)||42))+'px');
   r.style.setProperty('--atyaf-profile-tablet-size',Math.max(30,Math.min(180,Number(p.tabletSize)||64))+'px');
-  const top=document.querySelector('.topbar span')||document.querySelector('.topbar');
-  if(top&&p.barText!=null){if(top.matches('.topbar'))top.childNodes[0].nodeValue=String(p.barText);else top.textContent=String(p.barText)}
+  r.style.setProperty('--atyaf-profile-desktop-size',Math.max(30,Math.min(220,Number(p.desktopSize||p.tabletSize)||64))+'px');
   document.querySelectorAll('.atyaf-profile,.atyaf-mobile-profile').forEach(x=>x.style.display=p.enabled===false?'none':'');
   document.querySelectorAll('.atyaf-profile-image-slot').forEach(slot=>{
     slot.style.display=url?'grid':'none';

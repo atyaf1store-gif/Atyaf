@@ -225,7 +225,7 @@ const schemas={
  nav:{title:'القائمة الرئيسية',fields:[['home','الرئيسية'],['brands','الماركات'],['best','الأكثر مبيعاً'],['new','وصل حديثاً'],['offers','العروض'],['scents','الروائح'],['contact','تواصل معنا'],['enabled','ظاهر','bool']]},
  gift:{title:'قسم الهدية',fields:[['kicker','النص الصغير'],['title','العنوان'],['text','الوصف'],['button','نص الزر'],['link','الرابط'],['enabled','ظاهر','bool']]},
  footer:{title:'الفوتر',fields:[['storeName','اسم المتجر'],['description','الوصف'],['phone','الهاتف'],['email','البريد'],['instagram','Instagram'],['tiktok','TikTok'],['whatsapp','WhatsApp'],['copyright','حقوق النشر'],['enabled','ظاهر','bool']]},
- policies:{title:'السياسات',fields:[['about','من نحن','area'],['privacy','الخصوصية','area'],['terms','الشروط','area'],['returns','الاستبدال والاسترجاع','area'],['shipping','الشحن','area'],['customerService','خدمة العملاء','area']]}
+ policies:{title:'السياسات',fields:[['enabled','ظاهر','bool'],['about','من نحن','area'],['privacy','الخصوصية','area'],['terms','الشروط','area'],['returns','الاستبدال والاسترجاع','area'],['shipping','الشحن','area'],['customerService','خدمة العملاء','area']]}
 };
 
 function giftSectionEditor(){
@@ -286,16 +286,14 @@ async function createGiftSection(){try{if(SETTINGS.some(x=>x.key==='gift')&&!con
 
 function colorField(k,label,val){return `<div class="field"><label>${label}</label><div class="color-row"><input data-v="${k}" type="color" value="${esc(val)}"><input value="${esc(val)}" readonly></div></div>`}
 function profileSectionEditor(){
- const s=getSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',barBackgroundColor:'#000000',barText:'مرحبا بكم',barTextColor:'#ffffff',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64});
+ const s=getSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64,desktopSize:64});
  profileEditor.innerHTML=`<div class="grid">
  <div class="field"><label>الحالة</label><select data-v="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
  ${colorField('backgroundColor','لون خلفية الهيدر',s.backgroundColor||'#000000')}
- ${colorField('barBackgroundColor','لون الشريط العلوي',s.barBackgroundColor||'#000000')}
- ${colorField('barTextColor','لون نص الشريط',s.barTextColor||'#ffffff')}
- <div class="field full"><label>نص الشريط العلوي</label><input data-v="barText" value="${esc(s.barText||'مرحبا بكم')}"></div>
  <div class="field"><label>الخط</label><select data-v="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
- <div class="field"><label>حجم البروفايل للهاتف px</label><input data-v="phoneSize" type="number" min="24" max="140" value="${Number(s.phoneSize||42)}"></div>
- <div class="field"><label>حجم البروفايل للآيباد/التابلت px</label><input data-v="tabletSize" type="number" min="30" max="180" value="${Number(s.tabletSize||64)}"></div>
+ <div class="field"><label>حجم الشعار للهاتف px</label><input data-v="phoneSize" type="number" min="24" max="140" value="${Number(s.phoneSize||42)}"></div>
+ <div class="field"><label>حجم الشعار للآيباد/التابلت px</label><input data-v="tabletSize" type="number" min="30" max="180" value="${Number(s.tabletSize||64)}"></div>
+ <div class="field"><label>حجم الشعار للكمبيوتر px</label><input data-v="desktopSize" type="number" min="30" max="220" value="${Number(s.desktopSize||s.tabletSize||64)}"></div>
  <div class="field full upload"><b>صورة البروفايل — رفع مباشر</b><input id="profileLogoFile" type="file" accept="image/*">${s.logoImage?`<div style="margin-top:9px"><img src="${esc(s.logoImage)}" style="max-width:180px;max-height:130px;object-fit:contain"><br><button class="btn red" type="button" onclick="removeProfileLogo()">حذف الصورة فقط</button></div>`:''}</div>
  </div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveProfileSection()">حفظ</button></div>`;
  const ff=profileEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Tahoma, Arial, sans-serif';
@@ -321,7 +319,7 @@ function introSectionEditor(){
 }
 function readVisualEditor(el,key){
  const old=getSetting(key,{}),o={...old};
- el.querySelectorAll('[data-v]').forEach(x=>{let v=x.value;if(x.dataset.v==='enabled'||x.dataset.v==='showOnce')v=v==='true';else if(['arabicSize','englishSize','markSize','letterSize','duration','phoneSize','tabletSize'].includes(x.dataset.v))v=Number(v)||0;o[x.dataset.v]=v});return o;
+ el.querySelectorAll('[data-v]').forEach(x=>{let v=x.value;if(x.dataset.v==='enabled'||x.dataset.v==='showOnce')v=v==='true';else if(['arabicSize','englishSize','markSize','letterSize','duration','phoneSize','tabletSize','desktopSize'].includes(x.dataset.v))v=Number(v)||0;o[x.dataset.v]=v});return o;
 }
 async function saveProfileSection(){try{
  let old=getSetting('profile',{}),v=readVisualEditor(profileEditor,'profile'),f=document.getElementById('profileLogoFile')?.files?.[0];
@@ -335,7 +333,7 @@ async function removeProfileLogo(){let s=getSetting('profile',{});s.logoImage=''
 async function removeIntroLogo(){let s=getSetting('intro',{});s.logoImage='';await putSetting('intro',s);await loadAll()}
 async function deleteProfileSection(){if(confirm('حذف إعدادات البروفايل؟')){await removeSetting('profile');await loadAll()}}
 async function deleteIntroSection(){if(confirm('حذف إعدادات شاشة البداية؟')){await removeSetting('intro');await loadAll()}}
-async function createProfileSection(){await putSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',barBackgroundColor:'#000000',barText:'مرحبا بكم',barTextColor:'#ffffff',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64});await loadAll()}
+async function createProfileSection(){await putSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64,desktopSize:64});await loadAll()}
 async function createIntroSection(){await putSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
 
 function navLinksEditor(el){

@@ -3279,5 +3279,36 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 </style>
 
+
+<style id="atyaf-product-action-visibility-v1">
+html.atyaf-hide-add-cart [onclick*="addCart("],
+html.atyaf-hide-add-cart .atyaf-cart-action{display:none!important}
+html.atyaf-hide-buy-gift [onclick*="buyAsGift("],
+html.atyaf-hide-buy-gift .gift-buy-btn,
+html.atyaf-hide-buy-gift .atyaf-gift-action{display:none!important}
+</style>
+<script id="atyaf-product-action-visibility-js-v1">
+(()=>{
+ const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
+ function apply(raw){
+  const s=parse(raw);
+  document.documentElement.classList.toggle('atyaf-hide-add-cart',s.showAddToCart===false);
+  document.documentElement.classList.toggle('atyaf-hide-buy-gift',s.showBuyAsGift===false);
+ }
+ async function load(){
+  try{
+   const cached=window.ATYAF_ADMIN_SETTINGS?.product_actions;
+   if(cached!=null)apply(cached);
+   if(!window.atyafDb)return;
+   const {data,error}=await window.atyafDb.from('settings').select('id,value,updated_at').eq('key','product_actions').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
+   if(error)throw error;
+   apply(data?.[0]?.value||{});
+  }catch(e){console.warn('ATYAAF product action visibility:',e)}
+ }
+ document.addEventListener('atyaf:settings-applied',e=>{if(e?.detail?.product_actions!=null)apply(e.detail.product_actions)});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,100));else setTimeout(load,100);
+ window.addEventListener('focus',load);
+})();
+</script>
 </body>
 </html>

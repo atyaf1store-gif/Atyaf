@@ -3344,54 +3344,46 @@ html.atyaf-hide-buy-gift #productModalBody [onclick*="buyAsGift"]{display:none!i
 })();
 </script>
 
-
-<style id="atyaf-product-design-live-v1">
+<style id="atyaf-product-design-safe-v2">
 :root{
- --pd-img-w:88%;--pd-img-h:300px;--pd-card-w:100%;--pd-radius:16px;--pd-gap:14px;
- --pd-cols-d:4;--pd-cols-t:3;--pd-cols-m:2;--pd-card-bg:#fff;--pd-border:#eeeae2;--pd-img-bg:#fbfaf7;
- --pd-name:#17352e;--pd-brand:#777;--pd-price:#17352e;--pd-font:Tahoma,Arial,sans-serif;
- --pd-name-size:16px;--pd-brand-size:11px;--pd-price-size:15px;--pd-badge-bg:#17352e;--pd-badge-color:#fff;--pd-badge-size:11px;
- --pd-cart-bg:#17352e;--pd-cart-color:#fff;--pd-gift-bg:#fff;--pd-gift-color:#17352e;--pd-btn-h:42px;--pd-btn-size:12px;--pd-btn-radius:12px
+ --pd-card-bg:#fff;--pd-border:#eeeae2;--pd-name:#17352e;--pd-brand:#777;--pd-price:#17352e;
+ --pd-font:Tahoma,Arial,sans-serif;--pd-name-size:16px;--pd-brand-size:11px;--pd-price-size:15px;
+ --pd-badge-bg:#17352e;--pd-badge-color:#fff;--pd-badge-size:11px;
+ --pd-cart-bg:#17352e;--pd-cart-color:#fff;--pd-gift-bg:#fff;--pd-gift-color:#17352e;
+ --pd-btn-h:42px;--pd-btn-size:12px;--pd-btn-radius:12px
 }
-#atyafBrandProductSections .atyaf-brand-products-grid,.products-grid,.products{gap:var(--pd-gap)!important}
-#atyafBrandProductSections .product,.products-grid .product,.products .product{
- width:var(--pd-card-w)!important;max-width:100%!important;border-radius:var(--pd-radius)!important;
- background:var(--pd-card-bg)!important;border-color:var(--pd-border)!important;font-family:var(--pd-font)!important
-}
-#atyafBrandProductSections .product-visual,.products-grid .product-visual,.products .product-visual{
- height:var(--pd-img-h)!important;flex-basis:var(--pd-img-h)!important;background:var(--pd-img-bg)!important
-}
-#atyafBrandProductSections .product-visual>img,.products-grid .product-visual>img,.products .product-visual>img{
- width:var(--pd-img-w)!important;max-width:var(--pd-img-w)!important;height:100%!important;object-fit:contain!important;margin:auto!important
-}
-.product-info h3{color:var(--pd-name)!important;font-size:var(--pd-name-size)!important;font-family:var(--pd-font)!important}
-.product-info small{color:var(--pd-brand)!important;font-size:var(--pd-brand-size)!important;font-family:var(--pd-font)!important}
-.product-info .price,.price{color:var(--pd-price)!important;font-size:var(--pd-price-size)!important;font-family:var(--pd-font)!important}
-.product .tag{background:var(--pd-badge-bg)!important;color:var(--pd-badge-color)!important;font-size:var(--pd-badge-size)!important}
-.product-actions .btn-primary,.atyaf-cart-action{background:var(--pd-cart-bg)!important;color:var(--pd-cart-color)!important;min-height:var(--pd-btn-h)!important;border-radius:var(--pd-btn-radius)!important;font-size:var(--pd-btn-size)!important}
-.product-actions .gift-buy-btn,.atyaf-gift-action{background:var(--pd-gift-bg)!important;color:var(--pd-gift-color)!important;min-height:var(--pd-btn-h)!important;border-radius:var(--pd-btn-radius)!important;font-size:var(--pd-btn-size)!important}
-@media(min-width:1025px){#atyafBrandProductSections .atyaf-brand-products-grid,.products-grid,.products{grid-template-columns:repeat(var(--pd-cols-d),minmax(0,1fr))!important}}
-@media(min-width:601px) and (max-width:1024px){#atyafBrandProductSections .atyaf-brand-products-grid,.products-grid,.products{grid-template-columns:repeat(var(--pd-cols-t),minmax(0,1fr))!important}}
-@media(max-width:600px){#atyafBrandProductSections .atyaf-brand-products-grid,.products-grid,.products{grid-template-columns:repeat(var(--pd-cols-m),minmax(0,1fr))!important}}
+#atyafBrandProductSections .product{background:var(--pd-card-bg)!important;border-color:var(--pd-border)!important;font-family:var(--pd-font)!important}
+#atyafBrandProductSections .product-info h3{color:var(--pd-name)!important;font-size:var(--pd-name-size)!important;font-family:var(--pd-font)!important}
+#atyafBrandProductSections .product-info small{color:var(--pd-brand)!important;font-size:var(--pd-brand-size)!important;font-family:var(--pd-font)!important}
+#atyafBrandProductSections .price{color:var(--pd-price)!important;font-size:var(--pd-price-size)!important;font-family:var(--pd-font)!important}
+#atyafBrandProductSections .tag{background:var(--pd-badge-bg)!important;color:var(--pd-badge-color)!important;font-size:var(--pd-badge-size)!important}
+#atyafBrandProductSections .product-actions .btn-primary{background:var(--pd-cart-bg)!important;color:var(--pd-cart-color)!important;min-height:var(--pd-btn-h)!important;border-radius:var(--pd-btn-radius)!important;font-size:var(--pd-btn-size)!important}
+#atyafBrandProductSections .product-actions .gift-buy-btn{background:var(--pd-gift-bg)!important;color:var(--pd-gift-color)!important;min-height:var(--pd-btn-h)!important;border-radius:var(--pd-btn-radius)!important;font-size:var(--pd-btn-size)!important}
 </style>
-<script id="atyaf-product-design-live-js-v1">
+<script id="atyaf-product-design-safe-js-v2">
 (()=>{
- const D={imageWidth:88,imageHeight:300,cardWidth:100,cardRadius:16,gap:14,columnsDesktop:4,columnsTablet:3,columnsMobile:2,cardBackground:'#ffffff',cardBorder:'#eeeae2',imageBackground:'#fbfaf7',nameColor:'#17352e',brandColor:'#777777',priceColor:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',nameSize:16,brandSize:11,priceSize:15,badgeText:'مميز',badgeBackground:'#17352e',badgeTextColor:'#ffffff',badgeSize:11,cartBackground:'#17352e',cartTextColor:'#ffffff',giftBackground:'#ffffff',giftTextColor:'#17352e',buttonHeight:42,buttonFontSize:12,buttonRadius:12};
+ const D={imageWidth:88,imageHeight:300,cardWidth:100,cardRadius:16,gap:14,columnsDesktop:4,columnsTablet:3,columnsMobile:2,cardBackground:'#ffffff',cardBorder:'#eeeae2',nameColor:'#17352e',brandColor:'#777777',priceColor:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',nameSize:16,brandSize:11,priceSize:15,badgeText:'مميز',badgeBackground:'#17352e',badgeTextColor:'#ffffff',badgeSize:11,cartBackground:'#17352e',cartTextColor:'#ffffff',giftBackground:'#ffffff',giftTextColor:'#17352e',buttonHeight:42,buttonFontSize:12,buttonRadius:12};
  const parse=v=>{if(v&&typeof v==='object')return v;if(typeof v==='string'){try{return JSON.parse(v)||{}}catch(_){}}return {}};
  const n=(v,d,min,max)=>Math.max(min,Math.min(max,Number(v??d)||d));
  function apply(raw){
-   const x={...D,...parse(raw)},h=document.documentElement;
-   const set=(k,v)=>h.style.setProperty(k,String(v));
-   set('--pd-img-w',n(x.imageWidth,88,20,100)+'%');set('--pd-img-h',n(x.imageHeight,300,120,600)+'px');
-   set('--pd-card-w',n(x.cardWidth,100,45,100)+'%');set('--pd-radius',n(x.cardRadius,16,0,50)+'px');set('--pd-gap',n(x.gap,14,0,50)+'px');
-   set('--pd-cols-d',n(x.columnsDesktop,4,1,6));set('--pd-cols-t',n(x.columnsTablet,3,1,4));set('--pd-cols-m',n(x.columnsMobile,2,1,2));
-   set('--pd-card-bg',x.cardBackground);set('--pd-border',x.cardBorder);set('--pd-img-bg',x.imageBackground);
+   const x={...D,...parse(raw)},h=document.documentElement,set=(k,v)=>h.style.setProperty(k,String(v));
+   // Map layout controls onto the storefront's existing, already-tested variables.
+   set('--bs-icon-w',n(x.imageWidth,88,20,100)+'%');
+   set('--bs-icon-h','100%');
+   set('--catalog-image-h',n(x.imageHeight,300,180,520)+'px');
+   set('--bs-card-w',n(x.cardWidth,100,45,100)+'%');
+   set('--bs-radius',n(x.cardRadius,16,0,50)+'px');
+   set('--bs-gap',n(x.gap,14,0,50)+'px');
+   set('--catalog-cols-d',n(x.columnsDesktop,4,1,6));
+   set('--catalog-cols-t',n(x.columnsTablet,3,1,4));
+   set('--catalog-cols-m',n(x.columnsMobile,2,1,2));
+   set('--pd-card-bg',x.cardBackground);set('--pd-border',x.cardBorder);
    set('--pd-name',x.nameColor);set('--pd-brand',x.brandColor);set('--pd-price',x.priceColor);set('--pd-font',x.fontFamily);
    set('--pd-name-size',n(x.nameSize,16,10,32)+'px');set('--pd-brand-size',n(x.brandSize,11,8,24)+'px');set('--pd-price-size',n(x.priceSize,15,10,32)+'px');
    set('--pd-badge-bg',x.badgeBackground);set('--pd-badge-color',x.badgeTextColor);set('--pd-badge-size',n(x.badgeSize,11,8,24)+'px');
    set('--pd-cart-bg',x.cartBackground);set('--pd-cart-color',x.cartTextColor);set('--pd-gift-bg',x.giftBackground);set('--pd-gift-color',x.giftTextColor);
    set('--pd-btn-h',n(x.buttonHeight,42,30,80)+'px');set('--pd-btn-size',n(x.buttonFontSize,12,9,24)+'px');set('--pd-btn-radius',n(x.buttonRadius,12,0,40)+'px');
-   if(x.badgeText)document.querySelectorAll('.product .tag').forEach(el=>el.textContent=x.badgeText);
+   if(x.badgeText)document.querySelectorAll('#atyafBrandProductSections .product .tag').forEach(el=>el.textContent=x.badgeText);
  }
  async function load(){
    try{
@@ -3402,10 +3394,9 @@ html.atyaf-hide-buy-gift #productModalBody [onclick*="buyAsGift"]{display:none!i
    }catch(e){console.warn('ATYAAF product design:',e)}
  }
  document.addEventListener('atyaf:settings-applied',e=>{if(e?.detail?.product_design!=null)apply(e.detail.product_design)});
- const mo=new MutationObserver(()=>{const x=window.ATYAF_ADMIN_SETTINGS?.product_design;if(x)apply(x)});
- mo.observe(document.documentElement,{subtree:true,childList:true});
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,120));else setTimeout(load,120);
- window.addEventListener('focus',load);window.addEventListener('pageshow',load);setInterval(()=>{if(!document.hidden)load()},10000);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,150));else setTimeout(load,150);
+ window.addEventListener('focus',load);window.addEventListener('pageshow',load);
+ setInterval(()=>{if(!document.hidden)load()},10000);
  window.atyafApplyProductDesign=apply;
 })();
 </script>

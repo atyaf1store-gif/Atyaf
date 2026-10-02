@@ -73,6 +73,15 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
 <section id="products" class="panel">
+
+<div class="card" id="atyafProductButtonsSettings">
+ <div class="toolbar"><div class="grow"><h2 style="margin:0 0 6px">أزرار المنتجات في المتجر</h2><div class="muted">تحكم بإظهار أو إخفاء زر إضافة إلى السلة وزر شراء كهدية في جميع بطاقات وتفاصيل المنتجات.</div></div></div>
+ <div class="grid" style="margin-top:14px">
+  <div class="field"><label>زر إضافة إلى السلة</label><select id="atyafShowCartButton"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
+  <div class="field"><label>زر شراء كهدية</label><select id="atyafShowGiftButton"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
+ </div>
+ <div class="toolbar" style="margin-top:14px"><button class="btn" type="button" onclick="atyafSaveProductButtons()">حفظ إعدادات الأزرار</button></div>
+</div>
 <div class="card atyaf-product-add-card">
  <div class="toolbar atyaf-product-add-head">
   <div class="grow">
@@ -765,6 +774,31 @@ window.atyafToggleAiProducts=(force)=>{
    }
   }
  };
+})();
+</script>
+
+<script id="atyaf-product-buttons-settings-admin-v1">
+(()=>{
+ const render=()=>{
+  if(!Array.isArray(window.SETTINGS) && typeof SETTINGS==='undefined')return;
+  const cfg=(typeof getSetting==='function'?getSetting('product_actions',{}):{})||{};
+  const cart=document.getElementById('atyafShowCartButton');
+  const gift=document.getElementById('atyafShowGiftButton');
+  if(cart)cart.value=cfg.showAddToCart===false?'false':'true';
+  if(gift)gift.value=cfg.showBuyAsGift===false?'false':'true';
+ };
+ window.atyafSaveProductButtons=async()=>{
+  try{
+   const old=(typeof getSetting==='function'?getSetting('product_actions',{}):{})||{};
+   const value={...old,showAddToCart:document.getElementById('atyafShowCartButton')?.value!=='false',showBuyAsGift:document.getElementById('atyafShowGiftButton')?.value!=='false'};
+   await putSetting('product_actions',value);
+   await loadAll();
+   stat('تم حفظ إعدادات أزرار المنتجات ✓');
+  }catch(e){console.error('ATYAAF product actions settings:',e);stat(e?.message||String(e),true)}
+ };
+ const base=window.loadAll;
+ if(typeof base==='function')window.loadAll=async function(...args){const out=await base.apply(this,args);render();return out};
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(render,250));
 })();
 </script>
 </body></html>

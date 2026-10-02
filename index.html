@@ -3280,35 +3280,69 @@ html,body{max-width:100%;overflow-x:hidden}
 </style>
 
 
-<style id="atyaf-product-action-visibility-v1">
-html.atyaf-hide-add-cart [onclick*="addCart("],
-html.atyaf-hide-add-cart .atyaf-cart-action{display:none!important}
-html.atyaf-hide-buy-gift [onclick*="buyAsGift("],
+
+<style id="atyaf-product-action-visibility-v2">
+html.atyaf-hide-add-cart .atyaf-cart-action,
+html.atyaf-hide-add-cart .product-actions .btn-primary,
+html.atyaf-hide-add-cart #productModalBody .btn-primary,
+html.atyaf-hide-add-cart button[data-action="cart"]{display:none!important}
+
+html.atyaf-hide-buy-gift .atyaf-gift-action,
 html.atyaf-hide-buy-gift .gift-buy-btn,
-html.atyaf-hide-buy-gift .atyaf-gift-action{display:none!important}
+html.atyaf-hide-buy-gift #productModalBody [onclick*="buyAsGift"]{display:none!important}
 </style>
-<script id="atyaf-product-action-visibility-js-v1">
+<script id="atyaf-product-action-visibility-js-v2">
 (()=>{
- const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
+ let current={showAddToCart:true,showBuyAsGift:true};
+ const parse=v=>{
+   if(v && typeof v==='object')return v;
+   if(typeof v==='string'){try{return JSON.parse(v)||{}}catch(_){return {}}}
+   return {};
+ };
  function apply(raw){
-  const s=parse(raw);
-  document.documentElement.classList.toggle('atyaf-hide-add-cart',s.showAddToCart===false);
-  document.documentElement.classList.toggle('atyaf-hide-buy-gift',s.showBuyAsGift===false);
+   current={...current,...parse(raw)};
+   const root=document.documentElement;
+   root.classList.toggle('atyaf-hide-add-cart',current.showAddToCart===false);
+   root.classList.toggle('atyaf-hide-buy-gift',current.showBuyAsGift===false);
+   document.querySelectorAll('.atyaf-cart-action,.product-actions .btn-primary,#productModalBody .btn-primary').forEach(el=>{
+     el.style.setProperty('display',current.showAddToCart===false?'none':'','important');
+     if(current.showAddToCart!==false)el.style.removeProperty('display');
+   });
+   document.querySelectorAll('.atyaf-gift-action,.gift-buy-btn,#productModalBody [onclick*="buyAsGift"]').forEach(el=>{
+     el.style.setProperty('display',current.showBuyAsGift===false?'none':'','important');
+     if(current.showBuyAsGift!==false)el.style.removeProperty('display');
+   });
  }
  async function load(){
-  try{
-   const cached=window.ATYAF_ADMIN_SETTINGS?.product_actions;
-   if(cached!=null)apply(cached);
-   if(!window.atyafDb)return;
-   const {data,error}=await window.atyafDb.from('settings').select('id,value,updated_at').eq('key','product_actions').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);
-   if(error)throw error;
-   apply(data?.[0]?.value||{});
-  }catch(e){console.warn('ATYAAF product action visibility:',e)}
+   try{
+     if(window.ATYAF_ADMIN_SETTINGS?.product_actions!=null)
+       apply(window.ATYAF_ADMIN_SETTINGS.product_actions);
+     if(!window.atyafDb)return apply(current);
+     const {data,error}=await window.atyafDb.from('settings')
+       .select('id,key,value,updated_at')
+       .eq('key','product_actions')
+       .order('updated_at',{ascending:false,nullsFirst:false})
+       .order('id',{ascending:false})
+       .limit(1);
+     if(error)throw error;
+     apply(data?.[0]?.value||{});
+   }catch(e){console.warn('ATYAAF product action visibility:',e)}
  }
- document.addEventListener('atyaf:settings-applied',e=>{if(e?.detail?.product_actions!=null)apply(e.detail.product_actions)});
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,100));else setTimeout(load,100);
+ document.addEventListener('atyaf:settings-applied',e=>{
+   if(e?.detail?.product_actions!=null)apply(e.detail.product_actions);
+ });
+ const observer=new MutationObserver(()=>apply(current));
+ if(document.documentElement)observer.observe(document.documentElement,{childList:true,subtree:true});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(load,80));
+ else setTimeout(load,80);
  window.addEventListener('focus',load);
+ window.addEventListener('pageshow',load);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+ setInterval(()=>{if(!document.hidden)load()},10000);
+ window.atyafApplyProductActions=apply;
+ window.atyafRefreshProductActions=load;
 })();
 </script>
+
 </body>
 </html>

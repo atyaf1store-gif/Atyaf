@@ -1751,26 +1751,69 @@ section.benefits>.benefit span,.benefits>.benefit span{
  </div>
 </div>
 <script id="atyaf-luxury-intro-js">
-(()=>{
- const intro=document.getElementById('atyafIntro');
- const slot=document.getElementById('atyafIntroProfileImage');
+(function(){
+ "use strict";
+ var intro=document.getElementById("atyafIntro");
+ var slot=document.getElementById("atyafIntroProfileImage");
  if(!intro)return;
- const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
- const close=()=>{intro.classList.add('done');setTimeout(()=>intro.remove(),750)};
- const apply=raw=>{
-  const p=parse(raw); if(p.enabled===false){close();return}
-  intro.style.background=p.backgroundColor||'#17352e';
-  const url=String(p.logoImage||'').trim(); if(!slot){close();return}
-  slot.replaceChildren();
-  if(url){const img=new Image();img.alt='';img.onload=()=>{slot.replaceChildren(img);setTimeout(close,Math.max(1500,Math.min(10000,Number(p.duration)||3350)))};img.onerror=close;img.src=url;return}
-  const group=document.createElement('div');group.style.cssText='text-align:center;font-family:'+String(p.fontFamily||'Georgia, serif')+';color:'+String(p.textColor||'#f5eee4');
-  const name=document.createElement('div');name.textContent=String(p.name||'ATYAAF');name.style.cssText='font-size:'+Math.max(22,Math.min(100,Number(p.letterSize)||58))+'px;font-weight:700;letter-spacing:.12em';
-  const mark=document.createElement('div');mark.textContent=String(p.mark||'أ');mark.style.cssText='font-size:'+Math.max(20,Math.min(80,Number(p.markSize)||35))+'px;color:'+String(p.accentColor||'#c99a69')+';margin:6px 0';
-  const sub=document.createElement('div');sub.textContent=String(p.sub||'STORE');sub.style.cssText='font-size:12px;letter-spacing:.28em';
-  group.append(name,mark,sub);slot.append(group); setTimeout(close,Math.max(1500,Math.min(10000,Number(p.duration)||3350)));
- };
- async function load(){let tries=0;while(!window.atyafDb&&tries++<80)await new Promise(r=>setTimeout(r,100));if(!window.atyafDb){close();return}try{const {data,error}=await window.atyafDb.from('settings').select('id,value,updated_at').eq('key','intro').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1);if(error)throw error;apply(data?.[0]?.value||{})}catch(e){console.warn('ATYAAF intro:',e);close()}}
- load();intro.addEventListener('click',close,{once:true});
+
+ var closed=false,normalTimer=0;
+ function parse(v){
+   if(v&&typeof v==="object")return v;
+   if(typeof v==="string"){try{return JSON.parse(v)||{}}catch(_){return {}}}
+   return {};
+ }
+ function closeIntro(){
+   if(closed)return;
+   closed=true;
+   if(normalTimer)clearTimeout(normalTimer);
+   intro.style.cssText+=";display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;";
+   intro.setAttribute("hidden","");
+   intro.classList.add("done");
+   setTimeout(function(){if(intro&&intro.parentNode)intro.parentNode.removeChild(intro)},30);
+ }
+ function schedule(v){
+   if(closed)return;
+   if(normalTimer)clearTimeout(normalTimer);
+   var ms=Number(v);
+   if(!Number.isFinite(ms))ms=1900;
+   normalTimer=setTimeout(closeIntro,Math.max(900,Math.min(2400,ms)));
+ }
+ function apply(raw){
+   if(closed)return;
+   var p=parse(raw);
+   if(p.enabled===false){closeIntro();return}
+   if(p.backgroundColor)intro.style.background=String(p.backgroundColor);
+   var url=String(p.logoImage||"").trim();
+   if(slot&&url){
+     var img=new Image();
+     img.alt=""; img.decoding="async";
+     img.onload=function(){if(!closed&&slot.isConnected)slot.replaceChildren(img)};
+     img.onerror=function(){};
+     img.src=url;
+   }
+   schedule(p.duration);
+ }
+ async function loadSetting(){
+   schedule(1900); /* starts immediately, never waits for network */
+   var db=window.atyafDb;
+   if(!db)return;
+   try{
+     var q=await db.from("settings").select("id,value,updated_at")
+       .eq("key","intro").order("updated_at",{ascending:false,nullsFirst:false})
+       .order("id",{ascending:false}).limit(1);
+     if(q.error)throw q.error;
+     if(!closed&&q.data&&q.data[0])apply(q.data[0].value);
+   }catch(e){console.warn("ATYAAF intro:",e)}
+ }
+
+ /* Absolute iPhone/iPad Safari failsafe, armed synchronously. */
+ setTimeout(closeIntro,2600);
+ intro.addEventListener("click",closeIntro,{once:true,passive:true});
+ window.addEventListener("pageshow",function(e){if(e.persisted)closeIntro()},{passive:true});
+ if(document.readyState==="loading")
+   document.addEventListener("DOMContentLoaded",loadSetting,{once:true});
+ else loadSetting();
 })();
 </script>
 
@@ -3279,91 +3322,64 @@ html,body{max-width:100%;overflow-x:hidden}
 }
 </style>
 
-
-<style id="atyaf-product-actions-real-fix">
-/* Final product action visibility. Kept at the end so older !important card CSS cannot override it. */
+<style id="atyaf-product-actions-authoritative">
 html.atyaf-hide-add-cart .product-actions .btn-primary,
 html.atyaf-hide-add-cart #productModalBody .btn-primary,
-html.atyaf-hide-add-cart button[onclick*="addCart("],
-html.atyaf-hide-add-cart .atyaf-cart-action{
-  display:none!important;
-}
-html.atyaf-hide-buy-gift .product-actions .gift-buy-btn,
-html.atyaf-hide-buy-gift #productModalBody button[onclick*="buyAsGift("],
-html.atyaf-hide-buy-gift button[onclick*="buyAsGift("],
-html.atyaf-hide-buy-gift .atyaf-gift-action{
-  display:none!important;
-}
+html.atyaf-hide-add-cart [onclick*="addCart("]{display:none!important}
+html.atyaf-hide-buy-gift .gift-buy-btn,
+html.atyaf-hide-buy-gift #productModalBody [onclick*="buyAsGift("],
+html.atyaf-hide-buy-gift [onclick*="buyAsGift("]{display:none!important}
 </style>
-<script id="atyaf-product-actions-real-fix-js">
+<script id="atyaf-product-actions-authoritative-js">
 (function(){
-  "use strict";
+ "use strict";
+ var state={showAddToCart:true,showBuyAsGift:true};
 
-  var state={showAddToCart:true,showBuyAsGift:true};
+ function parse(v){
+   if(v&&typeof v==="object")return v;
+   if(typeof v==="string"){
+     try{
+       var a=JSON.parse(v);
+       if(typeof a==="string"){try{return JSON.parse(a)||{}}catch(_){}}
+       return a||{};
+     }catch(_){return {}}
+   }
+   return {};
+ }
+ function apply(raw){
+   var s=parse(raw);
+   if(Object.prototype.hasOwnProperty.call(s,"showAddToCart"))state.showAddToCart=(s.showAddToCart!==false&&s.showAddToCart!=="false");
+   if(Object.prototype.hasOwnProperty.call(s,"showBuyAsGift"))state.showBuyAsGift=(s.showBuyAsGift!==false&&s.showBuyAsGift!=="false");
+   document.documentElement.classList.toggle("atyaf-hide-add-cart",!state.showAddToCart);
+   document.documentElement.classList.toggle("atyaf-hide-buy-gift",!state.showBuyAsGift);
+ }
+ async function readDirect(){
+   var db=window.atyafDb;if(!db)return;
+   try{
+     var q=await db.from("settings").select("id,key,value,updated_at")
+       .eq("key","product_actions")
+       .order("updated_at",{ascending:false,nullsFirst:false})
+       .order("id",{ascending:false}).limit(1);
+     if(q.error)throw q.error;
+     if(q.data&&q.data[0])apply(q.data[0].value);
+   }catch(e){console.warn("ATYAAF product actions:",e)}
+ }
 
-  function obj(v){
-    if(v && typeof v==="object") return v;
-    if(typeof v==="string"){
-      try{return JSON.parse(v)||{};}catch(_){return {};}
-    }
-    return {};
-  }
+ /* Main bridge path: exact same object saved by ATYAAF PRO. */
+ document.addEventListener("atyaf:settings-applied",function(e){
+   if(e&&e.detail&&e.detail.product_actions!=null)apply(e.detail.product_actions);
+ });
+ if(window.ATYAF_ADMIN_SETTINGS&&window.ATYAF_ADMIN_SETTINGS.product_actions!=null)
+   apply(window.ATYAF_ADMIN_SETTINGS.product_actions);
 
-  function falseValue(v){
-    if(v===false || v===0) return true;
-    var s=String(v==null?"":v).trim().toLowerCase();
-    return s==="false" || s==="0" || s==="hide" || s==="hidden" || s==="إخفاء" || s==="مخفي";
-  }
+ if(document.readyState==="loading")
+   document.addEventListener("DOMContentLoaded",function(){setTimeout(readDirect,80)},{once:true});
+ else setTimeout(readDirect,80);
 
-  function apply(raw){
-    var x=obj(raw);
-    if(Object.prototype.hasOwnProperty.call(x,"showAddToCart"))
-      state.showAddToCart=!falseValue(x.showAddToCart);
-    if(Object.prototype.hasOwnProperty.call(x,"showBuyAsGift"))
-      state.showBuyAsGift=!falseValue(x.showBuyAsGift);
-
-    var root=document.documentElement;
-    root.classList.toggle("atyaf-hide-add-cart",state.showAddToCart===false);
-    root.classList.toggle("atyaf-hide-buy-gift",state.showBuyAsGift===false);
-  }
-
-  async function refresh(){
-    try{
-      if(window.ATYAF_ADMIN_SETTINGS && window.ATYAF_ADMIN_SETTINGS.product_actions!=null)
-        apply(window.ATYAF_ADMIN_SETTINGS.product_actions);
-
-      if(!window.atyafDb) return;
-
-      var q=await window.atyafDb.from("settings")
-        .select("id,value,updated_at")
-        .eq("key","product_actions")
-        .order("updated_at",{ascending:false,nullsFirst:false})
-        .order("id",{ascending:false})
-        .limit(1);
-
-      if(q.error) throw q.error;
-      if(q.data && q.data.length) apply(q.data[0].value);
-    }catch(e){
-      console.warn("ATYAAF product_actions:",e);
-    }
-  }
-
-  /* The store already emits this after every settings sync/realtime update. */
-  document.addEventListener("atyaf:settings-applied",function(e){
-    if(e && e.detail && e.detail.product_actions!=null)
-      apply(e.detail.product_actions);
-  });
-
-  if(document.readyState==="loading")
-    document.addEventListener("DOMContentLoaded",function(){setTimeout(refresh,120);},{once:true});
-  else
-    setTimeout(refresh,120);
-
-  window.addEventListener("pageshow",refresh);
-  window.addEventListener("focus",refresh);
-
-  window.atyafApplyProductActions=apply;
-  window.atyafRefreshProductActions=refresh;
+ window.addEventListener("focus",readDirect);
+ window.addEventListener("pageshow",readDirect);
+ window.atyafApplyProductActions=apply;
+ window.atyafRefreshProductActions=readDirect;
 })();
 </script>
 

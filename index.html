@@ -3326,98 +3326,100 @@ html,body{max-width:100%;overflow-x:hidden}
 </style>
 
 <style id="atyaf-product-actions-authoritative">
-html.atyaf-hide-add-cart .product-actions .btn-primary,
-html.atyaf-hide-add-cart #productModalBody .btn-primary,
-html.atyaf-hide-add-cart [onclick*="addCart("]{display:none!important}
-html.atyaf-hide-buy-gift .product-actions .gift-buy-btn,
-html.atyaf-hide-buy-gift .atyaf-gift-action,
-html.atyaf-hide-buy-gift #productModalBody [onclick*="buyAsGift("],
-html.atyaf-hide-buy-gift [onclick*="buyAsGift("]{display:none!important}
+html[data-atyaf-cart="hide"] .atyaf-cart-action,
+html[data-atyaf-cart="hide"] .product-actions .btn-primary,
+html[data-atyaf-cart="hide"] [onclick*="addCart("]{display:none!important}
+html[data-atyaf-gift="hide"] .atyaf-gift-action,
+html[data-atyaf-gift="hide"] .gift-buy-btn,
+html[data-atyaf-gift="hide"] [onclick*="buyAsGift("]{display:none!important}
 </style>
 <script id="atyaf-product-actions-authoritative-js">
 (function(){
  "use strict";
- let lastSignature="";
+ let cfg={showAddToCart:true,showBuyAsGift:true};
 
- function parse(v){
+ const parse=v=>{
    if(v&&typeof v==="object")return v;
-   if(typeof v==="string"){
-     try{
-       let x=JSON.parse(v);
-       if(typeof x==="string"){try{x=JSON.parse(x)}catch(_){}}
-       return x&&typeof x==="object"?x:{};
-     }catch(_){}
-   }
+   if(typeof v==="string"){try{const x=JSON.parse(v);return typeof x==="string"?JSON.parse(x):x}catch(_){}}
    return {};
- }
- function bool(v,def){
-   if(v===false||v===0||v==="false"||v==="0")return false;
-   if(v===true||v===1||v==="true"||v==="1")return true;
-   return def;
+ };
+ const asBool=(v,d)=>v===false||v==="false"||v===0||v==="0"?false:
+                      v===true||v==="true"||v===1||v==="1"?true:d;
+
+ function enforce(){
+   const showCart=cfg.showAddToCart!==false, showGift=cfg.showBuyAsGift!==false;
+   const root=document.documentElement;
+   root.dataset.atyafCart=showCart?"show":"hide";
+   root.dataset.atyafGift=showGift?"show":"hide";
+   document.querySelectorAll(".atyaf-cart-action,.product-actions .btn-primary,[onclick*='addCart(']").forEach(el=>{
+     el.hidden=!showCart;
+     el.style.setProperty("display",showCart?"":"none","important");
+     if(showCart)el.style.removeProperty("display");
+   });
+   document.querySelectorAll(".atyaf-gift-action,.gift-buy-btn,[onclick*='buyAsGift(']").forEach(el=>{
+     el.hidden=!showGift;
+     el.style.setProperty("display",showGift?"":"none","important");
+     if(showGift)el.style.removeProperty("display");
+   });
  }
  function apply(raw){
-   const s=parse(raw);
-   const showCart=bool(s.showAddToCart,true);
-   const showGift=bool(s.showBuyAsGift,true);
-   const root=document.documentElement;
-   root.classList.toggle("atyaf-hide-add-cart",!showCart);
-   root.classList.toggle("atyaf-hide-buy-gift",!showGift);
-
-   /* Direct DOM enforcement too, so old/mobile !important rules cannot win. */
-   document.querySelectorAll('.product-actions .btn-primary,#productModalBody .btn-primary,[onclick*="addCart("]').forEach(el=>{
-     el.hidden=!showCart;
-     if(!showCart)el.style.setProperty("display","none","important");
-     else el.style.removeProperty("display");
-   });
-   document.querySelectorAll('.gift-buy-btn,.atyaf-gift-action,#productModalBody [onclick*="buyAsGift("],[onclick*="buyAsGift("]').forEach(el=>{
-     el.hidden=!showGift;
-     if(!showGift)el.style.setProperty("display","none","important");
-     else el.style.removeProperty("display");
-   });
+   const x=parse(raw);
+   if(Object.prototype.hasOwnProperty.call(x,"showAddToCart"))cfg.showAddToCart=asBool(x.showAddToCart,cfg.showAddToCart);
+   if(Object.prototype.hasOwnProperty.call(x,"showBuyAsGift"))cfg.showBuyAsGift=asBool(x.showBuyAsGift,cfg.showBuyAsGift);
+   enforce();
  }
- async function refresh(){
-   const db=window.atyafDb;
-   if(!db)return;
+
+ async function read(){
+   const db=window.atyafDb;if(!db)return;
    try{
-     const {data,error}=await db.from("settings")
-       .select("id,value,updated_at").eq("key","product_actions")
-       .order("updated_at",{ascending:false,nullsFirst:false})
-       .order("id",{ascending:false}).limit(1);
-     if(error)throw error;
-     if(data?.[0]){
-       const sig=String(data[0].id)+"|"+String(data[0].updated_at||"")+"|"+JSON.stringify(data[0].value);
-       if(sig!==lastSignature){lastSignature=sig;apply(data[0].value)}
-       else apply(data[0].value); /* also catches buttons rendered after the setting was applied */
+     /* Primary source */
+     const a=await db.from("settings").select("id,value,updated_at").eq("key","product_actions")
+       .order("updated_at",{ascending:false,nullsFirst:false}).order("id",{ascending:false}).limit(1);
+     if(a.error)throw a.error;
+     if(a.data?.[0]){apply(a.data[0].value);return}
+
+     /* Compatibility source: allows a mirrored value in general if used later. */
+     const g=await db.from("settings").select("id,value,updated_at").eq("key","general")
+       .order("updated_at",{ascending:false,nullsFirst:false}).order("id",{ascending:false}).limit(1);
+     if(!g.error&&g.data?.[0]){
+       const v=parse(g.data[0].value);
+       if(v.product_actions!=null)apply(v.product_actions);
+       else if(v.productActions!=null)apply(v.productActions);
      }
-   }catch(e){console.warn("ATYAAF product_actions:",e)}
+   }catch(e){console.warn("ATYAAF product action visibility:",e)}
  }
 
+ /* Use the store's existing full settings bridge first. */
  document.addEventListener("atyaf:settings-applied",e=>{
    if(e?.detail?.product_actions!=null)apply(e.detail.product_actions);
  });
  if(window.ATYAF_ADMIN_SETTINGS?.product_actions!=null)apply(window.ATYAF_ADMIN_SETTINGS.product_actions);
 
- function start(){
-   refresh();
-   /* Lightweight fallback: ensures Admin changes work even if Realtime is off. */
-   setInterval(()=>{if(!document.hidden)refresh()},3000);
-   try{
-     window.atyafDb?.channel("atyaf-product-actions-live-final")
-       .on("postgres_changes",{event:"*",schema:"public",table:"settings",filter:"key=eq.product_actions"},refresh)
-       .subscribe();
-   }catch(_){}
+ /* Product cards are dynamically rebuilt; re-enforce immediately after those rebuild events. */
+ document.addEventListener("atyaf:settings-applied",()=>setTimeout(enforce,0));
+ window.addEventListener("pageshow",()=>{read();setTimeout(enforce,0)});
+ window.addEventListener("focus",read);
+
+ let tries=0,boot=setInterval(()=>{
+   if(window.atyafDb){clearInterval(boot);read()}
+   else if(++tries>80)clearInterval(boot);
+ },100);
+
+ /* Narrow observer: only product areas, no whole-document observer. */
+ function watch(){
+   ["productGrid","atyafBrandProductSections","productModalBody"].forEach(id=>{
+     const host=document.getElementById(id);
+     if(host&&!host.dataset.atyafActionWatch){
+       host.dataset.atyafActionWatch="1";
+       new MutationObserver(enforce).observe(host,{childList:true,subtree:true});
+     }
+   });
  }
- if(window.atyafDb)start();
- else{
-   let n=0,timer=setInterval(()=>{
-     if(window.atyafDb){clearInterval(timer);start()}
-     else if(++n>25)clearInterval(timer);
-   },100);
- }
- window.addEventListener("focus",refresh);
- window.addEventListener("pageshow",refresh);
- window.atyafRefreshProductActions=refresh;
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
+ setTimeout(watch,800);
+
  window.atyafApplyProductActions=apply;
+ window.atyafRefreshProductActions=read;
 })();
 </script>
 

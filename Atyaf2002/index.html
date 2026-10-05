@@ -73,14 +73,14 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
 <section id="products" class="panel">
-
-<div class="card" id="atyafProductButtonsSettings">
- <div class="toolbar"><div class="grow"><h2 style="margin:0 0 6px">أزرار المنتجات في المتجر</h2><div class="muted">تحكم بإظهار أو إخفاء زر إضافة إلى السلة وزر شراء كهدية في جميع بطاقات وتفاصيل المنتجات.</div></div></div>
+<div class="card section-editor" id="atyafProductButtonsCard">
+ <h2 style="margin-top:0">أزرار المنتجات في المتجر</h2>
+ <div class="muted">تحكم بإظهار أو إخفاء زر إضافة إلى السلة وزر شراء كهدية. يتم التحقق من الحفظ من قاعدة البيانات قبل إظهار رسالة النجاح.</div>
  <div class="grid" style="margin-top:14px">
-  <div class="field"><label>زر إضافة إلى السلة</label><select id="atyafShowCartButton"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
-  <div class="field"><label>زر شراء كهدية</label><select id="atyafShowGiftButton"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
+  <div class="field"><label>زر إضافة إلى السلة</label><select id="atyafShowAddToCart"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
+  <div class="field"><label>زر شراء كهدية</label><select id="atyafShowBuyAsGift"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
  </div>
- <div class="toolbar" style="margin-top:14px"><button class="btn" type="button" onclick="atyafSaveProductButtons()">حفظ إعدادات الأزرار</button></div>
+ <div class="toolbar" style="margin-top:14px"><button class="btn" id="atyafSaveProductButtonsBtn" type="button" onclick="atyafSaveProductButtons()">حفظ إعدادات الأزرار</button></div>
 </div>
 <div class="card atyaf-product-add-card">
  <div class="toolbar atyaf-product-add-head">
@@ -193,7 +193,19 @@ function stat(t,bad=false){
  el.style.color=bad?'#8b211b':'#17352e';
 }
 function getSetting(key,def={}){let r=SETTINGS.find(x=>x.key===key);return r?parse(r.value):def}
-async function putSetting(key,value){let old=SETTINGS.find(x=>x.key===key);let r=old?await db.from('settings').update({value}).eq('id',old.id):await db.from('settings').insert({key,value});if(r.error)throw r.error}
+async function putSetting(key,value){
+ let old=SETTINGS.find(x=>x.key===key),r;
+ if(old){
+  r=await db.from('settings').update({value}).eq('id',old.id).select('id,key,value,updated_at');
+  if(r.error)throw r.error;
+  if(!r.data||!r.data.length)throw new Error('لم يتم تحديث الإعداد في قاعدة البيانات. تحقق من صلاحية UPDATE لجدول settings.');
+ }else{
+  r=await db.from('settings').insert({key,value}).select('id,key,value,updated_at');
+  if(r.error)throw r.error;
+  if(!r.data||!r.data.length)throw new Error('لم يتم إنشاء الإعداد في قاعدة البيانات. تحقق من صلاحية INSERT لجدول settings.');
+ }
+ return r.data[0];
+}
 async function removeSetting(key){let old=SETTINGS.find(x=>x.key===key);if(old){let r=await db.from('settings').delete().eq('id',old.id);if(r.error)throw r.error}}
 
 async function uploadFiles(files,folder){
@@ -402,6 +414,58 @@ async function saveBrandItem(i){
  }catch(e){stat('فشل حفظ الماركة: '+(e?.message||String(e)),true)}
 }
 
+function atyafRenderProductButtons(){
+ const v=getSetting('product_actions',{showAddToCart:true,showBuyAsGift:true})||{};
+ const cart=document.getElementById('atyafShowAddToCart');
+ const gift=document.getElementById('atyafShowBuyAsGift');
+ if(cart)cart.value=v.showAddToCart===false?'false':'true';
+ if(gift)gift.value=v.showBuyAsGift===false?'false':'true';
+}
+async function atyafReadLatestProductActions(){
+ const r=await db.from('settings').select('id,key,value,updated_at')
+  .eq('key','product_actions')
+  .order('updated_at',{ascending:false,nullsFirst:false})
+  .order('id',{ascending:false})
+  .limit(1);
+ if(r.error)throw r.error;
+ return r.data?.[0]||null;
+}
+async function atyafSaveProductButtons(){
+ const btn=document.getElementById('atyafSaveProductButtonsBtn');
+ const wanted={
+  showAddToCart:document.getElementById('atyafShowAddToCart')?.value!=='false',
+  showBuyAsGift:document.getElementById('atyafShowBuyAsGift')?.value!=='false'
+ };
+ try{
+  if(btn){btn.disabled=true;btn.textContent='جاري الحفظ…'}
+  stat('جاري حفظ إعدادات أزرار المنتجات…');
+  await putSetting('product_actions',wanted);
+
+  /* Read the database back before claiming success. */
+  const saved=await atyafReadLatestProductActions();
+  const raw=saved?.value;
+  const check=(typeof raw==='string'?parse(raw):raw)||{};
+  if(check.showAddToCart!==wanted.showAddToCart || check.showBuyAsGift!==wanted.showBuyAsGift){
+   throw new Error('تم إرسال التعديل لكن القيمة المقروءة من قاعدة البيانات لم تتغير. لم يتم اعتماد الحفظ.');
+  }
+
+  await loadAll();
+  const after=getSetting('product_actions',{});
+  if(after.showAddToCart!==wanted.showAddToCart || after.showBuyAsGift!==wanted.showBuyAsGift){
+   throw new Error('الحفظ موجود في قاعدة البيانات لكن لوحة الإدارة قرأت قيمة أقدم. تحقق من وجود سجلات مكررة للمفتاح product_actions.');
+  }
+  stat('تم حفظ إعدادات أزرار المنتجات والتحقق منها من قاعدة البيانات ✓');
+ }catch(e){
+  console.error('ATYAAF product buttons save:',e);
+  stat('فشل حفظ إعدادات الأزرار: '+(e?.message||String(e)),true);
+  /* Restore the actual database value instead of leaving a false success state. */
+  try{await loadAll()}catch(_){}
+ }finally{
+  if(btn){btn.disabled=false;btn.textContent='حفظ إعدادات الأزرار'}
+ }
+}
+window.atyafSaveProductButtons=atyafSaveProductButtons;
+
 function renderProducts(){productRows.innerHTML=PRODUCTS.map(p=>`<tr><td>${esc(p.name||p.title||'')}</td><td>${esc(p.brand||'')}</td><td>${esc(p.price||0)}</td><td>${p.is_active===false?'مخفي':'ظاهر'}</td><td class="actions"><button class="btn alt" onclick='editProduct(${JSON.stringify(String(p.id))})'>تعديل</button><button class="btn red" onclick='quickDeleteProduct(${JSON.stringify(String(p.id))})'>حذف</button></td></tr>`).join('')}
 function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pDesc.value=p.description||p.desc||'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
 async function saveProduct(){
@@ -496,6 +560,7 @@ function atyafRenderAdmin(){
   {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
  ]);
  brandsSectionEditor();
+ atyafRenderProductButtons();
  renderProducts();
 }
 async function loadAll(){
@@ -774,31 +839,6 @@ window.atyafToggleAiProducts=(force)=>{
    }
   }
  };
-})();
-</script>
-
-<script id="atyaf-product-buttons-settings-admin-v1">
-(()=>{
- const render=()=>{
-  if(!Array.isArray(window.SETTINGS) && typeof SETTINGS==='undefined')return;
-  const cfg=(typeof getSetting==='function'?getSetting('product_actions',{}):{})||{};
-  const cart=document.getElementById('atyafShowCartButton');
-  const gift=document.getElementById('atyafShowGiftButton');
-  if(cart)cart.value=cfg.showAddToCart===false?'false':'true';
-  if(gift)gift.value=cfg.showBuyAsGift===false?'false':'true';
- };
- window.atyafSaveProductButtons=async()=>{
-  try{
-   const old=(typeof getSetting==='function'?getSetting('product_actions',{}):{})||{};
-   const value={...old,showAddToCart:document.getElementById('atyafShowCartButton')?.value!=='false',showBuyAsGift:document.getElementById('atyafShowGiftButton')?.value!=='false'};
-   await putSetting('product_actions',value);
-   await loadAll();
-   stat('تم حفظ إعدادات أزرار المنتجات ✓');
-  }catch(e){console.error('ATYAAF product actions settings:',e);stat(e?.message||String(e),true)}
- };
- const base=window.loadAll;
- if(typeof base==='function')window.loadAll=async function(...args){const out=await base.apply(this,args);render();return out};
- document.addEventListener('DOMContentLoaded',()=>setTimeout(render,250));
 })();
 </script>
 </body></html>

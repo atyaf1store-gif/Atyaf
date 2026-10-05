@@ -3423,5 +3423,119 @@ html[data-atyaf-gift="hide"] [onclick*="buyAsGift("]{display:none!important}
 })();
 </script>
 
+
+<!-- ATYAAF SEARCH MOBILE SAFE FIX -->
+<style id="atyaf-search-mobile-safe-fix-css">
+.atyaf-search-popover.open{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+.atyaf-search-toggle{touch-action:manipulation!important;pointer-events:auto!important}
+@media(max-width:600px){
+  .atyaf-search-popover.open{
+    position:fixed!important;top:118px!important;left:10px!important;right:10px!important;
+    width:auto!important;z-index:10060!important;
+  }
+}
+</style>
+<script id="atyaf-search-mobile-safe-fix-js">
+(function(){
+ "use strict";
+
+ const norm=v=>String(v??"").trim().toLocaleLowerCase("ar");
+ const input=()=>document.getElementById("searchInput");
+ const pop=()=>document.getElementById("atyafSearchPopover");
+
+ function openSearch(){
+   const p=pop(); if(!p)return;
+   p.classList.add("open");
+   p.setAttribute("aria-hidden","false");
+   setTimeout(()=>input()?.focus(),40);
+ }
+ function closeSearch(){
+   const p=pop(); if(!p)return;
+   p.classList.remove("open");
+   p.setAttribute("aria-hidden","true");
+ }
+ function searchableText(card){
+   const id=card?.getAttribute("data-product-id");
+   let p=null;
+   const pool=Array.isArray(window.ATYAAF_LIVE_PRODUCTS)?window.ATYAAF_LIVE_PRODUCTS:[];
+   if(id)p=pool.find(x=>String(x?.id)===String(id));
+   return norm([
+     card?.textContent||"",
+     p?.name||"",p?.brand||"",p?.desc||"",p?.description||"",
+     ...(Array.isArray(p?.tags)?p.tags:[])
+   ].join(" "));
+ }
+ function applySearch(){
+   const q=norm(input()?.value);
+   const host=document.getElementById("atyafBrandProductSections");
+   let visible=0;
+
+   if(host){
+     host.querySelectorAll("[data-brand-section]").forEach(section=>{
+       let sectionVisible=0;
+       section.querySelectorAll(".product").forEach(card=>{
+         const match=!q || searchableText(card).includes(q);
+         card.style.setProperty("display",match?"":"none","important");
+         if(match){ card.style.removeProperty("display"); sectionVisible++; visible++; }
+       });
+       section.style.setProperty("display",(!q||sectionVisible)?"":"none","important");
+       if(!q||sectionVisible)section.style.removeProperty("display");
+     });
+   }
+
+   /* Keep the legacy grid synchronized too, without changing its renderer. */
+   const grid=document.getElementById("productGrid");
+   if(grid){
+     grid.querySelectorAll(".product").forEach(card=>{
+       const match=!q || searchableText(card).includes(q);
+       card.style.display=match?"":"none";
+     });
+   }
+
+   const result=document.getElementById("resultText");
+   if(result && q) result.textContent=visible?`نتائج البحث عن «${input().value.trim()}»`:`لا توجد نتائج لـ «${input().value.trim()}»`;
+
+   if(q && host) host.scrollIntoView({behavior:"smooth",block:"start"});
+ }
+
+ /* Override only the search controls; product/cart/gift code is untouched. */
+ window.toggleHeaderSearch=function(e){
+   if(e){e.preventDefault();e.stopPropagation();}
+   pop()?.classList.contains("open")?closeSearch():openSearch();
+ };
+ window.closeHeaderSearch=closeSearch;
+
+ document.addEventListener("click",e=>{
+   const btn=e.target.closest(".atyaf-search-toggle");
+   if(btn){
+     e.preventDefault();e.stopPropagation();
+     pop()?.classList.contains("open")?closeSearch():openSearch();
+     return;
+   }
+   const p=pop();
+   if(p?.classList.contains("open")&&!p.contains(e.target))closeSearch();
+ },true);
+
+ document.addEventListener("input",e=>{
+   if(e.target?.id==="searchInput"){
+     /* Prevent the old handler from being the only search path. */
+     setTimeout(applySearch,0);
+   }
+ },true);
+
+ document.addEventListener("keydown",e=>{
+   if(e.key==="Escape")closeSearch();
+   if(e.key==="Enter" && e.target?.id==="searchInput"){
+     e.preventDefault(); applySearch(); e.target.blur();
+   }
+ });
+
+ document.addEventListener("atyaf:settings-applied",()=>setTimeout(applySearch,120));
+ window.addEventListener("pageshow",()=>setTimeout(applySearch,120));
+
+ window.atyafApplySearch=applySearch;
+})();
+</script>
+
 </body>
 </html>

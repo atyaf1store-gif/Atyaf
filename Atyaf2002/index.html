@@ -439,27 +439,59 @@ async function atyafSaveProductButtons(){
  try{
   if(btn){btn.disabled=true;btn.textContent='جاري الحفظ…'}
   stat('جاري حفظ إعدادات أزرار المنتجات…');
-  await putSetting('product_actions',wanted);
 
-  /* Read the database back before claiming success. */
+  /* product_actions may already exist more than once.
+     Updating only SETTINGS.find(...).id can update an older row while the store/admin
+     immediately reads the newer duplicate and appears to undo the change.
+     Synchronize every existing row for this one key; insert only when none exists. */
+  const existing=await db.from('settings')
+   .select('id,key,value,updated_at')
+   .eq('key','product_actions');
+  if(existing.error)throw existing.error;
+
+  let write;
+  if(existing.data&&existing.data.length){
+   write=await db.from('settings')
+    .update({value:wanted})
+    .eq('key','product_actions')
+    .select('id,key,value,updated_at');
+  }else{
+   write=await db.from('settings')
+    .insert({key:'product_actions',value:wanted})
+    .select('id,key,value,updated_at');
+  }
+  if(write.error)throw write.error;
+  if(!write.data||!write.data.length)
+   throw new Error('لم يتم تعديل أي سجل product_actions في قاعدة البيانات.');
+
+  /* Verify the same newest-row rule used by the store. */
   const saved=await atyafReadLatestProductActions();
   const raw=saved?.value;
   const check=(typeof raw==='string'?parse(raw):raw)||{};
-  if(check.showAddToCart!==wanted.showAddToCart || check.showBuyAsGift!==wanted.showBuyAsGift){
-   throw new Error('تم إرسال التعديل لكن القيمة المقروءة من قاعدة البيانات لم تتغير. لم يتم اعتماد الحفظ.');
-  }
+  if(check.showAddToCart!==wanted.showAddToCart || check.showBuyAsGift!==wanted.showBuyAsGift)
+   throw new Error('القيمة الأحدث في قاعدة البيانات لا تطابق اختيارك.');
 
+  /* Refresh without allowing a stale local row to decide the select value. */
   await loadAll();
-  const after=getSetting('product_actions',{});
-  if(after.showAddToCart!==wanted.showAddToCart || after.showBuyAsGift!==wanted.showBuyAsGift){
-   throw new Error('الحفظ موجود في قاعدة البيانات لكن لوحة الإدارة قرأت قيمة أقدم. تحقق من وجود سجلات مكررة للمفتاح product_actions.');
-  }
+  const verified=await atyafReadLatestProductActions();
+  const finalValue=(typeof verified?.value==='string'?parse(verified.value):verified?.value)||{};
+  const cart=document.getElementById('atyafShowAddToCart');
+  const gift=document.getElementById('atyafShowBuyAsGift');
+  if(cart)cart.value=finalValue.showAddToCart===false?'false':'true';
+  if(gift)gift.value=finalValue.showBuyAsGift===false?'false':'true';
+
   stat('تم حفظ إعدادات أزرار المنتجات والتحقق منها من قاعدة البيانات ✓');
  }catch(e){
   console.error('ATYAAF product buttons save:',e);
   stat('فشل حفظ إعدادات الأزرار: '+(e?.message||String(e)),true);
-  /* Restore the actual database value instead of leaving a false success state. */
-  try{await loadAll()}catch(_){}
+  try{
+   const saved=await atyafReadLatestProductActions();
+   const v=(typeof saved?.value==='string'?parse(saved.value):saved?.value)||{};
+   const cart=document.getElementById('atyafShowAddToCart');
+   const gift=document.getElementById('atyafShowBuyAsGift');
+   if(cart)cart.value=v.showAddToCart===false?'false':'true';
+   if(gift)gift.value=v.showBuyAsGift===false?'false':'true';
+  }catch(_){}
  }finally{
   if(btn){btn.disabled=false;btn.textContent='حفظ إعدادات الأزرار'}
  }

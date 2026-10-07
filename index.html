@@ -1744,79 +1744,148 @@ section.benefits>.benefit span,.benefits>.benefit span{
 <body>
 
 <div id="atyafIntro" aria-hidden="true">
- <div class="atyaf-intro-group">
-  <div class="atyaf-intro-stage">
-   <div class="atyaf-intro-logo" id="atyafIntroProfileImage"></div>
-  </div>
+ <div class="atyaf-intro-admin-stage" id="atyafIntroAdminStage">
+  <img id="atyafIntroAdminLogo" alt="" hidden>
+  <div id="atyafIntroAdminMark" class="atyaf-intro-admin-mark" hidden></div>
+  <div id="atyafIntroAdminName" class="atyaf-intro-admin-name">ATYAAF</div>
+  <div id="atyafIntroAdminSub" class="atyaf-intro-admin-sub">STORE</div>
  </div>
 </div>
+<style id="atyaf-intro-admin-exact-css">
+#atyafIntro{
+ position:fixed!important;inset:0!important;z-index:2147483000!important;
+ display:grid!important;place-items:center!important;overflow:hidden!important;
+ opacity:1;visibility:visible;transition:opacity .5s ease,visibility .5s ease;
+ background:var(--atyaf-intro-bg,#17352e)!important;
+}
+#atyafIntro.done{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+#atyafIntro::before{display:none!important}
+.atyaf-intro-admin-stage{
+ width:min(88vw,760px);min-height:260px;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;text-align:center;gap:8px;padding:24px;
+ position:relative;z-index:1;
+}
+#atyafIntroAdminLogo{
+ display:block;width:auto;height:auto;max-width:min(72vw,420px);max-height:38vh;
+ object-fit:contain;background:transparent;border:0;box-shadow:none;margin:0 auto 10px;
+}
+.atyaf-intro-admin-mark{
+ display:grid;place-items:center;color:#c99a69;font-family:Georgia,serif;
+ line-height:1;margin-bottom:8px;
+}
+.atyaf-intro-admin-name{
+ direction:ltr;line-height:1.1;white-space:nowrap;font-weight:500;
+}
+.atyaf-intro-admin-sub{
+ direction:ltr;line-height:1.2;font-weight:700;letter-spacing:.34em;margin-top:2px;
+}
+@media(max-width:600px){
+ .atyaf-intro-admin-stage{width:92vw;min-height:220px;padding:18px}
+ #atyafIntroAdminLogo{max-width:76vw;max-height:32vh;margin-bottom:8px}
+}
+</style>
 <script id="atyaf-luxury-intro-js">
 (function(){
  "use strict";
  const intro=document.getElementById("atyafIntro");
- const slot=document.getElementById("atyafIntroProfileImage");
- if(!intro||!slot)return;
+ const logo=document.getElementById("atyafIntroAdminLogo");
+ const mark=document.getElementById("atyafIntroAdminMark");
+ const name=document.getElementById("atyafIntroAdminName");
+ const sub=document.getElementById("atyafIntroAdminSub");
+ if(!intro||!logo||!mark||!name||!sub)return;
 
- let closed=false,closeTimer=0;
- const parse=v=>{if(v&&typeof v==="object")return v;if(typeof v==="string"){try{return JSON.parse(v)||{}}catch(_){}}return {}};
+ let closed=false,timer=0,absoluteTimer=0;
+ const parse=v=>{
+   if(v&&typeof v==="object")return v;
+   if(typeof v==="string"){try{const x=JSON.parse(v);return typeof x==="string"?JSON.parse(x):x}catch(_){}}
+   return {};
+ };
+ const clean=v=>String(v??"").trim();
 
- function hardClose(){
-   if(closed)return; closed=true;
-   clearTimeout(closeTimer);
+ function close(){
+   if(closed)return;closed=true;
+   clearTimeout(timer);clearTimeout(absoluteTimer);
    intro.classList.add("done");
    intro.style.pointerEvents="none";
-   setTimeout(()=>{
-     intro.style.setProperty("display","none","important");
-     intro.style.setProperty("visibility","hidden","important");
-     intro.style.setProperty("opacity","0","important");
-   },180);
+   setTimeout(()=>intro.style.setProperty("display","none","important"),520);
  }
  function arm(ms){
-   clearTimeout(closeTimer);
+   clearTimeout(timer);
    const n=Number(ms);
-   closeTimer=setTimeout(hardClose,Math.max(2200,Math.min(4200,Number.isFinite(n)?n:3200)));
- }
- function fallback(){
-   if(closed)return;
-   slot.innerHTML='<div style="display:grid;place-items:center;text-align:center;color:#f5eee4">'
-     +'<div style="font:500 30px Georgia,serif;letter-spacing:.18em;direction:ltr">ATYAAF</div>'
-     +'<div style="margin-top:7px;color:#c99a69;font:700 10px Arial,sans-serif;letter-spacing:.30em">STORE</div>'
-     +'</div>';
+   timer=setTimeout(close,Math.max(1500,Math.min(10000,Number.isFinite(n)?n:3350)));
  }
  function apply(raw){
    if(closed)return;
    const p=parse(raw);
-   if(p.enabled===false){hardClose();return}
-   if(p.backgroundColor)intro.style.setProperty("background",String(p.backgroundColor),"important");
-   const url=String(p.logoImage||"").trim();
+   if(p.enabled===false){close();return}
+
+   intro.style.setProperty("background",clean(p.backgroundColor)||"#17352e","important");
+
+   const font=clean(p.fontFamily)||"Georgia, serif";
+   const text=clean(p.textColor)||"#f5eee4";
+   const accent=clean(p.accentColor)||"#c99a69";
+   const letterSize=Math.max(22,Math.min(100,Number(p.letterSize)||58));
+   const markSize=Math.max(20,Math.min(80,Number(p.markSize)||35));
+
+   name.textContent=clean(p.name)||"ATYAAF";
+   sub.textContent=clean(p.sub)||"STORE";
+   mark.textContent=clean(p.mark)||"";
+
+   name.style.fontFamily=font;
+   name.style.fontSize=letterSize+"px";
+   name.style.color=text;
+   sub.style.fontFamily=font;
+   sub.style.fontSize=Math.max(8,Math.round(letterSize*.18))+"px";
+   sub.style.color=accent;
+   mark.style.fontFamily=font;
+   mark.style.fontSize=markSize+"px";
+   mark.style.color=accent;
+
+   const url=clean(p.logoImage);
    if(url){
-     const img=new Image(); img.alt=""; img.decoding="async";
-     img.onload=()=>{if(!closed&&slot.isConnected)slot.replaceChildren(img)};
-     img.onerror=()=>{};
-     img.src=url;
+     logo.hidden=false;
+     mark.hidden=true;
+     /* Uploaded logo is shown at a useful responsive size, not forced into the old 62px mobile box. */
+     logo.onload=()=>{ if(!closed) logo.hidden=false; };
+     logo.onerror=()=>{ logo.hidden=true; mark.hidden=!clean(p.mark); };
+     if(logo.src!==url)logo.src=url;
+   }else{
+     logo.hidden=true;
+     mark.hidden=!clean(p.mark);
    }
    arm(p.duration);
  }
- async function readIntro(){
-   for(let i=0;i<12&&!window.atyafDb&&!closed;i++)
-     await new Promise(r=>setTimeout(r,80));
+
+ async function read(){
+   /* Existing settings bridge can apply immediately if it already has intro. */
+   if(window.ATYAF_ADMIN_SETTINGS?.intro!=null)apply(window.ATYAF_ADMIN_SETTINGS.intro);
+
+   for(let i=0;i<30&&!window.atyafDb&&!closed;i++)await new Promise(r=>setTimeout(r,80));
    if(!window.atyafDb||closed)return;
    try{
-     const {data,error}=await window.atyafDb.from("settings")
+     const r=await window.atyafDb.from("settings")
        .select("id,value,updated_at").eq("key","intro")
        .order("updated_at",{ascending:false,nullsFirst:false})
        .order("id",{ascending:false}).limit(1);
-     if(error)throw error;
-     if(data?.[0])apply(data[0].value);
+     if(r.error)throw r.error;
+     if(r.data?.[0])apply(r.data[0].value);
    }catch(e){console.warn("ATYAAF intro:",e)}
  }
 
- fallback();              /* visible from first paint; never blank */
- arm(3200);               /* normal close */
- setTimeout(hardClose,4500); /* absolute mobile Safari failsafe */
- intro.addEventListener("click",hardClose,{once:true,passive:true});
- window.addEventListener("pageshow",e=>{if(e.persisted)hardClose()},{passive:true});
- readIntro();
+ /* Visible, complete fallback while the saved admin setting is being read. */
+ apply({enabled:true,name:"ATYAAF",sub:"STORE",backgroundColor:"#17352e",
+        textColor:"#f5eee4",accentColor:"#c99a69",fontFamily:"Georgia, serif",
+        letterSize:58,markSize:35,duration:3350});
+
+ document.addEventListener("atyaf:settings-applied",e=>{
+   if(e?.detail?.intro!=null)apply(e.detail.intro);
+ });
+ intro.addEventListener("click",close,{once:true,passive:true});
+ window.addEventListener("pageshow",e=>{if(e.persisted)close()},{passive:true});
+
+ read();
+ /* Safety only: respects admin duration up to 10s, but can never hang forever on Safari. */
+ absoluteTimer=setTimeout(close,11000);
 })();
 </script>
 

@@ -451,13 +451,26 @@ async function saveProduct(){
     if(!q.data || !q.data.length) throw new Error('لم يتم إنشاء المنتج. تحقق من صلاحية INSERT في جدول products.');
   }
 
-  stat('تم حفظ المنتج بنجاح ✓');
+  // Read the saved value back from the database; do not claim success merely because the request returned.
+  const savedId=q.data[0]?.id;
+  if(savedId==null)throw new Error('لم يرجع الخادم معرف المنتج بعد الحفظ.');
+  const verification=await db.from('products').select('id,stock_quantity').eq('id',savedId).single();
+  if(verification.error)throw verification.error;
+  const expected=row.stock_quantity;
+  const actual=verification.data?.stock_quantity;
+  if(actual!==expected){
+    throw new Error(`لم تُحفظ الكمية كما أدخلتها. المطلوب: ${expected??'غير محدد'}، المسجل: ${actual??'غير محدد'}. تحقق من قواعد قاعدة البيانات أو التريجر.`);
+  }
   pImageFile.value='';
   productDialog.close();
   await loadAll();
+  stat('تم حفظ المنتج والتحقق من كمية المخزون في قاعدة البيانات ✓');
  }catch(e){
   console.error('saveProduct:',e);
-  stat('فشل الحفظ: '+(e?.message||String(e)),true);
+  const raw=e?.message||String(e);
+  const advice=/stock_quantity|schema cache|column/i.test(raw)?' — تأكد من إنشاء عمود stock_quantity في جدول public.products وتشغيل تحديث مخطط Supabase.':/permission|policy|row-level|RLS|لم يتم تحديث/i.test(raw)?' — تحقق من سياسات RLS وصلاحيات تحديث المنتجات.':'';
+  stat('فشل الحفظ: '+raw+advice,true);
+  alert('تعذر حفظ المنتج\n'+raw+advice);
  }finally{
   const btn=document.querySelector('#productDialog .toolbar .btn:not(.red)');
   if(btn){btn.disabled=false;btn.textContent='حفظ'}

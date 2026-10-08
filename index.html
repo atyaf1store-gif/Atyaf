@@ -2531,7 +2531,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
    body.style.fontFamily=fonts.includes(x.fontFamily)?x.fontFamily:'Tahoma, Arial, sans-serif';
    const logo=safeUrl(x.logoImage);if(logo){const img=document.createElement('img');img.className='intro-logo';img.src=logo;img.alt='شعار أطياف';body.appendChild(img)}
    const add=(tag,cls,value)=>{if(!String(value||'').trim())return;const n=document.createElement(tag);n.className=cls;n.textContent=String(value);body.appendChild(n)};
-   add('div','intro-kicker',x.kicker);add('h1','intro-title',x.title||'أطياف | ATYAF');add('p','intro-description',x.description);
+   add('div','intro-kicker',x.kicker);add('h1','intro-title',x.title);add('p','intro-description',x.description);
    const finish=()=>{completed=signature;if(once)sessionStorage.setItem(key,'1');remove()};
    if(x.buttonText){const btn=document.createElement('a');btn.className='intro-cta';btn.textContent=String(x.buttonText);btn.href=safeUrl(x.buttonLink)||'#';
      btn.addEventListener('click',ev=>{if(btn.getAttribute('href')==='#')ev.preventDefault();finish()});body.appendChild(btn)}

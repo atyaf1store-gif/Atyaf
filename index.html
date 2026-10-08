@@ -753,71 +753,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 </style>
 
 
-<style id="atyaf-luxury-intro-v1">
-#atyafIntro{
- position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;
- background:linear-gradient(145deg,#0e3029 0%,#173f35 52%,#0b2923 100%);
- overflow:hidden;opacity:1;visibility:visible;
- transition:opacity .65s ease,visibility .65s ease;
-}
-#atyafIntro::before{
- content:"";position:absolute;inset:-20%;pointer-events:none;
- background:radial-gradient(circle at 50% 45%,rgba(196,145,91,.14),transparent 34%);
-}
-#atyafIntro.done{opacity:0;visibility:hidden;pointer-events:none}
-.atyaf-intro-stage{position:relative;width:min(92vw,760px);height:250px;display:grid;place-items:center}
-.atyaf-intro-logo{
- position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
- width:min(34vw,150px);height:min(34vw,150px);border:0;border-radius:0;
- display:grid;place-items:center;color:#d1a06c;font-family:Georgia,serif;font-size:35px;
- opacity:0;animation:atyafMark 1.05s cubic-bezier(.2,.8,.2,1) 1.25s forwards;
- box-shadow:none;background:transparent;
-}
-.atyaf-intro-logo img{display:block;width:100%;height:100%;object-fit:contain;border:0;border-radius:0;background:transparent}
-.atyaf-intro-word{
- position:absolute;top:50%;left:50%;display:flex;direction:ltr;gap:.10em;
- transform:translate(-50%,28px);white-space:nowrap;color:#f5eee4;
- font-family:Georgia,"Times New Roman",serif;font-size:clamp(31px,8vw,58px);
- letter-spacing:.17em;font-weight:500;
-}
-.atyaf-intro-letter{
- display:inline-block;opacity:0;filter:blur(3px);
- transform:translate3d(var(--dx),var(--dy),0) rotate(var(--rot));
- animation:atyafLetter 1.05s cubic-bezier(.16,.9,.24,1) var(--delay) forwards;
-}
-.atyaf-intro-sub{
- position:absolute;top:calc(50% + 78px);left:50%;transform:translateX(-50%);
- color:#c99a69;font:600 10px/1.2 Arial,sans-serif;letter-spacing:.48em;
- opacity:0;animation:atyafSub .7s ease 1.55s forwards;
-}
-.atyaf-intro-group{
- animation:atyafRise .85s cubic-bezier(.2,.8,.2,1) 2.45s forwards;
- transform-origin:center;
-}
-@keyframes atyafLetter{
- 0%{opacity:0;filter:blur(3px);transform:translate3d(var(--dx),var(--dy),0) rotate(var(--rot))}
- 70%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) rotate(0)}
- 100%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) rotate(0)}
-}
-@keyframes atyafMark{from{opacity:0;transform:translate(-50%,-50%) scale(.72)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-@keyframes atyafSub{to{opacity:.9}}
-@keyframes atyafRise{
- from{transform:translateY(0);opacity:1}
- to{transform:translateY(-58px);opacity:0}
-}
-@media(max-width:600px){
- .atyaf-intro-stage{height:210px}
- .atyaf-intro-logo{width:62px;height:62px;font-size:29px}
- .atyaf-intro-word{font-size:36px;letter-spacing:.13em;transform:translate(-50%,24px)}
- .atyaf-intro-sub{top:calc(50% + 66px);font-size:8px}
-}
-@media(prefers-reduced-motion:reduce){
- .atyaf-intro-letter,.atyaf-intro-logo,.atyaf-intro-sub,.atyaf-intro-group{animation-duration:.01ms!important;animation-delay:0s!important}
- #atyafIntro{transition-duration:.15s}
-}
-</style>
-
-
 <style id="atyaf-gift-admin-live-sync-v2">
 /* Values below are populated from settings.gift; existing store layout stays intact. */
 .gift-prep-banner,
@@ -941,7 +876,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  box-shadow:none!important;
 }
 .atyaf-mobile-profile .atyaf-profile-image-slot img{height:34px!important;max-width:58px!important}
-#atyafIntro{background:linear-gradient(145deg,#0e3029 0%,#173f35 52%,#0b2923 100%)!important}
+
 #atyafIntro .atyaf-intro-logo{
  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
  width:min(42vw,180px)!important;height:min(42vw,180px)!important;
@@ -1082,7 +1017,7 @@ nav,.nav,.main-nav{background:var(--atyaf-nav-bg)!important}
 .card,.product-card,.benefit,.brand-card{background-color:var(--atyaf-card-bg)}
 button,.btn{border-color:var(--atyaf-border)}
 footer,.footer{background:var(--atyaf-footer-bg)!important;color:var(--atyaf-footer-text)!important}
-#atyafIntro{background:var(--atyaf-intro-bg)!important}
+
 </style>
 
 
@@ -1843,45 +1778,22 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
 @media(max-width:850px){.hero-ad{height:var(--atyaf-hero-tablet-height,520px)!important;aspect-ratio:auto!important}}
 @media(max-width:600px){.hero-ad{height:var(--atyaf-hero-mobile-height,360px)!important;aspect-ratio:auto!important}}
 </style>
+
+<style id="atyaf-admin-intro-v11-style">
+#atyafAdminIntroV11{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;opacity:1;transition:opacity .4s ease;background:#17352e;color:#f5eee4;text-align:center}
+#atyafAdminIntroV11[hidden]{display:none!important}
+#atyafAdminIntroV11.atyaf-closing{opacity:0;pointer-events:none}
+#atyafAdminIntroV11 .intro-inner{max-width:92vw;display:flex;flex-direction:column;align-items:center;gap:12px}
+#atyafAdminIntroV11 img{display:block;max-width:min(72vw,420px);max-height:34vh;width:auto;height:auto;object-fit:contain}
+#atyafAdminIntroV11 .intro-mark{line-height:1.15}
+#atyafAdminIntroV11 .intro-name{line-height:1.2;overflow-wrap:anywhere}
+#atyafAdminIntroV11 .intro-sub{font-size:12px;letter-spacing:.25em;line-height:1.5}
+@media(prefers-reduced-motion:reduce){#atyafAdminIntroV11{transition:none}}
+</style>
 </head>
 <body>
 
-<style id="atyaf-intro-admin-exact-css">
-#atyafIntro{
- position:fixed!important;inset:0!important;z-index:2147483000!important;
- display:grid!important;place-items:center!important;overflow:hidden!important;
- opacity:1;visibility:visible;transition:opacity .5s ease,visibility .5s ease;
- background:var(--atyaf-intro-bg,#17352e)!important;
-}
-#atyafIntro.done{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
-#atyafIntro::before{display:none!important}
-.atyaf-intro-admin-stage{
- width:min(88vw,760px);min-height:260px;display:flex;flex-direction:column;
- align-items:center;justify-content:center;text-align:center;gap:8px;padding:24px;
- position:relative;z-index:1;
-}
-#atyafIntroAdminLogo{
- display:block;width:auto;height:auto;max-width:min(72vw,420px);max-height:38vh;
- object-fit:contain;background:transparent;border:0;box-shadow:none;margin:0 auto 10px;
-}
-.atyaf-intro-admin-mark{
- display:grid;place-items:center;color:#c99a69;font-family:Georgia,serif;
- line-height:1;margin-bottom:8px;
-}
-.atyaf-intro-admin-name{
- direction:ltr;line-height:1.1;white-space:nowrap;font-weight:500;
-}
-.atyaf-intro-admin-sub{
- direction:ltr;line-height:1.2;font-weight:700;letter-spacing:.34em;margin-top:2px;
-}
-@media(max-width:600px){
- .atyaf-intro-admin-stage{width:92vw;min-height:220px;padding:18px}
- #atyafIntroAdminLogo{max-width:76vw;max-height:32vh;margin-bottom:8px}
-}
-</style>
-
-
-  <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
+<div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
   <header class="header">
     <div class="container headrow atyaf-head-balanced">
       <div class="actions atyaf-head-right customer-tools" aria-label="السلة والمفضلة">
@@ -2580,6 +2492,50 @@ window.addEventListener("focus",atyafLoadLowerAds);
 </script>
 <script>
 
+/* ATYAF V11: single admin-controlled welcome screen (settings.intro). */
+(function(){
+  let timer=null, signature=null, completedSignature=null;
+  const key='atyaf-intro-shown-v11';
+  const escape=v=>String(v??'');
+  const num=(v,def,min,max)=>{const n=Number(v);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):def};
+  const safeColor=(v,fallback)=>/^#[0-9a-f]{3,8}$/i.test(String(v||''))?v:fallback;
+  const fonts=['Georgia, serif','Tahoma, Arial, sans-serif','Arial, sans-serif',"'Times New Roman', serif"];
+  function close(){
+    clearTimeout(timer);timer=null;
+    const el=document.getElementById('atyafAdminIntroV11');
+    if(!el)return;
+    el.classList.add('atyaf-closing');
+    setTimeout(()=>el.remove(),420);
+  }
+  window.atyafApplyAdminIntroV11=function(raw){
+    let x=raw;
+    if(typeof x==='string'){try{x=JSON.parse(x)}catch{x=null}}
+    if(!x||typeof x!=='object'||x.enabled!==true){close();signature=null;return}
+    const showOnce=x.showOnce!==false;
+    if(showOnce&&sessionStorage.getItem(key)==='1'){close();return}
+    // Do not restart the timer on every realtime/poll refresh.
+    const sig=JSON.stringify(x);
+    if(sig===completedSignature || (sig===signature&&document.getElementById('atyafAdminIntroV11')))return;
+    signature=sig;
+    clearTimeout(timer);
+    let el=document.getElementById('atyafAdminIntroV11');
+    if(!el){el=document.createElement('div');el.id='atyafAdminIntroV11';el.setAttribute('role','status');el.setAttribute('aria-label','شاشة ترحيب أطياف');document.body.appendChild(el)}
+    el.classList.remove('atyaf-closing');
+    el.replaceChildren();
+    el.style.background=safeColor(x.backgroundColor,'#17352e');
+    el.style.color=safeColor(x.textColor,'#f5eee4');
+    const wrap=document.createElement('div');wrap.className='intro-inner';
+    wrap.style.fontFamily=fonts.includes(x.fontFamily)?x.fontFamily:'Georgia, serif';
+    if(x.logoImage&&/^https:\/\//i.test(String(x.logoImage))){const img=document.createElement('img');img.src=x.logoImage;img.alt='شعار أطياف';wrap.appendChild(img)}
+    if(x.mark){const mark=document.createElement('div');mark.className='intro-mark';mark.textContent=escape(x.mark);mark.style.color=safeColor(x.accentColor,'#c99a69');mark.style.fontSize=num(x.markSize,35,20,80)+'px';wrap.appendChild(mark)}
+    const name=document.createElement('div');name.className='intro-name';name.textContent=escape(x.name||'ATYAF');name.style.fontSize='clamp(24px, 7vw, '+num(x.letterSize,58,22,100)+'px)';wrap.appendChild(name);
+    if(x.sub){const sub=document.createElement('div');sub.className='intro-sub';sub.textContent=escape(x.sub);sub.style.color=safeColor(x.accentColor,'#c99a69');wrap.appendChild(sub)}
+    el.appendChild(wrap);
+    const duration=num(x.duration,3350,1500,10000);
+    timer=setTimeout(()=>{completedSignature=sig;if(showOnce)sessionStorage.setItem(key,'1');close()},duration);
+  };
+})();
+
 /* ATYAAF ADMIN <-> STORE FULL SETTINGS BRIDGE START */
 (function(){
   const SB=window.atyafDb || (window.supabase && typeof ATYAF_SUPABASE_URL!=="undefined"
@@ -2785,6 +2741,9 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(error)throw error;
       const map={};
       (data||[]).forEach(r=>{ if(!(r.key in map)) map[r.key]=val(r.value); });
+      // Screen intro is distinct from the upper advertising banner.
+      // No splash is displayed before an authoritative settings response.
+      window.atyafApplyAdminIntroV11(map.intro||null);
       if(map.topbar)applyTopbar(map.topbar);
       if(map.header)applyHeader(map.header);
       if(map.nav)applyNav(map.nav);
@@ -2795,13 +2754,14 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(map.brands)applyBrands(map.brands);
       if(map.policies)applyPolicies(map.policies);
       // نفس مفاتيح لوحة الإدارة، مع دعم الأسماء القديمة.
-      const upperKeys=["hero_ads","ads"];
+      const upperKeys=["hero_ads"];
       const lowerKeys=["bottom_ads","bottom_ad","lower_ads","lower_ad","after_products_ad","after_products_ads"];
       const upperKey=upperKeys.find(k=>map[k]!=null);
       const lowerKey=lowerKeys.find(k=>map[k]!=null);
       if(upperKey)applyAdAlias(upperKey,map[upperKey]);
       else if(typeof window.atyafRenderHeroAds==="function")window.atyafRenderHeroAds({enabled:false});
       if(lowerKey)applyAdAlias(lowerKey,map[lowerKey]);
+      else if(typeof window.atyafRenderLowerAds==="function")window.atyafRenderLowerAds({enabled:false});
       window.ATYAF_ADMIN_SETTINGS=map;
       document.dispatchEvent(new CustomEvent("atyaf:settings-applied",{detail:map}));
     }catch(e){console.error("ATYAF settings sync:",e)}

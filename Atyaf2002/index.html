@@ -73,14 +73,58 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
 <section id="products" class="panel">
-<div class="card section-editor" id="atyafProductButtonsCard">
- <h2 style="margin-top:0">أزرار المنتجات في المتجر</h2>
- <div class="muted">تحكم بإظهار أو إخفاء زر إضافة إلى السلة وزر شراء كهدية. يتم التحقق من الحفظ من قاعدة البيانات قبل إظهار رسالة النجاح.</div>
- <div class="grid" style="margin-top:14px">
-  <div class="field"><label>زر إضافة إلى السلة</label><select id="atyafShowAddToCart"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
-  <div class="field"><label>زر شراء كهدية</label><select id="atyafShowBuyAsGift"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
+<div class="card" id="atyafProductDesignSettings" style="margin-bottom:16px">
+ <h3 style="margin-top:0">تصميم بطاقات المنتجات</h3>
+ <p class="muted">تحكم كامل في صورة المنتج والبطاقة والنصوص والألوان والأزرار والشارة. هذه الإعدادات لا تحذف أو تغيّر بيانات المنتجات نفسها.</p>
+ <div class="grid">
+  <div class="field"><label>عرض صورة/أيقونة المنتج %</label><input data-pd="imageWidth" type="number" min="20" max="100" value="88"></div>
+  <div class="field"><label>ارتفاع منطقة الصورة px</label><input data-pd="imageHeight" type="number" min="120" max="600" value="300"></div>
+  <div class="field"><label>حجم البطاقة — عرض %</label><input data-pd="cardWidth" type="number" min="45" max="100" value="100"></div>
+  <div class="field"><label>استدارة البطاقة px</label><input data-pd="cardRadius" type="number" min="0" max="50" value="16"></div>
+  <div class="field"><label>المسافة بين البطاقات px</label><input data-pd="gap" type="number" min="0" max="50" value="14"></div>
+  <div class="field"><label>عدد الأعمدة — كمبيوتر</label><input data-pd="columnsDesktop" type="number" min="1" max="6" value="4"></div>
+  <div class="field"><label>عدد الأعمدة — تابلت</label><input data-pd="columnsTablet" type="number" min="1" max="4" value="3"></div>
+  <div class="field"><label>عدد الأعمدة — هاتف</label><input data-pd="columnsMobile" type="number" min="1" max="2" value="2"></div>
+
+  <div class="field"><label>لون خلفية البطاقة</label><input data-pd="cardBackground" type="color" value="#ffffff"></div>
+  <div class="field"><label>لون حدود البطاقة</label><input data-pd="cardBorder" type="color" value="#eeeae2"></div>
+  <div class="field"><label>لون خلفية الصورة</label><input data-pd="imageBackground" type="color" value="#fbfaf7"></div>
+  <div class="field"><label>لون اسم المنتج</label><input data-pd="nameColor" type="color" value="#17352e"></div>
+  <div class="field"><label>لون اسم الماركة</label><input data-pd="brandColor" type="color" value="#777777"></div>
+  <div class="field"><label>لون السعر</label><input data-pd="priceColor" type="color" value="#17352e"></div>
+
+  <div class="field"><label>الخط</label><select data-pd="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Cairo, Tahoma, sans-serif">Cairo</option><option value="Georgia, serif">Georgia</option></select></div>
+  <div class="field"><label>حجم اسم المنتج px</label><input data-pd="nameSize" type="number" min="10" max="32" value="16"></div>
+  <div class="field"><label>حجم الماركة px</label><input data-pd="brandSize" type="number" min="8" max="24" value="11"></div>
+  <div class="field"><label>حجم السعر px</label><input data-pd="priceSize" type="number" min="10" max="32" value="15"></div>
+
+  <div class="field"><label>نص الشارة</label><input data-pd="badgeText" value="مميز"></div>
+  <div class="field"><label>لون الشارة</label><input data-pd="badgeBackground" type="color" value="#17352e"></div>
+  <div class="field"><label>لون نص الشارة</label><input data-pd="badgeTextColor" type="color" value="#ffffff"></div>
+  <div class="field"><label>حجم نص الشارة px</label><input data-pd="badgeSize" type="number" min="8" max="24" value="11"></div>
+
+  <div class="field"><label>لون زر إضافة للسلة</label><input data-pd="cartBackground" type="color" value="#17352e"></div>
+  <div class="field"><label>لون نص زر السلة</label><input data-pd="cartTextColor" type="color" value="#ffffff"></div>
+  <div class="field"><label>لون زر الهدية</label><input data-pd="giftBackground" type="color" value="#ffffff"></div>
+  <div class="field"><label>لون نص زر الهدية</label><input data-pd="giftTextColor" type="color" value="#17352e"></div>
+  <div class="field"><label>ارتفاع الأزرار px</label><input data-pd="buttonHeight" type="number" min="30" max="80" value="42"></div>
+  <div class="field"><label>حجم خط الأزرار px</label><input data-pd="buttonFontSize" type="number" min="9" max="24" value="12"></div>
+  <div class="field"><label>استدارة الأزرار px</label><input data-pd="buttonRadius" type="number" min="0" max="40" value="12"></div>
  </div>
- <div class="toolbar" style="margin-top:14px"><button class="btn" id="atyafSaveProductButtonsBtn" type="button" onclick="atyafSaveProductButtons()">حفظ إعدادات الأزرار</button></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+  <button class="btn" type="button" onclick="saveProductDesignSettings()">حفظ تصميم المنتجات</button>
+  <button class="btn ghost" type="button" onclick="resetProductDesignSettings()">إعادة الافتراضي</button>
+ </div>
+</div>
+
+
+<div class="card" id="atyafProductButtonsSettings">
+ <div class="toolbar"><div class="grow"><h2 style="margin:0 0 6px">أزرار المنتجات في المتجر</h2><div class="muted">تحكم بإظهار أو إخفاء زر إضافة إلى السلة وزر شراء كهدية في جميع بطاقات وتفاصيل المنتجات.</div></div></div>
+ <div class="grid" style="margin-top:14px">
+  <div class="field"><label>زر إضافة إلى السلة</label><select id="atyafShowCartButton"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
+  <div class="field"><label>زر شراء كهدية</label><select id="atyafShowGiftButton"><option value="true">إظهار</option><option value="false">إخفاء</option></select></div>
+ </div>
+ <div class="toolbar" style="margin-top:14px"><button class="btn" type="button" onclick="atyafSaveProductButtons()">حفظ إعدادات الأزرار</button></div>
 </div>
 <div class="card atyaf-product-add-card">
  <div class="toolbar atyaf-product-add-head">
@@ -193,19 +237,7 @@ function stat(t,bad=false){
  el.style.color=bad?'#8b211b':'#17352e';
 }
 function getSetting(key,def={}){let r=SETTINGS.find(x=>x.key===key);return r?parse(r.value):def}
-async function putSetting(key,value){
- let old=SETTINGS.find(x=>x.key===key),r;
- if(old){
-  r=await db.from('settings').update({value}).eq('id',old.id).select('id,key,value,updated_at');
-  if(r.error)throw r.error;
-  if(!r.data||!r.data.length)throw new Error('لم يتم تحديث الإعداد في قاعدة البيانات. تحقق من صلاحية UPDATE لجدول settings.');
- }else{
-  r=await db.from('settings').insert({key,value}).select('id,key,value,updated_at');
-  if(r.error)throw r.error;
-  if(!r.data||!r.data.length)throw new Error('لم يتم إنشاء الإعداد في قاعدة البيانات. تحقق من صلاحية INSERT لجدول settings.');
- }
- return r.data[0];
-}
+async function putSetting(key,value){let old=SETTINGS.find(x=>x.key===key);let r=old?await db.from('settings').update({value}).eq('id',old.id):await db.from('settings').insert({key,value});if(r.error)throw r.error}
 async function removeSetting(key){let old=SETTINGS.find(x=>x.key===key);if(old){let r=await db.from('settings').delete().eq('id',old.id);if(r.error)throw r.error}}
 
 async function uploadFiles(files,folder){
@@ -320,10 +352,10 @@ function profileSectionEditor(){
  const ff=profileEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Tahoma, Arial, sans-serif';
 }
 function introSectionEditor(){
- const s=getSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});
+ const s=getSetting('intro',{enabled:false,name:'ATYAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});
  introEditor.innerHTML=`<div class="grid">
  <div class="field"><label>الحالة</label><select data-v="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
- <div class="field"><label>اسم البداية</label><input data-v="name" value="${esc(s.name||'ATYAAF')}"></div>
+ <div class="field"><label>اسم البداية</label><input data-v="name" value="${esc(s.name||'ATYAF')}"></div>
  <div class="field"><label>النص السفلي</label><input data-v="sub" value="${esc(s.sub||'STORE')}"></div>
  <div class="field"><label>حرف/رمز الشعار</label><input data-v="mark" value="${esc(s.mark||'أ')}"></div>
  ${colorField('backgroundColor','لون خلفية البداية',s.backgroundColor||'#17352e')}
@@ -355,7 +387,7 @@ async function removeIntroLogo(){let s=getSetting('intro',{});s.logoImage='';awa
 async function deleteProfileSection(){if(confirm('حذف إعدادات البروفايل؟')){await removeSetting('profile');await loadAll()}}
 async function deleteIntroSection(){if(confirm('حذف إعدادات شاشة البداية؟')){await removeSetting('intro');await loadAll()}}
 async function createProfileSection(){await putSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64,desktopSize:64});await loadAll()}
-async function createIntroSection(){await putSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
+async function createIntroSection(){await putSetting('intro',{enabled:true,name:'ATYAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
 
 function navLinksEditor(el){
  const s=getSetting('nav',{enabled:true});
@@ -413,90 +445,6 @@ async function saveBrandItem(i){
   await putSetting('brands',s);await loadAll();stat('تم حفظ اسم الماركة وصورتها ورمز الانتقال ✓');
  }catch(e){stat('فشل حفظ الماركة: '+(e?.message||String(e)),true)}
 }
-
-function atyafRenderProductButtons(){
- const v=getSetting('product_actions',{showAddToCart:true,showBuyAsGift:true})||{};
- const cart=document.getElementById('atyafShowAddToCart');
- const gift=document.getElementById('atyafShowBuyAsGift');
- if(cart)cart.value=v.showAddToCart===false?'false':'true';
- if(gift)gift.value=v.showBuyAsGift===false?'false':'true';
-}
-async function atyafReadLatestProductActions(){
- const r=await db.from('settings').select('id,key,value,updated_at')
-  .eq('key','product_actions')
-  .order('updated_at',{ascending:false,nullsFirst:false})
-  .order('id',{ascending:false})
-  .limit(1);
- if(r.error)throw r.error;
- return r.data?.[0]||null;
-}
-async function atyafSaveProductButtons(){
- const btn=document.getElementById('atyafSaveProductButtonsBtn');
- const wanted={
-  showAddToCart:document.getElementById('atyafShowAddToCart')?.value!=='false',
-  showBuyAsGift:document.getElementById('atyafShowBuyAsGift')?.value!=='false'
- };
- try{
-  if(btn){btn.disabled=true;btn.textContent='جاري الحفظ…'}
-  stat('جاري حفظ إعدادات أزرار المنتجات…');
-
-  /* product_actions may already exist more than once.
-     Updating only SETTINGS.find(...).id can update an older row while the store/admin
-     immediately reads the newer duplicate and appears to undo the change.
-     Synchronize every existing row for this one key; insert only when none exists. */
-  const existing=await db.from('settings')
-   .select('id,key,value,updated_at')
-   .eq('key','product_actions');
-  if(existing.error)throw existing.error;
-
-  let write;
-  if(existing.data&&existing.data.length){
-   write=await db.from('settings')
-    .update({value:wanted})
-    .eq('key','product_actions')
-    .select('id,key,value,updated_at');
-  }else{
-   write=await db.from('settings')
-    .insert({key:'product_actions',value:wanted})
-    .select('id,key,value,updated_at');
-  }
-  if(write.error)throw write.error;
-  if(!write.data||!write.data.length)
-   throw new Error('لم يتم تعديل أي سجل product_actions في قاعدة البيانات.');
-
-  /* Verify the same newest-row rule used by the store. */
-  const saved=await atyafReadLatestProductActions();
-  const raw=saved?.value;
-  const check=(typeof raw==='string'?parse(raw):raw)||{};
-  if(check.showAddToCart!==wanted.showAddToCart || check.showBuyAsGift!==wanted.showBuyAsGift)
-   throw new Error('القيمة الأحدث في قاعدة البيانات لا تطابق اختيارك.');
-
-  /* Refresh without allowing a stale local row to decide the select value. */
-  await loadAll();
-  const verified=await atyafReadLatestProductActions();
-  const finalValue=(typeof verified?.value==='string'?parse(verified.value):verified?.value)||{};
-  const cart=document.getElementById('atyafShowAddToCart');
-  const gift=document.getElementById('atyafShowBuyAsGift');
-  if(cart)cart.value=finalValue.showAddToCart===false?'false':'true';
-  if(gift)gift.value=finalValue.showBuyAsGift===false?'false':'true';
-
-  stat('تم حفظ إعدادات أزرار المنتجات والتحقق منها من قاعدة البيانات ✓');
- }catch(e){
-  console.error('ATYAAF product buttons save:',e);
-  stat('فشل حفظ إعدادات الأزرار: '+(e?.message||String(e)),true);
-  try{
-   const saved=await atyafReadLatestProductActions();
-   const v=(typeof saved?.value==='string'?parse(saved.value):saved?.value)||{};
-   const cart=document.getElementById('atyafShowAddToCart');
-   const gift=document.getElementById('atyafShowBuyAsGift');
-   if(cart)cart.value=v.showAddToCart===false?'false':'true';
-   if(gift)gift.value=v.showBuyAsGift===false?'false':'true';
-  }catch(_){}
- }finally{
-  if(btn){btn.disabled=false;btn.textContent='حفظ إعدادات الأزرار'}
- }
-}
-window.atyafSaveProductButtons=atyafSaveProductButtons;
 
 function renderProducts(){productRows.innerHTML=PRODUCTS.map(p=>`<tr><td>${esc(p.name||p.title||'')}</td><td>${esc(p.brand||'')}</td><td>${esc(p.price||0)}</td><td>${p.is_active===false?'مخفي':'ظاهر'}</td><td class="actions"><button class="btn alt" onclick='editProduct(${JSON.stringify(String(p.id))})'>تعديل</button><button class="btn red" onclick='quickDeleteProduct(${JSON.stringify(String(p.id))})'>حذف</button></td></tr>`).join('')}
 function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pDesc.value=p.description||p.desc||'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
@@ -592,7 +540,6 @@ function atyafRenderAdmin(){
   {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
  ]);
  brandsSectionEditor();
- atyafRenderProductButtons();
  renderProducts();
 }
 async function loadAll(){
@@ -873,4 +820,66 @@ window.atyafToggleAiProducts=(force)=>{
  };
 })();
 </script>
+
+<script id="atyaf-product-buttons-settings-admin-v1">
+(()=>{
+ const render=()=>{
+  if(!Array.isArray(window.SETTINGS) && typeof SETTINGS==='undefined')return;
+  const cfg=(typeof getSetting==='function'?getSetting('product_actions',{}):{})||{};
+  const cart=document.getElementById('atyafShowCartButton');
+  const gift=document.getElementById('atyafShowGiftButton');
+  if(cart)cart.value=cfg.showAddToCart===false?'false':'true';
+  if(gift)gift.value=cfg.showBuyAsGift===false?'false':'true';
+ };
+ window.atyafSaveProductButtons=async()=>{
+  try{
+   const old=(typeof getSetting==='function'?getSetting('product_actions',{}):{})||{};
+   const value={...old,showAddToCart:document.getElementById('atyafShowCartButton')?.value!=='false',showBuyAsGift:document.getElementById('atyafShowGiftButton')?.value!=='false'};
+   await putSetting('product_actions',value);
+   await loadAll();
+   stat('تم حفظ إعدادات أزرار المنتجات ✓');
+  }catch(e){console.error('ATYAAF product actions settings:',e);stat(e?.message||String(e),true)}
+ };
+ const base=window.loadAll;
+ if(typeof base==='function')window.loadAll=async function(...args){const out=await base.apply(this,args);render();return out};
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(render,250));
+})();
+</script>
+
+<script id="atyaf-product-design-admin-v1">
+(()=>{
+ const D={imageWidth:88,imageHeight:300,cardWidth:100,cardRadius:16,gap:14,columnsDesktop:4,columnsTablet:3,columnsMobile:2,cardBackground:'#ffffff',cardBorder:'#eeeae2',imageBackground:'#fbfaf7',nameColor:'#17352e',brandColor:'#777777',priceColor:'#17352e',fontFamily:'Tahoma, Arial, sans-serif',nameSize:16,brandSize:11,priceSize:15,badgeText:'مميز',badgeBackground:'#17352e',badgeTextColor:'#ffffff',badgeSize:11,cartBackground:'#17352e',cartTextColor:'#ffffff',giftBackground:'#ffffff',giftTextColor:'#17352e',buttonHeight:42,buttonFontSize:12,buttonRadius:12};
+ const parse=v=>{if(v&&typeof v==='object')return v;if(typeof v==='string'){try{return JSON.parse(v)||{}}catch(_){}}return {}};
+ function fill(){
+   const s={...D,...parse(typeof getSetting==='function'?getSetting('product_design',{}):{})};
+   document.querySelectorAll('#atyafProductDesignSettings [data-pd]').forEach(el=>{
+     const k=el.dataset.pd;if(s[k]!=null)el.value=s[k];
+   });
+ }
+ window.saveProductDesignSettings=async function(){
+   try{
+     const v={...D};
+     document.querySelectorAll('#atyafProductDesignSettings [data-pd]').forEach(el=>{
+       const k=el.dataset.pd;
+       v[k]=el.type==='number'?Number(el.value):el.value;
+     });
+     if(typeof stat==='function')stat('جاري حفظ تصميم المنتجات…');
+     await putSetting('product_design',v);
+     await loadAll();
+     fill();
+     if(typeof stat==='function')stat('تم حفظ تصميم بطاقات المنتجات ✓');
+   }catch(e){if(typeof stat==='function')stat('فشل الحفظ: '+(e?.message||String(e)),true);else alert(e?.message||String(e))}
+ };
+ window.resetProductDesignSettings=async function(){
+   if(!confirm('إعادة إعدادات تصميم المنتجات إلى القيم الافتراضية؟'))return;
+   try{await putSetting('product_design',D);await loadAll();fill();if(typeof stat==='function')stat('تمت إعادة تصميم المنتجات للوضع الافتراضي ✓')}
+   catch(e){if(typeof stat==='function')stat(e?.message||String(e),true)}
+ };
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(fill,250));
+ document.addEventListener('click',e=>{if(e.target?.dataset?.tab==='products')setTimeout(fill,80)});
+ window.addEventListener('atyaf:admin-loaded',fill);
+ setTimeout(fill,800);
+})();
+</script>
+
 </body></html>

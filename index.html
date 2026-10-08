@@ -383,7 +383,7 @@ img,video,svg{max-width:100%;height:auto}
 .navrow{display:flex;justify-content:center;align-items:center;gap:clamp(18px,2.4vw,38px);white-space:nowrap}
 .hero-ad{width:100%;overflow:hidden}
 .hero-ad-track{width:100%}
-.hero-ad img,.hero-ad-track img{width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-ad img,.hero-ad-track img{width:100%;height:100%}
 .benefits{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .benefit{min-width:0;height:100%}
 .brands{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
@@ -1746,7 +1746,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
 :root{--cream:#faf9f6;--paper:#fff;--green:#182d29;--green2:#29463e;--copper:#b78a58;--gold:#d5b786;--line:#ebe8e2;--ink:#1c2522;--muted:#747b77;--shadow:0 16px 42px #192c2710;--radius:18px}
 html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}button,a{touch-action:manipulation}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--copper);outline-offset:3px}
 .topbar{background:#172c27!important;min-height:36px;letter-spacing:.3px}.header{background:#ffffffed!important;box-shadow:0 6px 28px #152a2410!important}.header .nav{border-color:#eae8e1!important}.navrow a{transition:color .2s}.navrow a:hover{color:var(--copper)!important}
-.hero-ad{background:#eae5da!important}.hero-ad-slide{transition:opacity .75s ease!important}.hero-ad-slide img{object-fit:cover!important}.hero-ad-dot,.atyaf-lower-dot{cursor:pointer}
+.hero-ad{background:#eae5da!important}.hero-ad-slide{transition:opacity .75s ease!important}.hero-ad-slide img{max-width:none}.hero-ad-dot,.atyaf-lower-dot{cursor:pointer}
 .styaf-v2-intro{padding:32px 0 12px;text-align:center}.styaf-v2-kicker{display:inline-block;color:#a47b4c;letter-spacing:3px;font-size:11px;font-weight:800}.styaf-v2-intro h1{font-size:clamp(26px,3.5vw,45px);line-height:1.4;color:var(--green);font-weight:700;margin:8px 0}.styaf-v2-intro p{color:var(--muted);font-size:14px;max-width:630px;margin:0 auto 18px}.styaf-v2-cta{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 25px;background:var(--green);color:white;text-decoration:none;border-radius:4px;font-weight:700;font-size:13px}
 .styaf-v2-trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-block:1px solid var(--line);margin-top:20px;margin-bottom:8px;background:#fff}.styaf-v2-trust>div{padding:20px 15px;text-align:center;border-left:1px solid var(--line)}.styaf-v2-trust>div:last-child{border-left:0}.styaf-v2-trust strong{display:block;color:var(--green);font-size:14px}.styaf-v2-trust span{font-size:12px;color:var(--muted)}.styaf-v2-trust i{display:block;font-size:22px;color:var(--copper);font-style:normal;margin-bottom:5px}
 .styaf-v2-categories{padding:50px 0 25px}.styaf-v2-heading{text-align:center;margin-bottom:27px}.styaf-v2-heading small{color:var(--copper);font-size:11px;letter-spacing:2px}.styaf-v2-heading h2{margin:6px 0;font-size:clamp(24px,3vw,34px);color:var(--green)}.styaf-v2-heading p{color:var(--muted);font-size:13px;margin:0}.styaf-v2-category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.styaf-v2-category{position:relative;min-height:220px;border:1px solid #e8e4da;background:linear-gradient(145deg,#e8dfd1,#f8f4ec);overflow:hidden;border-radius:8px;display:flex;align-items:flex-end;padding:18px;text-align:right;isolation:isolate;transition:transform .25s,box-shadow .25s}.styaf-v2-category:nth-child(2){background:linear-gradient(145deg,#d6ddd8,#f5f7f2)}.styaf-v2-category:nth-child(3){background:linear-gradient(145deg,#e5d4d1,#faf0eb)}.styaf-v2-category:nth-child(4){background:linear-gradient(145deg,#ded8cd,#f9f7f1)}.styaf-v2-category:before{content:'✦';position:absolute;top:0;left:10%;font-size:150px;line-height:1;color:#ffffff70;transform:rotate(-15deg);z-index:-1}.styaf-v2-category:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#182d2945,transparent 70%);z-index:-1}.styaf-v2-category strong{color:#fff;font-size:21px;display:block}.styaf-v2-category span{color:#fff;font-size:12px;opacity:.9}.styaf-v2-category:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
@@ -1832,6 +1832,15 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
 #store>.hero-ad+.benefits{display:none!important}
 #brands{scroll-margin-top:115px}
 @media(max-width:600px){#brands{scroll-margin-top:24px}}
+</style>
+
+<style id="atyaf-hero-admin-display-repair-v8">
+/* Avoid cropping banner assets and avoid overriding the administrator's image fit. */
+.hero-ad{height:auto!important;min-height:0!important;aspect-ratio:16/9!important;background:#f8f4ed!important;}
+.hero-ad-track,.hero-ad-slide{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+.hero-ad-slide img,.hero-ad-slide video{width:100%!important;height:100%!important;max-width:none!important;object-fit:contain;object-position:center}
+.hero-ad[hidden]{display:none!important}
+@media(max-width:600px){.hero-ad{aspect-ratio:4/3!important}}
 </style>
 </head>
 <body>
@@ -2129,22 +2138,21 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
       let media=x.media??x.medias??x.slides??x.images??x.files??x.items??x.urls??[];
       if(typeof media==='string'){try{const p=JSON.parse(media);media=Array.isArray(p)?p:[media]}catch(e){media=media.split(/\\r?\\n|,/).map(v=>v.trim()).filter(Boolean)}}
       if(!Array.isArray(media))media=[media];media=media.map(atyafMediaUrl).filter(Boolean);
-      return {enabled:x.enabled!==false,media,interval:Math.max(1500,Number(x.interval||x.speed||3500)),fit:x.fit||'cover',position:x.position||'center',link:String(x.link||x.url_link||'').trim()};
+      return {enabled:x.enabled!==false,media,interval:Math.max(1500,Number(x.interval||x.speed||3500)),fit:['contain','cover','fill','scale-down'].includes(x.fit)?x.fit:'contain',position:x.position||'center',link:String(x.link||x.url_link||'').trim()};
     }
     function heroAdTo(n){if(!heroAdSlides.length)return;heroAdIndex=(Number(n)+heroAdSlides.length)%heroAdSlides.length;document.querySelectorAll('.hero-ad-slide').forEach((el,i)=>el.classList.toggle('active',i===heroAdIndex));document.querySelectorAll('.hero-ad-dot').forEach((el,i)=>el.classList.toggle('active',i===heroAdIndex));document.querySelectorAll('.hero-ad-slide video').forEach((v,i)=>{if(i===heroAdIndex){v.play().catch(()=>{})}else{v.pause()}})}
     function renderHeroAd(raw){
-      const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;const a=normalizeHeroAd(raw);heroAdSlides=a.media;
+      const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;const a=normalizeHeroAd(raw);a.position=/^[a-z0-9% .-]{1,48}$/i.test(a.position)?a.position:'center';heroAdSlides=a.media;
       if(!a.enabled||!a.media.length){track.innerHTML='';dots.innerHTML='';track.closest('.hero-ad')?.setAttribute('hidden','');return} track.closest('.hero-ad')?.removeAttribute('hidden');
-      track.innerHTML=a.media.map((url,i)=>{const v=/\\.(mp4|webm|ogg)(?:\\?|#|$)/i.test(url);const m=v?`<video src="${escapeHtml(url)}" muted playsinline autoplay loop preload="metadata" style="object-fit:${escapeHtml(a.fit)} !important;object-position:${escapeHtml(a.position)} !important"></video>`:`<img src="${escapeHtml(url)}" alt="إعلان أطياف" style="object-fit:${escapeHtml(a.fit)} !important;object-position:${escapeHtml(a.position)} !important" ${i?'loading="lazy"':''}>`;return `<div class="hero-ad-slide ${i===0?'active':''}">${m}${a.link?`<a class="hero-ad-link" href="${safeLink(a.link)}" aria-label="فتح الإعلان"></a>`:''}</div>`}).join('')+'<div class="hero-ad-shade"></div>';
+      track.innerHTML=a.media.map((url,i)=>{const v=/\\.(mp4|webm|ogg)(?:\\?|#|$)/i.test(url);const m=v?`<video src="${escapeHtml(url)}" muted playsinline autoplay loop preload="metadata" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}"></video>`:`<img src="${escapeHtml(url)}" alt="إعلان أطياف" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}" ${i?'loading="lazy"':''}>`;return `<div class="hero-ad-slide ${i===0?'active':''}">${m}${a.link?`<a class="hero-ad-link" href="${safeLink(a.link)}" aria-label="فتح الإعلان"></a>`:''}</div>`}).join('')+'<div class="hero-ad-shade"></div>';
       dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;if(a.media.length>1)heroAdTimer=setInterval(()=>heroAdTo(heroAdIndex+1),a.interval);
     }
     window.atyafRenderHeroAds=renderHeroAd;
+    // Unified admin bridge below is the only source of hero updates.
     async function loadHeroAds(){
-      if(!atyafDb)return renderHeroAd({enabled:false});
-      try{const {data,error}=await atyafDb.from('settings').select('id,key,value,updated_at').in('key',['ads','hero_ads']).order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false});if(error)throw error;const rows=Array.isArray(data)?data:[];const row=rows.find(r=>r.key==='ads')||rows.find(r=>r.key==='hero_ads');renderHeroAd(row?.value||{enabled:false})}catch(e){console.warn('ATYAAF hero ads:',e);renderHeroAd({enabled:false})}
+      if(typeof window.atyafSyncAdminSettings==='function') return window.atyafSyncAdminSettings();
     }
     window.atyafLoadHeroAds=loadHeroAds;
-    window.addEventListener('focus',loadHeroAds);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadHeroAds()});
 
     let state={filter:'all',brand:'كل الماركات',cart:JSON.parse(localStorage.getItem('atyaaf-cart')||'[]'),favs:JSON.parse(localStorage.getItem('atyaaf-favs')||'[]')};
     const ATYAAF_CART_SESSION_KEY='atyaaf-cart-session';
@@ -2564,7 +2572,7 @@ function openSocial(type){
 
     function toggleTopbar(){document.getElementById('topbar').style.display='none'}function toggleNav(){document.getElementById('nav').classList.toggle('open')};function goHome(){closeAdmin();window.scrollTo({top:0,behavior:'smooth'})}
     function openAdmin(){document.getElementById('store').style.display='none';document.querySelector('footer').style.display='none';document.getElementById('admin').classList.add('show');window.scrollTo(0,0)}function closeAdmin(){document.getElementById('admin').classList.remove('show');document.getElementById('store').style.display='block';document.querySelector('footer').style.display='block'}function toggleSetting(el){el.classList.toggle('on');if(el.id==='switchTop')document.getElementById('topbar').style.display=el.classList.contains('on')?'flex':'none'}
-    renderProducts();updateCounts();loadAtyafConnections();loadHeroAds();
+    renderProducts();updateCounts();loadAtyafConnections();
     
 document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nav')?.classList.remove('open')));
 
@@ -2926,17 +2934,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
 
 </script>
 
-<script id="atyaf-hero-admin-realtime">
-document.addEventListener("DOMContentLoaded",()=>{
-  if(!window.atyafDb || typeof window.atyafLoadHeroAds!=="function") return;
-  window.atyafDb.channel("atyaf-hero-ads-live")
-    .on("postgres_changes",
-      {event:"*",schema:"public",table:"settings",},
-      ()=>window.atyafLoadHeroAds()
-    )
-    .subscribe();
-});
-</script>
+
 
 
 <script id="atyaf-store-actions-controller">
@@ -3482,7 +3480,7 @@ html,body{max-width:100%;overflow-x:hidden}
   /* Hero keeps the adopted full-width ad design and scales naturally on phones. */
   .hero-ad{width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:16/10!important;margin:0!important;overflow:hidden!important}
   .hero-ad-track,.hero-ad-slide{width:100%!important;height:100%!important;min-height:0!important}
-  .hero-ad-slide img,.hero-ad-slide video{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+  .hero-ad-slide img,.hero-ad-slide video{width:100%!important;height:100%!important}
 
   .section{padding:34px 0!important}
   .section-head{gap:10px!important}

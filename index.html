@@ -1825,7 +1825,7 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
 </style>
 
 <style id="atyaf-admin-hero-priority-v6">
-/* The first screen is driven solely by settings.hero_ads in the existing administration. */
+/* Upper banner is driven by settings.hero_ads; intro splash uses settings.intro. */
 .hero-ad[hidden],#home[hidden]{display:none!important}
 .hero-ad-slide video,.hero-ad-slide img{max-width:none!important}
 #store>.hero-ad{margin-block:0!important}
@@ -1834,13 +1834,14 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
 @media(max-width:600px){#brands{scroll-margin-top:24px}}
 </style>
 
-<style id="atyaf-hero-admin-display-repair-v8">
-/* Avoid cropping banner assets and avoid overriding the administrator's image fit. */
-.hero-ad{height:auto!important;min-height:0!important;aspect-ratio:16/9!important;background:#f8f4ed!important;}
-.hero-ad-track,.hero-ad-slide{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
-.hero-ad-slide img,.hero-ad-slide video{width:100%!important;height:100%!important;max-width:none!important;object-fit:contain;object-position:center}
+<style id="atyaf-hero-admin-display-repair-v9">
+/* Layout is controlled by hero_ads heights and fit from ATYAAF PRO. */
+.hero-ad{height:var(--atyaf-hero-height,650px)!important;min-height:0!important;aspect-ratio:auto!important;background:#f8f4ed!important}
 .hero-ad[hidden]{display:none!important}
-@media(max-width:600px){.hero-ad{aspect-ratio:4/3!important}}
+.hero-ad-track,.hero-ad-slide{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+.hero-ad-slide img,.hero-ad-slide video{width:100%!important;height:100%!important;max-width:none!important;object-fit:var(--atyaf-hero-fit,cover)!important;object-position:center!important}
+@media(max-width:850px){.hero-ad{height:var(--atyaf-hero-tablet-height,520px)!important;aspect-ratio:auto!important}}
+@media(max-width:600px){.hero-ad{height:var(--atyaf-hero-mobile-height,360px)!important;aspect-ratio:auto!important}}
 </style>
 </head>
 <body>
@@ -2138,11 +2139,11 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
       let media=x.media??x.medias??x.slides??x.images??x.files??x.items??x.urls??[];
       if(typeof media==='string'){try{const p=JSON.parse(media);media=Array.isArray(p)?p:[media]}catch(e){media=media.split(/\\r?\\n|,/).map(v=>v.trim()).filter(Boolean)}}
       if(!Array.isArray(media))media=[media];media=media.map(atyafMediaUrl).filter(Boolean);
-      return {enabled:x.enabled!==false,media,interval:Math.max(1500,Number(x.interval||x.speed||3500)),fit:['contain','cover','fill','scale-down'].includes(x.fit)?x.fit:'contain',position:x.position||'center',link:String(x.link||x.url_link||'').trim()};
+      return {enabled:x.enabled!==false,media,interval:Math.max(1500,Number(x.interval||x.speed||3500)),fit:['contain','cover','fill','scale-down'].includes(x.fit)?x.fit:'contain',position:x.position||'center',link:String(x.link||x.url_link||'').trim(),heightDesktop:Number(x.heightDesktop??650),heightTablet:Number(x.heightTablet??520),heightMobile:Number(x.heightMobile??360)};
     }
     function heroAdTo(n){if(!heroAdSlides.length)return;heroAdIndex=(Number(n)+heroAdSlides.length)%heroAdSlides.length;document.querySelectorAll('.hero-ad-slide').forEach((el,i)=>el.classList.toggle('active',i===heroAdIndex));document.querySelectorAll('.hero-ad-dot').forEach((el,i)=>el.classList.toggle('active',i===heroAdIndex));document.querySelectorAll('.hero-ad-slide video').forEach((v,i)=>{if(i===heroAdIndex){v.play().catch(()=>{})}else{v.pause()}})}
     function renderHeroAd(raw){
-      const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;const a=normalizeHeroAd(raw);a.position=/^[a-z0-9% .-]{1,48}$/i.test(a.position)?a.position:'center';heroAdSlides=a.media;
+      const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;const a=normalizeHeroAd(raw);const heroBox=track.closest('.hero-ad');if(heroBox){const px=(v,d)=>Math.min(1600,Math.max(120,Number.isFinite(v)&&v>0?v:d))+'px';heroBox.style.setProperty('--atyaf-hero-height',px(a.heightDesktop,650));heroBox.style.setProperty('--atyaf-hero-tablet-height',px(a.heightTablet,520));heroBox.style.setProperty('--atyaf-hero-mobile-height',px(a.heightMobile,360));heroBox.style.setProperty('--atyaf-hero-fit',a.fit)}a.position=/^[a-z0-9% .-]{1,48}$/i.test(a.position)?a.position:'center';heroAdSlides=a.media;
       if(!a.enabled||!a.media.length){track.innerHTML='';dots.innerHTML='';track.closest('.hero-ad')?.setAttribute('hidden','');return} track.closest('.hero-ad')?.removeAttribute('hidden');
       track.innerHTML=a.media.map((url,i)=>{const v=/\\.(mp4|webm|ogg)(?:\\?|#|$)/i.test(url);const m=v?`<video src="${escapeHtml(url)}" muted playsinline autoplay loop preload="metadata" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}"></video>`:`<img src="${escapeHtml(url)}" alt="إعلان أطياف" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}" ${i?'loading="lazy"':''}>`;return `<div class="hero-ad-slide ${i===0?'active':''}">${m}${a.link?`<a class="hero-ad-link" href="${safeLink(a.link)}" aria-label="فتح الإعلان"></a>`:''}</div>`}).join('')+'<div class="hero-ad-shade"></div>';
       dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;if(a.media.length>1)heroAdTimer=setInterval(()=>heroAdTo(heroAdIndex+1),a.interval);
@@ -2876,7 +2877,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     box.querySelectorAll('[data-policy-key]').forEach(a=>a.onclick=()=>window.atyafOpenPolicy?.(a.dataset.policyKey,a.textContent));
   }
   function applyAdAlias(key,s){
-    // الشاشة العلوية في لوحة الإدارة محفوظة فعليًا تحت key = ads.
+    // لوحة الإدارة المرفقة تحفظ الإعلان العلوي تحت hero_ads.
     if(["ads","hero_ads","hero_ad","top_ads","top_ad"].includes(key)
        && typeof window.atyafRenderHeroAds==="function"){
       window.atyafRenderHeroAds(s);
@@ -2905,7 +2906,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(map.brands)applyBrands(map.brands);
       if(map.policies)applyPolicies(map.policies);
       // نفس مفاتيح لوحة الإدارة، مع دعم الأسماء القديمة.
-      const upperKeys=["ads","hero_ads"];
+      const upperKeys=["hero_ads","ads"];
       const lowerKeys=["bottom_ads","bottom_ad","lower_ads","lower_ad","after_products_ad","after_products_ads"];
       const upperKey=upperKeys.find(k=>map[k]!=null);
       const lowerKey=lowerKeys.find(k=>map[k]!=null);

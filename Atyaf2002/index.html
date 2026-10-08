@@ -352,7 +352,7 @@ function profileSectionEditor(){
  const ff=profileEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Tahoma, Arial, sans-serif';
 }
 function introSectionEditor(){
- const s=getSetting('intro',{enabled:false,title:'أطياف | ATYAF',kicker:'ATYAF • FRAGRANCE',description:'عطور مختارة بعناية',backgroundColor:'#17352e',textColor:'#ffffff',accentColor:'#d4aa75',overlayColor:'#102820',overlayOpacity:45,mediaFit:'cover',mediaPosition:'center',align:'center',fontFamily:'Tahoma, Arial, sans-serif',titleSize:66,duration:4500,showOnce:true,showSkip:true,showProgress:true,skipText:'تخطي',buttonText:'تسوق الآن',buttonLink:'#',buttonColor:'#ffffff',buttonTextColor:'#17352e',buttonRadius:12,logoImage:'',mediaUrl:'',mediaType:'image'});
+ const s=getSetting('intro',{enabled:false,title:'',kicker:'',description:'',backgroundColor:'#17352e',textColor:'#ffffff',accentColor:'#d4aa75',overlayColor:'#102820',overlayOpacity:45,mediaFit:'cover',mediaPosition:'center',align:'center',fontFamily:'Tahoma, Arial, sans-serif',titleSize:66,duration:4500,showOnce:true,showSkip:true,showProgress:true,skipText:'تخطي',buttonText:'تسوق الآن',buttonLink:'#',buttonColor:'#ffffff',buttonTextColor:'#17352e',buttonRadius:12,logoImage:'',mediaUrl:'',mediaType:'image'});
  const fld=(key,label,type='text',min='',max='')=>`<div class="field"><label>${label}</label><input data-intro="${key}" type="${type}" ${min!==''?`min="${min}"`:''} ${max!==''?`max="${max}"`:''} value="${esc(s[key]??'')}"></div>`;
  const sel=(key,label,options)=>`<div class="field"><label>${label}</label><select data-intro="${key}">${options.map(([v,t])=>`<option value="${esc(v)}" ${String(s[key])===String(v)?'selected':''}>${t}</option>`).join('')}</select></div>`;
  introEditor.innerHTML=`<p class="muted">هذه شاشة دخول تفاعلية مستقلة عن البنر العلوي. كل تغيير يُحفظ في settings.intro ويظهر في المتجر عند الزيارة التالية. المعاينة لا تحفظ التعديلات.</p>
@@ -378,7 +378,7 @@ function introSectionEditor(){
  ${sel('mediaPosition','موضع الوسائط',[['center','الوسط'],['top','أعلى'],['bottom','أسفل']])}
  <div class="field full upload"><label>صورة شعار البداية (اختياري)</label><input id="introLogoFile" type="file" accept="image/*">${s.logoImage?`<img src="${esc(s.logoImage)}" style="max-height:90px;max-width:170px;object-fit:contain" alt="الشعار الحالي"><button class="btn alt" type="button" onclick="removeIntroLogo()">حذف الشعار</button>`:''}</div>
  <div class="field full upload"><label>صورة أو فيديو خلفية البداية (اختياري)</label><input id="introMediaFile" type="file" accept="image/*,video/mp4,video/webm">${s.mediaUrl?`<div class="muted">الوسائط الحالية: ${esc(s.mediaUrl)}</div><button class="btn alt" type="button" onclick="removeIntroMedia()">حذف وسائط الخلفية</button>`:''}</div>
- </div><div class="toolbar" style="margin-top:14px"><button class="btn alt" type="button" onclick="previewIntroV12()">معاينة تفاعلية</button><button class="btn" type="button" onclick="saveIntroSection()">حفظ شاشة البداية</button><button class="btn red" type="button" onclick="disableIntroV12()">تعطيل الشاشة</button></div>
+ </div><div class="toolbar" style="margin-top:14px"><button class="btn alt" type="button" onclick="previewIntroV12()">معاينة تفاعلية</button><button class="btn" type="button" onclick="saveIntroSection()">حفظ شاشة البداية</button><button class="btn alt" type="button" onclick="clearIntroTitleV13()">حذف عنوان البداية نهائيًا</button><button class="btn red" type="button" onclick="disableIntroV12()">تعطيل الشاشة</button></div>
  <div id="introPreviewV12" style="display:none;margin-top:16px"></div>`;
 }
 function readIntroV12(){
@@ -398,6 +398,14 @@ function previewIntroV12(){
  if(s.logoImage){const img=document.createElement('img');img.src=s.logoImage;img.style.cssText='max-width:180px;max-height:100px;object-fit:contain';content.appendChild(img)}
  for(const [tag,value,size] of [['small',s.kicker,'13px'],['h2',s.title,'clamp(25px,5vw,54px)'],['p',s.description,'16px']]){const el=document.createElement(tag);el.textContent=value||'';el.style.cssText='margin:0;font-size:'+size;content.appendChild(el)}
  if(s.buttonText){const b=document.createElement('button');b.type='button';b.textContent=s.buttonText;b.style.cssText='border:0;padding:13px 25px;border-radius:'+s.buttonRadius+'px;background:'+s.buttonColor+';color:'+s.buttonTextColor;content.appendChild(b)}box.appendChild(content);
+}
+async function clearIntroTitleV13(){
+ try{
+  const s=getSetting('intro',{});
+  await putSetting('intro',{...s,title:''});
+  await loadAll();
+  stat('تم مسح عنوان شاشة البداية من الإعدادات المحفوظة ✓');
+ }catch(e){stat('تعذر مسح العنوان: '+(e?.message||String(e)),true)}
 }
 async function disableIntroV12(){try{const s=getSetting('intro',{});await putSetting('intro',{...s,enabled:false});await loadAll();stat('تم تعطيل شاشة البداية ✓')}catch(e){stat(e.message,true)}}
 async function removeIntroMedia(){try{const s=getSetting('intro',{});await putSetting('intro',{...s,mediaUrl:'',mediaType:'image'});await loadAll();stat('تم حذف خلفية البداية ✓')}catch(e){stat(e.message,true)}}
@@ -424,7 +432,7 @@ async function removeIntroLogo(){let s=getSetting('intro',{});s.logoImage='';awa
 async function deleteProfileSection(){if(confirm('حذف إعدادات البروفايل؟')){await removeSetting('profile');await loadAll()}}
 async function deleteIntroSection(){if(confirm('حذف إعدادات شاشة البداية؟')){await removeSetting('intro');await loadAll()}}
 async function createProfileSection(){await putSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64,desktopSize:64});await loadAll()}
-async function createIntroSection(){await putSetting('intro',{enabled:false,title:'أطياف | ATYAF',kicker:'ATYAF • FRAGRANCE',description:'عطور مختارة بعناية',backgroundColor:'#17352e',textColor:'#ffffff',accentColor:'#d4aa75',overlayColor:'#102820',overlayOpacity:45,mediaFit:'cover',mediaPosition:'center',align:'center',fontFamily:'Tahoma, Arial, sans-serif',titleSize:66,duration:4500,showOnce:true,showSkip:true,showProgress:true,skipText:'تخطي',buttonText:'تسوق الآن',buttonLink:'#',buttonColor:'#ffffff',buttonTextColor:'#17352e',buttonRadius:12,logoImage:'',mediaUrl:'',mediaType:'image'});await loadAll()}
+async function createIntroSection(){await putSetting('intro',{enabled:false,title:'',kicker:'',description:'',backgroundColor:'#17352e',textColor:'#ffffff',accentColor:'#d4aa75',overlayColor:'#102820',overlayOpacity:45,mediaFit:'cover',mediaPosition:'center',align:'center',fontFamily:'Tahoma, Arial, sans-serif',titleSize:66,duration:4500,showOnce:true,showSkip:true,showProgress:true,skipText:'تخطي',buttonText:'تسوق الآن',buttonLink:'#',buttonColor:'#ffffff',buttonTextColor:'#17352e',buttonRadius:12,logoImage:'',mediaUrl:'',mediaType:'image'});await loadAll()}
 
 function navLinksEditor(el){
  const s=getSetting('nav',{enabled:true});

@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#17352e" />
-  <meta name="description" content="أطياف ستور — عطور فاخرة بروح عربية عصرية." />
-  <title>أطياف ستور | ATYAAF STORE</title>
+  <meta name="description" content="STYAF — متجر العطور والهدايا." />
+  <title>STYAF | ستياف</title>
   <style>
     :root{--ink:#17231f;--muted:#707b75;--cream:#f8f4ed;--paper:#fffdfa;--green:#17352e;--green2:#214c41;--copper:#b47a4f;--gold:#d6aa62;--line:#e9e1d6;--danger:#b54c3f;--shadow:0 18px 50px #17352e12;--radius:22px;--font:Tahoma,Arial,sans-serif}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--cream);font-family:var(--font);line-height:1.6}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.container{width:min(1180px,calc(100% - 36px));margin:auto}.topbar{background:var(--green);color:#fff;display:flex;justify-content:center;gap:16px;align-items:center;font-size:13px;padding:8px 16px}.topbar button{background:none;color:#fff;font-size:18px;line-height:1}.header{background:#fffdfaee;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.headrow{height:86px;display:grid;grid-template-columns:1fr minmax(300px,480px) 1fr;align-items:center;gap:24px}.brand{display:flex;align-items:center;gap:11px;color:var(--green);text-decoration:none}.brand-mark{width:43px;height:43px;border:1px solid var(--copper);border-radius:50%;display:grid;place-items:center;color:var(--copper);font-family:Georgia,serif;font-size:25px;font-weight:bold}.brand strong{font-family:Georgia,serif;letter-spacing:2px;font-size:18px}.brand small{display:block;font-size:9px;letter-spacing:3px;color:var(--copper);margin-top:-5px}.search{display:flex;align-items:center;background:var(--cream);border:1px solid transparent;border-radius:999px;padding:0 16px;transition:.2s}.search:focus-within{border-color:var(--copper);box-shadow:0 0 0 4px #b47a4f16}.search input{width:100%;border:0;background:transparent;padding:12px 10px;outline:0}.search span{font-size:20px;color:var(--copper)}.actions{display:flex;justify-content:flex-start;gap:8px}.icon-btn{position:relative;width:42px;height:42px;background:transparent;border-radius:50%;font-size:21px;color:var(--green);transition:.2s}.icon-btn:hover{background:var(--cream);transform:translateY(-2px)}.count{position:absolute;top:0;right:0;background:var(--copper);color:white;border-radius:99px;min-width:17px;height:17px;font-size:10px;display:grid;place-items:center}.nav{border-top:1px solid #eee7dc}.navrow{display:flex;justify-content:center;gap:30px;padding:12px 0;font-size:14px}.nav a{color:var(--ink);text-decoration:none}.nav a:hover{color:var(--copper)}.menu-btn{display:none;background:transparent;font-size:24px;color:var(--green)}
@@ -1740,6 +1740,24 @@ section.benefits>.benefit span,.benefits>.benefit span{
 }
 </style>
 
+
+<!-- STYAF V2: non-destructive storefront refinement. Legacy API/database IDs retained intentionally. -->
+<style id="styaf-v2-storefront-polish">
+:root{--styaf-focus:#b47a4f}
+html{scroll-padding-top:110px}
+body{min-width:320px}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--styaf-focus);outline-offset:3px}
+.product,.brand-card,.benefit{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+@media(hover:hover){.brand-card:hover,.benefit:hover{transform:translateY(-3px);box-shadow:var(--shadow)}.product:hover{border-color:#d6b68f}}
+.product-info h3{overflow-wrap:anywhere}
+.product-actions button{touch-action:manipulation}
+.product-visual>img{object-fit:contain}
+.hero-ad-slide img,.hero-ad-slide video{object-position:center}
+.drawer-panel,.modal-card{overscroll-behavior:contain}
+@media(max-width:600px){.product-info h3{line-height:1.5}.section-head{gap:12px}.cart-foot{padding-bottom:max(14px,env(safe-area-inset-bottom))}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
 
@@ -1814,7 +1832,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
    const n=Number(ms);
    timer=setTimeout(close,Math.max(1500,Math.min(10000,Number.isFinite(n)?n:3350)));
  }
- function apply(raw, startTimer=true){
+ function apply(raw){
    if(closed)return;
    const p=parse(raw);
    if(p.enabled===false){close();return}
@@ -1853,44 +1871,29 @@ section.benefits>.benefit span,.benefits>.benefit span{
      logo.hidden=true;
      mark.hidden=!clean(p.mark);
    }
-   if(startTimer)arm(p.duration);
+   arm(p.duration);
  }
 
  async function read(){
-   // Wait briefly for the database client; do not start the intro countdown yet.
-   for(let i=0;i<45&&!window.atyafDb&&!closed;i++)
-     await new Promise(r=>setTimeout(r,80));
-   if(closed)return;
-   if(window.atyafDb){
-     try{
-       const request=window.atyafDb.from("settings")
-         .select("id,value,updated_at").eq("key","intro")
-         .order("updated_at",{ascending:false,nullsFirst:false})
-         .order("id",{ascending:false}).limit(1);
-       const r=await Promise.race([
-         request,
-         new Promise((_,reject)=>setTimeout(()=>reject(new Error("intro settings timeout")),2400))
-       ]);
-       if(r.error)throw r.error;
-       if(r.data?.[0]){
-         apply(r.data[0].value);
-         return;
-       }
-     }catch(e){console.warn("ATYAAF intro:",e)}
-   }
-   // The settings bridge may have loaded the saved value independently.
-   if(window.ATYAF_ADMIN_SETTINGS?.intro!=null){
-     apply(window.ATYAF_ADMIN_SETTINGS.intro);
-     return;
-   }
-   // Offline / unavailable settings: close promptly, never trap mobile visitors.
-   arm(1500);
+   /* Existing settings bridge can apply immediately if it already has intro. */
+   if(window.ATYAF_ADMIN_SETTINGS?.intro!=null)apply(window.ATYAF_ADMIN_SETTINGS.intro);
+
+   for(let i=0;i<30&&!window.atyafDb&&!closed;i++)await new Promise(r=>setTimeout(r,80));
+   if(!window.atyafDb||closed)return;
+   try{
+     const r=await window.atyafDb.from("settings")
+       .select("id,value,updated_at").eq("key","intro")
+       .order("updated_at",{ascending:false,nullsFirst:false})
+       .order("id",{ascending:false}).limit(1);
+     if(r.error)throw r.error;
+     if(r.data?.[0])apply(r.data[0].value);
+   }catch(e){console.warn("ATYAAF intro:",e)}
  }
 
- // Paint a fallback immediately, but do not dismiss it before admin settings load.
+ /* Visible, complete fallback while the saved admin setting is being read. */
  apply({enabled:true,name:"ATYAAF",sub:"STORE",backgroundColor:"#17352e",
         textColor:"#f5eee4",accentColor:"#c99a69",fontFamily:"Georgia, serif",
-        letterSize:58,markSize:35,duration:3350},false);
+        letterSize:58,markSize:35,duration:3350});
 
  document.addEventListener("atyaf:settings-applied",e=>{
    if(e?.detail?.intro!=null)apply(e.detail.intro);
@@ -1900,7 +1903,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
 
  read();
  /* Safety only: respects admin duration up to 10s, but can never hang forever on Safari. */
- absoluteTimer=setTimeout(close,8500);
+ absoluteTimer=setTimeout(close,11000);
 })();
 </script>
 
@@ -1939,7 +1942,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
 
   </main>
   <section class="admin" id="admin"><div class="container"><div class="section-head"><div><span class="eyebrow">مساحة الإدارة</span><h2>لوحة أطياف</h2><p>تحكم سريع بالمحتوى والإعدادات — نسخة تفاعلية تجريبية</p></div><button class="btn btn-outline" onclick="closeAdmin()">العودة للمتجر</button></div><div class="admin-grid"><aside class="admin-nav"><button class="active">نظرة عامة</button><button>المنتجات</button><button>الطلبات</button><button>التصميم</button></aside><div><div class="stat-grid"><div class="stat"><span>طلبات اليوم</span><b>٢٤</b><small>+١٨٪ عن أمس</small></div><div class="stat"><span>إجمالي المنتجات</span><b id="adminProducts">6</b><small>منشورة ونشطة</small></div><div class="stat"><span>المبيعات</span><b>١٢٫٨K</b><small>ر.س هذا الشهر</small></div></div><div class="admin-card" style="margin-top:18px"><h3>إعدادات سريعة</h3><div class="settings-row"><span>شريط الإعلانات العلوي</span><button class="switch on" id="switchTop" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>عرض قسم الهدايا</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>الوضع التجريبي للطلبات</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="notice">ملاحظة: هذه نسخة HTML مستقلة. ربط Supabase والدفع الحقيقي يحتاج طبقة خادم ومفاتيح بيئة آمنة.</div></div></div></div></section>
-  <footer id="contact"><div class="container"><div class="footer-grid"><div><div class="footer-brand">أطياف ستور</div><p style="color:#9db3a6;font-size:13px">عطور مختارة بعناية، لتصنع لحظات تبقى.</p></div><div><h3>المتجر</h3><a href="#products">كل المنتجات</a><a href="#brands">الماركات</a><a href="#scents">الهدايا</a></div><div><h3>خدمة العملاء</h3><a href="javascript:void(0)" onclick="showContactInfo()">تواصل معنا</a><a href="javascript:void(0)" onclick="showShippingInfo()">الشحن والتوصيل</a><a href="javascript:void(0)" onclick="showReturnsInfo()">الاستبدال والاسترجاع</a></div><div><h3>تابعنا</h3><a href="javascript:void(0)" onclick="openSocial('instagram')">Instagram</a><a href="javascript:void(0)" onclick="openSocial('tiktok')">TikTok</a><a href="javascript:void(0)" onclick="openSocial('whatsapp')">WhatsApp</a></div></div><div class="copyright"><span>© 2026 ATYAAF STORE. جميع الحقوق محفوظة.</span><span>صُنع بذوق ✦</span></div></div></footer>
+  <footer id="contact"><div class="container"><div class="footer-grid"><div><div class="footer-brand">ستياف</div><p style="color:#9db3a6;font-size:13px">عطور مختارة بعناية، لتصنع لحظات تبقى.</p></div><div><h3>المتجر</h3><a href="#products">كل المنتجات</a><a href="#brands">الماركات</a><a href="#scents">الهدايا</a></div><div><h3>خدمة العملاء</h3><a href="javascript:void(0)" onclick="showContactInfo()">تواصل معنا</a><a href="javascript:void(0)" onclick="showShippingInfo()">الشحن والتوصيل</a><a href="javascript:void(0)" onclick="showReturnsInfo()">الاستبدال والاسترجاع</a></div><div><h3>تابعنا</h3><a href="javascript:void(0)" onclick="openSocial('instagram')">Instagram</a><a href="javascript:void(0)" onclick="openSocial('tiktok')">TikTok</a><a href="javascript:void(0)" onclick="openSocial('whatsapp')">WhatsApp</a></div></div><div class="copyright"><span>© 2026 ATYAAF STORE. جميع الحقوق محفوظة.</span><span>صُنع بذوق ✦</span></div></div></footer>
   <div class="drawer" id="cartDrawer" onclick="if(event.target===this)closeCart()"><div class="drawer-panel"><button class="close" onclick="closeCart()">×</button><h2>سلة مشترياتك</h2><div class="cart-list" id="cartList"></div><div class="cart-foot"><div class="total"><span>الإجمالي</span><span id="cartTotal">0 ر.س</span></div><button class="btn btn-primary" style="width:100%" onclick="openCheckout()">متابعة الطلب</button></div></div></div>
   <section id="atyafCartPage" aria-label="سلة التسوق"><div class="container">
 <div class="atyaf-cart-page-head"><div class="atyaf-cart-page-title"><span class="atyaf-cart-bag">▣</span><h2>سلة التسوق</h2></div><div class="atyaf-cart-head-actions"><b id="atyafCartPageCount">0 منتجات</b><button class="atyaf-cart-close" type="button" onclick="atyafCloseCartPage()" aria-label="إغلاق">×</button></div></div>

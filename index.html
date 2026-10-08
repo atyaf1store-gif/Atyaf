@@ -1758,7 +1758,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
  opacity:1;visibility:visible;transition:opacity .5s ease,visibility .5s ease;
  background:var(--atyaf-intro-bg,#17352e)!important;
 }
-#atyafIntro.done{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+#atyafIntro.done{opacity:0!important;visibility:hidden!important;pointer-events:none!important;display:none!important}
 #atyafIntro::before{display:none!important}
 .atyaf-intro-admin-stage{
  width:min(88vw,760px);min-height:260px;display:flex;flex-direction:column;
@@ -1769,6 +1769,7 @@ section.benefits>.benefit span,.benefits>.benefit span{
  display:block;width:auto;height:auto;max-width:min(72vw,420px);max-height:38vh;
  object-fit:contain;background:transparent;border:0;box-shadow:none;margin:0 auto 10px;
 }
+#atyafIntroAdminLogo[hidden],#atyafIntroAdminMark[hidden],#atyafIntroAdminName[hidden],#atyafIntroAdminSub[hidden]{display:none!important}
 .atyaf-intro-admin-mark{
  display:grid;place-items:center;color:#c99a69;font-family:Georgia,serif;
  line-height:1;margin-bottom:8px;
@@ -1787,105 +1788,61 @@ section.benefits>.benefit span,.benefits>.benefit span{
 <script id="atyaf-luxury-intro-js">
 (function(){
  "use strict";
- const intro=document.getElementById("atyafIntro");
- const logo=document.getElementById("atyafIntroAdminLogo");
- const mark=document.getElementById("atyafIntroAdminMark");
- const name=document.getElementById("atyafIntroAdminName");
- const sub=document.getElementById("atyafIntroAdminSub");
+ const intro=document.getElementById('atyafIntro');
+ const logo=document.getElementById('atyafIntroAdminLogo');
+ const mark=document.getElementById('atyafIntroAdminMark');
+ const name=document.getElementById('atyafIntroAdminName');
+ const sub=document.getElementById('atyafIntroAdminSub');
  if(!intro||!logo||!mark||!name||!sub)return;
-
- let closed=false,timer=0,absoluteTimer=0;
- const parse=v=>{
-   if(v&&typeof v==="object")return v;
-   if(typeof v==="string"){try{const x=JSON.parse(v);return typeof x==="string"?JSON.parse(x):x}catch(_){}}
-   return {};
- };
- const clean=v=>String(v??"").trim();
-
- function close(){
-   if(closed)return;closed=true;
-   clearTimeout(timer);clearTimeout(absoluteTimer);
-   intro.classList.add("done");
-   intro.style.pointerEvents="none";
-   setTimeout(()=>intro.style.setProperty("display","none","important"),520);
- }
- function arm(ms){
-   clearTimeout(timer);
-   const n=Number(ms);
-   timer=setTimeout(close,Math.max(1500,Math.min(10000,Number.isFinite(n)?n:3350)));
- }
+ let closed=false, applied=false, timer=null;
+ const parse=v=>{if(v&&typeof v==='object')return v;if(typeof v==='string'){try{let x=JSON.parse(v);return typeof x==='string'?JSON.parse(x):x}catch(_){}}return {}};
+ const str=v=>String(v??'').trim();
+ const num=(v,def,min,max)=>{const n=Number(v);return Math.max(min,Math.min(max,Number.isFinite(n)&&n>0?n:def))};
+ function close(){if(closed)return;closed=true;clearTimeout(timer);intro.classList.add('done');intro.style.pointerEvents='none';}
+ function schedule(duration){clearTimeout(timer);timer=setTimeout(close,num(duration,3350,900,10000));}
  function apply(raw){
    if(closed)return;
-   const p=parse(raw);
-   if(p.enabled===false){close();return}
-
-   intro.style.setProperty("background",clean(p.backgroundColor)||"#17352e","important");
-
-   const font=clean(p.fontFamily)||"Georgia, serif";
-   const text=clean(p.textColor)||"#f5eee4";
-   const accent=clean(p.accentColor)||"#c99a69";
-   const letterSize=Math.max(22,Math.min(100,Number(p.letterSize)||58));
-   const markSize=Math.max(20,Math.min(80,Number(p.markSize)||35));
-
-   name.textContent=clean(p.name)||"ATYAAF";
-   sub.textContent=clean(p.sub)||"STORE";
-   mark.textContent=clean(p.mark)||"";
-
-   name.style.fontFamily=font;
-   name.style.fontSize=letterSize+"px";
-   name.style.color=text;
-   sub.style.fontFamily=font;
-   sub.style.fontSize=Math.max(8,Math.round(letterSize*.18))+"px";
-   sub.style.color=accent;
-   mark.style.fontFamily=font;
-   mark.style.fontSize=markSize+"px";
-   mark.style.color=accent;
-
-   const url=clean(p.logoImage);
+   const p=parse(raw);if(!p||typeof p!=='object')return;
+   if(p.enabled===false||p.enabled==='false'){close();return;}
+   applied=true;
+   intro.style.setProperty('background',str(p.backgroundColor)||'#17352e','important');
+   const font=str(p.fontFamily)||'Georgia, serif';
+   const size=num(p.letterSize,58,20,100), color=str(p.textColor)||'#f5eee4',accent=str(p.accentColor)||'#c99a69';
+   name.textContent=str(p.name)||'ATYAAF';sub.textContent=str(p.sub)||'STORE';mark.textContent=str(p.mark);
+   name.style.cssText='font-family:'+font+';font-size:clamp(20px,'+size+'px,22vw);color:'+color+';';
+   sub.style.fontFamily=font;sub.style.fontSize=Math.max(8,Math.round(size*.18))+'px';sub.style.color=accent;
+   mark.style.fontFamily=font;mark.style.fontSize=num(p.markSize,35,15,100)+'px';mark.style.color=accent;
+   const url=str(p.logoImage);
    if(url){
-     logo.hidden=false;
-     mark.hidden=true;
-     /* Uploaded logo is shown at a useful responsive size, not forced into the old 62px mobile box. */
-     logo.onload=()=>{ if(!closed) logo.hidden=false; };
-     logo.onerror=()=>{ logo.hidden=true; mark.hidden=!clean(p.mark); };
-     if(logo.src!==url)logo.src=url;
-   }else{
-     logo.hidden=true;
-     mark.hidden=!clean(p.mark);
-   }
-   arm(p.duration);
+     logo.hidden=false;logo.style.display='block';mark.hidden=true;
+     logo.onerror=()=>{logo.hidden=true;mark.hidden=!str(p.mark)};
+     if(logo.getAttribute('src')!==url)logo.setAttribute('src',url);
+     /* An uploaded logo is the visual design: avoid adding default lettering over it. */
+     name.hidden=true;sub.hidden=true;
+   }else{logo.hidden=true;logo.removeAttribute('src');mark.hidden=!str(p.mark);name.hidden=false;sub.hidden=false;}
+   schedule(p.duration);
  }
-
  async function read(){
-   /* Existing settings bridge can apply immediately if it already has intro. */
-   if(window.ATYAF_ADMIN_SETTINGS?.intro!=null)apply(window.ATYAF_ADMIN_SETTINGS.intro);
-
-   for(let i=0;i<30&&!window.atyafDb&&!closed;i++)await new Promise(r=>setTimeout(r,80));
-   if(!window.atyafDb||closed)return;
-   try{
-     const r=await window.atyafDb.from("settings")
-       .select("id,value,updated_at").eq("key","intro")
-       .order("updated_at",{ascending:false,nullsFirst:false})
-       .order("id",{ascending:false}).limit(1);
-     if(r.error)throw r.error;
-     if(r.data?.[0])apply(r.data[0].value);
-   }catch(e){console.warn("ATYAAF intro:",e)}
+   const cached=window.ATYAF_ADMIN_SETTINGS?.intro;
+   if(cached!=null)apply(cached);
+   for(let i=0;i<45&&!window.atyafDb&&!closed;i++)await new Promise(r=>setTimeout(r,60));
+   if(window.atyafDb&&!closed){
+     try{
+       const r=await Promise.race([
+         window.atyafDb.from('settings').select('id,value,updated_at').eq('key','intro').order('updated_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false}).limit(1),
+         new Promise((_,reject)=>setTimeout(()=>reject(new Error('intro request timeout')),2500))
+       ]);
+       if(!r.error&&r.data?.[0])apply(r.data[0].value);
+     }catch(e){console.warn('ATYAAF intro settings:',e)}
+   }
+   if(!applied&&!closed)apply({enabled:true,name:'ATYAAF',sub:'STORE',backgroundColor:'#17352e',duration:2200});
  }
-
- /* Visible, complete fallback while the saved admin setting is being read. */
- apply({enabled:true,name:"ATYAAF",sub:"STORE",backgroundColor:"#17352e",
-        textColor:"#f5eee4",accentColor:"#c99a69",fontFamily:"Georgia, serif",
-        letterSize:58,markSize:35,duration:3350});
-
- document.addEventListener("atyaf:settings-applied",e=>{
-   if(e?.detail?.intro!=null)apply(e.detail.intro);
- });
- intro.addEventListener("click",close,{once:true,passive:true});
- window.addEventListener("pageshow",e=>{if(e.persisted)close()},{passive:true});
-
+ document.addEventListener('atyaf:settings-applied',e=>{if(e?.detail?.intro!=null)apply(e.detail.intro)});
+ intro.addEventListener('click',close,{once:true,passive:true});
+ window.addEventListener('pageshow',e=>{if(e.persisted)close()},{passive:true});
+ /* Hard safety cap: never block the store indefinitely, even without network. */
+ setTimeout(close,7500);
  read();
- /* Safety only: respects admin duration up to 10s, but can never hang forever on Safari. */
- absoluteTimer=setTimeout(close,11000);
 })();
 </script>
 

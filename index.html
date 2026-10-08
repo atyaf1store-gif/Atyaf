@@ -877,14 +877,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 }
 .atyaf-mobile-profile .atyaf-profile-image-slot img{height:34px!important;max-width:58px!important}
 
-#atyafIntro .atyaf-intro-logo{
- border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
- width:min(42vw,180px)!important;height:min(42vw,180px)!important;
-}
-#atyafIntro .atyaf-intro-logo img{
- width:100%!important;height:100%!important;object-fit:contain!important;
- border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
-}
 </style>
 
 <style id="atyaf-single-tracking-final">
@@ -1779,16 +1771,25 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
 @media(max-width:600px){.hero-ad{height:var(--atyaf-hero-mobile-height,360px)!important;aspect-ratio:auto!important}}
 </style>
 
-<style id="atyaf-admin-intro-v11-style">
-#atyafAdminIntroV11{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;opacity:1;transition:opacity .4s ease;background:#17352e;color:#f5eee4;text-align:center}
-#atyafAdminIntroV11[hidden]{display:none!important}
-#atyafAdminIntroV11.atyaf-closing{opacity:0;pointer-events:none}
-#atyafAdminIntroV11 .intro-inner{max-width:92vw;display:flex;flex-direction:column;align-items:center;gap:12px}
-#atyafAdminIntroV11 img{display:block;max-width:min(72vw,420px);max-height:34vh;width:auto;height:auto;object-fit:contain}
-#atyafAdminIntroV11 .intro-mark{line-height:1.15}
-#atyafAdminIntroV11 .intro-name{line-height:1.2;overflow-wrap:anywhere}
-#atyafAdminIntroV11 .intro-sub{font-size:12px;letter-spacing:.25em;line-height:1.5}
-@media(prefers-reduced-motion:reduce){#atyafAdminIntroV11{transition:none}}
+
+<style id="atyaf-intro-v12-css">
+#atyafIntroV12{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;isolation:isolate;background:#17352e;color:#fff;opacity:1;transition:opacity .45s ease}
+#atyafIntroV12[hidden]{display:none!important}#atyafIntroV12.intro-leaving{opacity:0;pointer-events:none}
+#atyafIntroV12 .intro-media{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:var(--intro-fit,cover);object-position:var(--intro-position,center)}
+#atyafIntroV12 .intro-overlay{position:absolute;inset:0;z-index:-1;background:var(--intro-overlay,#102820);opacity:var(--intro-opacity,.45)}
+#atyafIntroV12 .intro-body{width:min(100% - 36px,900px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(10px,2vh,20px);padding:40px 12px;animation:introRise .8s both}
+#atyafIntroV12 .intro-logo{max-width:min(58vw,260px);max-height:25vh;object-fit:contain}
+#atyafIntroV12 .intro-kicker{font-size:clamp(10px,1.4vw,14px);letter-spacing:.22em;text-transform:uppercase}
+#atyafIntroV12 .intro-title{font-size:clamp(28px,6vw,var(--intro-title-size,66px));line-height:1.25;font-weight:700;margin:0;overflow-wrap:anywhere}
+#atyafIntroV12 .intro-description{font-size:clamp(13px,2vw,19px);line-height:1.9;margin:0;max-width:650px}
+#atyafIntroV12 .intro-cta{display:inline-flex;align-items:center;justify-content:center;min-height:48px;min-width:160px;padding:12px 28px;border-radius:var(--intro-radius,12px);background:var(--intro-button,#fff);color:var(--intro-button-text,#17352e);text-decoration:none;border:0;font-weight:700;cursor:pointer}
+#atyafIntroV12 .intro-skip{position:absolute;top:max(18px,env(safe-area-inset-top));left:22px;background:#0005;color:#fff;border:1px solid #fff8;border-radius:30px;padding:9px 16px;cursor:pointer;z-index:2}
+#atyafIntroV12 .intro-progress{position:absolute;bottom:0;left:0;height:4px;width:100%;transform-origin:left;background:var(--intro-progress,#d4aa75);animation:introProgress var(--intro-duration,4500ms) linear forwards}
+#atyafIntroV12[data-align="right"] .intro-body{align-items:flex-start;text-align:right;margin-right:auto}
+#atyafIntroV12[data-align="left"] .intro-body{align-items:flex-end;text-align:left;margin-left:auto}
+@keyframes introRise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes introProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12 .intro-body,#atyafIntroV12 .intro-progress{animation:none}}
 </style>
 </head>
 <body>
@@ -2492,48 +2493,53 @@ window.addEventListener("focus",atyafLoadLowerAds);
 </script>
 <script>
 
-/* ATYAF V11: single admin-controlled welcome screen (settings.intro). */
+/* ATYAF V12: the only intro renderer. Reads settings.intro, never shows a hard-coded splash. */
 (function(){
-  let timer=null, signature=null, completedSignature=null;
-  const key='atyaf-intro-shown-v11';
-  const escape=v=>String(v??'');
-  const num=(v,def,min,max)=>{const n=Number(v);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):def};
-  const safeColor=(v,fallback)=>/^#[0-9a-f]{3,8}$/i.test(String(v||''))?v:fallback;
-  const fonts=['Georgia, serif','Tahoma, Arial, sans-serif','Arial, sans-serif',"'Times New Roman', serif"];
-  function close(){
-    clearTimeout(timer);timer=null;
-    const el=document.getElementById('atyafAdminIntroV11');
-    if(!el)return;
-    el.classList.add('atyaf-closing');
-    setTimeout(()=>el.remove(),420);
-  }
-  window.atyafApplyAdminIntroV11=function(raw){
-    let x=raw;
-    if(typeof x==='string'){try{x=JSON.parse(x)}catch{x=null}}
-    if(!x||typeof x!=='object'||x.enabled!==true){close();signature=null;return}
-    const showOnce=x.showOnce!==false;
-    if(showOnce&&sessionStorage.getItem(key)==='1'){close();return}
-    // Do not restart the timer on every realtime/poll refresh.
-    const sig=JSON.stringify(x);
-    if(sig===completedSignature || (sig===signature&&document.getElementById('atyafAdminIntroV11')))return;
-    signature=sig;
-    clearTimeout(timer);
-    let el=document.getElementById('atyafAdminIntroV11');
-    if(!el){el=document.createElement('div');el.id='atyafAdminIntroV11';el.setAttribute('role','status');el.setAttribute('aria-label','شاشة ترحيب أطياف');document.body.appendChild(el)}
-    el.classList.remove('atyaf-closing');
-    el.replaceChildren();
-    el.style.background=safeColor(x.backgroundColor,'#17352e');
-    el.style.color=safeColor(x.textColor,'#f5eee4');
-    const wrap=document.createElement('div');wrap.className='intro-inner';
-    wrap.style.fontFamily=fonts.includes(x.fontFamily)?x.fontFamily:'Georgia, serif';
-    if(x.logoImage&&/^https:\/\//i.test(String(x.logoImage))){const img=document.createElement('img');img.src=x.logoImage;img.alt='شعار أطياف';wrap.appendChild(img)}
-    if(x.mark){const mark=document.createElement('div');mark.className='intro-mark';mark.textContent=escape(x.mark);mark.style.color=safeColor(x.accentColor,'#c99a69');mark.style.fontSize=num(x.markSize,35,20,80)+'px';wrap.appendChild(mark)}
-    const name=document.createElement('div');name.className='intro-name';name.textContent=escape(x.name||'ATYAF');name.style.fontSize='clamp(24px, 7vw, '+num(x.letterSize,58,22,100)+'px)';wrap.appendChild(name);
-    if(x.sub){const sub=document.createElement('div');sub.className='intro-sub';sub.textContent=escape(x.sub);sub.style.color=safeColor(x.accentColor,'#c99a69');wrap.appendChild(sub)}
-    el.appendChild(wrap);
-    const duration=num(x.duration,3350,1500,10000);
-    timer=setTimeout(()=>{completedSignature=sig;if(showOnce)sessionStorage.setItem(key,'1');close()},duration);
-  };
+ let timer=null,lastSignature=null,completed=null,closingTimer=null;
+ const key='atyaf-intro-v12-seen';
+ const number=(v,d,a,b)=>Number.isFinite(+v)?Math.max(a,Math.min(b,+v)):d;
+ const color=(v,d)=>/^#[a-f0-9]{3}(?:[a-f0-9]{3})?$/i.test(String(v||''))?v:d;
+ const safeUrl=v=>{try{const u=new URL(String(v),location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
+ function remove(){clearTimeout(timer);clearTimeout(closingTimer);timer=null;const e=document.getElementById('atyafIntroV12');if(e){e.classList.add('intro-leaving');closingTimer=setTimeout(()=>e.remove(),480)}}
+ window.atyafApplyAdminIntroV12=function(raw){
+   let x=raw;if(typeof x==='string'){try{x=JSON.parse(x)}catch{x=null}}
+   if(!x||typeof x!=='object'||x.enabled!==true){lastSignature=null;remove();return}
+   const once=x.showOnce!==false;
+   if(once&&sessionStorage.getItem(key)==='1'){remove();return}
+   const signature=JSON.stringify(x);
+   if(signature===completed || (signature===lastSignature&&document.getElementById('atyafIntroV12')))return;
+   lastSignature=signature;clearTimeout(timer);clearTimeout(closingTimer);
+   document.getElementById('atyafIntroV12')?.remove();
+   const e=document.createElement('section');e.id='atyafIntroV12';e.setAttribute('aria-label','شاشة بداية متجر أطياف');e.setAttribute('role','dialog');e.setAttribute('aria-modal','true');
+   e.dataset.align=['right','left','center'].includes(x.align)?x.align:'center';
+   e.style.background=color(x.backgroundColor,'#17352e');e.style.color=color(x.textColor,'#ffffff');
+   e.style.setProperty('--intro-overlay',color(x.overlayColor,'#102820'));e.style.setProperty('--intro-opacity',number(x.overlayOpacity,45,0,100)/100);
+   e.style.setProperty('--intro-fit',x.mediaFit==='contain'?'contain':'cover');
+   e.style.setProperty('--intro-position',['center','top','bottom'].includes(x.mediaPosition)?x.mediaPosition:'center');
+   e.style.setProperty('--intro-title-size',number(x.titleSize,66,22,110)+'px');
+   e.style.setProperty('--intro-radius',number(x.buttonRadius,12,0,40)+'px');
+   e.style.setProperty('--intro-button',color(x.buttonColor,'#ffffff'));e.style.setProperty('--intro-button-text',color(x.buttonTextColor,'#17352e'));
+   e.style.setProperty('--intro-progress',color(x.accentColor,'#d4aa75'));
+   const duration=number(x.duration,4500,1500,30000);e.style.setProperty('--intro-duration',duration+'ms');
+   const mediaUrl=safeUrl(x.mediaUrl),mediaType=x.mediaType==='video'?'video':'image';
+   if(mediaUrl){const m=document.createElement(mediaType==='video'?'video':'img');m.className='intro-media';m.src=mediaUrl;
+     if(mediaType==='video'){m.autoplay=true;m.muted=true;m.loop=true;m.playsInline=true;m.setAttribute('aria-hidden','true');m.addEventListener('error',()=>m.remove());}
+     else{m.alt='';m.addEventListener('error',()=>m.remove())}e.appendChild(m)}
+   const overlay=document.createElement('div');overlay.className='intro-overlay';e.appendChild(overlay);
+   const body=document.createElement('div');body.className='intro-body';
+   const fonts=['Georgia, serif','Tahoma, Arial, sans-serif','Arial, sans-serif',"'Times New Roman', serif"];
+   body.style.fontFamily=fonts.includes(x.fontFamily)?x.fontFamily:'Tahoma, Arial, sans-serif';
+   const logo=safeUrl(x.logoImage);if(logo){const img=document.createElement('img');img.className='intro-logo';img.src=logo;img.alt='شعار أطياف';body.appendChild(img)}
+   const add=(tag,cls,value)=>{if(!String(value||'').trim())return;const n=document.createElement(tag);n.className=cls;n.textContent=String(value);body.appendChild(n)};
+   add('div','intro-kicker',x.kicker);add('h1','intro-title',x.title||'أطياف | ATYAF');add('p','intro-description',x.description);
+   const finish=()=>{completed=signature;if(once)sessionStorage.setItem(key,'1');remove()};
+   if(x.buttonText){const btn=document.createElement('a');btn.className='intro-cta';btn.textContent=String(x.buttonText);btn.href=safeUrl(x.buttonLink)||'#';
+     btn.addEventListener('click',ev=>{if(btn.getAttribute('href')==='#')ev.preventDefault();finish()});body.appendChild(btn)}
+   e.appendChild(body);
+   if(x.showSkip!==false){const skip=document.createElement('button');skip.type='button';skip.className='intro-skip';skip.textContent=String(x.skipText||'تخطي');skip.onclick=finish;e.appendChild(skip)}
+   if(x.showProgress!==false){const progress=document.createElement('div');progress.className='intro-progress';e.appendChild(progress)}
+   document.body.appendChild(e);timer=setTimeout(finish,duration);
+ };
 })();
 
 /* ATYAAF ADMIN <-> STORE FULL SETTINGS BRIDGE START */
@@ -2743,7 +2749,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       (data||[]).forEach(r=>{ if(!(r.key in map)) map[r.key]=val(r.value); });
       // Screen intro is distinct from the upper advertising banner.
       // No splash is displayed before an authoritative settings response.
-      window.atyafApplyAdminIntroV11(map.intro||null);
+      window.atyafApplyAdminIntroV12(map.intro||null);
       if(map.topbar)applyTopbar(map.topbar);
       if(map.header)applyHeader(map.header);
       if(map.nav)applyNav(map.nav);

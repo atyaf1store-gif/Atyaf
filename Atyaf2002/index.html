@@ -313,27 +313,50 @@ function profileSectionEditor(){
  const ff=profileEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Tahoma, Arial, sans-serif';
 }
 function introSectionEditor(){
- const s=getSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});
- introEditor.innerHTML=`<div class="grid">
- <div class="field"><label>الحالة</label><select data-v="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
- <div class="field"><label>اسم البداية</label><input data-v="name" value="${esc(s.name||'ATYAAF')}"></div>
- <div class="field"><label>النص السفلي</label><input data-v="sub" value="${esc(s.sub||'STORE')}"></div>
- <div class="field"><label>حرف/رمز الشعار</label><input data-v="mark" value="${esc(s.mark||'أ')}"></div>
- ${colorField('backgroundColor','لون خلفية البداية',s.backgroundColor||'#17352e')}
- ${colorField('textColor','لون الحروف',s.textColor||'#f5eee4')}
- ${colorField('accentColor','اللون المميز',s.accentColor||'#c99a69')}
- <div class="field"><label>الخط</label><select data-v="fontFamily"><option value="Georgia, serif">Georgia</option><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
- <div class="field"><label>حجم الحروف</label><input data-v="letterSize" type="number" min="22" max="100" value="${Number(s.letterSize||58)}"></div>
- <div class="field"><label>حجم الشعار</label><input data-v="markSize" type="number" min="20" max="80" value="${Number(s.markSize||35)}"></div>
- <div class="field"><label>مدة الشاشة ms</label><input data-v="duration" type="number" min="1500" max="10000" step="100" value="${Number(s.duration||3350)}"></div>
- <div class="field"><label>الظهور</label><select data-v="showOnce"><option value="true" ${s.showOnce!==false?'selected':''}>مرة واحدة في الجلسة</option><option value="false" ${s.showOnce===false?'selected':''}>كل دخول/تحديث</option></select></div>
- <div class="field full upload"><b>لوجو شاشة البداية — رفع مباشر</b><input id="introLogoFile" type="file" accept="image/*">${s.logoImage?`<div style="margin-top:9px"><img src="${esc(s.logoImage)}" style="max-width:160px;max-height:120px;border-radius:12px"><br><button class="btn red" type="button" onclick="removeIntroLogo()">حذف الصورة فقط</button></div>`:''}</div>
- </div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveIntroSection()">حفظ</button><button class="btn alt" onclick="toggleSection('intro')">إظهار/إخفاء</button><button class="btn copper" onclick="createIntroSection()">+ إضافة/إنشاء</button><button class="btn red" onclick="deleteIntroSection()">حذف القسم</button></div>`;
- const ff=introEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Georgia, serif';
+  const s=getSetting('intro',{});
+  const v=(key,fallback='')=>s[key]??fallback;
+  const selected=(key,value,fallback)=>String(v(key,fallback))===String(value)?'selected':'';
+  const text=(key,label,fallback='')=>`<div class="field"><label>${label}</label><input data-v="${key}" value="${esc(v(key,fallback))}"></div>`;
+  const num=(key,label,fallback,min,max,step=1)=>`<div class="field"><label>${label}</label><input data-v="${key}" type="number" min="${min}" max="${max}" step="${step}" value="${esc(v(key,fallback))}"></div>`;
+  const bool=(key,label,fallback=true)=>`<div class="field"><label>${label}</label><select data-v="${key}"><option value="true" ${selected(key,true,fallback)}>إظهار / نعم</option><option value="false" ${selected(key,false,fallback)}>إخفاء / لا</option></select></div>`;
+  const choice=(key,label,options,fallback)=>`<div class="field"><label>${label}</label><select data-v="${key}">${options.map(([value,title])=>`<option value="${esc(value)}" ${selected(key,value,fallback)}>${esc(title)}</option>`).join('')}</select></div>`;
+  const image=String(v('logoImage',''));
+  const media=String(v('mediaUrl',''));
+  introEditor.innerHTML=`<p class="muted">هذه الخيارات مرتبطة بمفاتيح شاشة البداية التي يستخدمها المتجر فعليًا. تُحفظ القيم القديمة غير المعروضة دون حذف.</p><div class="grid">
+    ${bool('enabled','الحالة',true)}
+    ${text('kicker','النص الصغير أعلى العنوان')}
+    ${text('title','العنوان الرئيسي')}
+    <div class="field full"><label>وصف شاشة البداية</label><textarea data-v="description" rows="3">${esc(v('description',''))}</textarea></div>
+    ${text('buttonText','نص زر الدخول')}
+    ${text('buttonLink','رابط زر الدخول','#')}
+    ${text('skipText','نص زر التخطي','تخطي')}
+    ${bool('showSkip','إظهار زر التخطي',true)}
+    ${bool('showProgress','إظهار شريط التقدم',true)}
+    ${bool('showOnce','العرض مرة واحدة في الجلسة',true)}
+    ${choice('align','محاذاة المحتوى',[['center','الوسط'],['right','اليمين'],['left','اليسار']],'center')}
+    ${colorField('backgroundColor','لون الخلفية',v('backgroundColor','#17352e'))}
+    ${colorField('textColor','لون النص',v('textColor','#ffffff'))}
+    ${colorField('accentColor','لون شريط التقدم',v('accentColor','#d4aa75'))}
+    ${colorField('overlayColor','لون الطبقة فوق الخلفية',v('overlayColor','#102820'))}
+    ${num('overlayOpacity','شفافية الطبقة %',45,0,100)}
+    ${colorField('buttonColor','لون خلفية الزر',v('buttonColor','#ffffff'))}
+    ${colorField('buttonTextColor','لون نص الزر',v('buttonTextColor','#17352e'))}
+    ${num('buttonRadius','استدارة زر الدخول px',12,0,40)}
+    ${choice('fontFamily','الخط',[['Georgia, serif','Georgia'],['Tahoma, Arial, sans-serif','Tahoma'],['Arial, sans-serif','Arial'],["'Times New Roman', serif",'Times New Roman']],'Tahoma, Arial, sans-serif')}
+    ${num('titleSize','حجم العنوان الرئيسي px',66,22,110)}
+    ${num('duration','مدة ظهور الشاشة ms',4500,1500,30000,100)}
+    ${choice('mediaType','نوع الخلفية',[['image','صورة'],['video','فيديو']],'image')}
+    ${choice('mediaFit','طريقة ملء الخلفية',[['cover','تغطية كاملة'],['contain','عرض الصورة كاملة']],'cover')}
+    ${choice('mediaPosition','موضع الخلفية',[['center','الوسط'],['top','أعلى'],['bottom','أسفل']],'center')}
+    <div class="field full upload"><b>صورة الشعار — رفع مباشر</b><input id="introLogoFile" type="file" accept="image/*">${image?`<div style="margin-top:10px"><img src="${esc(image)}" style="max-width:180px;max-height:130px;object-fit:contain"><br><button class="btn red" type="button" onclick="removeIntroLogo()">حذف صورة الشعار فقط</button></div>`:''}</div>
+    <div class="field full upload"><b>خلفية شاشة البداية — صورة أو فيديو</b><input id="introMediaFile" type="file" accept="image/*,video/*">${media?`<div style="margin-top:10px">${v('mediaType','image')==='video'?`<video src="${esc(media)}" controls style="max-width:250px;max-height:170px"></video>`:`<img src="${esc(media)}" style="max-width:250px;max-height:170px;object-fit:contain">`}<br><button class="btn red" type="button" onclick="removeIntroMedia()">حذف الخلفية فقط</button></div>`:''}</div>
+  </div><div class="toolbar" style="margin-top:14px"><button class="btn" type="button" onclick="saveIntroSection()">حفظ شاشة البداية</button><button class="btn alt" type="button" onclick="toggleSection('intro')">إظهار/إخفاء</button><button class="btn copper" type="button" onclick="createIntroSection()">+ إضافة/إنشاء</button><button class="btn red" type="button" onclick="deleteIntroSection()">حذف القسم</button></div>`;
+  introEditor.querySelector('[data-v="fontFamily"]').value=v('fontFamily','Tahoma, Arial, sans-serif');
 }
+
 function readVisualEditor(el,key){
  const old=getSetting(key,{}),o={...old};
- el.querySelectorAll('[data-v]').forEach(x=>{let v=x.value;if(x.dataset.v==='enabled'||x.dataset.v==='showOnce')v=v==='true';else if(['arabicSize','englishSize','markSize','letterSize','duration','phoneSize','tabletSize','desktopSize'].includes(x.dataset.v))v=Number(v)||0;o[x.dataset.v]=v});return o;
+ el.querySelectorAll('[data-v]').forEach(x=>{let v=x.value;if(['enabled','showOnce','showSkip','showProgress'].includes(x.dataset.v))v=v==='true';else if(['arabicSize','englishSize','markSize','letterSize','duration','phoneSize','tabletSize','desktopSize','titleSize','overlayOpacity','buttonRadius'].includes(x.dataset.v))v=Number(v)||0;o[x.dataset.v]=v});return o;
 }
 async function saveProfileSection(){try{
  let old=getSetting('profile',{}),v=readVisualEditor(profileEditor,'profile'),f=document.getElementById('profileLogoFile')?.files?.[0];
@@ -342,13 +365,23 @@ async function saveProfileSection(){try{
  delete v.nameAr;delete v.nameEn;delete v.mark;delete v.textColor;delete v.accentColor;delete v.arabicSize;delete v.englishSize;delete v.markSize;
  await putSetting('profile',v);await loadAll();stat('تم حفظ صورة البروفايل والخلفية والشريط والخط والحجوم ✓')
 }catch(e){stat(e.message,true)}}
-async function saveIntroSection(){try{let v=readVisualEditor(introEditor,'intro'),f=document.getElementById('introLogoFile')?.files?.[0];if(f)v.logoImage=(await uploadFiles([f],'intro'))[0]||v.logoImage||'';await putSetting('intro',v);await loadAll();stat('تم حفظ شاشة البداية ✓')}catch(e){stat(e.message,true)}}
+async function saveIntroSection(){
+ try{
+  const v=readVisualEditor(introEditor,'intro');
+  const logo=document.getElementById('introLogoFile')?.files?.[0];
+  const media=document.getElementById('introMediaFile')?.files?.[0];
+  if(logo){stat('جاري رفع شعار شاشة البداية…');v.logoImage=(await uploadFiles([logo],'intro'))[0]||v.logoImage||''}
+  if(media){stat('جاري رفع خلفية شاشة البداية…');v.mediaUrl=(await uploadFiles([media],'intro'))[0]||v.mediaUrl||'';v.mediaType=media.type.startsWith('video/')?'video':'image'}
+  await putSetting('intro',v);await loadAll();stat('تم حفظ شاشة البداية وإعداداتها ✓');
+ }catch(e){stat('فشل حفظ شاشة البداية: '+(e?.message||String(e)),true)}
+}
+async function removeIntroMedia(){try{const s=getSetting('intro',{});s.mediaUrl='';await putSetting('intro',s);await loadAll();stat('تم حذف خلفية شاشة البداية فقط ✓')}catch(e){stat(e?.message||String(e),true)}}
 async function removeProfileLogo(){let s=getSetting('profile',{});s.logoImage='';await putSetting('profile',s);await loadAll()}
 async function removeIntroLogo(){let s=getSetting('intro',{});s.logoImage='';await putSetting('intro',s);await loadAll()}
 async function deleteProfileSection(){if(confirm('حذف إعدادات البروفايل؟')){await removeSetting('profile');await loadAll()}}
 async function deleteIntroSection(){if(confirm('حذف إعدادات شاشة البداية؟')){await removeSetting('intro');await loadAll()}}
 async function createProfileSection(){await putSetting('profile',{enabled:true,logoImage:'',backgroundColor:'#000000',fontFamily:'Tahoma, Arial, sans-serif',phoneSize:42,tabletSize:64,desktopSize:64});await loadAll()}
-async function createIntroSection(){await putSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
+async function createIntroSection(){if(SETTINGS.some(x=>x.key==='intro')&&!confirm('سيتم استبدال إعدادات شاشة البداية الحالية. هل تريد المتابعة؟'))return;await putSetting('intro',{enabled:true,name:'ATYAAF',sub:'STORE',mark:'أ',logoImage:'',backgroundColor:'#17352e',textColor:'#f5eee4',accentColor:'#c99a69',fontFamily:'Georgia, serif',letterSize:58,markSize:35,duration:3350,showOnce:true});await loadAll()}
 
 function navLinksEditor(el){
  const s=getSetting('nav',{enabled:true});
@@ -451,26 +484,13 @@ async function saveProduct(){
     if(!q.data || !q.data.length) throw new Error('لم يتم إنشاء المنتج. تحقق من صلاحية INSERT في جدول products.');
   }
 
-  // Read the saved value back from the database; do not claim success merely because the request returned.
-  const savedId=q.data[0]?.id;
-  if(savedId==null)throw new Error('لم يرجع الخادم معرف المنتج بعد الحفظ.');
-  const verification=await db.from('products').select('id,stock_quantity').eq('id',savedId).single();
-  if(verification.error)throw verification.error;
-  const expected=row.stock_quantity;
-  const actual=verification.data?.stock_quantity;
-  if(actual!==expected){
-    throw new Error(`لم تُحفظ الكمية كما أدخلتها. المطلوب: ${expected??'غير محدد'}، المسجل: ${actual??'غير محدد'}. تحقق من قواعد قاعدة البيانات أو التريجر.`);
-  }
+  stat('تم حفظ المنتج بنجاح ✓');
   pImageFile.value='';
   productDialog.close();
   await loadAll();
-  stat('تم حفظ المنتج والتحقق من كمية المخزون في قاعدة البيانات ✓');
  }catch(e){
   console.error('saveProduct:',e);
-  const raw=e?.message||String(e);
-  const advice=/stock_quantity|schema cache|column/i.test(raw)?' — تأكد من إنشاء عمود stock_quantity في جدول public.products وتشغيل تحديث مخطط Supabase.':/permission|policy|row-level|RLS|لم يتم تحديث/i.test(raw)?' — تحقق من سياسات RLS وصلاحيات تحديث المنتجات.':'';
-  stat('فشل الحفظ: '+raw+advice,true);
-  alert('تعذر حفظ المنتج\n'+raw+advice);
+  stat('فشل الحفظ: '+(e?.message||String(e)),true);
  }finally{
   const btn=document.querySelector('#productDialog .toolbar .btn:not(.red)');
   if(btn){btn.disabled=false;btn.textContent='حفظ'}

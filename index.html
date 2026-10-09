@@ -3341,6 +3341,70 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
 })();
 </script>
 
+<!-- ATYAF: isolated product card controls for brand sections; no layout reset -->
+<style id="atyaf-brand-card-admin-controls"></style>
+<script id="atyaf-brand-card-admin-controls-js">
+(()=>{
+ 'use strict';
+ const target=document.getElementById('atyaf-brand-card-admin-controls');
+ const host=document.getElementById('atyafBrandProductSections');
+ if(!target||!host)return;
+ const parse=v=>{if(typeof v==='string'){try{return JSON.parse(v)}catch(_){return null}}return v};
+ const number=(v,min,max)=>{if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):null};
+ const color=v=>typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v)?v:null;
+ const rules=[];
+ const set=(selector,prop,value)=>{if(value!==null&&value!==undefined)rules.push(`#atyafBrandProductSections ${selector}{${prop}:${value}!important}`)};
+ function apply(raw){
+  const x=parse(raw);if(!x||typeof x!=='object'||Array.isArray(x))return;
+  rules.length=0;
+  // Apply only actual admin values, never inject default dimensions or rebuild cards.
+  const px=(k,a,b)=>{const n=number(x[k],a,b);return n===null?null:n+'px'};
+  const pct=(k,a,b)=>{const n=number(x[k],a,b);return n===null?null:n+'%'};
+  set('.atyaf-brand-products-grid .product','background',color(x.cardBackground));
+  set('.atyaf-brand-products-grid .product','border-color',color(x.cardBorder));
+  set('.atyaf-brand-products-grid .product','border-radius',px('cardRadius',0,50));
+  set('.atyaf-brand-products-grid .product','width',pct('cardWidth',45,100));
+  set('.atyaf-brand-products-grid .product-visual','background',color(x.imageBackground));
+  set('.atyaf-brand-products-grid .product-visual','height',px('imageHeight',120,600));
+  set('.atyaf-brand-products-grid .product-visual>img','width',pct('imageWidth',20,100));
+  set('.atyaf-brand-products-grid .product-info h3','color',color(x.nameColor));
+  set('.atyaf-brand-products-grid .product-info h3','font-size',px('nameSize',10,32));
+  set('.atyaf-brand-products-grid .product-info small','color',color(x.brandColor));
+  set('.atyaf-brand-products-grid .product-info small','font-size',px('brandSize',8,24));
+  set('.atyaf-brand-products-grid .price','color',color(x.priceColor));
+  set('.atyaf-brand-products-grid .price','font-size',px('priceSize',10,32));
+  set('.atyaf-brand-products-grid .tag:not(.atyaf-sold-out)','background',color(x.badgeBackground));
+  set('.atyaf-brand-products-grid .tag:not(.atyaf-sold-out)','color',color(x.badgeTextColor));
+  set('.atyaf-brand-products-grid .tag','font-size',px('badgeSize',8,24));
+  set('.atyaf-brand-products-grid .atyaf-cart-action','background',color(x.cartBackground));
+  set('.atyaf-brand-products-grid .atyaf-cart-action','color',color(x.cartTextColor));
+  set('.atyaf-brand-products-grid .atyaf-gift-action','background',color(x.giftBackground));
+  set('.atyaf-brand-products-grid .atyaf-gift-action','color',color(x.giftTextColor));
+  set('.atyaf-brand-products-grid .product-actions button','height',px('buttonHeight',30,80));
+  set('.atyaf-brand-products-grid .product-actions button','font-size',px('buttonFontSize',9,24));
+  set('.atyaf-brand-products-grid .product-actions button','border-radius',px('buttonRadius',0,40));
+  // Keep brand-section columns, gaps, card-height, and image proportions untouched.
+  target.textContent=rules.join('\n');
+ }
+ async function refresh(){
+  const db=window.atyafDb;if(!db)return;
+  try{
+   const {data,error}=await db.from('settings').select('value').eq('key','product_design').limit(1);
+   if(error)throw error;
+   if(data&&data.length)apply(data[0].value);
+  }catch(e){console.warn('ATYAF brand card controls:',e.message||e)}
+ }
+ document.addEventListener('atyaf:settings-applied',e=>{
+  if(e.detail&&Object.prototype.hasOwnProperty.call(e.detail,'product_design'))apply(e.detail.product_design);
+ });
+ let attempts=0;
+ const timer=setInterval(()=>{if(window.atyafDb){clearInterval(timer);refresh()}else if(++attempts>=80)clearInterval(timer)},125);
+ window.addEventListener('focus',refresh);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
+ window.atyafRefreshBrandCardDesign=refresh;
+})();
+</script>
+
 <!-- ATYAF V15: product_design settings bridge (single scoped override) -->
 <style id="atyaf-product-design-live-style"></style>
 <script id="atyaf-product-design-live-sync">

@@ -3129,6 +3129,18 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
    @media(max-width:950px){#productGrid.products{grid-template-columns:repeat(${columns('columnsTablet')},minmax(0,1fr))!important}}
    @media(max-width:600px){#productGrid.products{grid-template-columns:repeat(${number(x.columnsMobile,1,2,2)},minmax(0,1fr))!important}}
 
+  /* One authoritative base for brand catalog cards; no legacy card overrides. */
+  #atyafBrandProductSections .atyaf-brand-products-grid{width:100%;min-width:0}
+  #atyafBrandProductSections .atyaf-reference-card{position:relative;box-sizing:border-box;cursor:pointer}
+  #atyafBrandProductSections .atyaf-reference-card .product-visual{position:relative;width:100%;min-width:0}
+  #atyafBrandProductSections .atyaf-reference-card .product-visual>img{z-index:1}
+  #atyafBrandProductSections .atyaf-reference-card .tag{position:absolute;top:12px;right:12px;z-index:3;border-radius:7px;padding:4px 9px}
+  #atyafBrandProductSections .atyaf-reference-card .tag[hidden]{display:none!important}
+  #atyafBrandProductSections .atyaf-reference-card .product-info h3{margin:5px 0;line-height:1.5;overflow-wrap:anywhere}
+  #atyafBrandProductSections .atyaf-reference-card .price{font-weight:700;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  #atyafBrandProductSections .atyaf-reference-card .old{text-decoration:line-through;font-size:.8em;opacity:.65;font-weight:400}
+  #atyafBrandProductSections .atyaf-reference-card .atyaf-stock-indicator{font-size:12px;margin:8px 0;min-height:1em}
+  #atyafBrandProductSections .atyaf-reference-card .product-actions button{text-align:center;cursor:pointer}
   /* V20: product cards displayed in brand sections (the actual visible catalog). */
   #atyafBrandProductSections .atyaf-brand-products{padding-bottom:28px}
   #atyafBrandProductSections .atyaf-brand-products-grid{display:grid!important;grid-template-columns:repeat(${columns('columnsDesktop')},minmax(0,1fr))!important;gap:${px('gap',0,50)}!important;align-items:stretch!important;margin-top:22px}
@@ -3153,13 +3165,13 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
   #atyafBrandProductSections .atyaf-reference-card button:disabled{opacity:.55!important;cursor:not-allowed!important}
   `;
   const badgeText=String(x.badgeText??'');
-  document.querySelectorAll('#productGrid .product .tag, #atyafBrandProductSections .atyaf-reference-card .tag').forEach(b=>{if(b.dataset.atyafPdBadgeOriginal===undefined)b.dataset.atyafPdBadgeOriginal=b.textContent;const card=b.closest('[data-product-id]');const p=window.ATYAAF_LIVE_PRODUCTS?.find(v=>String(v.id)===String(card?.dataset.productId));if(p?.stock!=null&&Number(p.stock)<=0){b.textContent='نفدت الكمية';b.hidden=false;return;}b.textContent=badgeText;b.hidden=!badgeText});
+  document.querySelectorAll('#productGrid .product .tag, #atyafBrandProductSections .atyaf-reference-card .tag').forEach(b=>{if(b.dataset.atyafPdBadgeOriginal===undefined)b.dataset.atyafPdBadgeOriginal=b.textContent;const card=b.closest('[data-product-id]');const p=window.ATYAAF_LIVE_PRODUCTS?.find(v=>String(v.id)===String(card?.dataset.productId));if(p?.stock!=null&&Number(p.stock)<=0){if(b.textContent!=='نفدت الكمية')b.textContent='نفدت الكمية';b.hidden=false;return;}if(b.textContent!==badgeText)b.textContent=badgeText;b.hidden=!badgeText});
  }
  const parse=v=>{if(typeof v==='string'){try{return JSON.parse(v)}catch{return null}}return v};
  let last='',lastConfig=null;
  function use(v){const parsed=parse(v);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))return;const serialized=JSON.stringify(parsed);if(serialized!==last){last=serialized;lastConfig=parsed;apply(parsed)}}
  document.addEventListener('atyaf:settings-applied',e=>{if(e.detail&&Object.prototype.hasOwnProperty.call(e.detail,'product_design'))use(e.detail.product_design)});
- const observer=new MutationObserver(()=>{if(lastConfig)apply(lastConfig)});
+ const observer=new MutationObserver(mutations=>{if(!lastConfig)return;if(mutations.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&(n.matches?.('.product,.atyaf-reference-card,.atyaf-brand-products')||n.querySelector?.('.product,.atyaf-reference-card')))))apply(lastConfig)});
  for(const id of ['productGrid','atyafBrandProductSections']){const grid=document.getElementById(id);if(grid)observer.observe(grid,{childList:true,subtree:id==='atyafBrandProductSections'});}
  if(window.ATYAF_ADMIN_SETTINGS?.product_design)use(window.ATYAF_ADMIN_SETTINGS.product_design);
  else apply(defaults);

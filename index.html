@@ -6,6 +6,27 @@
   <meta name="theme-color" content="#17352e" />
   <meta name="description" content="أطياف | ATYAF — متجر العطور والهدايا." />
   <title>أطياف | ATYAF</title>
+  <!-- ATYAF: first-paint guard. Keeps old/default theme from flashing before settings arrive. -->
+  <script id="atyaf-first-paint-guard">
+  (function(){
+    document.documentElement.classList.add('atyaf-first-paint-pending');
+    var released=false;
+    window.atyafReleaseFirstPaint=function(){
+      if(released)return;
+      released=true;
+      document.documentElement.classList.remove('atyaf-first-paint-pending');
+    };
+    // Never trap visitors on a blank screen if the database or CDN is unavailable.
+    setTimeout(window.atyafReleaseFirstPaint,4500);
+  })();
+  </script>
+  <style id="atyaf-first-paint-guard-css">
+    html.atyaf-first-paint-pending{background:#fffdfa!important}
+    html.atyaf-first-paint-pending body{background:#fffdfa!important}
+    html.atyaf-first-paint-pending body > :not(#atyafIntroV12):not(script):not(style){visibility:hidden!important}
+    html.atyaf-first-paint-pending #atyafIntroV12{visibility:visible!important}
+    @media(prefers-reduced-motion:reduce){#atyafIntroV12{transition:none!important}}
+  </style>
   <style>
     :root{--ink:#17231f;--muted:#707b75;--cream:#f8f4ed;--paper:#fffdfa;--green:#17352e;--green2:#214c41;--copper:#b47a4f;--gold:#d6aa62;--line:#e9e1d6;--danger:#b54c3f;--shadow:0 18px 50px #17352e12;--radius:22px;--font:Tahoma,Arial,sans-serif}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--cream);font-family:var(--font);line-height:1.6}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.container{width:min(1180px,calc(100% - 36px));margin:auto}.topbar{background:var(--green);color:#fff;display:flex;justify-content:center;gap:16px;align-items:center;font-size:13px;padding:8px 16px}.topbar button{background:none;color:#fff;font-size:18px;line-height:1}.header{background:#fffdfaee;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.headrow{height:86px;display:grid;grid-template-columns:1fr minmax(300px,480px) 1fr;align-items:center;gap:24px}.brand{display:flex;align-items:center;gap:11px;color:var(--green);text-decoration:none}.brand-mark{width:43px;height:43px;border:1px solid var(--copper);border-radius:50%;display:grid;place-items:center;color:var(--copper);font-family:Georgia,serif;font-size:25px;font-weight:bold}.brand strong{font-family:Georgia,serif;letter-spacing:2px;font-size:18px}.brand small{display:block;font-size:9px;letter-spacing:3px;color:var(--copper);margin-top:-5px}.search{display:flex;align-items:center;background:var(--cream);border:1px solid transparent;border-radius:999px;padding:0 16px;transition:.2s}.search:focus-within{border-color:var(--copper);box-shadow:0 0 0 4px #b47a4f16}.search input{width:100%;border:0;background:transparent;padding:12px 10px;outline:0}.search span{font-size:20px;color:var(--copper)}.actions{display:flex;justify-content:flex-start;gap:8px}.icon-btn{position:relative;width:42px;height:42px;background:transparent;border-radius:50%;font-size:21px;color:var(--green);transition:.2s}.icon-btn:hover{background:var(--cream);transform:translateY(-2px)}.count{position:absolute;top:0;right:0;background:var(--copper);color:white;border-radius:99px;min-width:17px;height:17px;font-size:10px;display:grid;place-items:center}.nav{border-top:1px solid #eee7dc}.navrow{display:flex;justify-content:center;gap:30px;padding:12px 0;font-size:14px}.nav a{color:var(--ink);text-decoration:none}.nav a:hover{color:var(--copper)}.menu-btn{display:none;background:transparent;font-size:24px;color:var(--green)}
@@ -2498,6 +2519,8 @@ window.addEventListener("focus",atyafLoadLowerAds);
       else if(typeof window.atyafRenderLowerAds==="function")window.atyafRenderLowerAds({enabled:false});
       window.ATYAF_ADMIN_SETTINGS=map;
       document.dispatchEvent(new CustomEvent("atyaf:settings-applied",{detail:map}));
+      // Reveal after settings have been applied, not while legacy defaults are painted.
+      setTimeout(()=>window.atyafReleaseFirstPaint?.(),350);
     }catch(e){console.error("ATYAF settings sync:",e)}
   }
   window.atyafSyncAdminSettings=sync;

@@ -1510,6 +1510,22 @@ button:disabled{cursor:not-allowed!important;opacity:.55!important}
 .product:has(.atyaf-cart-action:disabled) .tag,.product:has(.btn-primary:disabled) .tag{background:#a13d3d!important;color:#fff!important}
 .styaf-detail-qty[hidden]{display:none!important}
 </style>
+
+<!-- ATYAF CARD SUMMARY ONLY: scoped to storefront product cards; detail page unchanged -->
+<style id="atyaf-store-card-name-price-only">
+/* Only storefront card text: product name and current price. Images remain visible. */
+#atyafBrandProductSections .atyaf-reference-card .tag,
+#atyafBrandProductSections .atyaf-reference-card .atyaf-stock-indicator,
+#atyafBrandProductSections .atyaf-reference-card .product-actions,
+#atyafBrandProductSections .atyaf-reference-card .price .old,
+#productGrid .product .tag,
+#productGrid .product .favorite,
+#productGrid .product .product-info > small,
+#productGrid .product .atyaf-stock-indicator,
+#productGrid .product .product-actions,
+#productGrid .product .price .old {display:none!important;}
+/* Preserve card click-through to full product details and stock controls there. */
+</style>
 </head>
 <body>
 

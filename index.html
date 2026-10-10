@@ -1608,13 +1608,20 @@ button:disabled{cursor:not-allowed!important;opacity:.55!important}
     let atyafGeneralSettings={};
 
     function atyafProductImage(row){
+      const primary=row?.image_url||row?.image||row?.thumbnail;
+      if(typeof primary==='string'&&primary.trim())return primary;
+      // Compatibility fallback for older products which only stored images.
       let images=row?.images;
       if(typeof images==='string'){try{images=JSON.parse(images)}catch(e){images=[]}}
-      if(!Array.isArray(images))images=[];
+      if(!Array.isArray(images))return '';
       const first=images[0];
-      if(typeof first==='string')return first;
-      if(first&&typeof first==='object')return first.url||first.src||first.publicUrl||first.public_url||'';
-      return row?.image_url||row?.image||row?.thumbnail||'';
+      return typeof first==='string'?first:(first?.url||first?.src||first?.publicUrl||first?.public_url||'');
+    }
+    function atyafDetailImages(row){
+      let imgs=row?.images;
+      if(typeof imgs==='string'){try{imgs=JSON.parse(imgs)}catch(_){imgs=[]}}
+      if(!Array.isArray(imgs))return [];
+      return imgs.map(x=>typeof x==='string'?x:(x?.url||x?.src||x?.publicUrl||'')).filter(x=>typeof x==='string'&&/^https?:\/\//i.test(x));
     }
     function mapSupabaseProduct(row,index){
       const price=Number(row.price??row.sale_price??0);
@@ -1630,7 +1637,7 @@ button:disabled{cursor:not-allowed!important;opacity:.55!important}
       return {
         id:row.id??index+1,name:row.name||row.title||'منتج',brand:row.brand||row.brand_name||'أطياف',
         price,old:compare>price?compare:0,tags,label:row.badge||row.label||(row.is_new?'جديد':row.is_best_seller?'الأكثر مبيعًا':'مميز'),
-        stock:row.stock_quantity==null?null:Math.max(0,Math.floor(Number(row.stock_quantity)||0)),tone:'#8c542e',desc:row.description||row.short_description||'',image:atyafProductImage(row),raw:row
+        stock:row.stock_quantity==null?null:Math.max(0,Math.floor(Number(row.stock_quantity)||0)),tone:'#8c542e',desc:row.description||row.short_description||'',image:atyafProductImage(row),images:atyafDetailImages(row),raw:row
       };
     }
     async function atyafGetSetting(key){

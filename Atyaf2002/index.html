@@ -415,10 +415,38 @@ async function saveListItem(key,i){let s=getSetting(key,{items:[]});s.items[i].t
 async function hideListItem(key,i){let s=getSetting(key,{items:[]});s.items[i].hidden=!s.items[i].hidden;await putSetting(key,s);await loadAll()}
 async function removeListItem(key,i){let s=getSetting(key,{items:[]});s.items.splice(i,1);await putSetting(key,s);await loadAll()}
 
+/* ATYAF brand appearance controls — independent from product cards */
+const ATYAF_BRAND_FIELDS=[
+ ['logoSize','ارتفاع شعار الماركة (px)',54,20,180],['cardMinHeight','الحد الأدنى لارتفاع البطاقة (px)',170,70,420],
+ ['cardPadding','المسافة الداخلية (px)',22,0,65],['cardRadius','استدارة الزوايا (px)',18,0,65],
+ ['borderWidth','سُمك الحدود (px)',1,0,8],['gap','المسافة بين الماركات (px)',14,0,50],
+ ['brandNameSize','حجم اسم الماركة (px)',18,9,40],['brandSubSize','حجم النص السفلي (px)',11,8,30],
+ ['columnsDesktop','عدد الأعمدة للكمبيوتر',5,1,8],['columnsTablet','عدد الأعمدة للتابلت',3,1,6],['columnsMobile','عدد الأعمدة للهاتف',2,1,4]
+];
+const ATYAF_BRAND_COLORS=[['cardBackground','خلفية البطاقة','#fffdfa'],['cardBorder','لون الحدود','#e4ddd2'],['brandNameColor','لون اسم الماركة','#17352e'],['brandSubColor','لون النص السفلي','#b47a4f']];
+function atyafBrandAppearanceEditor(s){
+ const num=ATYAF_BRAND_FIELDS.map(([k,label,def,min,max])=>`<div class="field"><label>${label}</label><input data-brand-appearance="${k}" type="number" min="${min}" max="${max}" value="${esc(s[k]??def)}"></div>`).join('');
+ const colors=ATYAF_BRAND_COLORS.map(([k,label,def])=>`<div class="field"><label>${label}</label><input data-brand-appearance="${k}" type="color" value="${/^#[0-9a-f]{6}$/i.test(s[k]||'')?s[k]:def}"></div>`).join('');
+ const font=String(s.brandFontFamily||'inherit');
+ return `<div class="card" style="margin:14px 0"><h3>تصميم أيقونات الماركات</h3><p class="muted">تتحكم هذه الخيارات في بطاقات الماركات فقط، ولا تغيّر بطاقات المنتجات.</p><div class="grid">${num}${colors}<div class="field"><label>خط أسماء الماركات</label><select data-brand-appearance="brandFontFamily">${['inherit','Tahoma, Arial, sans-serif','Arial, sans-serif','Georgia, serif','Cairo, sans-serif'].map(v=>`<option value="${v}" ${font===v?'selected':''}>${v}</option>`).join('')}</select></div></div><button class="btn" onclick="saveBrandAppearance()">حفظ تصميم الماركات</button></div>`;
+}
+async function saveBrandAppearance(){
+ try{
+  const s=getSetting('brands',{enabled:true,items:[]});
+  document.querySelectorAll('[data-brand-appearance]').forEach(el=>{
+   const k=el.dataset.brandAppearance;
+   const def=ATYAF_BRAND_FIELDS.find(row=>row[0]===k);
+   if(def){const n=Number(el.value);if(Number.isFinite(n))s[k]=Math.min(def[4],Math.max(def[3],n));}
+   else if(k==='brandFontFamily')s[k]=el.value;
+   else if(/^#[0-9a-f]{6}$/i.test(el.value))s[k]=el.value;
+  });
+  await putSetting('brands',s);await loadAll();stat('تم حفظ تصميم أيقونات الماركات ✓');
+ }catch(e){stat('تعذر حفظ تصميم الماركات: '+(e?.message||String(e)),true)}
+}
 /* محرر الماركات: اسم + صورة + رمز/معرف الانتقال للقسم */
 function brandsSectionEditor(){
  let s=getSetting('brands',{enabled:true,items:[]}),items=Array.isArray(s.items)?s.items:[];
- brandsEditor.innerHTML=`<div class="toolbar"><button class="btn" onclick="addBrandItem()">+ إضافة ماركة</button><button class="btn alt" onclick="toggleSection('brands')">إظهار/إخفاء القسم</button><button class="btn red" onclick="deleteSection('brands')">حذف القسم</button></div>`+
+ brandsEditor.innerHTML=atyafBrandAppearanceEditor(s)+`<div class="toolbar"><button class="btn" onclick="addBrandItem()">+ إضافة ماركة</button><button class="btn alt" onclick="toggleSection('brands')">إظهار/إخفاء القسم</button><button class="btn red" onclick="deleteSection('brands')">حذف القسم</button></div>`+
  items.map((x,i)=>`<div class="card" style="margin-top:10px"><div class="grid">
   <div class="field"><label>اسم الماركة</label><input id="brand_title_${i}" value="${esc(x.title||x.name||'')}"></div>
   <div class="field"><label>رمز/معرف الانتقال إلى القسم</label><input id="brand_text_${i}" value="${esc(x.text||x.icon||'')}" placeholder="مثال: ابرق أو abraq"><small class="muted">استخدم نفس اسم/معرف قسم منتجات الماركة في المتجر.</small></div>

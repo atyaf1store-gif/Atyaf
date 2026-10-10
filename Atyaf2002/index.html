@@ -141,6 +141,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <div class="field"><label>السعر</label><input id="pPrice" type="number"></div><div class="field"><label>السعر القديم</label><input id="pOld" type="number"></div>
 <div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field"><label>الكمية المتوفرة بالمخزون</label><input id="pStock" type="number" min="0" step="1" placeholder="اتركه فارغًا إن كان غير محدد"></div><div class="field"><label>نشط/مخفي</label><select id="pActive"><option value="true">ظاهر</option><option value="false">مخفي</option></select></div>
 <div class="field"><label>ترتيب</label><input id="pSort" type="number"></div><div class="field full upload"><label>صورة المنتج — رفع مباشر</label><input id="pImageFile" type="file" accept="image/*"><div id="pImagePreview"></div></div>
+<div class="field full upload" id="atyafExtraImagesEditor"><label>صور إضافية لصفحة تفاصيل المنتج فقط (لا تغيّر صورة بطاقة المتجر)</label><input id="pExtraImageFiles" type="file" accept="image/*" multiple><small class="muted">يمكنك رفع عدة صور، حذف صورة، وتغيير ترتيبها قبل الحفظ. ستظهر في معرض تفاصيل المنتج فقط.</small><div id="pExtraImagesPreview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px"></div></div>
 </div><div class="toolbar" style="margin-top:12px"><button type="button" class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
 
 <script>
@@ -441,7 +442,26 @@ async function saveBrandItem(i){
 }
 
 function renderProducts(){productRows.innerHTML=PRODUCTS.map(p=>`<tr><td>${esc(p.name||p.title||'')}</td><td>${esc(p.brand||'')}</td><td>${esc(p.price||0)}</td><td>${p.stock_quantity==null?"غير محدد":esc(p.stock_quantity)}</td><td>${p.is_active===false?'مخفي':'ظاهر'}</td><td class="actions"><button class="btn alt" onclick='editProduct(${JSON.stringify(String(p.id))})'>تعديل</button><button class="btn red" onclick='quickDeleteProduct(${JSON.stringify(String(p.id))})'>حذف</button></td></tr>`).join('')}
-function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pImageFile.value='';pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pDesc.value=p.description||p.desc||'';document.getElementById('pStock').value=p.stock_quantity??'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
+// Additional gallery images are separate from the storefront thumbnail.
+let atyafExtraImages=[];
+function atyafReadExtraImages(value){
+ if(typeof value==='string'){try{value=JSON.parse(value)}catch(_){value=[]}}
+ return Array.isArray(value)?value.map(x=>typeof x==='string'?x:(x?.url||x?.src||'')).filter(x=>typeof x==='string'&&/^https?:\/\//i.test(x)).slice(0,30):[];
+}
+function atyafRenderExtraImages(){
+ const box=document.getElementById('pExtraImagesPreview');if(!box)return;
+ box.replaceChildren();
+ atyafExtraImages.forEach((url,i)=>{
+  const wrap=document.createElement('div');wrap.style.cssText='width:108px;border:1px solid #ddd;border-radius:10px;padding:5px;background:white;text-align:center';
+  const img=document.createElement('img');img.src=url;img.alt='صورة إضافية '+(i+1);img.style.cssText='width:94px;height:94px;object-fit:contain';wrap.appendChild(img);
+  const bar=document.createElement('div');bar.style.cssText='display:flex;gap:3px;justify-content:center';
+  [['↑',()=>atyafMoveExtraImage(i,-1)],['↓',()=>atyafMoveExtraImage(i,1)],['حذف',()=>atyafRemoveExtraImage(i)]].forEach(([label,fn])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText='font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:5px;background:#fff';b.addEventListener('click',fn);bar.appendChild(b)});
+  wrap.appendChild(bar);box.appendChild(wrap);
+ });
+}
+function atyafRemoveExtraImage(i){atyafExtraImages.splice(i,1);atyafRenderExtraImages()}
+function atyafMoveExtraImage(i,delta){const j=i+delta;if(j<0||j>=atyafExtraImages.length)return;[atyafExtraImages[i],atyafExtraImages[j]]=[atyafExtraImages[j],atyafExtraImages[i]];atyafRenderExtraImages()}
+function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pImageFile.value='';document.getElementById('pExtraImageFiles').value='';atyafExtraImages=atyafReadExtraImages(p.images);atyafRenderExtraImages();pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pDesc.value=p.description||p.desc||'';document.getElementById('pStock').value=p.stock_quantity??'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
 async function saveProduct(){
  try{
   const btn=document.querySelector('#productDialog .toolbar .btn:not(.red)');
@@ -457,6 +477,14 @@ async function saveProduct(){
     image=(await uploadFiles(pImageFile.files,'products'))[0]||image;
   }
 
+  const extraFiles=document.getElementById('pExtraImageFiles').files;
+  let extraImages=[...atyafExtraImages];
+  if(extraFiles.length){
+    if(extraImages.length+extraFiles.length>30)throw new Error('الحد الأقصى 30 صورة إضافية');
+    for(const f of extraFiles){if(!f.type.startsWith('image/'))throw new Error('يجب اختيار ملفات صور فقط');if(f.size>12*1024*1024)throw new Error('حجم الصورة يجب ألا يتجاوز 12 ميجابايت');}
+    stat('جاري رفع صور تفاصيل المنتج…');
+    extraImages.push(...await uploadFiles(extraFiles,'products'));
+  }
   const row={
     name:pName.value.trim(),
     brand:pBrand.value.trim(),
@@ -464,6 +492,7 @@ async function saveProduct(){
     old_price:Number(pOld.value)||0,
     description:pDesc.value.trim(),
     image_url:image,
+    images:extraImages,
     is_active:pActive.value==='true',
     sort_order:Number(pSort.value)||0
   };
@@ -486,6 +515,7 @@ async function saveProduct(){
 
   stat('تم حفظ المنتج بنجاح ✓');
   pImageFile.value='';
+  document.getElementById('pExtraImageFiles').value='';
   productDialog.close();
   await loadAll();
  }catch(e){

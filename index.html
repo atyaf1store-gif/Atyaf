@@ -3489,6 +3489,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
 })();
 </script>
 
+<!-- ATYAF V24: visible brand grids obey product_design columns, including tablet/mobile. -->
 <!-- ATYAF: isolated product card controls for brand sections; no layout reset -->
 <style id="atyaf-brand-card-admin-controls"></style>
 <script id="atyaf-brand-card-admin-controls-js">
@@ -3531,7 +3532,14 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
   set('.atyaf-brand-products-grid .product-actions button','height',px('buttonHeight',30,80));
   set('.atyaf-brand-products-grid .product-actions button','font-size',px('buttonFontSize',9,24));
   set('.atyaf-brand-products-grid .product-actions button','border-radius',px('buttonRadius',0,40));
-  // Keep brand-section columns, gaps, card-height, and image proportions untouched.
+  // The visible catalog is #atyafBrandProductSections, not the legacy #productGrid.
+  // Make the three admin column controls authoritative for the actual visible cards.
+  const desktop=number(x.columnsDesktop,1,8);
+  const tablet=number(x.columnsTablet,1,8);
+  const mobile=number(x.columnsMobile,1,8);
+  if(desktop!==null)rules.push(`#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${desktop},minmax(0,1fr))!important}`);
+  if(tablet!==null)rules.push(`@media(max-width:950px){#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${tablet},minmax(0,1fr))!important}}`);
+  if(mobile!==null)rules.push(`@media(max-width:600px){#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${mobile},minmax(0,1fr))!important}}`);
   target.textContent=rules.join('\n');
  }
  async function refresh(){

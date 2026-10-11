@@ -431,17 +431,63 @@ function atyafBrandAppearanceEditor(s){
  return `<div class="card" style="margin:14px 0"><h3>تصميم أيقونات الماركات</h3><p class="muted">تتحكم هذه الخيارات في بطاقات الماركات فقط، ولا تغيّر بطاقات المنتجات.</p><div class="grid">${num}${colors}<div class="field"><label>خط أسماء الماركات</label><select data-brand-appearance="brandFontFamily">${['inherit','Tahoma, Arial, sans-serif','Arial, sans-serif','Georgia, serif','Cairo, sans-serif'].map(v=>`<option value="${v}" ${font===v?'selected':''}>${v}</option>`).join('')}</select></div></div><button class="btn" onclick="saveBrandAppearance()">حفظ تصميم الماركات</button></div>`;
 }
 async function saveBrandAppearance(){
+ const button=document.querySelector('#brandsEditor button[onclick="saveBrandAppearance()"]');
+ if(button?.disabled)return;
  try{
-  const s=getSetting('brands',{enabled:true,items:[]});
-  document.querySelectorAll('[data-brand-appearance]').forEach(el=>{
+  if(!db)throw new Error('الاتصال بقاعدة البيانات غير متاح');
+  if(button){button.disabled=true;button.textContent='جاري الحفظ والتحقق…';}
+  // Capture the actual current form values before any UI refresh.
+  const current=getSetting('brands',{enabled:true,items:[]});
+  const s={...current};
+  const inputs=[...document.querySelectorAll('#brandsEditor [data-brand-appearance]')];
+  if(!inputs.length)throw new Error('حقول تصميم الماركات غير موجودة');
+  for(const el of inputs){
    const k=el.dataset.brandAppearance;
    const def=ATYAF_BRAND_FIELDS.find(row=>row[0]===k);
-   if(def){const n=Number(el.value);if(Number.isFinite(n))s[k]=Math.min(def[4],Math.max(def[3],n));}
-   else if(k==='brandFontFamily')s[k]=el.value;
+   if(def){
+    if(el.value.trim()==='')throw new Error('أدخل قيمة '+def[1]);
+    const n=Number(el.value);
+    if(!Number.isFinite(n)||n<def[3]||n>def[4])throw new Error('القيمة خارج النطاق: '+def[1]);
+    s[k]=n;
+   }else if(k==='brandFontFamily')s[k]=el.value;
    else if(/^#[0-9a-f]{6}$/i.test(el.value))s[k]=el.value;
-  });
-  await putSetting('brands',s);await loadAll();stat('تم حفظ تصميم أيقونات الماركات ✓');
- }catch(e){stat('تعذر حفظ تصميم الماركات: '+(e?.message||String(e)),true)}
+  }
+  // Save to the newest brands row; detect RLS policies that silently update 0 rows.
+  const existing=(SETTINGS||[]).filter(x=>x.key==='brands');
+  let rowId;
+  if(existing.length){
+   const target=existing[0]; // settings loaded newest first
+   const {data,error}=await db.from('settings').update({value:s}).eq('id',target.id).select('id,key,value');
+   if(error)throw error;
+   if(!Array.isArray(data)||data.length!==1)throw new Error('لم تؤكد قاعدة البيانات حفظ التعديل. تحقق من صلاحيات التعديل (RLS).');
+   rowId=target.id;
+  }else{
+   const {data,error}=await db.from('settings').insert({key:'brands',value:s}).select('id,key,value');
+   if(error)throw error;
+   if(!Array.isArray(data)||data.length!==1)throw new Error('لم تؤكد قاعدة البيانات إنشاء إعدادات الماركات.');
+   rowId=data[0].id;
+  }
+  // Independently read back the stored values before displaying success.
+  const {data:check,error:readError}=await db.from('settings').select('id,key,value').eq('id',rowId).single();
+  if(readError)throw readError;
+  const stored=parse(check?.value);
+  for(const el of inputs){
+   const k=el.dataset.brandAppearance;
+   if(String(stored?.[k])!==String(s[k]))throw new Error('لم يتم تثبيت إعداد '+k+' في قاعدة البيانات');
+  }
+  // Keep in-memory state in sync without reloading all products or discarding edits.
+  const idx=SETTINGS.findIndex(x=>String(x.id)===String(rowId));
+  if(idx>=0)SETTINGS[idx]={...SETTINGS[idx],value:stored};
+  else SETTINGS.unshift({...check,value:stored});
+  brandsSectionEditor();
+  stat('تم حفظ تصميم الماركات والتحقق منه في قاعدة البيانات ✓');
+ }catch(e){
+  stat('فشل حفظ تصميم الماركات: '+(e?.message||String(e)),true);
+  console.error('Brand appearance save failed',e);
+ }finally{
+  const b=document.querySelector('#brandsEditor button[onclick="saveBrandAppearance()"]');
+  if(b){b.disabled=false;b.textContent='حفظ تصميم الماركات';}
+ }
 }
 /* محرر الماركات: اسم + صورة + رمز/معرف الانتقال للقسم */
 function brandsSectionEditor(){

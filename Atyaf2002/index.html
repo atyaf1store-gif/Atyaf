@@ -421,7 +421,7 @@ const ATYAF_BRAND_FIELDS=[
  ['cardPadding','المسافة الداخلية (px)',22,0,65],['cardRadius','استدارة الزوايا (px)',18,0,65],
  ['borderWidth','سُمك الحدود (px)',1,0,8],['gap','المسافة بين الماركات (px)',14,0,50],
  ['brandNameSize','حجم اسم الماركة (px)',18,9,40],['brandSubSize','حجم النص السفلي (px)',11,8,30],
- ['columnsDesktop','عدد الأعمدة للكمبيوتر',5,1,8],['columnsTablet','عدد الأعمدة للتابلت',3,1,6],['columnsMobile','عدد الأعمدة للهاتف',2,1,4]
+ ['columnsDesktop','عدد الأعمدة للكمبيوتر',5,1,8],['columnsTablet','عدد الأعمدة للتابلت',3,1,8],['columnsMobile','عدد الأعمدة للهاتف',2,1,8]
 ];
 const ATYAF_BRAND_COLORS=[['cardBackground','خلفية البطاقة','#fffdfa'],['cardBorder','لون الحدود','#e4ddd2'],['brandNameColor','لون اسم الماركة','#17352e'],['brandSubColor','لون النص السفلي','#b47a4f']];
 function atyafBrandAppearanceEditor(s){
@@ -447,7 +447,7 @@ async function saveBrandAppearance(){
    if(def){
     if(el.value.trim()==='')throw new Error('أدخل قيمة '+def[1]);
     const n=Number(el.value);
-    if(!Number.isFinite(n)||n<def[3]||n>def[4])throw new Error('القيمة خارج النطاق: '+def[1]);
+    if(!Number.isFinite(n)||n<def[3]||n>def[4])throw new Error('القيمة خارج النطاق: '+def[1]+' (المسموح من '+def[3]+' إلى '+def[4]+')');
     s[k]=n;
    }else if(k==='brandFontFamily')s[k]=el.value;
    else if(/^#[0-9a-f]{6}$/i.test(el.value))s[k]=el.value;

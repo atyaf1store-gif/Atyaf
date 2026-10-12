@@ -3653,45 +3653,60 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
 </style>
 <!-- V28: translucent frosted-glass main header; no layout or functionality changes. -->
 <style id="atyaf-v28-glass-main-header">
-/* Keep the existing sticky header, but show content softly through it. */
+/* V29: translucent header with a neutral glass surface; profile background is a subtle tint, not an opaque slab. */
 html body .header{
-  position:sticky!important;top:0!important;z-index:100!important;
-  background:color-mix(in srgb, var(--atyaf-profile-header-bg, #ffffff) 76%, transparent)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(145%)!important;
-  backdrop-filter:blur(18px) saturate(145%)!important;
-  border-bottom:1px solid rgba(40,40,40,.10)!important;
-  box-shadow:0 3px 16px rgba(0,0,0,.045)!important;
+ position:sticky!important;top:0!important;z-index:100!important;
+ background:color-mix(in srgb, var(--atyaf-profile-header-bg,#ffffff) 12%, rgba(255,255,255,.80))!important;
+ -webkit-backdrop-filter:blur(16px) saturate(125%)!important;
+ backdrop-filter:blur(16px) saturate(125%)!important;
+ border-bottom:1px solid rgba(40,40,40,.10)!important;
+ box-shadow:0 3px 16px rgba(0,0,0,.045)!important;
 }
-/* Transparent nav row, including iPad and phone-specific previous overrides. */
-html body .header .nav{
-  background:rgba(255,255,255,.12)!important;
-  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-  border-top-color:rgba(40,40,40,.08)!important;
-  border-bottom-color:transparent!important;
-}
-html body .header .headrow,
-html body .header .navrow{background:transparent!important}
-@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
-  html body .header{background:var(--atyaf-profile-header-bg,#ffffff)!important}
+html body .header .nav{background:rgba(255,255,255,.10)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-top-color:rgba(40,40,40,.08)!important;border-bottom-color:transparent!important}
+html body .header .headrow,html body .header .navrow{background:transparent!important}
+@supports not (background:color-mix(in srgb, white 50%, transparent)){
+ html body .header{background:rgba(255,255,255,.80)!important}
 }
 </style>
 
 <style id="atyaf-v28-profile-settings-scoped-fix">
-/* Only profile image sizing: override historical 38/42/48/54px caps. */
-html body .header .atyaf-profile-image-slot,
-html body .header .atyaf-mobile-profile{height:auto!important;max-height:none!important}
-@media (max-width:600px){
- html body .header .atyaf-mobile-profile .atyaf-profile-image-slot img{height:var(--atyaf-profile-phone-size,42px)!important;max-height:none!important;width:auto!important;max-width:min(42vw,220px)!important}
+/* V29: the logo setting controls IMAGE size, never the header height. */
+html body .header .headrow.atyaf-head-balanced{
+ box-sizing:border-box!important;min-height:76px!important;height:76px!important;
+ padding-block:6px!important;align-items:center!important;
 }
-@media (min-width:601px) and (max-width:1100px){
- html body .header .atyaf-profile .atyaf-profile-image-slot img,
- html body .header .atyaf-mobile-profile .atyaf-profile-image-slot img{height:var(--atyaf-profile-tablet-size,64px)!important;max-height:none!important;width:auto!important;max-width:min(34vw,260px)!important}
+html body .header .atyaf-profile,
+html body .header .atyaf-mobile-profile,
+html body .header .atyaf-profile-image-slot{
+ min-height:0!important;max-height:100%!important;align-items:center!important;justify-content:center!important;
+}
+html body .header .atyaf-profile-image-slot img{
+ display:block!important;object-fit:contain!important;width:auto!important;
+ max-height:64px!important;max-width:min(34vw,280px)!important;
 }
 @media (min-width:1101px){
- html body .header .atyaf-profile .atyaf-profile-image-slot img{height:var(--atyaf-profile-desktop-size,64px)!important;max-height:none!important;width:auto!important;max-width:320px!important}
+ html body .header .headrow.atyaf-head-balanced{height:86px!important;min-height:86px!important}
+ html body .header .atyaf-profile .atyaf-profile-image-slot img{
+  height:min(var(--atyaf-profile-desktop-size,64px),72px)!important;
+  max-height:72px!important;max-width:320px!important;
+ }
+}
+@media (min-width:601px) and (max-width:1100px){
+ html body .header .headrow.atyaf-head-balanced{height:82px!important;min-height:82px!important;padding-block:6px!important}
+ html body .header .atyaf-profile .atyaf-profile-image-slot img{
+  height:min(var(--atyaf-profile-tablet-size,64px),66px)!important;
+  max-height:66px!important;max-width:min(34vw,260px)!important;
+ }
+}
+@media (max-width:600px){
+ html body .header .headrow.atyaf-head-balanced{height:72px!important;min-height:72px!important;padding-block:6px!important}
+ html body .header .atyaf-mobile-profile{height:60px!important;max-height:60px!important}
+ html body .header .atyaf-mobile-profile .atyaf-profile-image-slot{height:60px!important;max-height:60px!important}
+ html body .header .atyaf-mobile-profile .atyaf-profile-image-slot img{
+  height:min(var(--atyaf-profile-phone-size,42px),56px)!important;
+  max-height:56px!important;max-width:min(32vw,200px)!important;
+ }
 }
 </style>
 </body>
 </html>
-
-

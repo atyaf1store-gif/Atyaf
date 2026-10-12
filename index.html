@@ -1632,7 +1632,7 @@ html,body{overflow-x:clip!important}
     <section class="hero-ad" id="home" aria-label="إعلانات المتجر" hidden><div class="hero-ad-track" id="heroAdTrack"></div><div class="hero-ad-dots" id="heroAdDots"></div></section>
     <section class="container benefits" style="display:none" aria-hidden="true"></section>
 
-<section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands"><button class="brand-card" onclick="filterBrand('أطياف')"><strong>أطياف</strong><span>ATYAAF</span></button><button class="brand-card" onclick="filterBrand('دار العود')"><strong>دار العود</strong><span>HOUSE OF OUD</span></button><button class="brand-card" onclick="filterBrand('نُبل')"><strong>نُبل</strong><span>NOBLE</span></button><button class="brand-card" onclick="filterBrand('سُلاف')"><strong>سُلاف</strong><span>SULAF</span></button><button class="brand-card" onclick="filterBrand('كل الماركات')"><strong>الكل</strong><span>VIEW ALL</span></button></div></section>
+<section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands" data-atyaf-placeholder-brands="true"><button class="brand-card" onclick="filterBrand('أطياف')"><strong>أطياف</strong><span>ATYAAF</span></button><button class="brand-card" onclick="filterBrand('دار العود')"><strong>دار العود</strong><span>HOUSE OF OUD</span></button><button class="brand-card" onclick="filterBrand('نُبل')"><strong>نُبل</strong><span>NOBLE</span></button><button class="brand-card" onclick="filterBrand('سُلاف')"><strong>سُلاف</strong><span>SULAF</span></button><button class="brand-card" onclick="filterBrand('كل الماركات')"><strong>الكل</strong><span>VIEW ALL</span></button></div></section>
 
 <section class="section container" id="products" style="padding-top:20px"><div class="section-head"><div><h2>مختارات أطياف</h2><p id="resultText">منتجاتنا الأكثر حبًا</p></div><select id="sortSelect" onchange="renderProducts()" style="border:1px solid var(--line);background:#fffdfa;padding:10px 14px;border-radius:999px;color:var(--green)"><option value="featured">ترتيب: مميز</option><option value="price-low">السعر: الأقل</option><option value="price-high">السعر: الأعلى</option><option value="new">الأحدث</option></select></div><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all',this)">الكل</button><button class="chip" data-filter="oud" onclick="setFilter('oud',this)">عود</button><button class="chip" data-filter="musk" onclick="setFilter('musk',this)">مسك</button><button class="chip" data-filter="floral" onclick="setFilter('floral',this)">زهور</button><button class="chip" data-filter="sale" onclick="setFilter('sale',this)">عروض</button><button class="chip" data-filter="new" onclick="setFilter('new',this)">وصل حديثًا</button></div><div class="products" id="productGrid"></div></section>
     <div id="atyafBrandProductSections" class="atyaf-brand-product-sections" aria-label="أقسام المنتجات حسب الماركة"></div>
@@ -2578,7 +2578,8 @@ window.addEventListener("focus",atyafLoadLowerAds);
     box.style.setProperty('--brand-cols-t',String(Math.max(1,Number(s?.columnsTablet)||3)));
     box.style.setProperty('--brand-cols-m',String(Math.max(1,Number(s?.columnsMobile)||2)));
     const items=Array.isArray(s?.items)?s.items:[];
-    if(!items.length)return;
+    // Never leave hard-coded demo brands visible when the live settings are missing.
+    if(!items.length){box.replaceChildren();box.removeAttribute('data-atyaf-placeholder-brands');return;}
     box.innerHTML=items.filter(x=>x?.hidden!==true).map(it=>{
       const title=String(it.title||it.name||''),sub=String(it.text||it.subtitle||'');
       const safeTitle=title.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
@@ -2589,6 +2590,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
        ${sub?`<span class="atyaf-brand-caption" style="color:${escapeHtml(s?.brandSubColor||'#b47a4f')};font-size:${Number(s?.brandSubSize)||11}px">${escapeHtml(sub)}</span>`:''}
       </button>`;
     }).join('');
+    box.removeAttribute('data-atyaf-placeholder-brands');
   }
   function applyPolicies(s){
     window.ATYAAF_POLICIES=s||{};
@@ -2644,7 +2646,16 @@ window.addEventListener("focus",atyafLoadLowerAds);
       document.dispatchEvent(new CustomEvent("atyaf:settings-applied",{detail:map}));
       // Reveal after settings have been applied, not while legacy defaults are painted.
       setTimeout(()=>window.atyafReleaseFirstPaint?.(),350);
-    }catch(e){console.error("ATYAF settings sync:",e)}
+    }catch(e){
+      console.error("ATYAF settings sync:",e);
+      // Transient connectivity failures must not strand the visitor with demo branding.
+      if(!window.__atyafSettingsRetryTimer){
+        window.__atyafSettingsRetryTimer=setTimeout(()=>{
+          window.__atyafSettingsRetryTimer=null;
+          if(!document.hidden)sync();
+        },3000);
+      }
+    }
   }
   window.atyafSyncAdminSettings=sync;
   // atyaf-settings-poll-fallback: keeps Admin changes visible even if Realtime is disabled.
@@ -3684,6 +3695,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
 #brands .brands{grid-template-columns:repeat(var(--atyaf-brand-cols-d,5),minmax(0,1fr))!important;gap:var(--atyaf-brand-gap,14px)!important;align-items:start}
 @media(max-width:1199px){#brands .brands{grid-template-columns:repeat(var(--atyaf-brand-cols-t,3),minmax(0,1fr))!important}}
 @media(max-width:600px){#brands .brands{grid-template-columns:repeat(var(--atyaf-brand-cols-m,2),minmax(0,1fr))!important}}
+</style>
+<!-- V28 SAFE: hide original demo brand buttons until live brand settings are rendered. -->
+<style id="atyaf-v28-no-demo-brand-flash">
+#brands .brands[data-atyaf-placeholder-brands="true"] > .brand-card{display:none!important}
 </style>
 <!-- V28: translucent frosted-glass main header; no layout or functionality changes. -->
 <style id="atyaf-v28-glass-main-header">

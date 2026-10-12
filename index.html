@@ -3685,6 +3685,30 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
 @media(max-width:1199px){#brands .brands{grid-template-columns:repeat(var(--atyaf-brand-cols-t,3),minmax(0,1fr))!important}}
 @media(max-width:600px){#brands .brands{grid-template-columns:repeat(var(--atyaf-brand-cols-m,2),minmax(0,1fr))!important}}
 </style>
+<!-- V28: translucent frosted-glass main header; no layout or functionality changes. -->
+<style id="atyaf-v28-glass-main-header">
+/* Keep the existing sticky header, but show content softly through it. */
+html body .header{
+  position:sticky!important;top:0!important;z-index:100!important;
+  background:rgba(255,255,255,.76)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(145%)!important;
+  backdrop-filter:blur(18px) saturate(145%)!important;
+  border-bottom:1px solid rgba(40,40,40,.10)!important;
+  box-shadow:0 3px 16px rgba(0,0,0,.045)!important;
+}
+/* Transparent nav row, including iPad and phone-specific previous overrides. */
+html body .header .nav{
+  background:rgba(255,255,255,.12)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  border-top-color:rgba(40,40,40,.08)!important;
+  border-bottom-color:transparent!important;
+}
+html body .header .headrow,
+html body .header .navrow{background:transparent!important}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  html body .header{background:rgba(255,255,255,.94)!important}
+}
+</style>
 </body>
 </html>
 

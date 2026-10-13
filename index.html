@@ -1632,7 +1632,6 @@ html,body{overflow-x:clip!important}
 <div class="atyaf-coupon-box"><div class="atyaf-coupon-title">كوبون الخصم</div><div class="atyaf-coupon-row"><input id="atyafCartCouponInput" class="atyaf-coupon-input" placeholder="أدخل كود الخصم"><button class="atyaf-coupon-apply" type="button" onclick="atyafApplyCartCoupon()">تطبيق</button></div><div id="atyafCartCouponMsg" class="atyaf-coupon-msg"></div></div><div id="atyafCartDiscountLine" class="atyaf-summary-line atyaf-discount-line"><span>الخصم</span><strong id="atyafCartDiscount">0 ر.س</strong></div><div class="atyaf-delivery-note">التالي: أدخل عنوان التوصيل</div><textarea id="atyafWhatsAppAddress" class="atyaf-address-box" placeholder="المدينة، الحي، الشارع..."></textarea>
 <div class="atyaf-method-title">طريقة الطلب</div><div class="atyaf-whatsapp-method"><span style="font-size:25px">◉</span><div><b>عبر واتساب</b><small>أرسل تفاصيل طلبك مباشرة لتأكيده مع فريقنا</small></div></div>
 <button class="atyaf-whatsapp-send" type="button" onclick="atyafSendCartDirectWhatsApp()">◉ إرسال الطلب عبر واتساب</button></aside></div></div></section>
-  <div class="modal" id="checkoutModal" onclick="if(event.target===this)closeCheckout()"><div class="modal-card"><button class="close" onclick="closeCheckout()">×</button><h2>إتمام الطلب</h2><div class="notice">الدفع عند الاستلام متاح في النسخة التجريبية.</div><form onsubmit="submitOrder(event)"><div class="form-grid"><div class="field"><label>الاسم الكامل</label><input required placeholder="اكتب اسمك" /></div><div class="field"><label>رقم الهاتف</label><input required type="tel" placeholder="05xxxxxxxx" /></div><div class="field"><label>المدينة</label><input required placeholder="الرياض" /></div><div class="field"><label>المنطقة</label><input placeholder="الحي" /></div><div class="field full"><label>العنوان بالتفصيل</label><textarea required rows="2" placeholder="الشارع، المبنى، رقم الشقة"></textarea></div><div class="field full"><label>ملاحظات الطلب</label><textarea rows="2" placeholder="أي تفاصيل إضافية..."></textarea></div><div class="field full atyaf-coupon-field"><label>كود الخصم</label><div class="atyaf-coupon-row"><input id="couponCode" type="text" autocomplete="off" placeholder="أدخل كود الكوبون" oninput="clearCouponMessage(false)"/><button class="btn btn-outline" type="button" id="applyCouponBtn" onclick="applyCoupon()">تطبيق</button></div><div id="couponMessage" class="atyaf-coupon-message" aria-live="polite"></div></div></div><div id="checkoutSummary" class="atyaf-checkout-summary"><div><span>المجموع</span><b id="checkoutSubtotal">0 ر.س</b></div><div id="checkoutDiscountRow" hidden><span>خصم الكوبون</span><b id="checkoutDiscount">− 0 ر.س</b></div><div class="atyaf-checkout-final"><span>الإجمالي</span><b id="checkoutFinalTotal">0 ر.س</b></div></div><button class="btn btn-primary" style="width:100%" type="submit">تأكيد الطلب — <span id="checkoutTotal">0 ر.س</span></button></form></div></div>
   <div class="modal" id="giftModal" onclick="if(event.target===this)closeGift()"><div class="modal-card"><button class="close" onclick="closeGift()">×</button><h2>جهّز هديتك</h2><p style="color:var(--muted)">أضف تغليفًا فاخرًا إلى سلتك، وسنجهزها بعناية.</p><div class="gift-options"><label class="brand-card" style="display:block;text-align:right;cursor:pointer"><input type="radio" name="wrap" value="25" checked /> تغليف أطياف الكريمي <b style="float:left">25 ر.س</b></label><label class="brand-card" style="display:block;text-align:right;cursor:pointer;margin-top:10px"><input type="radio" name="wrap" value="45" /> صندوق المناسبات الفاخر <b style="float:left">45 ر.س</b></label></div><button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="addGift()">إضافة للسلة</button></div></div>
   
 
@@ -1981,7 +1980,7 @@ function closeFavorites(){document.getElementById('favoritesModal')?.classList.r
     return `<div class="cart-item">${pic}<div style="flex:1;min-width:0"><h4>${escapeHtml(p.name)}</h4><small>${money(p.price)}</small>${x.gift?`<div style="font-size:11px;color:var(--copper)">🎁 ${escapeHtml(x.giftWrap||'تغليف هدية')} ${x.giftWrapPrice?' + '+money(x.giftWrapPrice):''}</div>`:''}<div class="qty"><button onclick="changeQty('${p.id}',-1)">−</button><b>${x.qty}</b><button onclick="changeQty('${p.id}',1)">+</button></div></div><button onclick="removeCartItem('${p.id}')" aria-label="حذف" style="background:none;color:var(--danger);font-size:20px">×</button></div>`;
   }).join(''):'<div class="empty">السلة فارغة<br><a href="#products" onclick="closeCart()" class="link">ابدأ التسوق</a></div>';
   document.getElementById('cartTotal').textContent=money(cartTotal());
-  document.getElementById('checkoutTotal').textContent=money(cartTotal());
+  const checkoutTotalEl=document.getElementById('checkoutTotal');if(checkoutTotalEl)checkoutTotalEl.textContent=money(cartTotal());
   updateCheckoutTotals();
 }
 async function removeCartItem(id){
@@ -1990,7 +1989,7 @@ async function removeCartItem(id){
   save();renderCart();
   try{await deleteCartItemFromSupabase(id)}catch(e){console.error('Remove cart:',e)}
 }
-function openCart(){renderCart();document.getElementById('cartDrawer').classList.add('open')};function closeCart(){document.getElementById('cartDrawer').classList.remove('open')};function openCheckout(){if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا واحدًا على الأقل قبل متابعة الطلب.');atyafAppliedCoupon=null;const ci=document.getElementById('couponCode');if(ci)ci.value='';clearCouponMessage(true);updateCheckoutTotals();closeCart();document.getElementById('checkoutModal').classList.add('open')};function closeCheckout(){document.getElementById('checkoutModal').classList.remove('open')}
+function openCart(){renderCart();document.getElementById('cartDrawer').classList.add('open')};function closeCart(){document.getElementById('cartDrawer').classList.remove('open')};function openCheckout(){if(!state.cart.length)return showMessage('السلة فارغة','أضف منتجًا واحدًا على الأقل قبل متابعة الطلب.');closeCart();if(typeof window.atyafOpenCartPage==='function')return window.atyafOpenCartPage();console.error('ATYAF: cart WhatsApp page is unavailable');showMessage('تعذر فتح السلة','يرجى تحديث الصفحة والمحاولة مرة أخرى.')};function closeCheckout(){/* Legacy checkout form removed: orders are sent from the cart via WhatsApp. */}
     const ATYAAF_WHATSAPP_NUMBER='967774523109';
     function buildWhatsAppOrderMessage(order,orderNo,couponSnapshot){
       const lines=['طلب جديد من أطياف | ATYAF','رقم الطلب: '+orderNo,''];
@@ -3708,52 +3707,7 @@ html body .header .atyaf-profile-image-slot img{
  }
 }
 </style>
-<!-- ATYAF V30: checkout layout only. No changes to checkout logic or other modals. -->
-<style id="atyaf-v30-checkout-responsive-only">
-/* Keep checkout centered and contained instead of an oversized or clipped form. */
-#checkoutModal{padding:clamp(10px,2.5vw,24px)!important;align-items:center!important;justify-items:center!important;overflow:hidden!important}
-#checkoutModal .modal-card{
- box-sizing:border-box!important;float:none!important;position:relative!important;
- width:min(560px,100%)!important;max-width:560px!important;
- min-width:0!important;min-height:0!important;
- max-height:calc(100dvh - 32px)!important;
- margin:0 auto!important;padding:24px!important;
- border-radius:19px!important;overflow-x:hidden!important;overflow-y:auto!important;
- overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
- background:var(--paper,#fffdfa)!important;
-}
-#checkoutModal .modal-card>h2{font-size:clamp(21px,4vw,26px)!important;margin:0 44px 15px 0!important;line-height:1.5!important}
-#checkoutModal .modal-card>.close{
- position:absolute!important;left:18px!important;top:18px!important;float:none!important;
- margin:0!important;z-index:2!important;width:36px!important;height:36px!important;
- display:grid!important;place-items:center!important;
-}
-#checkoutModal .notice{margin:0 0 18px!important;padding:12px 14px!important;font-size:12px!important;line-height:1.7!important;border-radius:12px!important}
-#checkoutModal form{display:block!important;width:100%!important;min-width:0!important;margin:0!important}
-#checkoutModal .form-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;width:100%!important;min-width:0!important}
-#checkoutModal .form-grid>.field{display:flex!important;flex-direction:column!important;min-width:0!important;margin:0!important;gap:6px!important}
-#checkoutModal .form-grid>.field.full{grid-column:1/-1!important}
-#checkoutModal .field label{display:block!important;font-size:12px!important;line-height:1.6!important}
-#checkoutModal .field input,#checkoutModal .field textarea,#checkoutModal .field select{
- box-sizing:border-box!important;display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
- height:44px!important;min-height:44px!important;padding:10px 12px!important;
- border-radius:11px!important;font-size:14px!important;line-height:1.5!important;
-}
-#checkoutModal .field textarea{height:auto!important;min-height:74px!important;resize:vertical!important}
-#checkoutModal .atyaf-coupon-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;align-items:center!important}
-#checkoutModal .atyaf-coupon-row input{width:100%!important;min-width:0!important}
-#checkoutModal .atyaf-coupon-row button{width:auto!important;min-width:72px!important;white-space:nowrap!important}
-#checkoutModal .atyaf-checkout-summary{margin:16px 0!important}
-#checkoutModal form>button[type="submit"]{display:block!important;width:100%!important;min-height:46px!important;margin:12px 0 2px!important;white-space:normal!important}
-@media(max-width:600px){
- #checkoutModal{padding:12px!important;place-items:center!important}
- #checkoutModal .modal-card{width:100%!important;max-width:480px!important;max-height:calc(100dvh - 24px)!important;padding:20px 16px calc(22px + env(safe-area-inset-bottom,0px))!important;border-radius:17px!important}
- #checkoutModal .form-grid{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
- #checkoutModal .form-grid>.field.full{grid-column:auto!important}
- #checkoutModal .modal-card>.close{left:14px!important;top:14px!important}
-}
-@media(max-height:550px){#checkoutModal .modal-card{max-height:calc(100dvh - 12px)!important}}
-</style>
+
 </body>
 </html>
 

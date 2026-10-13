@@ -55,7 +55,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
 <button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
-<button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
+<button data-tab="coupons">الكوبونات والخصومات</button><button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="adminlock">قفل الإدارة</button>
 </div></aside><main>
 <div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><div class="toolbar"><button class="btn alt" onclick="loadAll()">↻ تحديث</button><button class="btn red" type="button" onclick="atyafAdminLogout()">تسجيل الخروج</button></div></div>
@@ -118,6 +118,27 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
  <div class="atyaf-products-table"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>المخزون</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div>
 </div>
 </section>
+<section id="coupons" class="panel"><div class="card section-editor">
+<h2>الكوبونات والخصومات</h2><p class="muted">إدارة كوبونات جدول coupons المستخدم مباشرة في سلة المتجر. لا يؤثر هذا القسم على إعدادات المنتجات أو الماركات.</p>
+<div class="toolbar" style="margin:12px 0"><button class="btn" type="button" id="atyafCouponNew" onclick="atyafCouponNew()">+ كوبون جديد</button><button class="btn alt" type="button" onclick="atyafCouponLoad()">↻ تحديث القائمة</button></div>
+<div id="atyafCouponNotice" class="muted" role="status" aria-live="polite"></div>
+<div id="atyafCouponForm" class="card" hidden style="margin-top:12px;background:#faf8f4">
+<h3 id="atyafCouponFormTitle">كوبون جديد</h3><input type="hidden" id="atyafCouponId">
+<div class="grid">
+<div class="field"><label>رمز الكوبون (أحرف إنجليزية وأرقام)</label><input id="atyafCouponCode" maxlength="40" dir="ltr" placeholder="WELCOME10" autocomplete="off"></div>
+<div class="field"><label>نوع الخصم</label><select id="atyafCouponType"><option value="percentage">نسبة مئوية %</option><option value="fixed">مبلغ ثابت</option></select></div>
+<div class="field"><label>قيمة الخصم</label><input id="atyafCouponValue" type="number" min="0.01" step="0.01"></div>
+<div class="field"><label>الحد الأدنى للطلب</label><input id="atyafCouponMin" type="number" min="0" step="0.01" value="0"></div>
+<div class="field"><label>الحد الأعلى للخصم (0 = بلا حد)</label><input id="atyafCouponCap" type="number" min="0" step="0.01" value="0"></div>
+<div class="field"><label>الحد الأقصى لمرات الاستخدام (0 = بلا حد)</label><input id="atyafCouponLimit" type="number" min="0" step="1" value="0"></div>
+<div class="field"><label>بداية الصلاحية (اختياري)</label><input id="atyafCouponStart" type="datetime-local"></div>
+<div class="field"><label>نهاية الصلاحية (اختياري)</label><input id="atyafCouponEnd" type="datetime-local"></div>
+<div class="field"><label>الحالة</label><select id="atyafCouponActive"><option value="true">مفعّل</option><option value="false">موقوف</option></select></div>
+<div class="field"><label>تطبيق الخصم</label><select id="atyafCouponAll"><option value="true">على كل المنتجات</option><option value="false">على ماركات/أقسام محددة</option></select></div>
+<div class="field full"><label>أسماء الماركات أو الأقسام المسموحة (افصل بينها بفاصلة، عند اختيار التخصيص)</label><input id="atyafCouponSections" placeholder="عساف, إبراڤ" autocomplete="off"></div>
+</div><div class="toolbar" style="margin-top:12px"><button class="btn" id="atyafCouponSaveBtn" type="button" onclick="atyafCouponSave()">حفظ الكوبون</button><button class="btn alt" type="button" onclick="document.getElementById('atyafCouponForm').hidden=true">إلغاء</button></div></div>
+<div style="overflow-x:auto;margin-top:14px"><table><thead><tr><th>الكود</th><th>الخصم</th><th>الحالة</th><th>الاستخدام</th><th>الصلاحية</th><th>الإجراءات</th></tr></thead><tbody id="atyafCouponRows"><tr><td colspan="6" class="muted">افتح القسم لتحميل الكوبونات.</td></tr></tbody></table></div>
+</div></section>
 <section id="gift" class="panel"><div class="card section-editor"><h2>قسم الهدية</h2><div id="giftEditor"></div></div></section>
 <section id="footer" class="panel"><div class="card section-editor"><h2>الفوتر والتواصل</h2><div id="footerEditor"></div></div></section>
 <section id="policies" class="panel"><div class="card section-editor"><h2>السياسات والنصوص</h2><div id="policiesEditor"></div></div></section>
@@ -981,6 +1002,27 @@ root.querySelectorAll('[data-pd]').forEach(el=>{let value=v[el.dataset.pd]??defa
 window.saveProductDesignSettings=async()=>{try{const v={};document.querySelectorAll('#atyafDesignFields [data-pd]').forEach(el=>{const def=defaults[el.dataset.pd];let val=el.value;if(typeof def==='number'){val=Number(val);const d=definitions.find(x=>x[0]===el.dataset.pd);if(!Number.isFinite(val)||val<d[3]||val>d[4])throw new Error('قيمة غير صالحة: '+d[1]);}if(el.dataset.pd==='fontFamily'&&!allowedFonts.includes(val))throw new Error('خط غير صالح');v[el.dataset.pd]=val});await putSetting('product_design',v);await loadAll();stat('تم حفظ تصميم المنتجات الموحّد ✓')}catch(e){stat('فشل حفظ التصميم: '+e.message,true)}};
 window.resetProductDesignSettings=async()=>{if(!confirm('استعادة إعدادات تصميم المنتجات الافتراضية؟'))return;try{await putSetting('product_design',defaults);await loadAll();stat('تمت استعادة التصميم الافتراضي ✓')}catch(e){stat(e.message,true)}};
 window.atyafRenderProductDesign=draw;
+})();
+</script>
+<script id="atyaf-coupons-admin-safe-v24">
+(()=>{
+'use strict';
+let rows=[],busy=false,loaded=false;
+const by=id=>document.getElementById(id);
+const notice=(m,bad=false)=>{const x=by('atyafCouponNotice');if(x){x.textContent=m;x.style.color=bad?'#a9443c':'#426253'}};
+const numeric=(id,label,integer=false)=>{const val=by(id).value.trim(),n=Number(val);if(!val||!Number.isFinite(n)||n<0||(integer&&!Number.isSafeInteger(n)))throw Error('قيمة غير صحيحة: '+label);return n};
+const localDate=iso=>{if(!iso)return '';const d=new Date(iso);if(Number.isNaN(d.getTime()))return '';const pad=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`};
+const utc=id=>{const v=by(id).value;if(!v)return null;const d=new Date(v);if(!Number.isFinite(d.getTime()))throw Error('تاريخ غير صحيح');return d.toISOString()};
+function draw(){const box=by('atyafCouponRows');if(!box)return;box.innerHTML=rows.length?rows.map(x=>{
+ const code=esc(x.code||''),id=JSON.stringify(String(x.id)),value=Number(x.discount_value||0),val=Number.isFinite(value)?value:0;
+ return `<tr><td><b dir="ltr">${code}</b></td><td>${esc(String(val))}${x.discount_type==='percentage'?'%':' مبلغ'}</td><td>${x.active?'مفعّل':'موقوف'}</td><td>${esc(String(x.used_count??0))} / ${Number(x.usage_limit||0)||'∞'}</td><td>${esc(x.expires_at?new Date(x.expires_at).toLocaleDateString('ar'):'بلا انتهاء')}</td><td><div class="actions"><button type="button" class="btn alt" onclick='atyafCouponEdit(${id})'>تعديل</button><button type="button" class="btn alt" onclick='atyafCouponToggle(${id})'>${x.active?'تعطيل':'تفعيل'}</button><button type="button" class="btn red" onclick='atyafCouponDelete(${id})'>حذف</button></div></td></tr>`;
+}).join(''):'<tr><td colspan="6" class="muted">لا توجد كوبونات حاليًا.</td></tr>'}
+async function load(){if(!db)return notice('قاعدة البيانات غير متصلة.',true);try{notice('جاري تحميل الكوبونات…');const {data,error}=await db.from('coupons').select('*').order('created_at',{ascending:false});if(error)throw error;rows=data||[];loaded=true;draw();notice('تم تحميل '+rows.length+' كوبون.')}catch(e){console.error('coupon load',e);notice('فشل تحميل الكوبونات: '+(e?.message||e),true)}}
+function newCoupon(id){const x=rows.find(r=>String(r.id)===String(id));by('atyafCouponForm').hidden=false;by('atyafCouponFormTitle').textContent=x?'تعديل الكوبون':'كوبون جديد';by('atyafCouponId').value=x?.id??'';const fields={atyafCouponCode:x?.code||'',atyafCouponType:x?.discount_type||'percentage',atyafCouponValue:x?.discount_value??'',atyafCouponMin:x?.min_order_amount??0,atyafCouponCap:x?.max_discount??0,atyafCouponLimit:x?.usage_limit??0,atyafCouponStart:localDate(x?.starts_at),atyafCouponEnd:localDate(x?.expires_at),atyafCouponActive:String(x?.active!==false),atyafCouponAll:String(x?.applies_to_all!==false),atyafCouponSections:Array.isArray(x?.applicable_sections)?x.applicable_sections.join(', '):''};for(const [k,v] of Object.entries(fields))by(k).value=v;by('atyafCouponCode').readOnly=!!x;by('atyafCouponForm').scrollIntoView({behavior:'smooth',block:'nearest'})}
+async function save(){if(busy)return;const btn=by('atyafCouponSaveBtn');try{const id=by('atyafCouponId').value,code=by('atyafCouponCode').value.trim().toUpperCase();if(!/^[A-Z0-9_-]{3,40}$/.test(code))throw Error('الكود يجب أن يكون 3–40 حرفًا إنجليزيًا أو رقمًا أو _ أو -');const type=by('atyafCouponType').value;if(!['percentage','fixed'].includes(type))throw Error('نوع الخصم غير صحيح');const val=numeric('atyafCouponValue','قيمة الخصم');if(val<=0||(type==='percentage'&&val>100))throw Error('قيمة الخصم يجب أن تكون أكبر من صفر، والنسبة لا تتجاوز 100%');const min=numeric('atyafCouponMin','الحد الأدنى'),cap=numeric('atyafCouponCap','الحد الأعلى'),limit=numeric('atyafCouponLimit','مرات الاستخدام',true);const start=utc('atyafCouponStart'),end=utc('atyafCouponEnd');if(start&&end&&Date.parse(start)>=Date.parse(end))throw Error('تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية');const all=by('atyafCouponAll').value==='true',sections=by('atyafCouponSections').value.split(/[,،\n]+/).map(x=>x.trim()).filter(Boolean);if(!all&&!sections.length)throw Error('حدد ماركة أو قسمًا واحدًا على الأقل');const values={code,discount_type:type,discount_value:val,min_order_amount:min,max_discount:cap,usage_limit:limit,starts_at:start,expires_at:end,active:by('atyafCouponActive').value==='true',applies_to_all:all,applicable_sections:all?[]:sections};busy=true;btn.disabled=true;notice('جاري حفظ الكوبون…');const request=id?db.from('coupons').update(values).eq('id',id):db.from('coupons').insert(values);const {data,error}=await request.select('*');if(error)throw error;if(!data?.length)throw Error('لم تُرجع قاعدة البيانات سجلًا بعد الحفظ. تحقق من صلاحيات جدول coupons.');by('atyafCouponForm').hidden=true;await load();notice('تم حفظ الكوبون في قاعدة البيانات ✓');}catch(e){console.error('coupon save',e);notice('فشل حفظ الكوبون: '+(e?.message||e),true)}finally{busy=false;btn.disabled=false}}
+async function change(id,kind){if(busy)return;const x=rows.find(r=>String(r.id)===String(id));if(!x)return;const deleting=kind==='delete';if(!confirm(deleting?'هل تريد حذف الكوبون نهائيًا؟':'هل تريد تغيير حالة الكوبون؟'))return;try{busy=true;let q=deleting?db.from('coupons').delete().eq('id',id):db.from('coupons').update({active:!x.active}).eq('id',id);const {data,error}=await q.select('id');if(error)throw error;if(!data?.length)throw Error('لم تؤكد قاعدة البيانات تنفيذ العملية. تحقق من الصلاحيات.');await load();notice(deleting?'تم حذف الكوبون ✓':'تم تغيير الحالة ✓')}catch(e){console.error('coupon action',e);notice('فشلت العملية: '+(e?.message||e),true)}finally{busy=false}}
+window.atyafCouponLoad=load;window.atyafCouponNew=()=>newCoupon();window.atyafCouponEdit=id=>newCoupon(id);window.atyafCouponSave=save;window.atyafCouponDelete=id=>change(id,'delete');window.atyafCouponToggle=id=>change(id,'toggle');
+document.addEventListener('DOMContentLoaded',()=>{const nav=document.querySelector('[data-tab="coupons"]');nav?.addEventListener('click',()=>{if(!loaded)load()})});
 })();
 </script>
 </body></html>

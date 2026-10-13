@@ -3708,5 +3708,53 @@ html body .header .atyaf-profile-image-slot img{
  }
 }
 </style>
+<!-- ATYAF V30: checkout layout only. No changes to checkout logic or other modals. -->
+<style id="atyaf-v30-checkout-responsive-only">
+/* Keep checkout centered and contained instead of an oversized or clipped form. */
+#checkoutModal{padding:clamp(10px,2.5vw,24px)!important;align-items:center!important;justify-items:center!important;overflow:hidden!important}
+#checkoutModal .modal-card{
+ box-sizing:border-box!important;float:none!important;position:relative!important;
+ width:min(560px,100%)!important;max-width:560px!important;
+ min-width:0!important;min-height:0!important;
+ max-height:calc(100dvh - 32px)!important;
+ margin:0 auto!important;padding:24px!important;
+ border-radius:19px!important;overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+ background:var(--paper,#fffdfa)!important;
+}
+#checkoutModal .modal-card>h2{font-size:clamp(21px,4vw,26px)!important;margin:0 44px 15px 0!important;line-height:1.5!important}
+#checkoutModal .modal-card>.close{
+ position:absolute!important;left:18px!important;top:18px!important;float:none!important;
+ margin:0!important;z-index:2!important;width:36px!important;height:36px!important;
+ display:grid!important;place-items:center!important;
+}
+#checkoutModal .notice{margin:0 0 18px!important;padding:12px 14px!important;font-size:12px!important;line-height:1.7!important;border-radius:12px!important}
+#checkoutModal form{display:block!important;width:100%!important;min-width:0!important;margin:0!important}
+#checkoutModal .form-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;width:100%!important;min-width:0!important}
+#checkoutModal .form-grid>.field{display:flex!important;flex-direction:column!important;min-width:0!important;margin:0!important;gap:6px!important}
+#checkoutModal .form-grid>.field.full{grid-column:1/-1!important}
+#checkoutModal .field label{display:block!important;font-size:12px!important;line-height:1.6!important}
+#checkoutModal .field input,#checkoutModal .field textarea,#checkoutModal .field select{
+ box-sizing:border-box!important;display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
+ height:44px!important;min-height:44px!important;padding:10px 12px!important;
+ border-radius:11px!important;font-size:14px!important;line-height:1.5!important;
+}
+#checkoutModal .field textarea{height:auto!important;min-height:74px!important;resize:vertical!important}
+#checkoutModal .atyaf-coupon-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;align-items:center!important}
+#checkoutModal .atyaf-coupon-row input{width:100%!important;min-width:0!important}
+#checkoutModal .atyaf-coupon-row button{width:auto!important;min-width:72px!important;white-space:nowrap!important}
+#checkoutModal .atyaf-checkout-summary{margin:16px 0!important}
+#checkoutModal form>button[type="submit"]{display:block!important;width:100%!important;min-height:46px!important;margin:12px 0 2px!important;white-space:normal!important}
+@media(max-width:600px){
+ #checkoutModal{padding:12px!important;place-items:center!important}
+ #checkoutModal .modal-card{width:100%!important;max-width:480px!important;max-height:calc(100dvh - 24px)!important;padding:20px 16px calc(22px + env(safe-area-inset-bottom,0px))!important;border-radius:17px!important}
+ #checkoutModal .form-grid{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ #checkoutModal .form-grid>.field.full{grid-column:auto!important}
+ #checkoutModal .modal-card>.close{left:14px!important;top:14px!important}
+}
+@media(max-height:550px){#checkoutModal .modal-card{max-height:calc(100dvh - 12px)!important}}
+</style>
 </body>
 </html>
+
+

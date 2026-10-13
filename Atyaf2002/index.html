@@ -105,7 +105,8 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
  </div>
  <div class="grid" style="margin-top:14px">
   <div class="field full upload"><label>صور المنتجات — حتى 10 صور</label><input id="atyafAiImages" type="file" accept="image/*" multiple><div id="atyafAiImageList"></div></div>
-  <div class="field full"><label>أمرك للمساعد</label><textarea id="atyafAiPrompt" rows="5" placeholder="مثال: هذه 5 عطور من عساف، الصور بالترتيب. الأول اسمه ... وسعره 100 والقديم 120، الثاني سعره 85... اكتب وصفًا احترافيًا ولا تخترع سعرًا أو معلومة لم أعطك إياها."></textarea></div>
+  <div class="field full"><label>تعليمات المساعد (افهم المطلوب وصُغ وصفًا جديدًا، لا تنسخ عباراتي)</label><textarea id="atyafAiPrompt" rows="5" placeholder="مثال: هذه العطور من دخون. سعر كل عطر 75 والقديم 99. صف الرائحة بأسلوب جذاب اعتمادًا على معلوماتي، لا تنسخ نص كلامي، ولا تضف مكونات لم أذكرها."></textarea><small class="muted">سيتعامل المساعد مع كلامك كتعليمات ومعلومات، لا كنص وصف يُنسخ كما هو. يمكنك مراجعة وتعديل كل وصف قبل الاعتماد.</small></div>
+  <div class="field"><label>المخزون الافتراضي لكل منتج (اختياري)</label><input id="atyafAiDefaultStock" type="number" min="0" step="1" placeholder="فارغ = غير محدد، 0 = نفد المخزون"><small class="muted">يُطبّق على المنتجات المحللة ما لم تذكر كمية خاصة بمنتج محدد؛ ويمكن تعديل كل كمية في المعاينة.</small></div>
  </div>
  <div class="toolbar" style="margin-top:12px"><button class="btn" id="atyafAiAnalyzeBtn" type="button" onclick="atyafAiAnalyzeProducts()">تحليل الصور وتجهيز المنتجات</button></div>
  <div id="atyafAiStatus" class="muted" style="margin-top:10px"></div>
@@ -813,12 +814,13 @@ window.atyafToggleAiProducts=(force)=>{
      <div class="field"><label>الماركة/القسم</label><input data-ai="${i}" data-k="brand" value="${html(p.brand)}"></div>
      <div class="field"><label>السعر</label><input type="number" data-ai="${i}" data-k="price" value="${Number(p.price)||0}"></div>
      <div class="field"><label>السعر القديم</label><input type="number" data-ai="${i}" data-k="old_price" value="${Number(p.old_price)||0}"></div>
-     <div class="field full"><label>الوصف والتفاصيل</label><textarea data-ai="${i}" data-k="description">${html(p.description)}</textarea></div>
+     <div class="field"><label>المخزون المتوفر</label><input type="number" min="0" step="1" data-ai="${i}" data-k="stock_quantity" value="${p.stock_quantity==null?'':html(p.stock_quantity)}" placeholder="فارغ = غير محدد"></div>
+     <div class="field full"><label>الوصف والتفاصيل (راجع الصياغة قبل الاعتماد)</label><textarea data-ai="${i}" data-k="description">${html(p.description)}</textarea></div>
     </div>
    </div>`).join('')}
    <div class="toolbar"><button class="btn" type="button" onclick="atyafAiSaveDraft()">اعتماد وإضافة ${draft.length} منتجات</button></div>
    <div id="atyafAiSaveStatus" class="muted" style="margin-top:10px;min-height:22px"></div>`;
-  box.querySelectorAll('[data-ai]').forEach(el=>el.oninput=()=>{const i=+el.dataset.ai,k=el.dataset.k;draft[i][k]=(k==='price'||k==='old_price')?Number(el.value)||0:el.value});
+  box.querySelectorAll('[data-ai]').forEach(el=>el.oninput=()=>{const i=+el.dataset.ai,k=el.dataset.k;draft[i][k]=k==='stock_quantity'?(el.value.trim()===''?null:Number(el.value)):(k==='price'||k==='old_price')?Number(el.value)||0:el.value});
  }
  window.atyafAiAnalyzeProducts=async()=>{
   const prompt=$('atyafAiPrompt').value.trim(),btn=$('atyafAiAnalyzeBtn'),status=$('atyafAiStatus');
@@ -826,7 +828,11 @@ window.atyafToggleAiProducts=(force)=>{
   if(!prompt)return status.textContent='اكتب للمساعد معلومات المنتجات والأسعار أولًا.';
   btn.disabled=true;btn.textContent='جاري التحليل…';status.textContent='يتم تحليل الصور وتجهيز المنتجات…';
   try{
-   const parts=[{text:`أنت مساعد إدخال منتجات لمتجر ATYAAF. عدد الصور ${files.length} وبنفس ترتيب المنتجات. اتبع معلومات المستخدم حرفيًا ولا تخترع أسعارًا أو أسماء ماركات لم يذكرها. يمكنك صياغة وصف عربي احترافي اعتمادًا على الصورة والمعلومات. أعد JSON فقط بالشكل {"products":[{"image_index":1,"name":"","brand":"","price":0,"old_price":0,"description":""}]}. يجب أن يكون عدد المنتجات مطابقًا للصور وبحد أقصى 10.\n\nأمر المستخدم:\n${prompt}`}];
+   const defaultStockRaw=$('atyafAiDefaultStock')?.value.trim()||'';
+   if(defaultStockRaw!=='' && (!/^\d+$/.test(defaultStockRaw)||!Number.isSafeInteger(Number(defaultStockRaw))))throw new Error('STOCK_INVALID');
+   const parts=[{text:`أنت مساعد محترف لإدخال منتجات العطور في متجر ATYAAF. أمامك ${files.length} صور؛ أرجع منتجًا واحدًا لكل صورة وبالترتيب الصحيح.
+تعامل مع كلام المستخدم باعتباره تعليمات ومعلومات مُدخلة، لا فقرة جاهزة للنسخ. افهم المقصود من الأسعار والماركة ومعلومات العطر ثم أنشئ وصفًا عربيًا تسويقيًا طبيعيًا وجديد الصياغة، مختصرًا ومفيدًا، وليس تكرارًا حرفيًا لكلام المستخدم أو تعليماته مثل «اكتب الوصف». اشرح الطابع العطري والانطباع العام إذا ورد وصف له؛ لا تدّعِ مكونات أو نوتات أو حجمًا أو تركيزًا أو ثباتًا أو منشأً غير مذكور صراحة أو غير موثوق من بيانات المنتج. لا تخترع أسعارًا أو ماركات أو مخزونًا. استخرج المخزون (stock_quantity) لكل منتج فقط إن ذكر المستخدم كمية واضحة، وإلا أرجع null؛ عدد صفر يعني نفاد المخزون. مخزون افتراضي حدده المدير (يطبّق محليًا فقط حين لا تُذكر كمية خاصة): ${defaultStockRaw===''?'غير محدد':defaultStockRaw}.
+أعد JSON صالحًا فقط: {"products":[{"image_index":1,"name":"","brand":"","price":0,"old_price":0,"stock_quantity":null,"description":""}]}. التزم بعدد الصور (حتى 10)، ولا تكرر أو تنسخ تعليمات المستخدم في حقل description.\n\nتعليمات المستخدم:\n${prompt}`}];
    for(const f of files)parts.push({inline_data:{mime_type:f.type||'image/jpeg',data:await file64(f)}});
    const endpoint=String(window.ATYAAF_AI_ENDPOINT||localStorage.getItem('atyaf_ai_endpoint')||'').trim();
    if(!endpoint)throw new Error('NO_ENDPOINT');
@@ -838,13 +844,18 @@ window.atyafToggleAiProducts=(force)=>{
    if(!res.ok)throw new Error('AI_'+res.status+': '+responseText.slice(0,180));
    let out;try{out=JSON.parse(responseText)}catch(_){throw new Error('AI_BAD_JSON')}
    const raw=out.products?out:(out.data||out.result||out);
-   draft=(raw.products||[]).slice(0,10).map((p,i)=>({...p,image_index:Number(p.image_index)||i+1}));
+   draft=(raw.products||[]).slice(0,10).map((p,i)=>{
+    const explicit=p.stock_quantity;
+    const candidate=(explicit===null||explicit===undefined||explicit==='')?defaultStockRaw:explicit;
+    const qty=candidate===''||candidate==null?null:Number(candidate);
+    return {...p,image_index:Number(p.image_index)||i+1,stock_quantity:qty!==null&&Number.isSafeInteger(qty)&&qty>=0?qty:null};
+   });
    if(!draft.length)throw new Error('EMPTY');
    renderDraft();status.textContent='تم تجهيز '+draft.length+' منتجات. راجعها ثم اعتمد الإضافة.';
   }catch(e){
    console.error('ATYAAF AI products:',e);
    const m=String(e?.message||'');
-   status.textContent=m==='NO_ENDPOINT'?'المساعد يحتاج ربط عنوان الوسيط الآمن أولًا.':m==='AUTH_REQUIRED'?'انتهت جلسة الإدارة. سجّل الدخول من جديد.':m.startsWith('AI_404')?'مسار الذكاء الاصطناعي /ai غير موجود في Worker.':m.startsWith('AI_401')||m.startsWith('AI_403')?'تعذر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من GEMINI_API_KEY في Worker.':m.startsWith('AI_413')?'حجم الصور كبير جدًا. قلّل حجم الصور ثم أعد المحاولة.':m.startsWith('AI_429')?'تم بلوغ حد الاستخدام المؤقت لخدمة الذكاء الاصطناعي. أعد المحاولة لاحقًا.':m==='AI_BAD_JSON'?'وصل رد غير صالح من Worker.':'تعذر تحليل المنتجات الآن. راجع سجل Worker ثم أعد المحاولة.';
+   status.textContent=m==='STOCK_INVALID'?'كمية المخزون الافتراضية يجب أن تكون عددًا صحيحًا غير سالب.':m==='NO_ENDPOINT'?'المساعد يحتاج ربط عنوان الوسيط الآمن أولًا.':m==='AUTH_REQUIRED'?'انتهت جلسة الإدارة. سجّل الدخول من جديد.':m.startsWith('AI_404')?'مسار الذكاء الاصطناعي /ai غير موجود في Worker.':m.startsWith('AI_401')||m.startsWith('AI_403')?'تعذر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من GEMINI_API_KEY في Worker.':m.startsWith('AI_413')?'حجم الصور كبير جدًا. قلّل حجم الصور ثم أعد المحاولة.':m.startsWith('AI_429')?'تم بلوغ حد الاستخدام المؤقت لخدمة الذكاء الاصطناعي. أعد المحاولة لاحقًا.':m==='AI_BAD_JSON'?'وصل رد غير صالح من Worker.':'تعذر تحليل المنتجات الآن. راجع سجل Worker ثم أعد المحاولة.';
   }
   finally{btn.disabled=false;btn.textContent='تحليل الصور وتجهيز المنتجات'}
  };
@@ -874,12 +885,15 @@ window.atyafToggleAiProducts=(force)=>{
     say('جاري رفع صورة المنتج '+(i+1)+' من '+draft.length+'… قد يستغرق الرفع وقتًا على الاتصال البطيء.');
     const image=(await atyafWithTimeout(uploadFiles([f],'products'),120000))[0]||'';
     if(!image)throw new Error('لم يتم الحصول على رابط صورة المنتج رقم '+(i+1)+'.');
+    const stock=p.stock_quantity;
+    if(stock!==null && stock!==undefined && stock!=='' && (!Number.isSafeInteger(Number(stock))||Number(stock)<0))throw new Error('المخزون للمنتج '+(i+1)+' يجب أن يكون عددًا صحيحًا غير سالب.');
     const row={
      name,
      brand:String(p.brand||'').trim(),
      price:Number(p.price)||0,
      old_price:Number(p.old_price)||0,
      description:String(p.description||'').trim(),
+     stock_quantity:stock===null||stock===undefined||stock===''?null:Number(stock),
      image_url:image,
      is_active:true,
      sort_order:PRODUCTS.length+i+1
@@ -900,6 +914,7 @@ window.atyafToggleAiProducts=(force)=>{
    draft=[];files=[];
    $('atyafAiImages').value='';
    $('atyafAiPrompt').value='';
+   $('atyafAiDefaultStock').value='';
    $('atyafAiImageList').innerHTML='';
    await loadAll();
    $('atyafAiPreview').innerHTML='<div class="status" style="margin:0">تمت إضافة '+added.length+' منتجات مع صورها بنجاح ✓</div>';

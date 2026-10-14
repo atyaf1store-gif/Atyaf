@@ -1602,6 +1602,26 @@ body.atyaf-single-brand-view #atyafBrandSingleViewBar{display:flex;align-items:c
 #atyafBrandSingleViewBack{flex:0 0 auto;background:#fff;border:1px solid var(--line,#e9e1d6);color:var(--green,#17352e);border-radius:10px;padding:9px 14px;min-height:42px;cursor:pointer}
 @media(max-width:600px){body.atyaf-single-brand-view #atyafBrandSingleViewBar{width:calc(100% - 24px);padding:15px 0 10px}#atyafBrandSingleViewBar h1{font-size:24px}body.atyaf-single-brand-view #atyafBrandProductSections > .atyaf-brand-products[data-atyaf-active-brand="1"]{padding-top:10px!important}}
 </style>
+<style id="atyaf-v36-brand-catalog-tools-css">
+#atyafBrandCatalogTools{display:none;max-width:1180px;width:calc(100% - 32px);padding:12px 0 0}
+body.atyaf-single-brand-view #atyafBrandProductSections .atyaf-reference-card[hidden]{display:none!important}
+body.atyaf-single-brand-view #atyafBrandCatalogTools:not([hidden]){display:block!important}
+#atyafBrandCatalogTools button,#atyafBrandCatalogTools select{font:inherit;cursor:pointer}
+#atyafBrandCatalogTools .atyaf-bc-shortcuts,#atyafBrandCatalogTools .atyaf-bc-brands,#atyafBrandCatalogTools .atyaf-bc-categories{display:flex;gap:8px;flex-wrap:wrap;padding:7px 0}
+#atyafBrandCatalogTools .atyaf-bc-shortcuts button,#atyafBrandCatalogTools .atyaf-bc-brands button,#atyafBrandCatalogTools .atyaf-bc-categories button{background:#fff;color:#33413b;border:1px solid #e8e2d9;border-radius:11px;min-height:39px;padding:8px 11px;font-size:12px;line-height:1.4}
+#atyafBrandCatalogTools .atyaf-bc-shortcuts button.active,#atyafBrandCatalogTools .atyaf-bc-brands button.active,#atyafBrandCatalogTools .atyaf-bc-categories button.active{background:#203b32;color:#fff;border-color:#203b32}
+#atyafBrandCatalogTools .atyaf-bc-search{height:46px;border:1px solid #e2ddd5;border-radius:12px;display:flex;align-items:center;gap:9px;background:#fff;padding:0 12px;margin:10px 0 5px}
+#atyafBrandCatalogTools .atyaf-bc-search span{font-size:21px;color:#847e76}
+#atyafBcSearch{border:0;background:transparent;outline:none;width:100%;font-size:16px;min-width:0;color:#233e35}
+#atyafBrandCatalogTools .atyaf-bc-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:9px 0;font-size:16px;color:#18392f}
+#atyafBcClear{border:0;border-radius:30px;background:#fbebea;color:#a63a35;padding:6px 10px;font-size:12px!important}
+#atyafBrandCatalogTools .atyaf-bc-sortbar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:1px solid #e9e3dc;border-radius:12px;padding:10px 13px;color:#726e68;font-size:13px}
+#atyafBrandCatalogTools .atyaf-bc-sortbar label{display:flex;align-items:center;gap:8px}
+#atyafBcSort{background:#fff;border:1px solid #e9e3dc;padding:6px;border-radius:9px;color:#283f37;max-width:170px}
+#atyafBcEmpty{background:#fff;border:1px dashed #e4ddd2;border-radius:12px;padding:24px;text-align:center;color:#666}
+#atyafBrandCatalogTools [hidden]{display:none!important}
+@media(max-width:600px){#atyafBrandCatalogTools{width:calc(100% - 24px)}#atyafBrandCatalogTools .atyaf-bc-shortcuts{justify-content:center}#atyafBrandCatalogTools .atyaf-bc-shortcuts button{font-size:11px;padding:7px 9px;flex:0 1 auto}#atyafBrandCatalogTools .atyaf-bc-brands{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}#atyafBrandCatalogTools .atyaf-bc-brands button{white-space:nowrap;flex:none;scroll-snap-align:start}}
+</style>
 </head>
 <body>
 
@@ -1634,6 +1654,27 @@ body.atyaf-single-brand-view #atyafBrandSingleViewBar{display:flex;align-items:c
 
 <section class="section container" id="products" style="padding-top:20px"><div class="section-head"><div><h2>مختارات أطياف</h2><p id="resultText">منتجاتنا الأكثر حبًا</p></div><select id="sortSelect" onchange="renderProducts()" style="border:1px solid var(--line);background:#fffdfa;padding:10px 14px;border-radius:999px;color:var(--green)"><option value="featured">ترتيب: مميز</option><option value="price-low">السعر: الأقل</option><option value="price-high">السعر: الأعلى</option><option value="new">الأحدث</option></select></div><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all',this)">الكل</button><button class="chip" data-filter="oud" onclick="setFilter('oud',this)">عود</button><button class="chip" data-filter="musk" onclick="setFilter('musk',this)">مسك</button><button class="chip" data-filter="floral" onclick="setFilter('floral',this)">زهور</button><button class="chip" data-filter="sale" onclick="setFilter('sale',this)">عروض</button><button class="chip" data-filter="new" onclick="setFilter('new',this)">وصل حديثًا</button></div><div class="products" id="productGrid"></div></section>
     <div id="atyafBrandSingleViewBar" dir="rtl" aria-live="polite"><div><h1 id="atyafBrandSingleViewTitle"></h1><p id="atyafBrandSingleViewSubtitle"></p></div><button id="atyafBrandSingleViewBack" type="button">← جميع الماركات</button></div>
+    <!-- V36: Functional filters inside an individual brand catalog only. -->
+    <section id="atyafBrandCatalogTools" class="container" dir="rtl" aria-label="بحث وفرز وتصفية منتجات الماركة" hidden>
+      <div class="atyaf-bc-shortcuts">
+        <button type="button" data-bc-mode="scents">✧ استكشف الروائح</button>
+        <button type="button" data-bc-show-categories="1">▦ تصفح الفئات</button>
+        <button type="button" data-bc-mode="favorites">♡ المفضلة</button>
+        <button type="button" data-bc-mode="sale">◈ العروض الحصرية</button>
+        <button type="button" data-bc-mode="trending">↗ الأكثر رواجًا</button>
+      </div>
+      <label class="atyaf-bc-search"><span aria-hidden="true">⌕</span><input id="atyafBcSearch" type="search" placeholder="ابحث عن منتج داخل الماركة..." autocomplete="off" aria-label="بحث في منتجات الماركة"></label>
+      <div class="atyaf-bc-brands" id="atyafBcBrands" aria-label="اختر الماركة"></div>
+      <div class="atyaf-bc-categories" id="atyafBcCategories" hidden aria-label="فلاتر الفئات">
+        <button type="button" data-bc-category="all" class="active">كل الروائح</button>
+        <button type="button" data-bc-category="oud">عود</button>
+        <button type="button" data-bc-category="musk">مسك</button>
+        <button type="button" data-bc-category="floral">زهور</button>
+      </div>
+      <div class="atyaf-bc-heading"><strong id="atyafBcModeTitle">جميع منتجات الماركة</strong><button type="button" id="atyafBcClear" hidden>إلغاء التصفية ×</button></div>
+      <div class="atyaf-bc-sortbar"><span id="atyafBcCount" role="status" aria-live="polite"></span><label>الترتيب <select id="atyafBcSort" aria-label="ترتيب المنتجات"><option value="default">الافتراضي</option><option value="low">السعر: الأقل</option><option value="high">السعر: الأعلى</option><option value="name">الاسم</option><option value="discount">الأعلى خصمًا</option></select></label></div>
+      <p id="atyafBcEmpty" role="status" hidden>لا توجد منتجات تطابق هذه التصفية. جرّب البحث أو اختيار تصفية أخرى.</p>
+    </section>
     <div id="atyafBrandProductSections" class="atyaf-brand-product-sections" aria-label="أقسام المنتجات حسب الماركة"></div>
     <section class="section container" id="scents"><div class="gift"><div><span class="eyebrow" style="color:#e8bb80">هدية تحمل شعورًا</span><h2>لأن أجمل الهدايا<br>تُحسّ قبل أن تُفتح</h2><p>اختر عطرك، أضف تغليفنا الفاخر، ودعنا نجهزها بعناية لتصل كما تتمنى.</p><button class="btn" onclick="openGift()">جهّز هديتك</button></div><div style="font-size:90px;color:#f2d19d80">✦</div></div></section>
 
@@ -3930,5 +3971,76 @@ main#store > section.benefits[aria-hidden="true"]{display:none!important}
  new MutationObserver(()=>{if(active)applySelection()}).observe(host,{childList:true});
 })();
 </script>
+<script id="atyaf-v36-brand-catalog-tools-js">
+(()=>{
+ 'use strict';
+ const host=document.getElementById('atyafBrandProductSections');
+ const box=document.getElementById('atyafBrandCatalogTools');
+ const title=document.getElementById('atyafBrandSingleViewTitle');
+ if(!host||!box||!title)return;
+ const search=document.getElementById('atyafBcSearch'),sort=document.getElementById('atyafBcSort');
+ const count=document.getElementById('atyafBcCount'),empty=document.getElementById('atyafBcEmpty');
+ const modeTitle=document.getElementById('atyafBcModeTitle'),clear=document.getElementById('atyafBcClear');
+ const brands=document.getElementById('atyafBcBrands'),categories=document.getElementById('atyafBcCategories');
+ const norm=v=>String(v||'').trim().toLocaleLowerCase('ar').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/\s+/g,' ');
+ const escape=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ let mode='all',category='all',brandBefore='',scheduled=false;
+ function products(){return Array.isArray(window.ATYAAF_LIVE_PRODUCTS)?window.ATYAAF_LIVE_PRODUCTS:[]}
+ function currentSection(){return [...host.querySelectorAll(':scope > section[data-brand-section]')].find(s=>s.dataset.atyafActiveBrand==='1')}
+ function amount(p){const n=Number(p?.price);return Number.isFinite(n)?n:0}
+ function old(p){const n=Number(p?.old);return Number.isFinite(n)?n:0}
+ function tags(p){return Array.isArray(p?.tags)?p.tags.map(norm):[]}
+ function favIds(){try{return new Set(JSON.parse(localStorage.getItem('atyaaf-favs')||'[]').map(String))}catch(_){return new Set()}}
+ function recognizedTrending(p){return tags(p).some(t=>['trending','popular','best','bestseller'].includes(t))||/الأكثر مبيع|رائج|best.?sell/i.test(String(p.label||''))}
+ const names={all:'جميع منتجات الماركة',sale:'العروض الحصرية',trending:'الأكثر رواجًا',favorites:'المفضلة',scents:'استكشف الروائح'};
+ function buildBrands(){
+   const name=title.textContent.trim(),items=[...new Set(products().map(p=>String(p.brand||'').trim()).filter(Boolean))];
+   brands.innerHTML=items.map(n=>'<button type="button" data-bc-brand="'+escape(n)+'" class="'+(norm(n)===norm(name)?'active':'')+'">'+escape(n)+'</button>').join('');
+ }
+ function apply(){
+   const visible=document.body.classList.contains('atyaf-single-brand-view');
+   box.hidden=!visible;if(!visible)return;
+   const section=currentSection();if(!section)return;
+   const selectedName=String(section.dataset.brandSection||'');
+   if(brandBefore!==selectedName){brandBefore=selectedName;mode='all';category='all';search.value='';sort.value='default';categories.hidden=true;buildBrands()}
+   const all=products(),lookup=new Map(all.map(p=>[String(p.id),p]));
+   const cards=[...section.querySelectorAll('.atyaf-brand-products-grid > [data-product-id]')];
+   const favs=favIds(),q=norm(search.value);let shown=[];
+   for(const card of cards){
+     const p=lookup.get(String(card.dataset.productId));if(!p){card.hidden=false;card.style.display='';continue}
+     const hay=norm([p.name,p.brand,p.desc,p.label].join(' '));
+     const hasCategory=category==='all'||tags(p).includes(category);
+     const hasMode=mode==='all'||(mode==='sale'&&old(p)>amount(p)&&amount(p)>=0)||(mode==='favorites'&&favs.has(String(p.id)))||(mode==='trending'&&recognizedTrending(p))||(mode==='scents'&&tags(p).some(t=>['oud','musk','floral'].includes(t)));
+     const show=hasMode&&hasCategory&&(!q||hay.includes(q));
+     card.hidden=!show;card.style.display=show?'':'none';if(show)shown.push({card,p});
+   }
+   const comparer={low:(a,b)=>amount(a.p)-amount(b.p),high:(a,b)=>amount(b.p)-amount(a.p),name:(a,b)=>String(a.p.name||'').localeCompare(String(b.p.name||''),'ar'),discount:(a,b)=>(old(b.p)-amount(b.p))-(old(a.p)-amount(a.p))}[sort.value];
+   if(comparer){shown.sort(comparer);const grid=section.querySelector('.atyaf-brand-products-grid');shown.forEach(({card})=>grid.appendChild(card))}
+   count.textContent=shown.length+' من '+cards.length+' منتج';empty.hidden=shown.length!==0;
+   modeTitle.textContent=names[mode]||names.all;
+   clear.hidden=mode==='all'&&category==='all'&&!q&&sort.value==='default';
+   box.querySelectorAll('[data-bc-mode]').forEach(b=>{b.classList.toggle('active',b.dataset.bcMode===mode);b.setAttribute('aria-pressed',String(b.dataset.bcMode===mode))});
+   box.querySelectorAll('[data-bc-category]').forEach(b=>b.classList.toggle('active',b.dataset.bcCategory===category));
+ }
+ function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;apply()})}
+ search.addEventListener('input',schedule);sort.addEventListener('change',schedule);
+ clear.addEventListener('click',()=>{mode='all';category='all';search.value='';sort.value='default';categories.hidden=true;schedule()});
+ box.addEventListener('click',e=>{
+   const modeButton=e.target.closest('[data-bc-mode]');
+   if(modeButton){mode=mode===modeButton.dataset.bcMode?'all':modeButton.dataset.bcMode;category='all';categories.hidden=true;schedule();return}
+   if(e.target.closest('[data-bc-show-categories]')){categories.hidden=!categories.hidden;schedule();return}
+   const cat=e.target.closest('[data-bc-category]');if(cat){category=cat.dataset.bcCategory;schedule();return}
+   const b=e.target.closest('[data-bc-brand]');if(b){window.atyafOpenBrandView?.(b.dataset.bcBrand);schedule()}
+ });
+ // The existing brand renderer replaces sections when live Supabase data change.
+ new MutationObserver(schedule).observe(host,{childList:true});
+ new MutationObserver(schedule).observe(document.body,{attributes:true,attributeFilter:['class']});
+ new MutationObserver(schedule).observe(title,{childList:true});
+ window.addEventListener('focus',schedule);
+ document.addEventListener('click',e=>{if(e.target.closest('[data-store-action="favorites"],#favoritesModal'))setTimeout(schedule,100)});
+ schedule();
+})();
+</script>
 </body>
 </html>
+

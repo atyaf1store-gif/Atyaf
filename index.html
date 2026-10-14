@@ -1622,6 +1622,25 @@ body.atyaf-single-brand-view #atyafBrandCatalogTools:not([hidden]){display:block
 #atyafBrandCatalogTools [hidden]{display:none!important}
 @media(max-width:600px){#atyafBrandCatalogTools{width:calc(100% - 24px)}#atyafBrandCatalogTools .atyaf-bc-shortcuts{justify-content:center}#atyafBrandCatalogTools .atyaf-bc-shortcuts button{font-size:11px;padding:7px 9px;flex:0 1 auto}#atyafBrandCatalogTools .atyaf-bc-brands{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}#atyafBrandCatalogTools .atyaf-bc-brands button{white-space:nowrap;flex:none;scroll-snap-align:start}}
 </style>
+<style id="atyaf-scent-catalog-v37-css">
+#atyafScentsCatalog{--sc-cols:5;--sc-tile:100px;--sc-gap:12px;--sc-round:50%;--sc-border:1px;--sc-border-color:#e8e1d7;--sc-bg:#fff;--sc-text:#17352e;--sc-font:13px}
+#atyafScentsCatalog[hidden],#atyafScentResults[hidden]{display:none!important}
+.atyaf-scent-tiles{display:grid;grid-template-columns:repeat(var(--sc-cols),minmax(0,1fr));gap:var(--sc-gap);align-items:start}
+.atyaf-scent-tile{background:transparent;border:0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--sc-text);font-size:var(--sc-font);text-align:center;padding:3px;cursor:pointer}
+.atyaf-scent-art{width:min(var(--sc-tile),100%);aspect-ratio:1;display:grid;place-items:center;border-radius:var(--sc-round);overflow:hidden;background:var(--sc-bg);border:var(--sc-border) solid var(--sc-border-color);font-size:36px}
+.atyaf-scent-art img{width:100%;height:100%;object-fit:cover;display:block}
+.atyaf-scent-tile strong{font-size:inherit;line-height:1.45;font-weight:600}
+.atyaf-scent-results-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e8e1d7;padding:0 0 12px;margin-bottom:12px}
+.atyaf-scent-results-head h2{margin:0;font-size:25px;color:var(--sc-text)}
+#atyafScentBack{background:white;border:1px solid #e8e1d7;border-radius:12px;padding:10px 14px;color:#18382e}
+#atyafScentCount{color:#777;font-size:12px}
+#atyafScentResultGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+#atyafScentResultGrid .atyaf-reference-card{min-width:0}
+body.atyaf-scent-only #store>.hero-ad,body.atyaf-scent-only #store>.benefits,body.atyaf-scent-only #store>#brands,body.atyaf-scent-only #store>#products,body.atyaf-scent-only #store>#atyafBrandProductSections,body.atyaf-scent-only #store>#scents,body.atyaf-scent-only #store>#atyafLowerAds,body.atyaf-scent-only #atyafBrandSingleViewBar,body.atyaf-scent-only #atyafBrandCatalogTools{display:none!important}
+body.atyaf-scent-only #atyafScentsCatalog{display:block!important}
+@media(max-width:1000px){#atyafScentResultGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){#atyafScentResultGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 
@@ -1644,7 +1663,7 @@ body.atyaf-single-brand-view #atyafBrandCatalogTools:not([hidden]){display:block
   </div>
 </div>
     </div>
-    <nav class="nav" id="nav"><div class="container navrow"><a href="#home">الرئيسية</a><a href="#brands">الماركات</a><a href="#products">الأكثر مبيعًا</a><a href="#products">وصل حديثًا</a><a href="#products">العروض</a><a href="#scents">الروائح</a><a href="#contact">تواصل معنا</a></div></nav>
+    <nav class="nav" id="nav"><div class="container navrow"><a href="#home">الرئيسية</a><a href="#brands">الماركات</a><a href="#products">الأكثر مبيعًا</a><a href="#products">وصل حديثًا</a><a href="#products">العروض</a><a href="#atyafScentsCatalog">الروائح</a><a href="#contact">تواصل معنا</a></div></nav>
   </header>
   <main id="store">
     <section class="hero-ad" id="home" aria-label="إعلانات المتجر" hidden><div class="hero-ad-track" id="heroAdTrack"></div><div class="hero-ad-dots" id="heroAdDots"></div></section>
@@ -1652,6 +1671,7 @@ body.atyaf-single-brand-view #atyafBrandCatalogTools:not([hidden]){display:block
 
 <section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands" data-atyaf-placeholder-brands="true" aria-busy="true"></div></section>
 
+<section id="atyafScentsCatalog" class="section container" dir="rtl" hidden aria-label="الروائح"><div class="section-head"><div><h2 id="atyafScentsTitle">الروائح</h2><p id="atyafScentsSubtitle">اكتشف عطرك بحسب النفحات</p></div><button type="button" id="atyafScentsAll" class="link" style="background:none">عرض الكل ←</button></div><div id="atyafScentTiles" class="atyaf-scent-tiles"></div><div id="atyafScentResults" hidden><div class="atyaf-scent-results-head"><h2 id="atyafScentResultTitle"></h2><button type="button" id="atyafScentBack">← كل الروائح</button></div><p id="atyafScentCount"></p><div id="atyafScentResultGrid" class="atyaf-brand-products-grid"></div><p id="atyafScentEmpty" hidden>لا توجد منتجات تطابق هذه الرائحة حاليًا.</p></div></section>
 <section class="section container" id="products" style="padding-top:20px"><div class="section-head"><div><h2>مختارات أطياف</h2><p id="resultText">منتجاتنا الأكثر حبًا</p></div><select id="sortSelect" onchange="renderProducts()" style="border:1px solid var(--line);background:#fffdfa;padding:10px 14px;border-radius:999px;color:var(--green)"><option value="featured">ترتيب: مميز</option><option value="price-low">السعر: الأقل</option><option value="price-high">السعر: الأعلى</option><option value="new">الأحدث</option></select></div><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all',this)">الكل</button><button class="chip" data-filter="oud" onclick="setFilter('oud',this)">عود</button><button class="chip" data-filter="musk" onclick="setFilter('musk',this)">مسك</button><button class="chip" data-filter="floral" onclick="setFilter('floral',this)">زهور</button><button class="chip" data-filter="sale" onclick="setFilter('sale',this)">عروض</button><button class="chip" data-filter="new" onclick="setFilter('new',this)">وصل حديثًا</button></div><div class="products" id="productGrid"></div></section>
     <div id="atyafBrandSingleViewBar" dir="rtl" aria-live="polite"><div><h1 id="atyafBrandSingleViewTitle"></h1><p id="atyafBrandSingleViewSubtitle"></p></div><button id="atyafBrandSingleViewBack" type="button">← جميع الماركات</button></div>
     <!-- V36: Functional filters inside an individual brand catalog only. -->
@@ -4041,6 +4061,41 @@ main#store > section.benefits[aria-hidden="true"]{display:none!important}
  schedule();
 })();
 </script>
+<script id="atyaf-scent-catalog-v37-js">
+(()=>{
+'use strict';
+const root=document.getElementById('atyafScentsCatalog'),tiles=document.getElementById('atyafScentTiles'),results=document.getElementById('atyafScentResults'),grid=document.getElementById('atyafScentResultGrid');if(!root||!tiles||!grid)return;
+const defaults=[{title:'عود',emoji:'🪵',keywords:'عود,oud'},{title:'مسك',emoji:'🌿',keywords:'مسك,musk'},{title:'ورد',emoji:'🌹',keywords:'ورد,rose,floral,زهور'},{title:'فانيليا',emoji:'🌼',keywords:'فانيليا,vanilla'},{title:'فاكهة',emoji:'🍊',keywords:'فواكه,فاكهه,fruit,fruity'}];
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=v=>String(v??'').toLocaleLowerCase('ar').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[\u064b-\u065f]/g,'').trim();
+const num=(v,d,min,max)=>{const n=Number(v);return Number.isFinite(n)?Math.max(min,Math.min(max,Math.round(n))):d};
+const paint=(v,d)=>/^#[0-9a-fA-F]{6}$/.test(String(v))?v:d;
+let cfg=null,selected=null,previousY=0,loading=false;
+function base(){return {enabled:true,title:'الروائح',subtitle:'اكتشف عطرك بحسب النفحات',columnsDesktop:5,columnsTablet:5,columnsMobile:5,tileSize:100,gap:12,radius:50,borderWidth:1,borderColor:'#e8e1d7',backgroundColor:'#ffffff',titleColor:'#17352e',fontSize:13,items:defaults.map(x=>({...x,hidden:false}))}}
+function draw(){if(!cfg)return;root.hidden=cfg.enabled===false;if(root.hidden)return;
+root.querySelector('#atyafScentsTitle').textContent=cfg.title||'الروائح';root.querySelector('#atyafScentsSubtitle').textContent=cfg.subtitle||'';
+root.style.setProperty('--sc-cols',num(cfg.columnsDesktop,5,1,10));root.style.setProperty('--sc-tile',num(cfg.tileSize,100,48,240)+'px');root.style.setProperty('--sc-gap',num(cfg.gap,12,0,60)+'px');root.style.setProperty('--sc-round',num(cfg.radius,50,0,50)+'%');root.style.setProperty('--sc-border',num(cfg.borderWidth,1,0,8)+'px');root.style.setProperty('--sc-border-color',paint(cfg.borderColor,'#e8e1d7'));root.style.setProperty('--sc-bg',paint(cfg.backgroundColor,'#ffffff'));root.style.setProperty('--sc-text',paint(cfg.titleColor,'#17352e'));root.style.setProperty('--sc-font',num(cfg.fontSize,13,9,28)+'px');
+let style=document.getElementById('atyaf-scent-responsive-live');if(!style){style=document.createElement('style');style.id='atyaf-scent-responsive-live';document.head.appendChild(style)}style.textContent='@media(max-width:1024px){#atyafScentsCatalog{--sc-cols:'+num(cfg.columnsTablet,5,1,10)+'}}@media(max-width:600px){#atyafScentsCatalog{--sc-cols:'+num(cfg.columnsMobile,5,1,8)+'}}';
+const items=Array.isArray(cfg.items)?cfg.items:defaults;tiles.innerHTML=items.map((x,i)=>x.hidden?'':`<button type="button" class="atyaf-scent-tile" data-sc-index="${i}"><span class="atyaf-scent-art">${/^https?:\/\//i.test(x.image||'')?`<img loading="lazy" src="${esc(x.image)}" alt="${esc(x.title)}">`:esc(x.emoji||'✦')}</span><strong>${esc(x.title||'رائحة')}</strong></button>`).join('');if(selected!==null)renderResults();}
+function products(){return Array.isArray(window.ATYAAF_LIVE_PRODUCTS)?window.ATYAAF_LIVE_PRODUCTS:[]}
+function matches(p,item){const words=String(item.keywords||item.title||'').split(/[,،\n]+/).map(norm).filter(w=>w.length>=2);if(!words.length)return false;const raw=Array.isArray(p.tags)?p.tags.join(' '):'';const hay=norm([p.name,p.brand,p.desc,p.description,p.label,raw].join(' '));return words.some(w=>hay.includes(w))}
+function renderResults(){if(selected===null||!cfg)return;const x=(Array.isArray(cfg.items)?cfg.items:defaults)[selected];if(!x)return;root.querySelector('#atyafScentResultTitle').textContent='عطور '+x.title;tiles.hidden=true;results.hidden=false;
+const found=products().filter(p=>matches(p,x));root.querySelector('#atyafScentCount').textContent=found.length+' منتج';root.querySelector('#atyafScentEmpty').hidden=found.length>0;
+const source=document.querySelectorAll('#atyafBrandProductSections .atyaf-reference-card[data-product-id]');const lookup=new Map([...source].map(card=>[card.getAttribute('data-product-id'),card]));const fragment=document.createDocumentFragment();for(const p of found){const card=lookup.get(String(p.id));if(card){const clone=card.cloneNode(true);clone.hidden=false;clone.style.display='';fragment.appendChild(clone)}}grid.replaceChildren(fragment);}
+function enter(i){if(!cfg)return;const a=cfg.items||defaults;if(i<0||i>=a.length)return;if(document.body.classList.contains('atyaf-single-brand-view'))window.atyafCloseBrandView?.();if(!document.body.classList.contains('atyaf-scent-only'))previousY=window.scrollY;selected=i;document.body.classList.add('atyaf-scent-only');root.hidden=false;renderResults();window.scrollTo({top:root.getBoundingClientRect().top+window.scrollY-120,behavior:'instant'});}
+function leave(){selected=null;results.hidden=true;tiles.hidden=false;document.body.classList.remove('atyaf-scent-only');window.scrollTo({top:previousY,behavior:'instant'})}
+function openAll(){if(cfg?.enabled===false)return;if(document.body.classList.contains('atyaf-single-brand-view'))window.atyafCloseBrandView?.();previousY=window.scrollY;selected=null;results.hidden=true;tiles.hidden=false;document.body.classList.add('atyaf-scent-only');root.hidden=false;window.scrollTo({top:root.getBoundingClientRect().top+window.scrollY-120,behavior:'instant'})}
+tiles.addEventListener('click',e=>{const btn=e.target.closest('[data-sc-index]');if(btn)enter(Number(btn.dataset.scIndex))});document.getElementById('atyafScentBack').addEventListener('click',()=>{selected=null;tiles.hidden=false;results.hidden=true});document.getElementById('atyafScentsAll').addEventListener('click',openAll);
+document.addEventListener('click',e=>{const link=e.target.closest('a[href="#atyafScentsCatalog"], .header .nav a[href="#scents"]');if(link){e.preventDefault();openAll()}const home=e.target.closest('#atyafMobileBottomNav [data-atyaf-tab="home"],#atyafMobileBottomNav [data-atyaf-tab="brands"]');if(home&&document.body.classList.contains('atyaf-scent-only'))leave()},true);
+window.atyafOpenScentCatalog=openAll;window.atyafCloseScentCatalog=leave;
+async function refresh(){if(loading||!window.atyafDb)return;loading=true;try{const {data,error}=await window.atyafDb.from('settings').select('value').eq('key','scent_catalog').order('updated_at',{ascending:false}).limit(1);if(error)throw error;let v=data?.[0]?.value;if(typeof v==='string')v=JSON.parse(v);cfg=v&&typeof v==='object'?{...base(),...v}:base();draw()}catch(e){console.warn('ATYAF scents settings:',e);if(!cfg){cfg=base();draw()}}finally{loading=false}}
+let wait=0;const t=setInterval(()=>{if(window.atyafDb){clearInterval(t);refresh()}else if(++wait>80){clearInterval(t);cfg=base();draw()}},125);
+window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
+// Re-render on products refresh, but never observe the cloned output to avoid loops.
+const original=document.getElementById('atyafBrandProductSections');if(original)new MutationObserver(()=>{if(selected!==null)requestAnimationFrame(renderResults)}).observe(original,{childList:true});
+})();
+</script>
 </body>
 </html>
+
 

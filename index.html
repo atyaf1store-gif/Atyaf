@@ -1583,6 +1583,25 @@ html,body{overflow-x:clip!important}
 }
 @supports not (overflow:clip){html,body{overflow-x:visible!important}}
 </style>
+<style id="atyaf-v35-brand-single-view-css">
+/* Single-brand catalog: uses the existing live product cards and their admin styles. */
+#atyafBrandSingleViewBar{display:none}
+body.atyaf-single-brand-view #store > .hero-ad,
+body.atyaf-single-brand-view #store > .benefits,
+body.atyaf-single-brand-view #store > #brands,
+body.atyaf-single-brand-view #store > #products,
+body.atyaf-single-brand-view #store > #scents,
+body.atyaf-single-brand-view #store > #atyafLowerAds{display:none!important}
+body.atyaf-single-brand-view #atyafBrandProductSections{display:block!important;padding-top:0!important}
+body.atyaf-single-brand-view #atyafBrandProductSections > .atyaf-brand-products{display:none!important}
+body.atyaf-single-brand-view #atyafBrandProductSections > .atyaf-brand-products[data-atyaf-active-brand="1"]{display:block!important;margin-top:0!important;padding-top:15px!important}
+body.atyaf-single-brand-view #atyafBrandProductSections > .atyaf-brand-products[data-atyaf-active-brand="1"] > .section-head{display:none!important}
+body.atyaf-single-brand-view #atyafBrandSingleViewBar{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1180px;width:calc(100% - 32px);margin:0 auto;padding:22px 0 12px;border-bottom:1px solid var(--line,#e9e1d6)}
+#atyafBrandSingleViewBar h1{margin:0;font-size:clamp(22px,3vw,32px);color:var(--green,#17352e);line-height:1.4}
+#atyafBrandSingleViewBar p{margin:2px 0 0;color:var(--muted,#707b75);font-size:13px}
+#atyafBrandSingleViewBack{flex:0 0 auto;background:#fff;border:1px solid var(--line,#e9e1d6);color:var(--green,#17352e);border-radius:10px;padding:9px 14px;min-height:42px;cursor:pointer}
+@media(max-width:600px){body.atyaf-single-brand-view #atyafBrandSingleViewBar{width:calc(100% - 24px);padding:15px 0 10px}#atyafBrandSingleViewBar h1{font-size:24px}body.atyaf-single-brand-view #atyafBrandProductSections > .atyaf-brand-products[data-atyaf-active-brand="1"]{padding-top:10px!important}}
+</style>
 </head>
 <body>
 
@@ -1614,6 +1633,7 @@ html,body{overflow-x:clip!important}
 <section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands" data-atyaf-placeholder-brands="true" aria-busy="true"></div></section>
 
 <section class="section container" id="products" style="padding-top:20px"><div class="section-head"><div><h2>مختارات أطياف</h2><p id="resultText">منتجاتنا الأكثر حبًا</p></div><select id="sortSelect" onchange="renderProducts()" style="border:1px solid var(--line);background:#fffdfa;padding:10px 14px;border-radius:999px;color:var(--green)"><option value="featured">ترتيب: مميز</option><option value="price-low">السعر: الأقل</option><option value="price-high">السعر: الأعلى</option><option value="new">الأحدث</option></select></div><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all',this)">الكل</button><button class="chip" data-filter="oud" onclick="setFilter('oud',this)">عود</button><button class="chip" data-filter="musk" onclick="setFilter('musk',this)">مسك</button><button class="chip" data-filter="floral" onclick="setFilter('floral',this)">زهور</button><button class="chip" data-filter="sale" onclick="setFilter('sale',this)">عروض</button><button class="chip" data-filter="new" onclick="setFilter('new',this)">وصل حديثًا</button></div><div class="products" id="productGrid"></div></section>
+    <div id="atyafBrandSingleViewBar" dir="rtl" aria-live="polite"><div><h1 id="atyafBrandSingleViewTitle"></h1><p id="atyafBrandSingleViewSubtitle"></p></div><button id="atyafBrandSingleViewBack" type="button">← جميع الماركات</button></div>
     <div id="atyafBrandProductSections" class="atyaf-brand-product-sections" aria-label="أقسام المنتجات حسب الماركة"></div>
     <section class="section container" id="scents"><div class="gift"><div><span class="eyebrow" style="color:#e8bb80">هدية تحمل شعورًا</span><h2>لأن أجمل الهدايا<br>تُحسّ قبل أن تُفتح</h2><p>اختر عطرك، أضف تغليفنا الفاخر، ودعنا نجهزها بعناية لتصل كما تتمنى.</p><button class="btn" onclick="openGift()">جهّز هديتك</button></div><div style="font-size:90px;color:#f2d19d80">✦</div></div></section>
 
@@ -3841,7 +3861,74 @@ main#store > section.benefits[aria-hidden="true"]{display:none!important}
 })();
 </script>
 
+<script id="atyaf-v35-single-brand-view-js">
+(()=>{
+ 'use strict';
+ const host=document.getElementById('atyafBrandProductSections');
+ const toolbar=document.getElementById('atyafBrandSingleViewBar');
+ const title=document.getElementById('atyafBrandSingleViewTitle');
+ const subtitle=document.getElementById('atyafBrandSingleViewSubtitle');
+ const back=document.getElementById('atyafBrandSingleViewBack');
+ if(!host||!toolbar||!title||!subtitle||!back)return;
+ const normalize=v=>String(v||'').trim().toLocaleLowerCase('ar').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/\s+/g,' ');
+ let active='',previousY=0;
+ function sections(){return [...host.querySelectorAll(':scope > section[data-brand-section]')];}
+ function applySelection(){
+   if(!active)return;
+   let found=false;
+   for(const section of sections()){
+     const selected=normalize(section.dataset.brandSection)===normalize(active);
+     if(selected)found=true;
+     if(selected)section.dataset.atyafActiveBrand='1';else section.removeAttribute('data-atyaf-active-brand');
+   }
+   if(found){
+     document.body.classList.add('atyaf-single-brand-view');
+     title.textContent=active;
+     subtitle.textContent='منتجات '+active;
+   }
+ }
+ function open(name){
+   const choice=String(name||'').trim();
+   if(!choice||/^(كل الماركات|الكل|view all)$/i.test(choice)){close();return false;}
+   if(!active)previousY=window.scrollY;
+   active=choice;
+   if(typeof window.atyafRenderBrandProductSections==='function'&&!sections().length)window.atyafRenderBrandProductSections();
+   applySelection();
+   if(!document.body.classList.contains('atyaf-single-brand-view')){
+      active=''; return false;
+   }
+   requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,toolbar.getBoundingClientRect().top+window.scrollY-115),behavior:'instant'}));
+   return true;
+ }
+ function close(){
+   if(!active)return;
+   active='';
+   document.body.classList.remove('atyaf-single-brand-view');
+   sections().forEach(section=>section.removeAttribute('data-atyaf-active-brand'));
+   requestAnimationFrame(()=>window.scrollTo({top:previousY,behavior:'instant'}));
+ }
+ window.atyafOpenBrandView=open;
+ window.atyafCloseBrandView=close;
+ back.addEventListener('click',close);
+ // Dynamic navigation may be rebuilt from Supabase. Match actual product-brand headings.
+ document.addEventListener('click',event=>{
+   const link=event.target.closest('.header .navrow a');
+   if(link){
+     const match=sections().find(section=>normalize(section.dataset.brandSection)===normalize(link.textContent));
+     if(match){event.preventDefault();event.stopImmediatePropagation();open(match.dataset.brandSection);}
+     return;
+   }
+   const home=event.target.closest('#atyafMobileBottomNav [data-atyaf-tab="home"],#atyafMobileBottomNav [data-atyaf-tab="brands"]');
+   if(home&&active)close();
+ },true);
+ // The existing brand cards invoke filterBrand; redirect only to the isolated catalog.
+ const originalFilter=window.filterBrand;
+ if(typeof originalFilter==='function'){
+   window.filterBrand=function(name){if(open(name))return;return originalFilter(name)};
+ }
+ // Brand products are rendered again when Supabase data/settings update; maintain selection.
+ new MutationObserver(()=>{if(active)applySelection()}).observe(host,{childList:true});
+})();
+</script>
 </body>
 </html>
-
-

@@ -1907,7 +1907,7 @@ body.atyaf-scent-only #atyafScentsCatalog{display:block!important}
       return true;
     }
 
-    const money=n=>new Intl.NumberFormat('ar-SA').format(n)+' ر.س';
+    const money=n=>{const num=Number(n);const safe=Number.isFinite(num)?num:0;const digits=new Intl.NumberFormat('en-US',{maximumFractionDigits:2,minimumFractionDigits:Number.isInteger(safe)?0:2,useGrouping:false}).format(safe);return digits+' ر.س';};
     function save(){localStorage.setItem('atyaaf-cart',JSON.stringify(state.cart));localStorage.setItem('atyaaf-favs',JSON.stringify(state.favs));updateCounts()}
     function updateCounts(){
       const c=document.getElementById('cartCount'),f=document.getElementById('favCount');
@@ -2843,7 +2843,7 @@ window.addEventListener('load',()=>{
 (()=>{
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
  const norm=v=>String(v??'').trim().toLocaleLowerCase('ar');
- const money=v=>{try{return new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(Number(v)||0)}catch(_){return Number(v)||0}};
+ const money=v=>{const num=Number(v);const safe=Number.isFinite(num)?num:0;return new Intl.NumberFormat('en-US',{maximumFractionDigits:2,minimumFractionDigits:Number.isInteger(safe)?0:2,useGrouping:false}).format(safe)};
  function productCard(p){
    const id=String(p.id??'');
    const visual=p.image?`<img src="${esc(p.image)}" alt="${esc(p.name)}">`:'';
@@ -2851,9 +2851,10 @@ window.addEventListener('load',()=>{
    const stockLabel=p.stock==null?'الكمية غير محددة':soldOut?'نفدت الكمية':`المتوفر: ${p.stock} قطعة`;
    const current=Number(p.price),previous=Number(p.old);
    const discountPercent=Number.isFinite(current)&&Number.isFinite(previous)&&previous>current&&current>=0?Math.round((previous-current)/previous*100):0;
+   const liked=(Array.isArray(state?.favs)?state.favs:[]).map(String).includes(id);
    return `<article class="product atyaf-reference-card" data-product-id="${esc(id)}" onclick="quickView('${esc(id)}')" role="button" tabindex="0" aria-label="عرض تفاصيل ${esc(p.name||'المنتج')}">
     <div class="product-visual" style="--tone:${esc(p.tone||'#8c542e')};cursor:pointer">
-      ${visual}${discountPercent>0?`<span class="atyaf-sale-corner" aria-label="خصم ${discountPercent} بالمئة" dir="ltr">-${discountPercent}%</span>`:''}
+      ${visual}${discountPercent>0?`<span class="atyaf-sale-corner" aria-label="خصم ${discountPercent} بالمئة" dir="ltr">-${discountPercent}%</span>`:''}<button class="favorite ${liked?'on':''}" type="button" onclick="event.stopPropagation();toggleFav('${esc(id)}')" aria-label="${liked?'إزالة من المفضلة':'إضافة إلى المفضلة'}" aria-pressed="${liked}">${liked?'♥':'♡'}</button>
     </div>
     <div class="product-info">
       <h3>${esc(p.name||'منتج')}</h3>
@@ -4095,6 +4096,41 @@ window.addEventListener('focus',refresh);document.addEventListener('visibilitych
 const original=document.getElementById('atyafBrandProductSections');if(original)new MutationObserver(()=>{if(selected!==null)requestAnimationFrame(renderResults)}).observe(original,{childList:true});
 })();
 </script>
+
+<style id="atyaf-v38-card-favorite-price-fix">
+/* V38: restore small favorite button + English-number prices + visible old price on storefront cards */
+#productGrid .product .favorite,
+#atyafBrandProductSections .atyaf-reference-card .favorite{
+  display:grid!important;place-items:center!important;
+  position:absolute!important;top:10px!important;right:10px!important;left:auto!important;
+  z-index:10!important;width:30px!important;height:30px!important;
+  border-radius:50%!important;border:1px solid #ece5d8!important;
+  background:#fff!important;color:#6e6e6e!important;font-size:17px!important;
+  line-height:1!important;padding:0!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;
+}
+#productGrid .product .favorite.on,
+#atyafBrandProductSections .atyaf-reference-card .favorite.on{color:#c04e43!important}
+#productGrid .product .price,
+#atyafBrandProductSections .atyaf-reference-card .price{
+  display:flex!important;align-items:baseline!important;justify-content:flex-end!important;
+  gap:6px!important;flex-wrap:wrap!important;direction:ltr!important;
+  font-variant-numeric:tabular-nums lining-nums!important;
+}
+#productGrid .product .price .old,
+#atyafBrandProductSections .atyaf-reference-card .price .old{
+  display:inline-flex!important;align-items:center!important;
+  margin-inline-start:0!important;color:#9d968a!important;font-size:.88em!important;
+  text-decoration:line-through!important;text-decoration-thickness:1.5px!important;
+  font-weight:500!important;white-space:nowrap!important;direction:ltr!important;
+}
+#productGrid .product .price{font-weight:800!important}
+#atyafBrandProductSections .atyaf-reference-card .price{font-weight:800!important}
+@media (max-width:600px){
+  #productGrid .product .favorite,
+  #atyafBrandProductSections .atyaf-reference-card .favorite{width:28px!important;height:28px!important;font-size:16px!important;top:8px!important;right:8px!important}
+}
+</style>
+
 </body>
 </html>
 

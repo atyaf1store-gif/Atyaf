@@ -54,7 +54,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <button class="active" data-tab="dashboard">الرئيسية</button>
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
-<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button>
+<button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button><button data-tab="scentCatalog">الروائح</button>
 <button data-tab="coupons">الكوبونات والخصومات</button><button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="adminlock">قفل الإدارة</button>
 </div></aside><main>
@@ -72,6 +72,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <section id="nav" class="panel"><div class="card section-editor"><h2>روابط القائمة الرئيسية</h2><div id="navEditor"></div></div></section>
 <section id="benefits" class="panel"><div class="card section-editor"><h2>مربعات المزايا</h2><div id="benefitsEditor"></div></div></section>
 <section id="brands" class="panel"><div class="card section-editor"><h2>الماركات</h2><div id="brandsEditor"></div></div></section>
+<section id="scentCatalog" class="panel"><div class="card"><h2>إدارة الروائح — الشكل والتصنيفات</h2><p class="muted">كل رائحة تظهر بصورة دائرية واسم أسفلها. كلمات المطابقة تحدد المنتجات التي تظهر عند الضغط على الرائحة، بناءً على اسم المنتج ووصفه. لا يتم تعديل بيانات المنتجات نفسها.</p><div id="atyafScentCatalogEditor"></div></div></section>
 <section id="products" class="panel">
 <div class="card" id="atyafProductDesignSettings">
 <h2>تصميم بطاقات المنتجات — إعداد موحّد</h2>
@@ -663,6 +664,7 @@ function atyafRenderAdmin(){
   {title:"خدمة تهتم",text:"نحن هنا لمساعدتك"}
  ]);
  brandsSectionEditor();
+ if(typeof window.atyafRenderScentCatalogAdmin==='function')window.atyafRenderScentCatalogAdmin();
  renderProducts();
  if(typeof window.atyafRenderProductDesign==='function')window.atyafRenderProductDesign();
 }
@@ -1023,6 +1025,37 @@ async function save(){if(busy)return;const btn=by('atyafCouponSaveBtn');try{cons
 async function change(id,kind){if(busy)return;const x=rows.find(r=>String(r.id)===String(id));if(!x)return;const deleting=kind==='delete';if(!confirm(deleting?'هل تريد حذف الكوبون نهائيًا؟':'هل تريد تغيير حالة الكوبون؟'))return;try{busy=true;let q=deleting?db.from('coupons').delete().eq('id',id):db.from('coupons').update({active:!x.active}).eq('id',id);const {data,error}=await q.select('id');if(error)throw error;if(!data?.length)throw Error('لم تؤكد قاعدة البيانات تنفيذ العملية. تحقق من الصلاحيات.');await load();notice(deleting?'تم حذف الكوبون ✓':'تم تغيير الحالة ✓')}catch(e){console.error('coupon action',e);notice('فشلت العملية: '+(e?.message||e),true)}finally{busy=false}}
 window.atyafCouponLoad=load;window.atyafCouponNew=()=>newCoupon();window.atyafCouponEdit=id=>newCoupon(id);window.atyafCouponSave=save;window.atyafCouponDelete=id=>change(id,'delete');window.atyafCouponToggle=id=>change(id,'toggle');
 document.addEventListener('DOMContentLoaded',()=>{const nav=document.querySelector('[data-tab="coupons"]');nav?.addEventListener('click',()=>{if(!loaded)load()})});
+})();
+</script>
+<script id="atyaf-scent-catalog-admin-v37">
+(()=>{
+'use strict';
+const root=document.getElementById('atyafScentCatalogEditor');if(!root)return;
+const defaults=[{title:'عود',emoji:'🪵',keywords:'عود, oud'},{title:'مسك',emoji:'🌿',keywords:'مسك, musk'},{title:'ورد',emoji:'🌹',keywords:'ورد, rose, floral, زهور'},{title:'فانيليا',emoji:'🌼',keywords:'فانيليا, vanilla'},{title:'فاكهة',emoji:'🍊',keywords:'فاكهه, فواكه, fruity, fruit'}];
+const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function config(){const s=getSetting('scent_catalog',null);return s&&typeof s==='object'&&!Array.isArray(s)?s:{enabled:true,title:'الروائح',subtitle:'اكتشف عطرك بحسب النفحات',columnsDesktop:5,columnsTablet:5,columnsMobile:5,tileSize:100,gap:12,radius:50,borderWidth:1,borderColor:'#e8e1d7',backgroundColor:'#ffffff',titleColor:'#17352e',fontSize:13,items:defaults.map(x=>({...x,image:'',hidden:false}))}};
+let working=null,busy=false;
+const number=(v,min,max,desc)=>{const n=Number(v);if(!Number.isInteger(n)||n<min||n>max)throw Error(desc+' يجب أن يكون بين '+min+' و'+max);return n};
+const color=(v,d)=>/^#[0-9a-fA-F]{6}$/.test(v||'')?v:d;
+function draw(){const c=config();working=JSON.parse(JSON.stringify(c));if(!Array.isArray(working.items))working.items=[];
+root.innerHTML=`<div class="grid">
+<div class="field"><label>إظهار قسم الروائح</label><select data-scent-setting="enabled"><option value="true" ${working.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${working.enabled===false?'selected':''}>مخفي</option></select></div>
+<div class="field"><label>عنوان القسم</label><input data-scent-setting="title" value="${safe(working.title||'الروائح')}"></div>
+<div class="field full"><label>وصف القسم</label><input data-scent-setting="subtitle" value="${safe(working.subtitle||'')}"></div>
+${[['columnsDesktop','أعمدة الكمبيوتر',1,10],['columnsTablet','أعمدة التابلت',1,10],['columnsMobile','أعمدة الهاتف',1,8],['tileSize','حجم دائرة الصورة px',48,240],['gap','المسافة بين الروائح px',0,60],['radius','استدارة مربع الصورة %',0,50],['borderWidth','سمك حدود الصورة px',0,8],['fontSize','حجم اسم الرائحة px',9,28]].map(([k,t,min,max])=>`<div class="field"><label>${t}</label><input data-scent-setting="${k}" type="number" min="${min}" max="${max}" value="${safe(working[k]??(k==='radius'?50:12))}"></div>`).join('')}
+${[['borderColor','لون الحدود'],['backgroundColor','خلفية الصورة'],['titleColor','لون اسم الرائحة']].map(([k,t])=>`<div class="field"><label>${t}</label><input data-scent-setting="${k}" type="color" value="${safe(color(working[k],'#ffffff'))}" style="min-height:43px;width:100%"></div>`).join('')}
+</div><h3>أنواع الروائح وصورها وكلمات المطابقة</h3><p class="muted">يمكنك تغيير اسم الرائحة وصورتها وترتيبها وإخفاءها. افصل كلمات المطابقة بفاصلة، مثل: ورد، روز، rose. يطابق النظام الكلمات في اسم المنتج ووصفه.</p><div id="atyafScentRows"></div><div class="toolbar"><button type="button" class="btn alt" id="atyafScentAdd">+ إضافة رائحة</button><button type="button" class="btn" id="atyafScentSave">حفظ قسم الروائح</button></div>`;
+ renderRows();root.querySelector('#atyafScentAdd').onclick=()=>{captureRows();working.items.push({title:'رائحة جديدة',emoji:'✦',keywords:'',image:'',hidden:false});renderRows()};root.querySelector('#atyafScentSave').onclick=save;
+}
+function renderRows(){const el=root.querySelector('#atyafScentRows');el.innerHTML=working.items.map((x,i)=>`<div class="card" data-scent-row="${i}" style="margin:9px 0;padding:12px"><div class="grid"><div class="field"><label>اسم الرائحة</label><input data-scent="title" value="${safe(x.title)}"></div><div class="field"><label>الرمز عند عدم وجود صورة</label><input data-scent="emoji" value="${safe(x.emoji||'✦')}"></div><div class="field full"><label>كلمات مطابقة المنتجات (افصل بفاصلة)</label><input data-scent="keywords" value="${safe(x.keywords||'')}"></div><div class="field"><label>صورة الرائحة (اختيارية)</label><input data-scent="file" type="file" accept="image/*"></div><div class="field"><label>إظهار</label><select data-scent="hidden"><option value="false" ${!x.hidden?'selected':''}>ظاهر</option><option value="true" ${x.hidden?'selected':''}>مخفي</option></select></div></div>${x.image?`<div style="display:flex;align-items:center;gap:9px"><img src="${safe(x.image)}" alt="" style="width:65px;height:65px;object-fit:cover;border-radius:50%"><button type="button" class="btn alt" data-scent-remove-image="${i}">حذف الصورة</button></div>`:''}<div class="toolbar"><button type="button" class="btn alt" data-scent-up="${i}">↑ رفع</button><button type="button" class="btn alt" data-scent-down="${i}">↓ خفض</button><button type="button" class="btn red" data-scent-delete="${i}">حذف الرائحة</button></div></div>`).join('');
+el.querySelectorAll('[data-scent-up],[data-scent-down],[data-scent-delete],[data-scent-remove-image]').forEach(btn=>btn.onclick=()=>{captureRows();let i=Number(btn.dataset.scentUp??btn.dataset.scentDown??btn.dataset.scentDelete??btn.dataset.scentRemoveImage);if(btn.hasAttribute('data-scent-delete')){if(!confirm('حذف هذه الرائحة من القسم؟'))return;working.items.splice(i,1)}else if(btn.hasAttribute('data-scent-remove-image'))working.items[i].image='';else{let j=i+(btn.hasAttribute('data-scent-up')?-1:1);if(j<0||j>=working.items.length)return;[working.items[i],working.items[j]]=[working.items[j],working.items[i]]}renderRows()});
+}
+function captureRows(){root.querySelectorAll('[data-scent-row]').forEach(row=>{const i=Number(row.dataset.scentRow),x=working.items[i];if(!x)return;for(const k of ['title','emoji','keywords'])x[k]=row.querySelector(`[data-scent="${k}"]`)?.value.trim()||'';x.hidden=row.querySelector('[data-scent="hidden"]')?.value==='true'})}
+async function save(){if(busy)return;const b=root.querySelector('#atyafScentSave');try{busy=true;b.disabled=true;captureRows();for(const el of root.querySelectorAll('[data-scent-setting]')){const k=el.dataset.scentSetting;working[k]=k==='enabled'?el.value==='true':el.type==='number'?Number(el.value):el.value.trim()}
+for(const [k,min,max] of [['columnsDesktop',1,10],['columnsTablet',1,10],['columnsMobile',1,8],['tileSize',48,240],['gap',0,60],['radius',0,50],['borderWidth',0,8],['fontSize',9,28]])working[k]=number(working[k],min,max,k);
+for(let i=0;i<working.items.length;i++){const x=working.items[i];if(!x.title)throw Error('اسم الرائحة مطلوب للعنصر '+(i+1));const file=root.querySelector(`[data-scent-row="${i}"] [data-scent="file"]`)?.files?.[0];if(file){if(!file.type.startsWith('image/'))throw Error('ملف الرائحة ليس صورة');if(file.size>8*1024*1024)throw Error('صورة الرائحة أكبر من 8 ميجابايت');stat('جاري رفع صورة '+x.title+'…');const uploaded=await uploadFiles([file],'scents');x.image=uploaded[0]||x.image}}
+stat('جاري حفظ إعدادات الروائح…');const existing=(SETTINGS||[]).find(x=>x.key==='scent_catalog');const query=existing?db.from('settings').update({value:working}).eq('id',existing.id):db.from('settings').insert({key:'scent_catalog',value:working});const {data,error}=await query.select('id,value');if(error)throw error;if(!data?.length)throw Error('لم تؤكد قاعدة البيانات حفظ الروائح — تحقق من الصلاحيات');await loadAll();stat('تم حفظ تصميم الروائح والتصنيفات ✓');}catch(e){stat('فشل حفظ الروائح: '+(e.message||e),true)}finally{busy=false;if(b)b.disabled=false}}
+window.atyafRenderScentCatalogAdmin=draw;
 })();
 </script>
 </body></html>

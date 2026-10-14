@@ -1608,10 +1608,10 @@ html,body{overflow-x:clip!important}
     <nav class="nav" id="nav"><div class="container navrow"><a href="#home">الرئيسية</a><a href="#brands">الماركات</a><a href="#products">الأكثر مبيعًا</a><a href="#products">وصل حديثًا</a><a href="#products">العروض</a><a href="#scents">الروائح</a><a href="#contact">تواصل معنا</a></div></nav>
   </header>
   <main id="store">
-    <section class="hero-ad" id="home" aria-label="إعلانات المتجر" hidden><div class="hero-ad-track" id="heroAdTrack"></div><div class="hero-ad-dots" id="heroAdDots"></div></section>
+    <section class="hero-ad" id="home" aria-label="إعلانات المتجر" hidden><div class="hero-ad-track" id="heroAdTrack"></div><button class="atyaf-hero-control atyaf-hero-prev" type="button" aria-label="الإعلان السابق" hidden>‹</button><button class="atyaf-hero-control atyaf-hero-next" type="button" aria-label="الإعلان التالي" hidden>›</button><div class="hero-ad-dots" id="heroAdDots"></div></section>
     <section class="container benefits" style="display:none" aria-hidden="true"></section>
 
-<section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands" data-atyaf-placeholder-brands="true"><button class="brand-card" onclick="filterBrand('أطياف')"><strong>أطياف</strong><span>ATYAAF</span></button><button class="brand-card" onclick="filterBrand('دار العود')"><strong>دار العود</strong><span>HOUSE OF OUD</span></button><button class="brand-card" onclick="filterBrand('نُبل')"><strong>نُبل</strong><span>NOBLE</span></button><button class="brand-card" onclick="filterBrand('سُلاف')"><strong>سُلاف</strong><span>SULAF</span></button><button class="brand-card" onclick="filterBrand('كل الماركات')"><strong>الكل</strong><span>VIEW ALL</span></button></div></section>
+<section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands" data-atyaf-placeholder-brands="true" aria-busy="true"></div></section>
 
 <section class="section container" id="products" style="padding-top:20px"><div class="section-head"><div><h2>مختارات أطياف</h2><p id="resultText">منتجاتنا الأكثر حبًا</p></div><select id="sortSelect" onchange="renderProducts()" style="border:1px solid var(--line);background:#fffdfa;padding:10px 14px;border-radius:999px;color:var(--green)"><option value="featured">ترتيب: مميز</option><option value="price-low">السعر: الأقل</option><option value="price-high">السعر: الأعلى</option><option value="new">الأحدث</option></select></div><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all',this)">الكل</button><button class="chip" data-filter="oud" onclick="setFilter('oud',this)">عود</button><button class="chip" data-filter="musk" onclick="setFilter('musk',this)">مسك</button><button class="chip" data-filter="floral" onclick="setFilter('floral',this)">زهور</button><button class="chip" data-filter="sale" onclick="setFilter('sale',this)">عروض</button><button class="chip" data-filter="new" onclick="setFilter('new',this)">وصل حديثًا</button></div><div class="products" id="productGrid"></div></section>
     <div id="atyafBrandProductSections" class="atyaf-brand-product-sections" aria-label="أقسام المنتجات حسب الماركة"></div>
@@ -1622,6 +1622,13 @@ html,body{overflow-x:clip!important}
 <!-- ATYAAF FULL WIDTH LOWER ADS END -->
 
   </main>
+  <nav id="atyafMobileBottomNav" class="atyaf-mobile-bottom-nav" aria-label="التنقل السريع">
+    <a class="atyaf-bottom-tab active" href="#home" data-atyaf-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10h-7v-6h-4v6H3z"/></svg><span>تسوق</span></a>
+    <a class="atyaf-bottom-tab" href="#brands" data-atyaf-tab="brands"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>الفئات</span></a>
+    <a class="atyaf-bottom-tab" href="#atyafBrandProductSections" data-atyaf-tab="trending"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-9M15 6h6v6"/></svg><span>رائج</span></a>
+    <button class="atyaf-bottom-tab" type="button" data-atyaf-tab="cart" onclick="if(typeof window.atyafOpenCartPage==='function')window.atyafOpenCartPage();else openCart()"><svg viewBox="0 0 24 24"><path d="M3 4h2l2 11h12l2-8H6M9 21h.01M18 21h.01"/></svg><span>السلة</span></button>
+    <button class="atyaf-bottom-tab" type="button" data-atyaf-tab="account" onclick="openCustomerCenter()"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-7 8-7s8 2 8 7"/></svg><span>حسابي</span></button>
+  </nav>
   <section class="admin" id="admin"><div class="container"><div class="section-head"><div><span class="eyebrow">مساحة الإدارة</span><h2>لوحة أطياف</h2><p>تحكم سريع بالمحتوى والإعدادات — نسخة تفاعلية تجريبية</p></div><button class="btn btn-outline" onclick="closeAdmin()">العودة للمتجر</button></div><div class="admin-grid"><aside class="admin-nav"><button class="active">نظرة عامة</button><button>المنتجات</button><button>الطلبات</button><button>التصميم</button></aside><div><div class="stat-grid"><div class="stat"><span>طلبات اليوم</span><b>٢٤</b><small>+١٨٪ عن أمس</small></div><div class="stat"><span>إجمالي المنتجات</span><b id="adminProducts">6</b><small>منشورة ونشطة</small></div><div class="stat"><span>المبيعات</span><b>١٢٫٨K</b><small>ر.س هذا الشهر</small></div></div><div class="admin-card" style="margin-top:18px"><h3>إعدادات سريعة</h3><div class="settings-row"><span>شريط الإعلانات العلوي</span><button class="switch on" id="switchTop" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>عرض قسم الهدايا</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>الوضع التجريبي للطلبات</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="notice">ملاحظة: هذه نسخة HTML مستقلة. ربط Supabase والدفع الحقيقي يحتاج طبقة خادم ومفاتيح بيئة آمنة.</div></div></div></div></section>
   <footer id="contact"><div class="container"><div class="footer-grid"><div><div class="footer-brand">أطياف | ATYAF</div><p style="color:#9db3a6;font-size:13px">عطور مختارة بعناية، لتصنع لحظات تبقى.</p></div><div><h3>المتجر</h3><a href="#products">كل المنتجات</a><a href="#brands">الماركات</a><a href="#scents">الهدايا</a></div><div><h3>خدمة العملاء</h3><a href="javascript:void(0)" onclick="showContactInfo()">تواصل معنا</a><a href="javascript:void(0)" onclick="showShippingInfo()">الشحن والتوصيل</a><a href="javascript:void(0)" onclick="showReturnsInfo()">الاستبدال والاسترجاع</a></div><div><h3>تابعنا</h3><a href="javascript:void(0)" onclick="openSocial('instagram')">Instagram</a><a href="javascript:void(0)" onclick="openSocial('tiktok')">TikTok</a><a href="javascript:void(0)" onclick="openSocial('whatsapp')">WhatsApp</a></div></div><div class="copyright"><span>© 2026 ATYAF — أطياف. جميع الحقوق محفوظة.</span><span>صُنع بذوق ✦</span></div></div></footer>
   <div class="drawer" id="cartDrawer" onclick="if(event.target===this)closeCart()"><div class="drawer-panel"><button class="close" onclick="closeCart()">×</button><h2>سلة مشترياتك</h2><div class="cart-list" id="cartList"></div><div class="cart-foot"><div class="total"><span>الإجمالي</span><span id="cartTotal">0 ر.س</span></div><button class="btn btn-primary" style="width:100%" onclick="openCheckout()">متابعة الطلب</button></div></div></div>
@@ -1746,7 +1753,7 @@ html,body{overflow-x:clip!important}
       const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;const a=normalizeHeroAd(raw);const heroBox=track.closest('.hero-ad');if(heroBox){const px=(v,d)=>Math.min(1600,Math.max(120,Number.isFinite(v)&&v>0?v:d))+'px';heroBox.style.setProperty('--atyaf-hero-height',px(a.heightDesktop,650));heroBox.style.setProperty('--atyaf-hero-tablet-height',px(a.heightTablet,520));heroBox.style.setProperty('--atyaf-hero-mobile-height',px(a.heightMobile,360));heroBox.style.setProperty('--atyaf-hero-fit',a.fit)}a.position=/^[a-z0-9% .-]{1,48}$/i.test(a.position)?a.position:'center';heroAdSlides=a.media;
       if(!a.enabled||!a.media.length){track.innerHTML='';dots.innerHTML='';track.closest('.hero-ad')?.setAttribute('hidden','');return} track.closest('.hero-ad')?.removeAttribute('hidden');
       track.innerHTML=a.media.map((url,i)=>{const v=/\\.(mp4|webm|ogg)(?:\\?|#|$)/i.test(url);const m=v?`<video src="${escapeHtml(url)}" muted playsinline autoplay loop preload="metadata" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}"></video>`:`<img src="${escapeHtml(url)}" alt="إعلان أطياف" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}" ${i?'loading="lazy"':''}>`;return `<div class="hero-ad-slide ${i===0?'active':''}">${m}${a.link?`<a class="hero-ad-link" href="${safeLink(a.link)}" aria-label="فتح الإعلان"></a>`:''}</div>`}).join('')+'<div class="hero-ad-shade"></div>';
-      dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;if(a.media.length>1)heroAdTimer=setInterval(()=>heroAdTo(heroAdIndex+1),a.interval);
+      dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;document.querySelectorAll('.atyaf-hero-control').forEach(b=>b.hidden=a.media.length<2);if(a.media.length>1)heroAdTimer=setInterval(()=>heroAdTo(heroAdIndex+1),a.interval);
     }
     window.atyafRenderHeroAds=renderHeroAd;
     // Unified admin bridge below is the only source of hero updates.
@@ -2482,7 +2489,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     sec.style.setProperty('gap',n(s?.gap,14,0,60)+'px','important');
 
     const vw=window.innerWidth||document.documentElement.clientWidth||390;
-    const cols=vw<=600?n(s?.columnsMobile,2,1,2):(vw<=850?n(s?.columnsTablet,2,1,4):n(s?.columnsDesktop,4,1,6));
+    const cols=vw<=600?Math.min(2,visibleItems.length):Math.min(visibleItems.length,(vw<=850?n(s?.columnsTablet,2,1,4):n(s?.columnsDesktop,4,1,6)));
     sec.style.setProperty('grid-template-columns',`repeat(${cols},minmax(0,1fr))`,'important');
 
     cards.forEach(card=>{
@@ -2491,9 +2498,9 @@ window.addEventListener("focus",atyafLoadLowerAds);
       card.style.setProperty('border-width',n(s?.cardBorderWidth,1,0,8)+'px','important');
       card.style.setProperty('border-style','solid','important');
       card.style.setProperty('border-radius',n(s?.cardRadius,18,0,60)+'px','important');
-      card.style.setProperty('padding',n(s?.cardPadding,22,0,60)+'px','important');
-      card.style.setProperty('min-height',n(s?.cardMinHeight,128,60,400)+'px','important');
-      card.style.setProperty('box-shadow',s?.cardShadow||'0 14px 38px rgba(23,53,46,.10)','important');
+      card.style.setProperty('padding','10px 12px','important');
+      card.style.setProperty('min-height','0px','important');
+      card.style.setProperty('box-shadow','none','important');
       card.style.setProperty('font-family',s?.fontFamily||'Tahoma, Arial, sans-serif','important');
 
       const icon=card.querySelector('i');
@@ -3707,6 +3714,63 @@ html body .header .atyaf-profile-image-slot img{
  }
 }
 </style>
+
+
+<!-- ATYAF V32: scoped navigation, ad interaction, benefit strip; no legacy theme overrides. -->
+<style id="atyaf-v32-navigation-ads-benefits">
+/* Show real brand data only, never old demonstration names. */
+#brands .brands[data-atyaf-placeholder-brands="true"]:empty{min-height:0!important}
+/* Ads: arrows and existing dots, keep the admin's images and dimensions. */
+#home.hero-ad{touch-action:pan-y}
+#home.hero-ad .atyaf-hero-control{position:absolute;z-index:7;top:50%;transform:translateY(-50%);width:35px;height:42px;border-radius:12px;background:rgba(255,255,255,.74);color:#17352e;font-size:29px;display:grid;place-items:center;box-shadow:0 3px 14px #0002;line-height:1}
+#home.hero-ad .atyaf-hero-control[hidden]{display:none!important}
+#home.hero-ad .atyaf-hero-prev{left:10px}#home.hero-ad .atyaf-hero-next{right:10px}
+#home.hero-ad .hero-ad-dots{z-index:8!important;display:flex!important;align-items:center;justify-content:center;gap:7px!important;bottom:15px!important;background:rgba(26,33,31,.3)!important;backdrop-filter:blur(7px);border-radius:40px;padding:7px 10px!important}
+#home.hero-ad .hero-ad-dot{width:9px!important;height:9px!important;min-width:9px;border:1px solid #fff!important;background:#ffffff74!important;border-radius:50%!important;transition:background .2s,transform .2s}
+#home.hero-ad .hero-ad-dot.active{width:10px!important;height:10px!important;background:#fff!important;transform:scale(1.16)}
+#atyafLowerAds{touch-action:pan-y}
+#atyafLowerAds .atyaf-lower-dots{z-index:8!important}
+/* Keep benefits as a compact horizontal service strip (when enabled by the admin). */
+main#store>.benefits:not([aria-hidden="true"]){width:min(1180px,calc(100% - 24px))!important;margin:0 auto!important;padding:10px 0!important;background:transparent!important;align-items:stretch!important}
+main#store>.benefits:not([aria-hidden="true"])>.benefit{min-height:0!important;max-width:none!important;padding:10px 12px!important;border-radius:10px!important;box-shadow:none!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;text-align:right!important;gap:9px!important}
+main#store>.benefits:not([aria-hidden="true"])>.benefit i{flex:0 0 auto;margin:0!important;font-size:23px!important}
+main#store>.benefits:not([aria-hidden="true"])>.benefit b{margin:0!important;white-space:normal;font-size:clamp(11px,1.8vw,15px)!important}
+main#store>.benefits:not([aria-hidden="true"])>.benefit span{margin:0!important;font-size:clamp(10px,1.4vw,12px)!important}
+@media(max-width:600px){main#store>.benefits:not([aria-hidden="true"]){grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;padding:7px 0!important}
+main#store>.benefits:not([aria-hidden="true"])>.benefit{padding:8px 5px!important;gap:5px!important;border-radius:0!important}
+main#store>.benefits:not([aria-hidden="true"])>.benefit+.benefit{border-right:1px solid #e7e0d7!important}
+main#store>.benefits:not([aria-hidden="true"])>.benefit i{font-size:19px!important}}
+.atyaf-mobile-bottom-nav{display:none}
+@media(max-width:767px){
+ body{padding-bottom:calc(66px + env(safe-area-inset-bottom))!important}
+ .atyaf-mobile-bottom-nav{position:fixed;inset-inline:0;bottom:0;z-index:55;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));height:calc(62px + env(safe-area-inset-bottom));padding:4px 6px env(safe-area-inset-bottom);background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid #e8e2d8;box-shadow:0 -3px 16px #0000000d;direction:rtl}
+ .atyaf-mobile-bottom-nav .atyaf-bottom-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;min-width:0;background:transparent;border:0;padding:3px 1px;font-family:inherit;text-decoration:none;color:#6d716f;font-size:10px;line-height:1.15}
+ .atyaf-mobile-bottom-nav .atyaf-bottom-tab svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+ .atyaf-mobile-bottom-nav .atyaf-bottom-tab.active{color:#b98a24;font-weight:700}
+ .atyaf-mobile-bottom-nav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg{color:#17352e}
+ body.atyaf-cart-page-open .atyaf-mobile-bottom-nav,body:has(#atyafIntroV12) .atyaf-mobile-bottom-nav{display:none!important}
+ html{scroll-padding-top:130px}
+}
+</style>
+<script id="atyaf-v32-interaction-js">
+(()=>{
+ function afterReady(){
+   const hero=document.getElementById('home'),lower=document.getElementById('atyafLowerAds');
+   const prev=hero?.querySelector('.atyaf-hero-prev'),next=hero?.querySelector('.atyaf-hero-next');
+   prev?.addEventListener('click',e=>{e.stopPropagation();if(typeof heroAdTo==='function')heroAdTo(heroAdIndex-1)});
+   next?.addEventListener('click',e=>{e.stopPropagation();if(typeof heroAdTo==='function')heroAdTo(heroAdIndex+1)});
+   function bindSwipe(el,go){if(!el)return;let touchX=null,touchY=null;
+     el.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;touchX=e.touches[0].clientX;touchY=e.touches[0].clientY},{passive:true});
+     el.addEventListener('touchend',e=>{if(touchX===null||!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-touchX,dy=e.changedTouches[0].clientY-touchY;touchX=null;touchY=null;if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.3)go(dx>0?-1:1)},{passive:true});
+   }
+   bindSwipe(hero,step=>{if(typeof heroAdTo==='function'&&typeof heroAdIndex==='number')heroAdTo(heroAdIndex+step)});
+   bindSwipe(lower,step=>{if(typeof atyafLowerGo==='function'&&typeof atyafLowerAdIndex==='number')atyafLowerGo(atyafLowerAdIndex+step)});
+   const tabs=document.querySelectorAll('#atyafMobileBottomNav .atyaf-bottom-tab');
+   tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active')}));
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',afterReady,{once:true});else afterReady();
+})();
+</script>
 
 </body>
 </html>

@@ -1608,7 +1608,7 @@ html,body{overflow-x:clip!important}
     <nav class="nav" id="nav"><div class="container navrow"><a href="#home">الرئيسية</a><a href="#brands">الماركات</a><a href="#products">الأكثر مبيعًا</a><a href="#products">وصل حديثًا</a><a href="#products">العروض</a><a href="#scents">الروائح</a><a href="#contact">تواصل معنا</a></div></nav>
   </header>
   <main id="store">
-    <section class="hero-ad" id="home" aria-label="إعلانات المتجر" hidden><div class="hero-ad-track" id="heroAdTrack"></div><button class="atyaf-hero-control atyaf-hero-prev" type="button" aria-label="الإعلان السابق" hidden>‹</button><button class="atyaf-hero-control atyaf-hero-next" type="button" aria-label="الإعلان التالي" hidden>›</button><div class="hero-ad-dots" id="heroAdDots"></div></section>
+    <section class="hero-ad" id="home" aria-label="إعلانات المتجر" hidden><div class="hero-ad-track" id="heroAdTrack"></div><div class="hero-ad-dots" id="heroAdDots"></div></section>
     <section class="container benefits" style="display:none" aria-hidden="true"></section>
 
 <section class="section container" id="brands"><div class="section-head"><div><h2>تسوق حسب الماركة</h2><p>علامات مختارة لعشاق التفاصيل</p></div><a class="link" href="#products">عرض الكل ←</a></div><div class="brands" data-atyaf-placeholder-brands="true" aria-busy="true"></div></section>
@@ -1753,7 +1753,7 @@ html,body{overflow-x:clip!important}
       const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;const a=normalizeHeroAd(raw);const heroBox=track.closest('.hero-ad');if(heroBox){const px=(v,d)=>Math.min(1600,Math.max(120,Number.isFinite(v)&&v>0?v:d))+'px';heroBox.style.setProperty('--atyaf-hero-height',px(a.heightDesktop,650));heroBox.style.setProperty('--atyaf-hero-tablet-height',px(a.heightTablet,520));heroBox.style.setProperty('--atyaf-hero-mobile-height',px(a.heightMobile,360));heroBox.style.setProperty('--atyaf-hero-fit',a.fit)}a.position=/^[a-z0-9% .-]{1,48}$/i.test(a.position)?a.position:'center';heroAdSlides=a.media;
       if(!a.enabled||!a.media.length){track.innerHTML='';dots.innerHTML='';track.closest('.hero-ad')?.setAttribute('hidden','');return} track.closest('.hero-ad')?.removeAttribute('hidden');
       track.innerHTML=a.media.map((url,i)=>{const v=/\\.(mp4|webm|ogg)(?:\\?|#|$)/i.test(url);const m=v?`<video src="${escapeHtml(url)}" muted playsinline autoplay loop preload="metadata" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}"></video>`:`<img src="${escapeHtml(url)}" alt="إعلان أطياف" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}" ${i?'loading="lazy"':''}>`;return `<div class="hero-ad-slide ${i===0?'active':''}">${m}${a.link?`<a class="hero-ad-link" href="${safeLink(a.link)}" aria-label="فتح الإعلان"></a>`:''}</div>`}).join('')+'<div class="hero-ad-shade"></div>';
-      dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;document.querySelectorAll('.atyaf-hero-control').forEach(b=>b.hidden=a.media.length<2);if(a.media.length>1)heroAdTimer=setInterval(()=>heroAdTo(heroAdIndex+1),a.interval);
+      dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;if(a.media.length>1)heroAdTimer=setInterval(()=>heroAdTo(heroAdIndex+1),a.interval);
     }
     window.atyafRenderHeroAds=renderHeroAd;
     // Unified admin bridge below is the only source of hero updates.
@@ -2282,8 +2282,6 @@ function atyafRenderLowerAds(raw){
     return `<div class="atyaf-lower-slide ${i===0?'active':''}" data-index="${i}">${media}</div>`;
   }).join("")+
   (s.media.length>1?`
-    <button class="atyaf-lower-arrow atyaf-lower-prev" type="button" aria-label="السابق" onclick="event.stopPropagation();atyafLowerGo(atyafLowerAdIndex-1)">›</button>
-    <button class="atyaf-lower-arrow atyaf-lower-next" type="button" aria-label="التالي" onclick="event.stopPropagation();atyafLowerGo(atyafLowerAdIndex+1)">‹</button>
     <div class="atyaf-lower-dots">${s.media.map((_,i)=>`<button class="atyaf-lower-dot ${i===0?'active':''}" type="button" onclick="event.stopPropagation();atyafLowerGo(${i})"></button>`).join("")}</div>`:"");
 
   if(s.link){
@@ -2526,7 +2524,24 @@ window.addEventListener("focus",atyafLoadLowerAds);
         desc.style.setProperty('font-size',n(s?.textSize,13,7,48)+'px','important');
         desc.style.setProperty('font-weight',n(s?.textWeight,400,300,800),'important');
       }
+      // Iconography matches the reference for shipping and easy returns.
+      if(icon){
+        const name=String(title?.textContent||'');
+        const svgStart='<svg viewBox="0 0 24 24" aria-hidden="true">';
+        if(/شحن|توصيل/.test(name))icon.innerHTML=svgStart+'<path d="M2 6h12v11H2zM14 10h4l4 4v3h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>';
+        else if(/إرجاع|استرجاع|ارجاع/.test(name))icon.innerHTML=svgStart+'<path d="M4 8V3m0 5h5M4 8a9 9 0 1 1-1 8"/></svg>';
+      }
+      if(window.innerWidth<=600){
+        card.style.setProperty('background','transparent','important');
+        card.style.setProperty('border','0','important');
+        card.style.setProperty('border-radius','0','important');
+        card.style.setProperty('padding','10px 8px','important');
+      }
     });
+    if(window.innerWidth<=600){
+      sec.style.setProperty('background','#fff','important');
+      sec.style.setProperty('gap','0px','important');
+    }
   }
   window.atyafApplyBenefits=applyBenefits;
   function applyBrands(s){
@@ -3726,7 +3741,7 @@ html body .header .atyaf-profile-image-slot img{
 <style id="atyaf-v32-navigation-ads-benefits">
 /* Show real brand data only, never old demonstration names. */
 #brands .brands[data-atyaf-placeholder-brands="true"]:empty{min-height:0!important}
-/* Ads: arrows and existing dots, keep the admin's images and dimensions. */
+/* Ads: dots, swipe and autoplay; no arrow buttons. */
 #home.hero-ad{touch-action:pan-y}
 #home.hero-ad .atyaf-hero-control{position:absolute;z-index:7;top:50%;transform:translateY(-50%);width:35px;height:42px;border-radius:12px;background:rgba(255,255,255,.74);color:#17352e;font-size:29px;display:grid;place-items:center;box-shadow:0 3px 14px #0002;line-height:1}
 #home.hero-ad .atyaf-hero-control[hidden]{display:none!important}
@@ -3757,15 +3772,48 @@ main#store>.benefits:not([aria-hidden="true"])>.benefit i{font-size:19px!importa
  body.atyaf-cart-page-open .atyaf-mobile-bottom-nav,body:has(#atyafIntroV12) .atyaf-mobile-bottom-nav{display:none!important}
  html{scroll-padding-top:130px}
 }
-/* V33: actual service strip was suppressed by legacy #store>.hero-ad+.benefits. */
+/* V34: two-column flat service strip like the supplied reference image. */
 main#store > section.benefits[aria-hidden="false"]{display:grid!important;position:relative!important;z-index:2!important}
 main#store > section.benefits[aria-hidden="true"]{display:none!important}
 @media(max-width:600px){
-  main#store > section.benefits[aria-hidden="false"]{grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important;gap:0!important;padding:0 8px!important;border-bottom:1px solid #e9e6df!important;background:#fff!important}
-  main#store > section.benefits[aria-hidden="false"] > .benefit{background:transparent!important;border:0!important;border-radius:0!important;padding:10px 5px!important;min-width:0!important;gap:5px!important}
-  main#store > section.benefits[aria-hidden="false"] > .benefit > i{font-size:22px!important;line-height:1!important}
-  main#store > section.benefits[aria-hidden="false"] > .benefit > b{font-size:12px!important}
-  main#store > section.benefits[aria-hidden="false"] > .benefit > span{font-size:10px!important;line-height:1.35!important}
+  main#store > section.container.benefits[aria-hidden="false"]{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;max-width:none!important;margin:0!important;
+    padding:0!important;gap:0!important;background:#fff!important;
+    border-top:1px solid #e8e8e8!important;border-bottom:1px solid #e8e8e8!important;
+    box-shadow:none!important;align-items:stretch!important;
+  }
+  main#store > section.container.benefits[aria-hidden="false"] > .benefit{
+    display:grid!important;grid-template-columns:30px minmax(0,1fr)!important;
+    grid-template-rows:auto auto!important;align-content:center!important;
+    align-items:center!important;justify-content:center!important;
+    column-gap:8px!important;row-gap:0!important;
+    direction:rtl!important;text-align:right!important;
+    background:transparent!important;border:0!important;border-radius:0!important;
+    box-shadow:none!important;min-width:0!important;min-height:66px!important;
+    padding:10px 8px!important;margin:0!important;
+  }
+  main#store > section.container.benefits[aria-hidden="false"] > .benefit:nth-child(2n){border-right:1px solid #e7e7e7!important}
+  main#store > section.container.benefits[aria-hidden="false"] > .benefit > i{
+    grid-column:1!important;grid-row:1 / span 2!important;display:grid!important;
+    align-items:center!important;justify-items:center!important;font-size:25px!important;
+    font-style:normal!important;line-height:1!important;margin:0!important;
+    color:#3d3640!important;
+  }
+  main#store > section.container.benefits[aria-hidden="false"] > .benefit > i svg{
+    width:26px!important;height:26px!important;display:block!important;stroke:currentColor!important;
+    fill:none!important;stroke-width:1.7!important;stroke-linecap:round;stroke-linejoin:round;
+  }
+  main#store > section.container.benefits[aria-hidden="false"] > .benefit > b{
+    grid-column:2!important;grid-row:1!important;display:block!important;
+    font-size:clamp(12px,3.4vw,15px)!important;line-height:1.35!important;
+    font-weight:700!important;color:#26232a!important;white-space:normal!important;margin:0!important;
+  }
+  main#store > section.container.benefits[aria-hidden="false"] > .benefit > span{
+    grid-column:2!important;grid-row:2!important;display:block!important;
+    font-size:clamp(9px,2.5vw,11px)!important;line-height:1.35!important;
+    font-weight:400!important;color:#959198!important;white-space:normal!important;margin:2px 0 0!important;
+  }
   #atyafMobileBottomNav{height:calc(67px + env(safe-area-inset-bottom))!important;z-index:55!important}
   #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg{background:#27221d;color:#e6b65b;border-radius:50%;width:34px;height:34px;padding:7px;stroke:#e6b65b}
   #atyafMobileBottomNav .atyaf-bottom-tab{gap:2px!important}
@@ -3795,4 +3843,5 @@ main#store > section.benefits[aria-hidden="true"]{display:none!important}
 
 </body>
 </html>
+
 

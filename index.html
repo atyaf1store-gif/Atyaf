@@ -1440,7 +1440,7 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
 .hero-ad[hidden],#home[hidden]{display:none!important}
 .hero-ad-slide video,.hero-ad-slide img{max-width:none!important}
 #store>.hero-ad{margin-block:0!important}
-#store>.hero-ad+.benefits{display:none!important}
+/* V33: benefits follow the admin setting; do not permanently hide them. */
 #brands{scroll-margin-top:115px}
 @media (max-width:600px){#brands{scroll-margin-top:24px}}
 </style>
@@ -2438,7 +2438,13 @@ window.addEventListener("focus",atyafLoadLowerAds);
     if(!sec)return;
 
     // الإدارة هي المصدر الوحيد للمزايا: إذا لم توجد عناصر محفوظة فلا نعرض أي بطاقات افتراضية.
-    const items=Array.isArray(s?.items)?s.items:[];
+    // If no benefits settings were ever saved, show the two requested service tiles.
+    // Explicitly disabled or empty saved lists remain respected.
+    const fallback=[
+      {icon:'🚚',title:'شحن مجاني',text:'حسب شروط الشحن'},
+      {icon:'↶',title:'إرجاع سهل',text:'اطّلع على سياسة الاسترجاع'}
+    ];
+    const items=Array.isArray(s?.items)?s.items:(s==null?fallback:[]);
     const visibleItems=items.filter(it=>it && it.hidden!==true);
     const shouldShow=s?.enabled!==false && visibleItems.length>0;
     hide(sec,!shouldShow);
@@ -3751,6 +3757,21 @@ main#store>.benefits:not([aria-hidden="true"])>.benefit i{font-size:19px!importa
  body.atyaf-cart-page-open .atyaf-mobile-bottom-nav,body:has(#atyafIntroV12) .atyaf-mobile-bottom-nav{display:none!important}
  html{scroll-padding-top:130px}
 }
+/* V33: actual service strip was suppressed by legacy #store>.hero-ad+.benefits. */
+main#store > section.benefits[aria-hidden="false"]{display:grid!important;position:relative!important;z-index:2!important}
+main#store > section.benefits[aria-hidden="true"]{display:none!important}
+@media(max-width:600px){
+  main#store > section.benefits[aria-hidden="false"]{grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important;gap:0!important;padding:0 8px!important;border-bottom:1px solid #e9e6df!important;background:#fff!important}
+  main#store > section.benefits[aria-hidden="false"] > .benefit{background:transparent!important;border:0!important;border-radius:0!important;padding:10px 5px!important;min-width:0!important;gap:5px!important}
+  main#store > section.benefits[aria-hidden="false"] > .benefit > i{font-size:22px!important;line-height:1!important}
+  main#store > section.benefits[aria-hidden="false"] > .benefit > b{font-size:12px!important}
+  main#store > section.benefits[aria-hidden="false"] > .benefit > span{font-size:10px!important;line-height:1.35!important}
+  #atyafMobileBottomNav{height:calc(67px + env(safe-area-inset-bottom))!important;z-index:55!important}
+  #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg{background:#27221d;color:#e6b65b;border-radius:50%;width:34px;height:34px;padding:7px;stroke:#e6b65b}
+  #atyafMobileBottomNav .atyaf-bottom-tab{gap:2px!important}
+  #home.hero-ad .hero-ad-dots:not(:empty){left:50%!important;transform:translateX(-50%)!important;pointer-events:auto!important}
+  #home.hero-ad .hero-ad-dot{touch-action:manipulation}
+}
 </style>
 <script id="atyaf-v32-interaction-js">
 (()=>{
@@ -3774,5 +3795,4 @@ main#store>.benefits:not([aria-hidden="true"])>.benefit i{font-size:19px!importa
 
 </body>
 </html>
-
 

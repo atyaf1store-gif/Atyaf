@@ -55,7 +55,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
 <button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button><button data-tab="scentCatalog">الروائح</button>
-<button data-tab="coupons">الكوبونات والخصومات</button><button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
+<button data-tab="homepageSections">أقسام الصفحة الرئيسية</button><button data-tab="coupons">الكوبونات والخصومات</button><button data-tab="gift">قسم الهدية</button><button data-tab="footer">الفوتر والتواصل</button><button data-tab="policies">السياسات</button>
 <button data-tab="adminlock">قفل الإدارة</button>
 </div></aside><main>
 <div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><div class="toolbar"><button class="btn alt" onclick="loadAll()">↻ تحديث</button><button class="btn red" type="button" onclick="atyafAdminLogout()">تسجيل الخروج</button></div></div>
@@ -119,6 +119,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
  <div class="atyaf-products-table"><table><thead><tr><th>المنتج</th><th>الماركة</th><th>السعر</th><th>المخزون</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="productRows"></tbody></table></div>
 </div>
 </section>
+<section id="homepageSections" class="panel"><div class="card"><h2>أقسام الصفحة الرئيسية المختصرة</h2><p class="muted">تحكم بإظهار أو إخفاء الأكثر مبيعًا، وصل حديثًا، والمنتجات المميزة. يظهر من كل قسم 4 منتجات فقط، وزر «عرض الكل» يعرض بقية منتجاته. كما تعرض أقسام الماركات 4 منتجات في الرئيسية.</p><div id="atyafHomeSectionsEditor"></div></div></section>
 <section id="coupons" class="panel"><div class="card section-editor">
 <h2>الكوبونات والخصومات</h2><p class="muted">إدارة كوبونات جدول coupons المستخدم مباشرة في سلة المتجر. لا يؤثر هذا القسم على إعدادات المنتجات أو الماركات.</p>
 <div class="toolbar" style="margin:12px 0"><button class="btn" type="button" id="atyafCouponNew" onclick="atyafCouponNew()">+ كوبون جديد</button><button class="btn alt" type="button" onclick="atyafCouponLoad()">↻ تحديث القائمة</button></div>
@@ -665,6 +666,7 @@ function atyafRenderAdmin(){
  ]);
  brandsSectionEditor();
  if(typeof window.atyafRenderScentCatalogAdmin==='function')window.atyafRenderScentCatalogAdmin();
+ if(typeof window.atyafRenderHomeSectionsAdmin==='function')window.atyafRenderHomeSectionsAdmin();
  renderProducts();
  if(typeof window.atyafRenderProductDesign==='function')window.atyafRenderProductDesign();
 }
@@ -1056,6 +1058,32 @@ for(const [k,min,max] of [['columnsDesktop',1,10],['columnsTablet',1,10],['colum
 for(let i=0;i<working.items.length;i++){const x=working.items[i];if(!x.title)throw Error('اسم الرائحة مطلوب للعنصر '+(i+1));const file=root.querySelector(`[data-scent-row="${i}"] [data-scent="file"]`)?.files?.[0];if(file){if(!file.type.startsWith('image/'))throw Error('ملف الرائحة ليس صورة');if(file.size>8*1024*1024)throw Error('صورة الرائحة أكبر من 8 ميجابايت');stat('جاري رفع صورة '+x.title+'…');const uploaded=await uploadFiles([file],'scents');x.image=uploaded[0]||x.image}}
 stat('جاري حفظ إعدادات الروائح…');const existing=(SETTINGS||[]).find(x=>x.key==='scent_catalog');const query=existing?db.from('settings').update({value:working}).eq('id',existing.id):db.from('settings').insert({key:'scent_catalog',value:working});const {data,error}=await query.select('id,value');if(error)throw error;if(!data?.length)throw Error('لم تؤكد قاعدة البيانات حفظ الروائح — تحقق من الصلاحيات');await loadAll();stat('تم حفظ تصميم الروائح والتصنيفات ✓');}catch(e){stat('فشل حفظ الروائح: '+(e.message||e),true)}finally{busy=false;if(b)b.disabled=false}}
 window.atyafRenderScentCatalogAdmin=draw;
+})();
+</script>
+
+<script id="atyaf-v26-homepage-sections-admin">
+(()=>{
+ 'use strict';
+ const root=document.getElementById('atyafHomeSectionsEditor');if(!root)return;
+ const groups=[['best','الأكثر مبيعًا'],['new','وصل حديثًا'],['featured','منتجات مميزة']];
+ const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ let draft=null,busy=false;
+ function initial(){const s=getSetting('homepage_sections',{});return Object.fromEntries(groups.map(([k])=>[k,{enabled:s?.[k]?.enabled!==false,ids:Array.isArray(s?.[k]?.ids)?s[k].ids.map(String):[]}]))}
+ function capture(){if(!draft)return;for(const [key] of groups){const box=root.querySelector('[data-home-group="'+key+'"]');if(!box)continue;draft[key].enabled=box.querySelector('select').value==='true';draft[key].ids=[...box.querySelectorAll('[data-home-id]:checked')].map(x=>x.dataset.homeId)}}
+ function render(){draft=initial();root.innerHTML=groups.map(([key,label])=>{
+   const cfg=draft[key];return `<div class="card" data-home-group="${key}" style="margin:12px 0;padding:14px"><div class="grid"><div class="field"><label>${label}: الإظهار في الرئيسية</label><select><option value="true" ${cfg.enabled?'selected':''}>إظهار</option><option value="false" ${!cfg.enabled?'selected':''}>إخفاء</option></select></div></div><p class="muted">اختر منتجات إضافية لعرضها داخل هذا القسم. المنتجات المصنفة مسبقًا من بياناتها تظهر تلقائيًا، ويمكنك تمييز منتجات أخرى من هنا.</p><div style="max-height:210px;overflow:auto;border:1px solid #e9e1d6;border-radius:10px;padding:9px">${(PRODUCTS||[]).map(p=>`<label style="display:flex;align-items:center;gap:9px;padding:6px 3px"><input type="checkbox" data-home-id="${safe(p.id)}" ${cfg.ids.includes(String(p.id))?'checked':''}><span>${safe(p.name||p.title||'منتج')} — ${safe(p.brand||'')}</span></label>`).join('')||'لا توجد منتجات'}</div></div>`;
+ }).join('')+'<button type="button" class="btn" id="atyafHomeSave">حفظ إعدادات أقسام الرئيسية</button><div class="muted" id="atyafHomeStatus" role="status" style="margin-top:8px"></div>';
+ root.querySelector('#atyafHomeSave').addEventListener('click',save);
+ }
+ async function save(){if(busy)return;const btn=root.querySelector('#atyafHomeSave');try{busy=true;btn.disabled=true;capture();root.querySelector('#atyafHomeStatus').textContent='جاري الحفظ…';
+   const previous=(SETTINGS||[]).find(x=>x.key==='homepage_sections');const query=previous?db.from('settings').update({value:draft}).eq('id',previous.id):db.from('settings').insert({key:'homepage_sections',value:draft});
+   const {data,error}=await query.select('id,value');if(error)throw error;if(!data?.length)throw Error('لم تؤكد Supabase الحفظ. تحقق من الصلاحيات.');
+   const {data:verify,error:readError}=await db.from('settings').select('value').eq('id',data[0].id).single();if(readError)throw readError;
+   const check=verify?.value;if(!check||groups.some(([k])=>check[k]?.enabled!==draft[k].enabled||JSON.stringify((check[k]?.ids||[]).map(String))!==JSON.stringify(draft[k].ids)))throw Error('القيم المحفوظة لا تطابق المدخلات');
+   root.querySelector('#atyafHomeStatus').textContent='تم الحفظ والتحقق بنجاح ✓';stat('تم حفظ الأقسام المختصرة ✓');
+   await loadAll();
+ }catch(e){console.error('homepage sections save',e);stat('فشل حفظ الأقسام: '+(e.message||e),true);const el=root.querySelector('#atyafHomeStatus');if(el)el.textContent='فشل الحفظ: '+(e.message||e)}finally{busy=false;if(btn.isConnected)btn.disabled=false}}
+ window.atyafRenderHomeSectionsAdmin=render;
 })();
 </script>
 </body></html>

@@ -1641,6 +1641,40 @@ body.atyaf-scent-only #atyafScentsCatalog{display:block!important}
 @media(max-width:1000px){#atyafScentResultGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){#atyafScentResultGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+
+<style id="atyaf-v40-favorites-dialog-only">
+/* V40: responsive favorites dialog - no storefront/card/checkout styling changes. */
+#favoritesModal{z-index:110!important;padding:12px!important;align-items:center!important}
+#favoritesModal .modal-card{position:relative!important;width:min(720px,100%)!important;max-height:calc(100dvh - 24px)!important;overflow-y:auto!important;overscroll-behavior:contain;background:#fffdfa!important;border-radius:18px!important;padding:20px!important;box-sizing:border-box!important}
+#favoritesModal .modal-card>.close{position:sticky!important;top:0!important;float:left!important;z-index:2!important;display:grid!important;place-items:center!important;width:36px!important;height:36px!important;border:1px solid #e9e1d6!important;background:#fff!important}
+#favoritesModal .modal-card>h2{font-size:22px!important;margin:2px 0 5px!important;text-align:right!important}
+#favoritesModal .atyaf-fav-count{font-size:12px;color:#707b75;margin:0 0 16px}
+#favoritesModal #favoritesList{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;margin:0!important;min-width:0!important}
+#favoritesModal .atyaf-fav-card{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:13px;min-width:0;padding:12px;border:1px solid #e9e1d6;border-radius:15px;background:#fff;box-shadow:0 2px 10px #17352e08}
+#favoritesModal .atyaf-fav-visual{width:96px;height:106px;display:grid;place-items:center;overflow:hidden;background:#fffdfa;border-radius:10px}
+#favoritesModal .atyaf-fav-visual img{max-width:100%!important;width:100%!important;height:100%!important;object-fit:contain!important;display:block}
+#favoritesModal .atyaf-fav-noimage{font-size:26px;color:#b47a4f}
+#favoritesModal .atyaf-fav-copy{min-width:0;text-align:right}
+#favoritesModal .atyaf-fav-copy small{color:#9d7754;font-size:11px}
+#favoritesModal .atyaf-fav-copy h3{font-size:14px!important;line-height:1.55!important;margin:3px 0 5px!important;overflow-wrap:anywhere;color:#17231f}
+#favoritesModal .atyaf-fav-price{font-size:15px;font-weight:800;color:#b54c3f;text-align:right;direction:ltr;unicode-bidi:isolate;display:inline-block}
+#favoritesModal .atyaf-fav-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+#favoritesModal .atyaf-fav-buttons button{border-radius:10px;padding:8px 12px;min-height:36px;font-size:12px;font-weight:700;white-space:nowrap}
+#favoritesModal .atyaf-fav-view{background:#17352e;color:white}
+#favoritesModal .atyaf-fav-remove{background:white;color:#a4443e;border:1px solid #dfbeb8}
+#favoritesModal .atyaf-fav-empty{padding:40px 12px;text-align:center;color:#707b75;background:#fff;border:1px dashed #e9e1d6;border-radius:14px}
+#favoritesModal .atyaf-fav-empty span{display:block;font-size:44px;color:#b47a4f}
+#favoritesModal .atyaf-fav-empty strong{display:block;color:#17352e;font-size:17px}
+#favoritesModal .atyaf-fav-empty p{font-size:13px;margin:6px auto}
+@media(max-width:600px){
+ #favoritesModal{padding:8px!important;align-items:center!important}
+ #favoritesModal .modal-card{width:calc(100vw - 16px)!important;max-width:480px!important;max-height:calc(100dvh - 30px)!important;padding:14px!important;border-radius:16px!important;margin:auto!important}
+ #favoritesModal .atyaf-fav-card{grid-template-columns:76px minmax(0,1fr);gap:10px;padding:10px}
+ #favoritesModal .atyaf-fav-visual{width:76px;height:92px}
+ #favoritesModal .atyaf-fav-copy h3{font-size:13px!important}
+ #favoritesModal .atyaf-fav-buttons button{font-size:11px;padding:7px 10px}
+}
+</style>
 </head>
 <body>
 
@@ -1733,6 +1767,7 @@ body.atyaf-scent-only #atyafScentsCatalog{display:block!important}
   <div class="modal-card">
     <button class="close" onclick="closeFavorites()">×</button>
     <h2>المفضلة</h2>
+    <p class="atyaf-fav-count" id="atyafFavoritesCount" aria-live="polite"></p>
     <div class="favorites-grid" id="favoritesList"></div>
   </div>
 </div>
@@ -1942,27 +1977,61 @@ body.atyaf-scent-only #atyafScentsCatalog{display:block!important}
     });
   }
 }
-    function toggleFav(id){let i=state.favs.map(String).indexOf(String(id));i>-1?state.favs.splice(i,1):state.favs.push(id);save();renderProducts()}
+    // V40: favorites use string-safe identifiers, synchronized with visible catalog and modal.
+    function toggleFav(id){
+      id=String(id??'');
+      if(!id)return;
+      const at=state.favs.findIndex(v=>String(v)===id);
+      if(at>=0)state.favs.splice(at,1);else state.favs.push(id);
+      save();
+      renderProducts();
+      if(document.getElementById('favoritesModal')?.classList.contains('open'))renderFavoritesList();
+      document.querySelectorAll('#atyafBrandProductSections .favorite, #atyafHomeSections .favorite, #atyafBrandCatalog .favorite, .atyaf-reference-card .favorite').forEach(btn=>{
+        const card=btn.closest('[data-product-id]');
+        if(!card||String(card.dataset.productId)!==id)return;
+        const liked=state.favs.some(v=>String(v)===id);
+        btn.classList.toggle('on',liked);
+        btn.textContent=liked?'♥':'♡';
+        btn.setAttribute('aria-pressed',String(liked));
+        btn.setAttribute('aria-label',liked?'إزالة من المفضلة':'إضافة إلى المفضلة');
+      });
+      document.dispatchEvent(new CustomEvent('atyaf:favorites-changed',{detail:{id}}));
+    }
+    function renderFavoritesList(){
+      const box=document.getElementById('favoritesList');if(!box)return;
+      const ids=new Set(state.favs.map(String));
+      const list=products.filter(p=>ids.has(String(p.id)));
+      const count=document.getElementById('atyafFavoritesCount');
+      if(count)count.textContent=list.length?`${list.length} منتج محفوظ`:'لا توجد منتجات محفوظة';
+      const empty='<div class="atyaf-fav-empty"><span aria-hidden="true">♡</span><strong>المفضلة فارغة</strong><p>اضغط على رمز القلب بجوار أي منتج لإضافته إلى هنا.</p></div>';
+      box.innerHTML=list.length?list.map(p=>{
+        const id=String(p.id);
+        const safeId=encodeURIComponent(id);
+        const img=p.image?`<img loading="lazy" src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}">`:'<div class="atyaf-fav-noimage" aria-hidden="true">✦</div>';
+        return `<article class="atyaf-fav-card" data-product-id="${escapeHtml(id)}">
+          <div class="atyaf-fav-visual">${img}</div>
+          <div class="atyaf-fav-copy"><small>${escapeHtml(p.brand)}</small><h3>${escapeHtml(p.name)}</h3><div class="atyaf-fav-price" dir="ltr">${money(p.price)}</div>
+          <div class="atyaf-fav-buttons"><button type="button" class="atyaf-fav-view" data-fav-action="view" data-fav-id="${safeId}">عرض التفاصيل</button><button type="button" class="atyaf-fav-remove" data-fav-action="remove" data-fav-id="${safeId}" aria-label="حذف ${escapeHtml(p.name)} من المفضلة">♡ إزالة</button></div></div>
+        </article>`;
+      }).join(''):empty;
+    }
     function showFavorites(){
-  const list=products.filter(p=>state.favs.map(String).includes(String(p.id)));
-  const box=document.getElementById('favoritesList');
-  box.innerHTML=list.length?list.map(p=>`
-    <div class="favorite-row">
-      ${p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}">`:`<div class="mini-art" style="--tone:${p.tone}"></div>`}
-      <div>
-        <small style="color:var(--copper)">${escapeHtml(p.brand)}</small>
-        <h3 style="margin:2px 0">${escapeHtml(p.name)}</h3>
-        <b class="price">${money(p.price)}</b>
-        <div class="fav-actions">
-          <button class="btn btn-primary" onclick="addCart('${p.id}')">أضف للسلة</button>
-          <button class="btn btn-outline" onclick="quickView('${p.id}')">عرض</button>
-          <button class="btn btn-outline" onclick="toggleFav(${p.id});showFavorites()">حذف ♡</button>
-        </div>
-      </div>
-    </div>`).join(''):'<div class="empty">لا توجد منتجات في المفضلة بعد ♡</div>';
-  document.getElementById('favoritesModal').classList.add('open');
-}
-function closeFavorites(){document.getElementById('favoritesModal')?.classList.remove('open')}
+      renderFavoritesList();
+      document.getElementById('favoritesModal')?.classList.add('open');
+    }
+    function closeFavorites(){document.getElementById('favoritesModal')?.classList.remove('open')}
+    document.getElementById('favoritesList')?.addEventListener('click',function(e){
+      const button=e.target.closest('button[data-fav-action]');
+      if(!button)return;
+      e.preventDefault();e.stopPropagation();
+      let id;try{id=decodeURIComponent(button.dataset.favId||'')}catch(_){return}
+      if(button.dataset.favAction==='remove'){
+        if(state.favs.some(v=>String(v)===id))toggleFav(id);
+        else renderFavoritesList();
+      }else if(button.dataset.favAction==='view'){
+        closeFavorites();quickView(id);
+      }
+    });
     async function addCart(id){
       id=String(id||'').trim();
       if(!id)return;

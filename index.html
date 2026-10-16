@@ -1695,6 +1695,7 @@ body.atyaf-scent-only #atyafScentsCatalog{display:block!important}
       <div class="atyaf-bc-sortbar"><span id="atyafBcCount" role="status" aria-live="polite"></span><label>الترتيب <select id="atyafBcSort" aria-label="ترتيب المنتجات"><option value="default">الافتراضي</option><option value="low">السعر: الأقل</option><option value="high">السعر: الأعلى</option><option value="name">الاسم</option><option value="discount">الأعلى خصمًا</option></select></label></div>
       <p id="atyafBcEmpty" role="status" hidden>لا توجد منتجات تطابق هذه التصفية. جرّب البحث أو اختيار تصفية أخرى.</p>
     </section>
+    <div id="atyafFeaturedHome" aria-label="مختارات المنتجات"></div>
     <div id="atyafBrandProductSections" class="atyaf-brand-product-sections" aria-label="أقسام المنتجات حسب الماركة"></div>
     <section class="section container" id="scents"><div class="gift"><div><span class="eyebrow" style="color:#e8bb80">هدية تحمل شعورًا</span><h2>لأن أجمل الهدايا<br>تُحسّ قبل أن تُفتح</h2><p>اختر عطرك، أضف تغليفنا الفاخر، ودعنا نجهزها بعناية لتصل كما تتمنى.</p><button class="btn" onclick="openGift()">جهّز هديتك</button></div><div style="font-size:90px;color:#f2d19d80">✦</div></div></section>
 
@@ -2879,10 +2880,11 @@ window.addEventListener('load',()=>{
      const rows=products.filter(p=>norm(p.brand)===norm(name));
      if(!rows.length)return '';
      return `<section class="section container atyaf-brand-products" data-brand-section="${esc(name)}">
-       <div class="section-head"><div><h2>${esc(name)}</h2><p>منتجات ${esc(name)}</p></div></div>
+       <div class="section-head"><div><h2>${esc(name)}</h2><p>منتجات ${esc(name)}</p></div><button type="button" class="atyaf-brand-view-all" data-atyaf-view-brand="${esc(name)}">عرض الكل ←</button></div>
        <div class="atyaf-brand-products-grid">${rows.map(productCard).join('')}</div>
      </section>`;
    }).join('');
+   document.dispatchEvent(new Event('atyaf:brand-cards-rendered'));
  }
  // The original renderer sets ATYAAF_LIVE_PRODUCTS. Wait until Supabase products finish loading.
  let tries=0;
@@ -4131,6 +4133,187 @@ const original=document.getElementById('atyafBrandProductSections');if(original)
 }
 </style>
 
+
+<style id="atyaf-v39-curated-clone-style">
+/* Only the visible brand-section product cards: do not change product details or brand icons. */
+#atyafFeaturedHome .atyaf-featured-grid{align-items:stretch!important}
+#atyafFeaturedHome .atyaf-featured-grid>.atyaf-reference-card{
+  position:relative!important;display:flex!important;flex-direction:column!important;
+  min-width:0!important;width:100%!important;height:100%!important;min-height:0!important;
+  overflow:hidden!important;border:1px solid #e7e7e7!important;border-radius:7px!important;
+  background:#fff!important;box-shadow:0 1px 3px rgba(0,0,0,.035)!important;
+  cursor:pointer!important;transform:none!important;transition:box-shadow .2s,border-color .2s!important;
+}
+#atyafFeaturedHome .atyaf-featured-grid>.atyaf-reference-card:hover{
+  border-color:#d7d7d7!important;box-shadow:0 5px 16px rgba(0,0,0,.07)!important
+}
+#atyafFeaturedHome .atyaf-reference-card>.product-visual{
+  position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;height:auto!important;min-height:0!important;
+  aspect-ratio:1/1.16!important;padding:12px!important;margin:0!important;
+  overflow:hidden!important;background:#fff!important;border:0!important;border-radius:0!important;
+}
+#atyafFeaturedHome .atyaf-reference-card>.product-visual>img{
+  position:relative!important;inset:auto!important;display:block!important;
+  width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+  margin:auto!important;padding:0!important;object-fit:contain!important;object-position:center!important;
+  background:transparent!important;transform:none!important
+}
+#atyafFeaturedHome .atyaf-reference-card>.product-visual:has(>img)::before,
+#atyafFeaturedHome .atyaf-reference-card>.product-visual:has(>img)::after,
+#atyafFeaturedHome .atyaf-reference-card>.product-visual:has(>img) .cap{display:none!important}
+#atyafFeaturedHome .atyaf-reference-card>.product-info{
+  position:relative!important;display:flex!important;flex-direction:column!important;justify-content:center!important;
+  flex:0 0 auto!important;min-width:0!important;width:100%!important;height:auto!important;
+  padding:10px 12px 12px!important;margin:0!important;border-top:1px solid #efefef!important;
+  background:#fff!important;text-align:right!important;gap:3px!important
+}
+#atyafFeaturedHome .atyaf-reference-card>.product-info>h3{
+  display:block!important;position:static!important;margin:0!important;padding:0!important;
+  font-size:13px!important;line-height:1.6!important;font-weight:500!important;
+  color:#535353!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  text-align:right!important;transform:none!important
+}
+#atyafFeaturedHome .atyaf-reference-card>.product-info>.price{
+  display:block!important;position:static!important;margin:0!important;padding:0!important;
+  font-size:15px!important;line-height:1.5!important;font-weight:800!important;color:#d94c3d!important;
+  text-align:right!important;transform:none!important
+}
+#atyafFeaturedHome .atyaf-reference-card .atyaf-sale-corner{
+  position:absolute!important;top:0!important;left:0!important;right:auto!important;z-index:8!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  min-height:19px!important;padding:2px 5px!important;margin:0!important;
+  background:#e74e40!important;color:#fff!important;font:700 11px/1.2 Arial,sans-serif!important;
+  border-radius:0 0 4px 0!important;white-space:nowrap!important;pointer-events:none!important
+}
+#atyafFeaturedHome .atyaf-reference-card .tag,
+#atyafFeaturedHome .atyaf-reference-card .atyaf-stock-indicator,
+#atyafFeaturedHome .atyaf-reference-card .product-actions,
+#atyafFeaturedHome .atyaf-reference-card .price .old{display:none!important}
+@media(max-width:600px){
+ #atyafFeaturedHome .atyaf-reference-card>.product-visual{padding:7px!important}
+ #atyafFeaturedHome .atyaf-reference-card>.product-info{padding:8px 9px 10px!important}
+ #atyafFeaturedHome .atyaf-reference-card>.product-info>h3{font-size:12px!important}
+ #atyafFeaturedHome .atyaf-reference-card>.product-info>.price{font-size:14px!important}
+}
+
+
+/* V38: restore small favorite button + English-number prices + visible old price on storefront cards */
+
+#atyafFeaturedHome .atyaf-reference-card .favorite{
+  display:grid!important;place-items:center!important;
+  position:absolute!important;top:10px!important;right:10px!important;left:auto!important;
+  z-index:10!important;width:30px!important;height:30px!important;
+  border-radius:50%!important;border:1px solid #ece5d8!important;
+  background:#fff!important;color:#6e6e6e!important;font-size:17px!important;
+  line-height:1!important;padding:0!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;
+}
+
+#atyafFeaturedHome .atyaf-reference-card .favorite.on{color:#c04e43!important}
+
+#atyafFeaturedHome .atyaf-reference-card .price{
+  display:flex!important;align-items:baseline!important;justify-content:flex-end!important;
+  gap:6px!important;flex-wrap:wrap!important;direction:ltr!important;
+  font-variant-numeric:tabular-nums lining-nums!important;
+}
+
+#atyafFeaturedHome .atyaf-reference-card .price .old{
+  display:inline-flex!important;align-items:center!important;
+  margin-inline-start:0!important;color:#9d968a!important;font-size:.88em!important;
+  text-decoration:line-through!important;text-decoration-thickness:1.5px!important;
+  font-weight:500!important;white-space:nowrap!important;direction:ltr!important;
+}
+
+#atyafFeaturedHome .atyaf-reference-card .price{font-weight:800!important}
+@media (max-width:600px){
+  
+  #atyafFeaturedHome .atyaf-reference-card .favorite{width:28px!important;height:28px!important;font-size:16px!important;top:8px!important;right:8px!important}
+}
+
+</style>
+<style id="atyaf-v39-curated-home-style">
+/* Four items on the home page only. Full brand views keep ALL products. */
+#atyafBrandProductSections .atyaf-brand-view-all,#atyafFeaturedHome .atyaf-featured-all{
+  border:0;background:none;color:var(--copper,#b47a4f);padding:7px 2px;font:700 13px inherit;cursor:pointer;white-space:nowrap
+}
+body:not(.atyaf-single-brand-view):not(.atyaf-curated-full):not(.atyaf-scent-only) #atyafBrandProductSections .atyaf-brand-products-grid > .atyaf-reference-card:nth-child(n+5){display:none!important}
+#atyafFeaturedHome .atyaf-featured-section{padding-top:26px;padding-bottom:12px}
+#atyafFeaturedHome .atyaf-featured-section .section-head{margin-bottom:15px}
+#atyafFeaturedHome .atyaf-featured-section h2{font-size:clamp(21px,3vw,30px)}
+#atyafFeaturedHome .atyaf-featured-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+#atyafFeaturedHome .atyaf-featured-grid > .atyaf-reference-card{min-width:0}
+#atyafFeaturedHome .atyaf-featured-fullbar{display:none;padding:14px 0;border-bottom:1px solid var(--line)}
+#atyafFeaturedHome .atyaf-featured-fullbar button{border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--green);padding:10px 14px;cursor:pointer}
+body.atyaf-curated-full #atyafFeaturedHome .atyaf-featured-fullbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+body.atyaf-curated-full #store > .hero-ad,body.atyaf-curated-full #store > .benefits,
+body.atyaf-curated-full #store > #brands,body.atyaf-curated-full #store > #products,
+body.atyaf-curated-full #store > #atyafBrandProductSections,body.atyaf-curated-full #store > #scents,
+body.atyaf-curated-full #store > #atyafLowerAds{display:none!important}
+body.atyaf-curated-full #atyafFeaturedHome .atyaf-featured-section{display:none!important}
+body.atyaf-curated-full #atyafFeaturedHome .atyaf-featured-section[data-full-active="true"]{display:block!important}
+body.atyaf-curated-full #atyafFeaturedHome .atyaf-featured-section[data-full-active="true"] .atyaf-featured-grid > .atyaf-reference-card:nth-child(n){display:block!important}
+body.atyaf-curated-full #atyafFeaturedHome .atyaf-featured-section[data-full-active="true"] .atyaf-featured-all{display:none}
+body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeaturedHome{display:none!important}
+@media(max-width:950px){#atyafFeaturedHome .atyaf-featured-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){#atyafFeaturedHome .atyaf-featured-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#atyafFeaturedHome .atyaf-featured-section{padding-top:20px;padding-bottom:5px}}
+</style>
+<script id="atyaf-v39-curated-home-js">
+(()=>{
+ 'use strict';
+ const root=document.getElementById('atyafFeaturedHome'),brandHost=document.getElementById('atyafBrandProductSections');if(!root||!brandHost)return;
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const keys=['best','new','featured'];
+ const labels={best:'الأكثر مبيعًا',new:'وصل حديثًا',featured:'منتجات مميزة'};
+ const defaults={best:{enabled:true,ids:[]},new:{enabled:true,ids:[]},featured:{enabled:true,ids:[]}};
+ let settings=defaults,active='',lastPosition=0,refreshing=false;
+ const pId=p=>String(p?.id??'');
+ const all=()=>Array.isArray(window.ATYAAF_LIVE_PRODUCTS)?window.ATYAAF_LIVE_PRODUCTS:[];
+ const truth=v=>v===true||v===1||v==='true';
+ const selected=(p,key)=>{
+   const entry=settings[key]||{};
+   const forced=Array.isArray(entry.ids)&&entry.ids.map(String).includes(pId(p));
+   if(forced)return true;
+   const raw=p.raw||{};
+   const label=String(p.label||raw.badge||'').toLowerCase();
+   if(key==='best')return truth(raw.is_best_seller)||truth(raw.best_seller)||/الأكثر مبيع|رائج|best.?sell/.test(label);
+   if(key==='new')return truth(raw.is_new)||(Array.isArray(p.tags)&&p.tags.includes('new'))||/جديد|وصل حديث/.test(label);
+   return truth(raw.is_featured)||truth(raw.featured)||/مميز|مختار/.test(label);
+ };
+ function sync(){
+   const products=all();if(!products.length)return;
+   const existing=new Map([...brandHost.querySelectorAll('.atyaf-reference-card[data-product-id]')].map(x=>[x.dataset.productId,x]));
+   const previously=active;
+   root.innerHTML='<div class="atyaf-featured-fullbar container"><strong id="atyafCuratedFullTitle"></strong><button type="button" data-curated-back>← العودة للمتجر</button></div>'+
+      keys.map(key=>{
+        const config=settings[key]||{};if(config.enabled===false)return '';
+        const matches=products.filter(p=>selected(p,key));if(!matches.length)return '';
+        const rows=previously===key?matches:matches.slice(0,4);
+        const cards=rows.map(p=>existing.get(pId(p))?.outerHTML||'').join('');
+        return '<section class="section container atyaf-featured-section" data-curated-section="'+key+'" '+(previously===key?'data-full-active="true"':'')+'><div class="section-head"><h2>'+labels[key]+'</h2><button class="atyaf-featured-all" type="button" data-curated-open="'+key+'">عرض الكل ←</button></div><div class="atyaf-featured-grid">'+cards+'</div></section>';
+      }).join('');
+   const bar=root.querySelector('#atyafCuratedFullTitle');if(bar)bar.textContent=labels[active]||'';
+   if(previously&&!root.querySelector('[data-full-active]')){active='';document.body.classList.remove('atyaf-curated-full')}
+ }
+ function enter(key){if(!keys.includes(key))return;if(!active)lastPosition=window.scrollY;
+   if(document.body.classList.contains('atyaf-single-brand-view'))window.atyafCloseBrandView?.();
+   if(document.body.classList.contains('atyaf-scent-only'))window.atyafCloseScentCatalog?.();
+   active=key;document.body.classList.add('atyaf-curated-full');sync();window.scrollTo({top:Math.max(0,root.getBoundingClientRect().top+window.scrollY-95),behavior:'instant'});
+ }
+ function exit(){if(!active)return;active='';document.body.classList.remove('atyaf-curated-full');sync();window.scrollTo({top:lastPosition,behavior:'instant'})}
+ root.addEventListener('click',e=>{const open=e.target.closest('[data-curated-open]');if(open){enter(open.dataset.curatedOpen);return}if(e.target.closest('[data-curated-back]'))exit()});
+ document.addEventListener('click',e=>{if(e.target.closest('#atyafMobileBottomNav [data-atyaf-tab="home"]'))exit()},true);
+ document.addEventListener('click',e=>{const btn=e.target.closest('[data-atyaf-view-brand]');if(btn){e.preventDefault();exit();window.atyafOpenBrandView?.(btn.dataset.atyafViewBrand)}},true);
+ document.addEventListener('atyaf:brand-cards-rendered',sync);
+ async function load(){if(refreshing||!window.atyafDb)return;refreshing=true;try{
+   const {data,error}=await window.atyafDb.from('settings').select('value').eq('key','homepage_sections').order('updated_at',{ascending:false}).limit(1);
+   if(error)throw error;let v=data?.[0]?.value;if(typeof v==='string')v=JSON.parse(v);
+   settings={...defaults,...(v&&typeof v==='object'?v:{})};sync();
+ }catch(e){console.warn('ATYAF homepage sections:',e);sync()}finally{refreshing=false}}
+ let attempts=0;const timer=setInterval(()=>{if(window.atyafDb){clearInterval(timer);load()}else if(++attempts>60)clearInterval(timer)},150);
+ window.addEventListener('focus',load);
+ window.atyafOpenCuratedSection=enter;window.atyafCloseCuratedSection=exit;
+})();
+</script>
 </body>
 </html>
 

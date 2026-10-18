@@ -4580,6 +4580,127 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
 }
 </style>
 
+
+<!-- V45: scent results reuse the exact storefront product-card layout, scoped only to scent results. -->
+<style id="atyaf-v45-scent-card-match">
+#atyafScentResultGrid{align-items:stretch!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media(max-width:1000px){#atyafScentResultGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){#atyafScentResultGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Only the visible brand-section product cards: do not change product details or brand icons. */
+#atyafScentResultGrid{align-items:stretch!important}
+#atyafScentResultGrid>.atyaf-reference-card{
+  position:relative!important;display:flex!important;flex-direction:column!important;
+  min-width:0!important;width:100%!important;height:100%!important;min-height:0!important;
+  overflow:hidden!important;border:1px solid #e7e7e7!important;border-radius:7px!important;
+  background:#fff!important;box-shadow:0 1px 3px rgba(0,0,0,.035)!important;
+  cursor:pointer!important;transform:none!important;transition:box-shadow .2s,border-color .2s!important;
+}
+#atyafScentResultGrid>.atyaf-reference-card:hover{
+  border-color:#d7d7d7!important;box-shadow:0 5px 16px rgba(0,0,0,.07)!important
+}
+#atyafScentResultGrid .atyaf-reference-card>.product-visual{
+  position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;height:auto!important;min-height:0!important;
+  aspect-ratio:1/1.16!important;padding:12px!important;margin:0!important;
+  overflow:hidden!important;background:#fff!important;border:0!important;border-radius:0!important;
+}
+#atyafScentResultGrid .atyaf-reference-card>.product-visual>img{
+  position:relative!important;inset:auto!important;display:block!important;
+  width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+  margin:auto!important;padding:0!important;object-fit:contain!important;object-position:center!important;
+  background:transparent!important;transform:none!important
+}
+#atyafScentResultGrid .atyaf-reference-card>.product-visual:has(>img)::before,
+#atyafScentResultGrid .atyaf-reference-card>.product-visual:has(>img)::after,
+#atyafScentResultGrid .atyaf-reference-card>.product-visual:has(>img) .cap{display:none!important}
+#atyafScentResultGrid .atyaf-reference-card>.product-info{
+  position:relative!important;display:flex!important;flex-direction:column!important;justify-content:center!important;
+  flex:0 0 auto!important;min-width:0!important;width:100%!important;height:auto!important;
+  padding:10px 12px 12px!important;margin:0!important;border-top:1px solid #efefef!important;
+  background:#fff!important;text-align:right!important;gap:3px!important
+}
+#atyafScentResultGrid .atyaf-reference-card>.product-info>h3{
+  display:block!important;position:static!important;margin:0!important;padding:0!important;
+  font-size:13px!important;line-height:1.6!important;font-weight:500!important;
+  color:#535353!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  text-align:right!important;transform:none!important
+}
+#atyafScentResultGrid .atyaf-reference-card>.product-info>.price{
+  display:block!important;position:static!important;margin:0!important;padding:0!important;
+  font-size:15px!important;line-height:1.5!important;font-weight:800!important;color:#d94c3d!important;
+  text-align:right!important;transform:none!important
+}
+#atyafScentResultGrid .atyaf-reference-card .atyaf-sale-corner{
+  position:absolute!important;top:0!important;left:0!important;right:auto!important;z-index:8!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  min-height:19px!important;padding:2px 5px!important;margin:0!important;
+  background:#e74e40!important;color:#fff!important;font:700 11px/1.2 Arial,sans-serif!important;
+  border-radius:0 0 4px 0!important;white-space:nowrap!important;pointer-events:none!important
+}
+#atyafScentResultGrid .atyaf-reference-card .tag,
+#atyafScentResultGrid .atyaf-reference-card .atyaf-stock-indicator,
+#atyafScentResultGrid .atyaf-reference-card .product-actions,
+#atyafScentResultGrid .atyaf-reference-card .price .old{display:none!important}
+@media(max-width:600px){
+ #atyafScentResultGrid .atyaf-reference-card>.product-visual{padding:7px!important}
+ #atyafScentResultGrid .atyaf-reference-card>.product-info{padding:8px 9px 10px!important}
+ #atyafScentResultGrid .atyaf-reference-card>.product-info>h3{font-size:12px!important}
+ #atyafScentResultGrid .atyaf-reference-card>.product-info>.price{font-size:14px!important}
+}
+
+
+/* V38: restore small favorite button + English-number prices + visible old price on storefront cards */
+#atyafScentResultGrid .atyaf-reference-card .favorite{
+  display:grid!important;place-items:center!important;
+  position:absolute!important;top:10px!important;right:10px!important;left:auto!important;
+  z-index:10!important;width:30px!important;height:30px!important;
+  border-radius:50%!important;border:1px solid #ece5d8!important;
+  background:#fff!important;color:#6e6e6e!important;font-size:17px!important;
+  line-height:1!important;padding:0!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important;
+}
+#atyafScentResultGrid .atyaf-reference-card .favorite.on{color:#c04e43!important}
+#atyafScentResultGrid .atyaf-reference-card .price{
+  display:flex!important;align-items:baseline!important;justify-content:flex-end!important;
+  gap:6px!important;flex-wrap:wrap!important;direction:ltr!important;
+  font-variant-numeric:tabular-nums lining-nums!important;
+}
+#atyafScentResultGrid .atyaf-reference-card .price .old{
+  display:inline-flex!important;align-items:center!important;
+  margin-inline-start:0!important;color:#9d968a!important;font-size:.88em!important;
+  text-decoration:line-through!important;text-decoration-thickness:1.5px!important;
+  font-weight:500!important;white-space:nowrap!important;direction:ltr!important;
+}
+
+#atyafScentResultGrid .atyaf-reference-card .price{font-weight:800!important}
+@media (max-width:600px){
+  #atyafScentResultGrid .atyaf-reference-card .favorite{width:28px!important;height:28px!important;font-size:16px!important;top:8px!important;right:8px!important}
+}
+
+</style>
+<style id="atyaf-v45-scent-card-admin-mirror"></style>
+<script id="atyaf-v45-scent-card-admin-mirror-js">
+(()=>{
+  'use strict';
+  const output=document.getElementById('atyaf-v45-scent-card-admin-mirror');
+  const sources=['atyaf-brand-card-admin-controls','atyaf-product-design-live-style'];
+  if(!output)return;
+  function copy(){
+    const chunks=sources.map(id=>document.getElementById(id)?.textContent||'');
+    let css=chunks.join('\n');
+    css=css.replace(/#atyafBrandProductSections\s+\.atyaf-brand-products-grid/g,'#atyafScentResultGrid')
+           .replace(/#atyafBrandProductSections\s+/g,'#atyafScentResultGrid ');
+    // Mirror only scoped rules. Other admin settings for #productGrid remain untouched.
+    // This stylesheet follows the store styles and is applied only to scent-result cards.
+    if(output.textContent!==css)output.textContent=css;
+  }
+  for(const id of sources){
+    const node=document.getElementById(id);
+    if(node)new MutationObserver(copy).observe(node,{childList:true,characterData:true,subtree:true});
+  }
+  copy();
+})();
+</script>
+
 </body>
 </html>
 

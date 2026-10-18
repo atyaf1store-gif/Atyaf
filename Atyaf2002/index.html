@@ -330,10 +330,10 @@ function profileSectionEditor(){
  <div class="field"><label>الحالة</label><select data-v="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
  ${colorField('backgroundColor','لون خلفية الهيدر',s.backgroundColor||'#000000')}
  <div class="field"><label>الخط</label><select data-v="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
- <div class="field"><label>حجم الشعار للهاتف px</label><input data-v="phoneSize" type="number" min="24" max="140" value="${Number(s.phoneSize||42)}"></div>
- <div class="field"><label>حجم الشعار للآيباد/التابلت px</label><input data-v="tabletSize" type="number" min="30" max="180" value="${Number(s.tabletSize||64)}"></div>
- <div class="field"><label>حجم الشعار للكمبيوتر px</label><input data-v="desktopSize" type="number" min="30" max="220" value="${Number(s.desktopSize||s.tabletSize||64)}"></div>
- <div class="field full upload"><b>صورة البروفايل — رفع مباشر</b><input id="profileLogoFile" type="file" accept="image/*">${s.logoImage?`<div style="margin-top:9px"><img src="${esc(s.logoImage)}" style="max-width:180px;max-height:130px;object-fit:contain"><br><button class="btn red" type="button" onclick="removeProfileLogo()">حذف الصورة فقط</button></div>`:''}</div>
+ <div class="field"><label>عرض الشعار للهاتف px (لا يغيّر ارتفاع الهيدر)</label><input data-v="phoneSize" type="number" min="24" max="260" value="${Number(s.phoneSize||42)}"></div>
+ <div class="field"><label>عرض الشعار للآيباد/التابلت px</label><input data-v="tabletSize" type="number" min="30" max="360" value="${Number(s.tabletSize||64)}"></div>
+ <div class="field"><label>عرض الشعار للكمبيوتر px</label><input data-v="desktopSize" type="number" min="30" max="420" value="${Number(s.desktopSize||s.tabletSize||64)}"></div>
+ <p class="muted" style="grid-column:1/-1">حجم الشعار هنا يعني عرض الصورة المرفوعة. يُقيّد تلقائيًا بحسب مساحة الجهاز حتى لا تتداخل أيقونات السلة والبحث، وتبقى خلفية الهيدر زجاجية بلونك المختار.</p><div class="field full upload"><b>صورة البروفايل — رفع مباشر</b><input id="profileLogoFile" type="file" accept="image/*">${s.logoImage?`<div style="margin-top:9px"><img src="${esc(s.logoImage)}" style="max-width:180px;max-height:130px;object-fit:contain"><br><button class="btn red" type="button" onclick="removeProfileLogo()">حذف الصورة فقط</button></div>`:''}</div>
  </div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveProfileSection()">حفظ</button></div>`;
  const ff=profileEditor.querySelector('[data-v="fontFamily"]');if(ff)ff.value=s.fontFamily||'Tahoma, Arial, sans-serif';
 }

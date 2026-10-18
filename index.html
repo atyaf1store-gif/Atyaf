@@ -4510,6 +4510,76 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
 })();
 </script>
 
+
+<style id="atyaf-v44-compact-brand-scent-headings">
+/* V44: only the category heading rows; logos, product grids, admin data and links remain unchanged. */
+@media (max-width: 850px) {
+  #store #brands,
+  #store #atyafScentsCatalog {
+    padding-top: 12px !important;
+    padding-bottom: 16px !important;
+  }
+  #store #brands > .section-head,
+  #store #atyafScentsCatalog > .section-head {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    min-height: 0 !important;
+    gap: 10px !important;
+    margin: 0 0 12px !important;
+    padding: 0 0 9px !important;
+  }
+  #store #brands > .section-head > div,
+  #store #atyafScentsCatalog > .section-head > div {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #store #brands > .section-head h2,
+  #store #atyafScentsCatalog > .section-head h2 {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: right !important;
+    letter-spacing: 0 !important;
+  }
+  /* Keep the subtitle accessible in the DOM; hide it visually on narrow screens to save space. */
+  #store #brands > .section-head p,
+  #store #atyafScentsCatalog > .section-head p {
+    display: none !important;
+  }
+  #store #brands > .section-head .link,
+  #store #atyafScentsCatalog > .section-head .link {
+    flex: 0 0 auto;
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    min-height: 30px;
+    padding: 4px 0 !important;
+    margin: 0 !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 600px) {
+  #store #brands,
+  #store #atyafScentsCatalog {
+    padding-top: 9px !important;
+    padding-bottom: 12px !important;
+  }
+  #store #brands > .section-head,
+  #store #atyafScentsCatalog > .section-head { margin-bottom: 9px !important; }
+  #store #brands > .section-head h2,
+  #store #atyafScentsCatalog > .section-head h2 { font-size: 14px !important; }
+}
+</style>
+
 </body>
 </html>
 

@@ -1675,6 +1675,54 @@ body.atyaf-scent-only #atyafScentsCatalog{display:block!important}
  #favoritesModal .atyaf-fav-buttons button{font-size:11px;padding:7px 10px}
 }
 </style>
+
+<!-- V42: one authoritative, scoped profile size/background mapping; no product or other-page changes. -->
+<style id="atyaf-v42-profile-admin-display-authority">
+/* The uploaded logo is a wide graphic. The setting controls WIDTH, never header height. */
+html body .header .atyaf-profile .atyaf-profile-image-slot img,
+html body .header .atyaf-mobile-profile .atyaf-profile-image-slot img{
+ height:auto!important;min-height:0!important;object-fit:contain!important;
+ border:0!important;box-shadow:none!important;background:transparent!important;
+}
+html body .header{
+ /* Apply the saved color visibly while retaining translucency and the chosen glass effect. */
+ background:color-mix(in srgb,var(--atyaf-profile-header-bg,#ffffff) 76%,transparent)!important;
+ -webkit-backdrop-filter:blur(15px) saturate(120%)!important;
+ backdrop-filter:blur(15px) saturate(120%)!important;
+}
+@supports not (background:color-mix(in srgb, white 50%, transparent)){
+ html body .header{background:var(--atyaf-profile-header-bg,#ffffff)!important}
+}
+@media(min-width:1101px){
+ html body .header .atyaf-profile .atyaf-profile-image-slot img{
+  width:min(var(--atyaf-profile-desktop-size,200px),min(28vw,360px))!important;
+  max-width:100%!important;max-height:70px!important;
+ }
+}
+@media(min-width:601px) and (max-width:1100px){
+ html body .header .atyaf-profile .atyaf-profile-image-slot img{
+  width:min(var(--atyaf-profile-tablet-size,200px),min(30vw,320px))!important;
+  max-width:100%!important;max-height:66px!important;
+ }
+}
+@media(max-width:600px){
+ html body .header .headrow.atyaf-head-balanced{
+  height:72px!important;min-height:72px!important;
+  grid-template-columns:minmax(74px,1fr) minmax(0,42vw) minmax(74px,1fr)!important;
+  padding:6px 0!important;gap:4px!important;
+ }
+ html body .header .atyaf-mobile-profile{
+  width:100%!important;max-width:42vw!important;height:60px!important;
+ }
+ html body .header .atyaf-mobile-profile .atyaf-profile-image-slot{
+  width:100%!important;max-width:100%!important;height:60px!important;
+ }
+ html body .header .atyaf-mobile-profile .atyaf-profile-image-slot img{
+  width:min(var(--atyaf-profile-phone-size,200px),42vw)!important;
+  max-width:100%!important;max-height:58px!important;
+ }
+}
+</style>
 </head>
 <body>
 
@@ -3203,9 +3251,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHeaderSearch()}
   r.style.setProperty('--atyaf-profile-bar-bg',p.barBackgroundColor||'#000000');
   r.style.setProperty('--atyaf-profile-bar-text',p.barTextColor||'#ffffff');
   r.style.setProperty('--atyaf-profile-font',p.fontFamily||'Tahoma, Arial, sans-serif');
-  r.style.setProperty('--atyaf-profile-phone-size',Math.max(24,Math.min(140,Number(p.phoneSize)||42))+'px');
-  r.style.setProperty('--atyaf-profile-tablet-size',Math.max(30,Math.min(180,Number(p.tabletSize)||64))+'px');
-  r.style.setProperty('--atyaf-profile-desktop-size',Math.max(30,Math.min(220,Number(p.desktopSize||p.tabletSize)||64))+'px');
+  r.style.setProperty('--atyaf-profile-phone-size',Math.max(24,Math.min(260,Number(p.phoneSize)||42))+'px');
+  r.style.setProperty('--atyaf-profile-tablet-size',Math.max(30,Math.min(360,Number(p.tabletSize)||64))+'px');
+  r.style.setProperty('--atyaf-profile-desktop-size',Math.max(30,Math.min(420,Number(p.desktopSize||p.tabletSize)||64))+'px');
   document.querySelectorAll('.atyaf-profile,.atyaf-mobile-profile').forEach(x=>x.style.display=p.enabled===false?'none':'');
   document.querySelectorAll('.atyaf-profile-image-slot').forEach(slot=>{
     slot.style.display=url?'grid':'none';

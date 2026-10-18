@@ -1685,8 +1685,8 @@ html body .header .atyaf-mobile-profile .atyaf-profile-image-slot img{
  border:0!important;box-shadow:none!important;background:transparent!important;
 }
 html body .header{
- /* Apply the saved color visibly while retaining translucency and the chosen glass effect. */
- background:color-mix(in srgb,var(--atyaf-profile-header-bg,#ffffff) 76%,transparent)!important;
+ /* Honor admin-selected header color without dilution; header dimensions unchanged. */
+ background:var(--atyaf-profile-header-bg,#ffffff)!important;
  -webkit-backdrop-filter:blur(15px) saturate(120%)!important;
  backdrop-filter:blur(15px) saturate(120%)!important;
 }
@@ -3881,10 +3881,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
 </style>
 <!-- V28: translucent frosted-glass main header; no layout or functionality changes. -->
 <style id="atyaf-v28-glass-main-header">
-/* V29: translucent header with a neutral glass surface; profile background is a subtle tint, not an opaque slab. */
+/* Preserve layout and blur, but never dilute the admin-selected header color. */
 html body .header{
  position:sticky!important;top:0!important;z-index:100!important;
- background:color-mix(in srgb, var(--atyaf-profile-header-bg,#ffffff) 12%, rgba(255,255,255,.80))!important;
+ background:var(--atyaf-profile-header-bg,#ffffff)!important;
  -webkit-backdrop-filter:blur(16px) saturate(125%)!important;
  backdrop-filter:blur(16px) saturate(125%)!important;
  border-bottom:1px solid rgba(40,40,40,.10)!important;
@@ -3893,7 +3893,7 @@ html body .header{
 html body .header .nav{background:rgba(255,255,255,.10)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-top-color:rgba(40,40,40,.08)!important;border-bottom-color:transparent!important}
 html body .header .headrow,html body .header .navrow{background:transparent!important}
 @supports not (background:color-mix(in srgb, white 50%, transparent)){
- html body .header{background:rgba(255,255,255,.80)!important}
+ html body .header{background:var(--atyaf-profile-header-bg,#ffffff)!important}
 }
 </style>
 

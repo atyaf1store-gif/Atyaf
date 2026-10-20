@@ -1736,6 +1736,7 @@ html body .header{
   <span class="brand-mark atyaf-profile-image-slot" aria-hidden="true"></span>
 </a>
 <div class="actions atyaf-head-left customer-tools" aria-label="الهدايا والبحث">
+  <button type="button" id="atyafRefMenuButton" class="customer-tool atyaf-ref-menu-button" aria-label="فتح القائمة الرئيسية" aria-expanded="false" aria-controls="atyafRefMenuPanel"><svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
   <button class="customer-tool" data-store-action="gifts" title="الهدايا" aria-label="الهدايا">🎁</button>
   <button class="customer-tool atyaf-search-toggle" type="button" title="البحث" aria-label="البحث" onclick="toggleHeaderSearch(event)">⌕</button>
   <div class="atyaf-search-popover" id="atyafSearchPopover">
@@ -1746,6 +1747,7 @@ html body .header{
     </div>
     <nav class="nav" id="nav" aria-label="الأقسام الرئيسية"><div class="container navrow" dir="ltr"><a href="#home" data-atyaf-main-tab="all" class="atyaf-tab-active">ALL</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="sale">Offers</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="best">Trending</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="new">New arrivals</a><a href="#atyafScentsCatalog" data-atyaf-main-tab="scents">Scents</a><a href="#atyafBrandProductSections" data-atyaf-main-tab="products">Products</a></div></nav>
   </header>
+  <div id="atyafRefMenuPanel" class="atyaf-ref-menu-panel" hidden aria-label="القائمة الرئيسية" dir="rtl"></div>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
   <main id="store">
     <section class="hero-ad" id="home" aria-label="إعلانات المتجر" hidden><div class="hero-ad-track" id="heroAdTrack"></div><div class="hero-ad-dots" id="heroAdDots"></div></section>
@@ -2683,6 +2685,15 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if(icon)icon.textContent=it.icon||it.symbol||it.textIcon||'✦';
       if(title)title.textContent=it.title||it.name||'';
       if(desc)desc.textContent=it.text||it.description||'';
+      // A functional policy link on the returns card (not an invented URL).
+      const returnsCard=/إرجاع|استرجاع|ارجاع/.test(String(it.title||it.name||''));
+      let policyLink=card.querySelector('.atyaf-ref-policy-link');
+      if(returnsCard){
+        if(!policyLink){policyLink=document.createElement('a');policyLink.className='atyaf-ref-policy-link';policyLink.href='#';card.appendChild(policyLink)}
+        policyLink.textContent='اعرف المزيد';
+        policyLink.onclick=e=>{e.preventDefault();if(typeof window.atyafOpenPolicy==='function')window.atyafOpenPolicy('returns','الاستبدال والاسترجاع')};
+      }else if(policyLink){policyLink.remove()}
+
     });
     current.slice(visibleItems.length).forEach(x=>x.remove());
 
@@ -4698,6 +4709,75 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
     if(node)new MutationObserver(copy).observe(node,{childList:true,characterData:true,subtree:true});
   }
   copy();
+})();
+</script>
+
+
+<!-- V46: reference mobile header, service strip, and ad dots; scoped to storefront only. -->
+<style id="atyaf-v46-reference-mobile-look">
+@media(max-width:767px){
+  /* The selected reference uses a dark two-level header; no change to desktop. */
+  body .header,html body .header,body .header #nav.nav,body .header .nav{
+    background:#211f1c!important;background-color:#211f1c!important;
+    color:#fff!important;border-color:rgba(255,255,255,.27)!important;
+    box-shadow:none!important;
+  }
+  .header .headrow.atyaf-head-balanced{height:64px!important;min-height:64px!important;padding-block:6px!important}
+  .header .atyaf-head-left .customer-tool,.header .atyaf-head-right .customer-tool{
+    color:#fff!important;background:transparent!important;border:0!important;
+    box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    width:38px!important;min-width:38px!important;height:42px!important;min-height:42px!important;
+  }
+  .header .customer-tool .atyaf-svg,.header .customer-tool svg{stroke:#fff!important;color:#fff!important}
+  #atyafRefMenuButton{display:inline-flex!important;align-items:center;justify-content:center}
+  .header .atyaf-head-left [data-store-action="gifts"]{display:none!important}
+  .header .atyaf-mobile-profile .atyaf-profile-image-slot img{filter:none!important}
+  #nav.nav .navrow>a[data-atyaf-main-tab]{color:#f7f6f4!important;font-size:12px!important;font-weight:600!important;min-height:43px!important}
+  #nav.nav .navrow>a.atyaf-tab-active{color:#e0b45c!important}
+  #nav.nav .navrow>a.atyaf-tab-active::after{background:#e0b45c!important}
+  .atyaf-ref-menu-panel:not([hidden]){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;
+    position:fixed;z-index:90;top:105px;left:10px;right:10px;padding:12px;
+    background:#25231f;color:#fff;border:1px solid #5a5043;border-radius:13px;
+    box-shadow:0 14px 35px #0005;max-height:60vh;overflow:auto}
+  .atyaf-ref-menu-panel button{padding:12px 6px;background:#ffffff12;color:#fff;border-radius:8px;text-align:center;font-size:13px}
+  main#store>.benefits[aria-hidden="false"]{font-family:Tahoma,Arial,sans-serif!important}
+  main#store>section.container.benefits[aria-hidden="false"]>.benefit{min-height:56px!important;
+    padding:7px 8px!important;grid-template-columns:25px minmax(0,1fr)!important;align-content:center!important}
+  main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{font-size:13px!important;font-weight:700!important;line-height:1.25!important}
+  main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{font-size:10px!important;line-height:1.25!important}
+  main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{font-size:22px!important;color:#37332e!important}
+  main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{grid-column:2;grid-row:3;
+    color:#817b74!important;font-size:10px!important;text-decoration:underline;text-underline-offset:2px;
+    justify-self:start;line-height:1.3;margin-top:2px}
+  #home.hero-ad .hero-ad-dots:not(:empty){gap:5px!important;background:rgba(24,25,24,.42)!important;
+    border-radius:50px!important;padding:6px 8px!important;bottom:13px!important}
+  #home.hero-ad .hero-ad-dot{width:7px!important;height:7px!important;min-width:7px!important;border:1px solid #fff!important;
+    background:transparent!important;padding:0!important;transform:none!important}
+  #home.hero-ad .hero-ad-dot.active{width:7px!important;height:7px!important;background:#fff!important;transform:none!important}
+  #home.hero-ad .atyaf-hero-control{display:none!important}
+}
+@media(min-width:768px){#atyafRefMenuButton,#atyafRefMenuPanel{display:none!important}}
+</style>
+<script id="atyaf-v46-reference-menu-js">
+(()=>{
+ const btn=document.getElementById('atyafRefMenuButton');
+ const panel=document.getElementById('atyafRefMenuPanel');
+ const nav=document.querySelector('#nav .navrow');
+ if(!btn||!panel||!nav)return;
+ const close=()=>{panel.hidden=true;btn.setAttribute('aria-expanded','false')};
+ btn.addEventListener('click',e=>{
+   e.preventDefault();e.stopPropagation();
+   if(!panel.hidden){close();return}
+   panel.replaceChildren();
+   nav.querySelectorAll('a[data-atyaf-main-tab]').forEach(a=>{
+     const item=document.createElement('button');item.type='button';item.textContent=a.textContent;
+     item.addEventListener('click',()=>{close();a.click()});panel.appendChild(item);
+   });
+   panel.hidden=false;btn.setAttribute('aria-expanded','true');
+ });
+ document.addEventListener('click',e=>{if(!panel.hidden&&!panel.contains(e.target)&&!btn.contains(e.target))close()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+ window.addEventListener('resize',()=>{if(innerWidth>=768)close()});
 })();
 </script>
 

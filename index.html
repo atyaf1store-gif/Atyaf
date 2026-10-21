@@ -2309,10 +2309,18 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
       main.src=imgs[index].dataset.src;
       main.alt=imgs[index].dataset.alt||'';
       main.dataset.index=String(index);
+      const counter=document.getElementById('styafV47Counter');if(counter)counter.textContent=(index+1)+'/'+imgs.length;
     }
     function styafGalleryStep(delta){const main=document.getElementById('styafGalleryMain');styafGalleryPick(Number(main?.dataset.index||0)+delta)}
     function styafFeedScroll(direction){const rail=document.getElementById('styafRelatedRail');if(rail)rail.scrollBy({left:direction*rail.clientWidth*.78,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
-    function styafDetailFavorite(id){toggleFav(id);const p=products.find(x=>String(x.id)===String(id));const b=document.getElementById('styafDetailFav');if(b&&p){const yes=state.favs.map(String).includes(String(id));b.textContent=yes?'♥ في المفضلة':'♡ المفضلة';b.setAttribute('aria-pressed',String(yes))}}
+    function styafDetailFavorite(id){toggleFav(id);const p=products.find(x=>String(x.id)===String(id));const b=document.getElementById('styafDetailFav');if(b&&p){const yes=state.favs.map(String).includes(String(id));b.textContent=yes?'♥':'♡';b.setAttribute('aria-pressed',String(yes))}}
+    function styafDetailWhatsApp(){
+      const number=String(ATYAAF_WHATSAPP_NUMBER||'').replace(/[^0-9]/g,'');
+      if(!number){showMessage('رقم واتساب غير متاح','يرجى التواصل مع إدارة المتجر.');return}
+      const p=products.find(x=>String(x.id)===String(window.atyafDetailCurrentId));
+      const msg='مرحبًا، أريد الاستفسار عن المنتج: '+(p?.name||'');
+      window.open('https://wa.me/'+number+'?text='+encodeURIComponent(msg),'_blank','noopener');
+    }
     function quickView(id){
       const p=products.find(x=>String(x.id)===String(id));if(!p)return;
       styafDetailQty=1;
@@ -2331,7 +2339,37 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
       const soldOut=p.stock!=null&&p.stock<=0;
       const stockText=p.stock==null?'الكمية المتوفرة غير محددة':soldOut?'نفدت الكمية':`الكمية المتوفرة: ${p.stock} قطعة`;
       const body=document.getElementById('productModalBody');
-      body.innerHTML=`<main class="styaf-detail-wrap"><nav class="styaf-crumbs" aria-label="مسار الصفحة"><button type="button" onclick="closeProductDetails()">الرئيسية</button><span aria-hidden="true"> / </span><span>${esc(brand||'المنتجات')}</span><span aria-hidden="true"> / </span><span>${esc(p.name)}</span></nav><section class="styaf-detail-grid"><div class="styaf-detail-gallery"><div class="styaf-detail-photo">${hero}${p.label?`<span class="styaf-detail-badge">${esc(p.label)}</span>`:''}${uniquePhotos.length>1?`<button type="button" class="styaf-gallery-prev" onclick="styafGalleryStep(-1)" aria-label="الصورة السابقة">❯</button><button type="button" class="styaf-gallery-next" onclick="styafGalleryStep(1)" aria-label="الصورة التالية">❮</button>`:''}</div>${uniquePhotos.length>1?`<div class="styaf-gallery-thumbs" id="styafGalleryThumbs">${thumbs}</div>`:''}</div><div class="styaf-detail-info"><div class="styaf-detail-brand">${esc(brand)}</div><h1>${esc(p.name)}</h1><div class="styaf-detail-price">${money(p.price)} ${p.old?`<del>${money(p.old)}</del>`:''}</div><p class="atyaf-stock-indicator atyaf-stock-detail" role="status">${stockText}</p><div class="styaf-detail-divider"></div><h3>تفاصيل المنتج</h3><p class="styaf-detail-desc">${esc(p.desc||'اكتشف هذا المنتج من مجموعتنا المختارة بعناية.')}</p><div class="styaf-detail-divider"></div><div class="styaf-detail-controls"><div class="styaf-detail-qty" aria-label="الكمية" ${soldOut?'hidden':''}><button type="button" onclick="styafDetailChange(-1)" aria-label="تقليل الكمية">−</button><output id="styafDetailQty">1</output><button type="button" onclick="styafDetailChange(1)" aria-label="زيادة الكمية">+</button></div><button type="button" class="btn btn-primary styaf-detail-buy" ${soldOut?'disabled aria-disabled="true"':''} onclick='styafDetailAdd(${safeId})'>${soldOut?'نفدت الكمية':'أضف إلى السلة'}</button></div><div class="styaf-detail-secondary"><button type="button" id="styafDetailFav" class="btn btn-outline" aria-pressed="${liked}" onclick='styafDetailFavorite(${safeId})'>${liked?'♥ في المفضلة':'♡ المفضلة'}</button><button type="button" class="btn btn-outline" ${soldOut?'disabled aria-disabled="true"':''} onclick='buyAsGift(${safeId});closeProductDetails()'>${soldOut?'نفدت الكمية':'🎁 شراء كهدية'}</button></div><p class="styaf-detail-assurance">✓ تسوق آمن &nbsp; · &nbsp; خدمة عملاء متاحة للمساعدة</p></div></section>${related.length?`<section class="styaf-related"><div class="styaf-related-head"><div><h2>قد تعجبك أيضًا</h2><p>اكتشف منتجات أخرى من ${esc(brand)}</p></div><div class="styaf-feed-controls"><button type="button" onclick="styafFeedScroll(1)" aria-label="المنتجات السابقة">❯</button><button type="button" onclick="styafFeedScroll(-1)" aria-label="المنتجات التالية">❮</button></div></div><div class="styaf-related-grid" id="styafRelatedRail" tabindex="0" aria-label="منتجات من نفس البراند">${recs}</div></section>`:''}</main>`;
+      const percent=p.old>p.price&&p.price>=0?Math.round((p.old-p.price)/p.old*100):0;
+      const saving=p.old>p.price?p.old-p.price:0;
+      const enPrice=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(Number(n)||0);
+      const currentPrice=`${enPrice(p.price)} ر.س`;
+      const oldPrice=p.old?`${enPrice(p.old)} ر.س`:'';
+      const desc=esc(p.desc||'لا يتوفر وصف لهذا المنتج حاليًا.');
+      const dots=uniquePhotos.map((src,i)=>`<button type="button" class="styaf-v47-dot ${i===0?'selected':''}" data-src="${esc(src)}" data-alt="${esc(p.name)}" aria-label="عرض الصورة ${i+1}" aria-pressed="${i===0}" onclick="styafGalleryPick(${i})"></button>`).join('');
+      const whatsappClick="styafDetailWhatsApp()";
+      body.innerHTML=`<main class="styaf-detail-wrap styaf-v47-product" dir="rtl">
+        <section class="styaf-detail-grid">
+          <div class="styaf-detail-gallery">
+            <div class="styaf-detail-photo">${hero}
+              ${uniquePhotos.length>1?`<div class="styaf-gallery-thumbs styaf-v47-dots" id="styafGalleryThumbs">${dots}</div><span class="styaf-v47-counter" id="styafV47Counter" dir="ltr">1/${uniquePhotos.length}</span>`:''}
+            </div>
+          </div>
+          <div class="styaf-detail-info">
+            <div class="styaf-detail-price" dir="ltr"><strong dir="ltr">${currentPrice}</strong>${p.old>p.price?`<del dir="ltr">${oldPrice}</del>`:''}</div>
+            ${saving>0?`<p class="styaf-v47-saving">وفّر ${enPrice(saving)} ر.س (${percent}%)</p>`:''}
+            <h1>${esc(p.name)}</h1>
+            <div class="styaf-v47-badges">${percent>0?`<span class="styaf-v47-sale">-${percent}%</span>`:''}<span class="styaf-v47-availability ${soldOut?'is-out':''}">${soldOut?'نفدت الكمية':p.stock==null?'متاح للطلب':'متوفر'}</span></div>
+            <div class="styaf-v47-quantity-row"><label for="styafDetailQty">الكمية</label><div class="styaf-detail-qty" ${soldOut?'hidden':''}><button type="button" onclick="styafDetailChange(-1)" aria-label="تقليل الكمية">−</button><output id="styafDetailQty">1</output><button type="button" onclick="styafDetailChange(1)" aria-label="زيادة الكمية">+</button></div></div>
+            <p class="atyaf-stock-indicator atyaf-stock-detail" role="status">${stockText}</p>
+            <div class="styaf-v47-trust"><div><span aria-hidden="true">♧</span> تفاصيل الشحن حسب موقع التوصيل</div><div><span aria-hidden="true">♧</span> استفسر عن المنتج عبر واتساب</div><div><span aria-hidden="true">✓</span> ${soldOut?'المنتج غير متوفر حاليًا':'المنتج متاح للطلب'}</div></div>
+            <details class="styaf-v47-disclosure styaf-v47-description" open><summary>الوصف</summary><p class="styaf-detail-desc">${desc}</p></details>
+            <details class="styaf-v47-disclosure"><summary>الشحن والتوصيل</summary><p>تختلف خيارات الشحن والتوصيل حسب المنطقة. تواصل معنا عبر واتساب للاستفسار عن الوقت والتكلفة قبل إتمام الطلب.</p></details>
+          </div>
+        </section>
+        ${related.length?`<section class="styaf-related"><div class="styaf-related-head"><h2>منتجات قد تعجبك</h2></div><div class="styaf-related-grid" id="styafRelatedRail" tabindex="0" aria-label="منتجات مشابهة من نفس الماركة">${recs}</div></section>`:''}
+        <div class="styaf-v47-cta" role="group" aria-label="إجراءات المنتج"><button type="button" id="styafDetailFav" class="styaf-v47-heart" aria-label="المفضلة" aria-pressed="${liked}" onclick='styafDetailFavorite(${safeId})'>${liked?'♥':'♡'}</button><span class="styaf-v47-cta-price"><small>السعر</small><b dir="ltr">${currentPrice}</b></span><button type="button" class="btn btn-primary styaf-detail-buy" ${soldOut?'disabled aria-disabled="true"':''} onclick='styafDetailAdd(${safeId})'>${soldOut?'نفدت الكمية':'🛒 أضف للسلة'}</button><button type="button" class="styaf-v47-whatsapp" onclick="${whatsappClick}" aria-label="الاستفسار عبر واتساب">♧</button></div>
+        <nav class="styaf-v47-bottom-nav" aria-label="التنقل في المتجر"><button type="button" onclick="closeProductDetails();window.scrollTo({top:0,behavior:'smooth'})"><span>⌂</span>تسوق</button><button type="button" onclick="closeProductDetails();document.getElementById('atyafBrandProductSections')?.scrollIntoView({behavior:'smooth'})"><span>▦</span>الفئات</button><button type="button" onclick="closeProductDetails();document.querySelector('[data-main-tab=trending]')?.click()"><span>↗</span>رائج</button><button type="button" onclick="closeProductDetails();openCart()"><span>♧</span>السلة</button><button type="button" onclick="closeProductDetails();window.openCustomerCenter?.()"><span>♙</span>حسابي</button></nav>
+      </main>`;
       const modal=document.getElementById('productModal');modal.classList.add('styaf-detail-mode','open');modal.scrollTop=0;document.body.style.overflow='hidden';
       // Re-check stock from the database on product open; do not trust stale browser state.
       if(window.atyafDb&&p.raw){
@@ -4781,6 +4819,59 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
 })();
 </script>
 
+
+<style id="styaf-product-detail-v47-reference">
+/* V47: product details isolated; no homepage or card overrides */
+#productModal.styaf-detail-mode{background:#fff!important;padding:0!important;overflow-y:auto!important;overflow-x:hidden!important}
+#productModal.styaf-detail-mode .modal-card{background:#fff!important;width:100%!important;max-width:none!important;padding:0!important;min-height:100dvh!important}
+#productModal.styaf-detail-mode .modal-card>.close{position:fixed!important;top:max(12px,env(safe-area-inset-top));left:12px;right:auto!important;z-index:130!important;float:none!important;margin:0!important;width:37px;height:37px;background:#ffffffed!important;border-radius:50%!important}
+#productModal.styaf-detail-mode .styaf-v47-product{max-width:1180px!important;padding:0 18px 175px!important;margin:0 auto!important}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:25px;align-items:start}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-photo{display:block;position:relative;width:100%;min-height:0!important;aspect-ratio:4/5!important;background:#fff!important;border:0!important;border-radius:0!important;overflow:hidden}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-photo>img{display:block;width:100%!important;height:100%!important;max-height:none!important;object-fit:contain!important;padding:0!important}
+#productModal.styaf-detail-mode .styaf-v47-dots{position:absolute;display:flex!important;gap:9px;justify-content:center;align-items:center;left:50%;bottom:12px;transform:translateX(-50%);background:#0004;padding:9px 12px;border-radius:30px;z-index:4;width:auto;max-width:78%;overflow:visible;box-shadow:none;border:0}
+#productModal.styaf-detail-mode .styaf-v47-dots .styaf-v47-dot{width:8px!important;height:8px!important;min-width:8px!important;padding:0!important;border-radius:50%!important;background:#ffffff70!important;border:1px solid #fff!important;box-shadow:none!important;cursor:pointer}
+#productModal.styaf-detail-mode .styaf-v47-dots .styaf-v47-dot.selected{background:#fff!important;transform:scale(1.18)}
+#productModal.styaf-detail-mode .styaf-v47-counter{position:absolute;bottom:12px;right:12px;border-radius:22px;padding:3px 8px;background:#7779;color:#fff;font-size:11px;direction:ltr}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-info{padding:20px 0 0!important}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-price{display:flex;align-items:baseline;justify-content:flex-end;gap:10px;color:#c7504e!important;font-size:22px!important;direction:ltr;margin:5px 0 4px!important}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-price strong{font-weight:800}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-price del{font-size:12px!important;color:#999!important;text-decoration:line-through}
+#productModal.styaf-detail-mode .styaf-v47-saving{color:#c7504e;font-size:12px;margin:4px 0}
+#productModal.styaf-detail-mode .styaf-v47-product h1{font-size:16px!important;color:#555!important;font-weight:500!important;margin:8px 0!important;line-height:1.65!important}
+#productModal.styaf-detail-mode .styaf-v47-badges{display:flex;align-items:center;gap:7px;margin:8px 0 16px}
+#productModal.styaf-detail-mode .styaf-v47-sale{background:#e25349;color:white;font-size:11px;padding:3px 6px;direction:ltr}
+#productModal.styaf-detail-mode .styaf-v47-availability{background:#e5f4eb;color:#39865b;padding:3px 9px;font-size:11px}
+#productModal.styaf-detail-mode .styaf-v47-availability.is-out{color:#a43c3c;background:#fbe9e9}
+#productModal.styaf-detail-mode .styaf-v47-quantity-row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding:10px 0;font-size:13px;color:#555}
+#productModal.styaf-detail-mode .styaf-v47-quantity-row .styaf-detail-qty{padding:0!important;border:1px solid #ddd!important;border-radius:0!important;gap:0!important}
+#productModal.styaf-detail-mode .styaf-v47-quantity-row .styaf-detail-qty button{border-radius:0!important;background:#fff!important;width:41px!important;height:40px!important;color:#888}
+#productModal.styaf-detail-mode .styaf-v47-quantity-row .styaf-detail-qty output{min-width:35px}
+#productModal.styaf-detail-mode .styaf-v47-product .atyaf-stock-detail{margin:6px 0!important;font-size:11px!important;color:#64736a!important}
+#productModal.styaf-detail-mode .styaf-v47-trust{border-bottom:1px solid #eee;padding:13px 0 19px;color:#777;font-size:12px;line-height:2}
+#productModal.styaf-detail-mode .styaf-v47-trust>div{display:flex;align-items:center;gap:9px}
+#productModal.styaf-detail-mode .styaf-v47-trust span{font-size:16px;color:#888}
+#productModal.styaf-detail-mode .styaf-v47-disclosure{border-bottom:1px solid #eaeaea;padding:18px 0;color:#666;font-size:13px}
+#productModal.styaf-detail-mode .styaf-v47-disclosure summary{font-weight:700;cursor:pointer;list-style:none;color:#666}
+#productModal.styaf-detail-mode .styaf-v47-disclosure summary::-webkit-details-marker{display:none}
+#productModal.styaf-detail-mode .styaf-v47-disclosure:not([open]) summary:after{content:'⌄';float:left}
+#productModal.styaf-detail-mode .styaf-v47-disclosure[open] summary:after{content:'⌃';float:left}
+#productModal.styaf-detail-mode .styaf-v47-disclosure p{line-height:1.95;white-space:pre-line;overflow-wrap:anywhere;margin:12px 0 0}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-related{margin-top:35px!important}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-related-head{margin-bottom:10px}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-related-head h2{font-size:16px!important}
+#productModal.styaf-detail-mode .styaf-v47-cta{position:fixed;bottom:65px;left:0;right:0;z-index:131;display:flex;align-items:stretch;gap:7px;background:#fff;border-top:1px solid #e8e8e8;padding:8px max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));direction:rtl;box-shadow:0 -5px 15px #00000008}
+#productModal.styaf-detail-mode .styaf-v47-heart,#productModal.styaf-detail-mode .styaf-v47-whatsapp{min-width:40px;width:40px;min-height:42px;background:white;border:1px solid #e4e4e4;border-radius:2px;font-size:24px;color:#666}
+#productModal.styaf-detail-mode .styaf-v47-whatsapp{background:#20ce54!important;color:#fff!important;border-color:#20ce54!important;font-size:22px}
+#productModal.styaf-detail-mode .styaf-v47-cta-price{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:65px;font-size:11px;color:#777;white-space:nowrap}
+#productModal.styaf-detail-mode .styaf-v47-cta-price b{color:#bd6454;font-size:13px}
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-buy{flex:1!important;min-width:0!important;min-height:42px!important;border-radius:2px!important;background:#293339!important;font-size:13px!important;color:#fff!important;padding:5px!important}
+#productModal.styaf-detail-mode .styaf-v47-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:132;display:flex;justify-content:space-around;background:#fff;border-top:1px solid #ededed;height:65px;padding-bottom:env(safe-area-inset-bottom)}
+#productModal.styaf-detail-mode .styaf-v47-bottom-nav button{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;flex:1;min-width:0;padding:4px;border:0;background:none;color:#777;font-size:10px}
+#productModal.styaf-detail-mode .styaf-v47-bottom-nav span{font-size:22px;line-height:1.2}
+@media(max-width:760px){#productModal.styaf-detail-mode .styaf-v47-product{padding:0 12px 175px!important}#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-grid{grid-template-columns:1fr;gap:0!important}#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-gallery{margin:0 -12px}#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-photo{aspect-ratio:4/5!important}#productModal.styaf-detail-mode .styaf-v47-product .styaf-detail-info{padding-top:12px!important}#productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid{grid-auto-columns:calc(50% - 7px)!important;gap:10px!important}}
+@media(min-width:761px){#productModal.styaf-detail-mode .styaf-v47-cta{max-width:1180px;margin:auto;bottom:0}#productModal.styaf-detail-mode .styaf-v47-bottom-nav{display:none}#productModal.styaf-detail-mode .styaf-v47-product{padding-bottom:100px!important}}
+</style>
 </body>
 </html>
 

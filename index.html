@@ -5246,57 +5246,219 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
 }
 </style>
 
-<style id="atyaf-v55-unified-phone-layout-tablet-desktop">
-/* V55: same mobile storefront composition on tablet/desktop. Keep real data and all action handlers unchanged. */
+<style id="atyaf-v57-fluid-responsive-balance">
+/* V57: إزالة قالب الهاتف الضيق من التابلت/الكمبيوتر مع الإبقاء على نفس الهوية البصرية. */
 @media (min-width:768px){
- html{background:#eeeae4!important}
- html body{box-sizing:border-box!important;width:min(100%,430px)!important;max-width:430px!important;min-height:100vh!important;margin:0 auto!important;position:relative!important;overflow-x:clip!important;background:#fffdfa!important;padding-bottom:76px!important;box-shadow:0 0 38px #00000012!important}
- html body .container{width:calc(100% - 20px)!important;max-width:none!important;margin-left:auto!important;margin-right:auto!important}
- html body .header{position:sticky!important;top:0!important;left:auto!important;right:auto!important;width:100%!important;z-index:100!important;background:#302820!important}
- html body header.header .headrow.atyaf-head-balanced{box-sizing:border-box!important;position:relative!important;display:flex!important;justify-content:center!important;align-items:center!important;height:58px!important;min-height:58px!important;padding:0 8px!important;background:#302820!important}
- html body header.header .atyaf-profile{display:none!important}
- html body header.header .atyaf-mobile-profile{display:flex!important;position:absolute!important;left:50%!important;top:50%!important;right:auto!important;transform:translate(-50%,-50%)!important;width:auto!important;height:48px!important;max-width:calc(100% - 180px)!important;justify-content:center!important;align-items:center!important;margin:0!important;padding:0!important}
- html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot,html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{display:block!important;max-width:100%!important;max-height:46px!important;width:auto!important;height:auto!important;object-fit:contain!important}
- html body header.header .atyaf-head-left,html body header.header .atyaf-head-right{position:absolute!important;top:50%!important;transform:translateY(-50%)!important;display:flex!important;align-items:center!important;width:auto!important;z-index:3!important;gap:5px!important}
- html body header.header .atyaf-head-left{left:8px!important;right:auto!important;direction:ltr!important}
- html body header.header .atyaf-head-right{right:8px!important;left:auto!important}
- html body header.header .atyaf-head-left [data-store-action="gifts"],html body header.header .atyaf-head-right [data-store-action="cart"]{display:none!important}
- html body header.header .atyaf-head-left #atyafRefMenuButton,html body header.header .atyaf-head-left .atyaf-search-toggle,html body header.header .atyaf-head-right [data-store-action="favorites"]{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:36px!important;min-width:36px!important;flex:0 0 36px!important;height:40px!important;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;color:#fff!important;font-size:32px!important}
- html body header.header .atyaf-head-left svg{width:24px!important;height:24px!important;stroke:#fff!important}
- html body header.header #favCount{display:none!important}
- html body #nav.nav{display:block!important;overflow-x:auto!important;overflow-y:hidden!important;background:#302820!important;border-top:1px solid #71665c!important;border-bottom:1px solid #71665c!important;scrollbar-width:none!important}
- html body #nav .navrow{display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start!important;align-items:center!important;min-width:max-content!important;width:max-content!important;gap:23px!important;min-height:45px!important;padding:0 13px!important;margin:0!important}
- html body #nav .navrow>a{font:700 12px Arial,Tahoma,sans-serif!important;color:#eee8e0!important;min-height:45px!important;white-space:nowrap!important}
- html body #nav .navrow>a.atyaf-tab-active{color:#daa820!important}
- html body #topbar.topbar{box-sizing:border-box!important;width:100%!important;min-height:36px!important;height:36px!important;display:flex!important;align-items:center!important;padding:3px 25px!important;font-size:12px!important;font-weight:700!important;background:#d5a91b!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important}
- html body #topbar.topbar>span{color:#fff!important}
- html body #home.hero-ad{width:100%!important;min-height:0!important;height:auto!important;aspect-ratio:16/10!important;max-height:none!important;margin:0!important}
- html body #home.hero-ad .hero-ad-track,html body #home.hero-ad .hero-ad-slide{height:100%!important}
- html body main#store>section.container.benefits[aria-hidden="false"]{box-sizing:border-box!important;display:grid!important;width:100%!important;max-width:none!important;margin:0!important;padding:2px 4px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;background:white!important;direction:ltr!important}
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{box-sizing:border-box!important;display:grid!important;grid-template-columns:23px minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;align-items:center!important;align-content:center!important;min-width:0!important;min-height:68px!important;height:auto!important;padding:6px 5px!important;gap:2px 5px!important;border:0!important;border-radius:0!important;background:white!important;box-shadow:none!important;direction:ltr!important;text-align:right!important}
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit+.benefit{border-left:1px solid #e7e3db!important}
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{grid-column:1!important;grid-row:1/span 3!important;margin:0!important;font-size:21px!important;color:#555!important}
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{width:22px!important;height:22px!important}
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{grid-column:2!important;grid-row:1!important;font-size:12px!important;line-height:1.3!important;margin:0!important;text-align:right!important}
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{grid-column:2!important;grid-row:2!important;font-size:9px!important;line-height:1.35!important;margin:0!important;text-align:right!important}
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{grid-column:2!important;grid-row:3!important;font-size:9px!important;text-align:right!important;justify-self:end!important}
- html body main#store section.section{padding-top:20px!important;padding-bottom:22px!important}
- html body main#store #brands>.section-head,html body main#store #atyafScentsCatalog>.section-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:0 0 12px!important;padding:0 0 8px!important}
- html body main#store #brands>.section-head h2,html body main#store #atyafScentsCatalog>.section-head h2{font-size:14px!important;line-height:1.3!important;font-family:Tahoma,Arial,sans-serif!important;margin:0!important}
- html body main#store #brands>.section-head p,html body main#store #atyafScentsCatalog>.section-head p{display:none!important}
- html body main#store #brands .brands{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important}
- html body main#store #brands .brand-card{min-width:0!important;padding:0!important;min-height:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
- html body main#store #brands .brand-card>.atyaf-brand-logo-tile{width:100%!important;aspect-ratio:1!important;min-height:0!important;border-radius:12px!important}
- html body main#store #brands .brand-card>strong{font-size:10px!important;line-height:1.3!important;margin-top:4px!important}
- html body main#store #brands .brand-card>.atyaf-brand-caption{font-size:8px!important}
- html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav{box-sizing:border-box!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;position:fixed!important;bottom:0!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:430px!important;max-width:100%!important;height:66px!important;z-index:55!important;padding:4px 7px!important;background:rgba(255,255,255,.97)!important;border-top:1px solid #e8e2d8!important;direction:rtl!important}
- html body #atyafMobileBottomNav .atyaf-bottom-tab{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;min-width:0!important;padding:3px 1px!important;border:0!important;background:none!important;color:#6d716f!important;font-size:10px!important;text-decoration:none!important}
- html body #atyafMobileBottomNav .atyaf-bottom-tab svg{width:23px!important;height:23px!important}
- html body #atyafMobileBottomNav .atyaf-bottom-tab.active{color:#b98a24!important}
- html body.atyaf-cart-page-open #atyafMobileBottomNav,html body:has(#atyafIntroV12) #atyafMobileBottomNav{display:none!important}
- html body .modal,html body .drawer{left:50%!important;right:auto!important;width:430px!important;max-width:100%!important;transform:translateX(-50%)!important}
- html body .modal-card{box-sizing:border-box!important;width:calc(100% - 18px)!important;max-width:none!important;max-height:88dvh!important}
- html body .drawer-panel{max-width:100%!important}
+  html{background:#f4f1eb!important;overflow-x:hidden!important}
+  html body{
+    box-sizing:border-box!important;
+    width:100%!important;max-width:none!important;min-height:100vh!important;
+    margin:0!important;position:relative!important;overflow-x:hidden!important;
+    background:#fffdfa!important;padding-bottom:88px!important;box-shadow:none!important;
+  }
+  html body .container,
+  html body #atyafBrandCatalogTools,
+  html body #atyafBrandSingleViewBar,
+  html body #atyafFeaturedHome,
+  html body #atyafBrandProductSections{
+    width:min(1380px,calc(100% - 40px))!important;
+    max-width:none!important;margin-left:auto!important;margin-right:auto!important;
+  }
+  html body .header{
+    position:sticky!important;top:0!important;left:0!important;right:0!important;
+    width:100%!important;z-index:100!important;background:#302820!important;
+  }
+  html body header.header .headrow.atyaf-head-balanced{
+    box-sizing:border-box!important;position:relative!important;display:flex!important;
+    justify-content:center!important;align-items:center!important;
+    height:70px!important;min-height:70px!important;padding:0 18px!important;
+    background:#302820!important;
+  }
+  html body header.header .atyaf-profile{display:none!important}
+  html body header.header .atyaf-mobile-profile{
+    display:flex!important;position:absolute!important;left:50%!important;top:50%!important;
+    right:auto!important;transform:translate(-50%,-50%)!important;
+    width:auto!important;height:48px!important;max-width:calc(100% - 240px)!important;
+    justify-content:center!important;align-items:center!important;margin:0!important;padding:0!important;
+  }
+  html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot,
+  html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{
+    display:block!important;max-width:100%!important;max-height:46px!important;
+    width:auto!important;height:auto!important;object-fit:contain!important;
+  }
+  html body header.header .atyaf-head-left,
+  html body header.header .atyaf-head-right{
+    position:absolute!important;top:50%!important;transform:translateY(-50%)!important;
+    display:flex!important;align-items:center!important;width:auto!important;z-index:3!important;gap:8px!important;
+  }
+  html body header.header .atyaf-head-left{left:18px!important;right:auto!important;direction:ltr!important}
+  html body header.header .atyaf-head-right{right:18px!important;left:auto!important}
+  html body header.header .atyaf-head-left [data-store-action="gifts"],
+  html body header.header .atyaf-head-right [data-store-action="cart"]{display:none!important}
+  html body header.header .atyaf-head-left #atyafRefMenuButton,
+  html body header.header .atyaf-head-left .atyaf-search-toggle,
+  html body header.header .atyaf-head-right [data-store-action="favorites"]{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:40px!important;min-width:40px!important;flex:0 0 40px!important;height:40px!important;
+    margin:0!important;padding:0!important;border:0!important;background:none!important;
+    box-shadow:none!important;color:#fff!important;font-size:30px!important;
+  }
+  html body header.header .atyaf-head-left svg{width:24px!important;height:24px!important;stroke:#fff!important}
+  html body header.header #favCount{display:none!important}
+
+  html body #nav.nav{
+    display:block!important;overflow-x:auto!important;overflow-y:hidden!important;
+    background:#302820!important;border-top:1px solid #71665c!important;border-bottom:1px solid #71665c!important;
+    scrollbar-width:none!important;
+  }
+  html body #nav.nav::-webkit-scrollbar{display:none!important}
+  html body #nav .navrow{
+    display:flex!important;flex-wrap:nowrap!important;justify-content:center!important;align-items:center!important;
+    width:100%!important;min-width:max-content!important;gap:clamp(20px,2.4vw,42px)!important;
+    min-height:48px!important;padding:0 18px!important;margin:0 auto!important;
+  }
+  html body #nav .navrow>a{
+    font:700 15px Arial,Tahoma,sans-serif!important;color:#eee8e0!important;
+    min-height:48px!important;display:flex!important;align-items:center!important;white-space:nowrap!important;
+  }
+  html body #nav .navrow>a.atyaf-tab-active{color:#daa820!important}
+
+  html body #topbar.topbar{
+    box-sizing:border-box!important;width:100%!important;min-height:40px!important;height:40px!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    padding:0 42px!important;font-size:14px!important;font-weight:700!important;
+    background:#d5a91b!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;
+  }
+  html body #topbar.topbar>span{color:#fff!important}
+
+  html body #home.hero-ad{
+    width:100%!important;min-height:360px!important;height:clamp(360px,42vw,640px)!important;
+    aspect-ratio:auto!important;max-height:640px!important;margin:0!important;
+  }
+  html body #home.hero-ad .hero-ad-track,
+  html body #home.hero-ad .hero-ad-slide{height:100%!important}
+
+  html body main#store>section.container.benefits[aria-hidden="false"]{
+    box-sizing:border-box!important;display:grid!important;
+    width:min(1380px,calc(100% - 40px))!important;max-width:none!important;
+    margin:18px auto 0!important;padding:0!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important;
+    background:transparent!important;direction:rtl!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{
+    box-sizing:border-box!important;display:grid!important;
+    grid-template-columns:36px minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;
+    align-items:center!important;align-content:center!important;min-width:0!important;
+    min-height:92px!important;height:100%!important;padding:18px 18px!important;gap:4px 12px!important;
+    border:1px solid #ebe2d5!important;border-radius:20px!important;background:#fff!important;
+    box-shadow:0 10px 24px rgba(0,0,0,.04)!important;direction:rtl!important;text-align:right!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit+.benefit{border-left:0!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{
+    grid-column:1!important;grid-row:1/span 3!important;margin:0!important;font-size:24px!important;color:#555!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{width:24px!important;height:24px!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{
+    grid-column:2!important;grid-row:1!important;font-size:24px!important;line-height:1.25!important;margin:0!important;text-align:right!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{
+    grid-column:2!important;grid-row:2!important;font-size:15px!important;line-height:1.45!important;margin:0!important;text-align:right!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
+    grid-column:2!important;grid-row:3!important;font-size:14px!important;text-align:right!important;justify-self:end!important;
+  }
+
+  html body main#store section.section{padding-top:34px!important;padding-bottom:34px!important}
+  html body main#store #brands>.section-head,
+  html body main#store #atyafScentsCatalog>.section-head{
+    display:flex!important;align-items:flex-end!important;justify-content:space-between!important;
+    gap:10px!important;margin:0 0 16px!important;padding:0 0 10px!important;
+  }
+  html body main#store #brands>.section-head h2,
+  html body main#store #atyafScentsCatalog>.section-head h2{
+    font-size:clamp(26px,2.6vw,44px)!important;line-height:1.2!important;
+    font-family:Tahoma,Arial,sans-serif!important;margin:0!important;
+  }
+  html body main#store #brands>.section-head p,
+  html body main#store #atyafScentsCatalog>.section-head p{
+    display:block!important;font-size:14px!important;line-height:1.5!important;color:#7a736b!important;margin-top:6px!important;
+  }
+  html body main#store #brands .brands{
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:14px!important;
+  }
+  html body main#store #brands .brand-card{
+    min-width:0!important;padding:0!important;min-height:0!important;background:transparent!important;border:0!important;box-shadow:none!important;
+  }
+  html body main#store #brands .brand-card>.atyaf-brand-logo-tile{width:100%!important;aspect-ratio:1!important;min-height:0!important;border-radius:16px!important}
+  html body main#store #brands .brand-card>strong{font-size:14px!important;line-height:1.4!important;margin-top:8px!important}
+  html body main#store #brands .brand-card>.atyaf-brand-caption{font-size:11px!important}
+
+  html body .products,
+  html body .atyaf-brand-products-grid,
+  html body #atyafBrandProductSections .atyaf-brand-products-grid,
+  html body #atyafScentTiles{
+    display:grid!important;gap:16px!important;
+  }
+  html body #atyafScentTiles{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+
+  html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav{
+    box-sizing:border-box!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    position:fixed!important;bottom:0!important;left:0!important;right:0!important;transform:none!important;
+    width:100%!important;max-width:none!important;height:auto!important;min-height:74px!important;z-index:55!important;
+    padding:6px 18px calc(6px + env(safe-area-inset-bottom))!important;background:rgba(255,255,255,.97)!important;
+    border-top:1px solid #e8e2d8!important;direction:rtl!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab{
+    display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+    gap:4px!important;min-width:0!important;padding:4px 2px!important;border:0!important;background:none!important;
+    color:#6d716f!important;font-size:12px!important;text-decoration:none!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab svg{width:25px!important;height:25px!important}
+  html body #atyafMobileBottomNav .atyaf-bottom-tab.active{color:#b98a24!important}
+  html body.atyaf-cart-page-open #atyafMobileBottomNav,
+  html body:has(#atyafIntroV12) #atyafMobileBottomNav{display:none!important}
+
+  html body .modal,
+  html body .drawer{left:0!important;right:0!important;width:100%!important;max-width:none!important;transform:none!important}
+  html body .modal-card{box-sizing:border-box!important;width:min(820px,calc(100% - 28px))!important;max-width:none!important;max-height:88dvh!important}
+  html body .drawer-panel{width:min(480px,100%)!important;max-width:100%!important}
+}
+
+@media (min-width:768px) and (max-width:1023px){
+  html body .container,
+  html body #atyafBrandCatalogTools,
+  html body #atyafBrandSingleViewBar,
+  html body #atyafFeaturedHome,
+  html body #atyafBrandProductSections,
+  html body main#store>section.container.benefits[aria-hidden="false"]{width:calc(100% - 28px)!important}
+  html body #home.hero-ad{min-height:300px!important;height:clamp(300px,48vw,520px)!important}
+  html body main#store #brands .brands{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  html body #atyafScentTiles{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{font-size:20px!important}
+}
+
+@media (min-width:1024px) and (max-width:1399px){
+  html body #atyafScentTiles{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+}
+
+@media (min-width:1400px){
+  html body #atyafScentTiles{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+}
+</style>
+
+<style id="atyaf-v58-viewport-balance">
+/* V58: Genuine fluid canvas, while cards still respond to administrator product design. */
+@media (min-width:768px){
+  html,body{max-width:100%!important}
+  body>main,body #store,body #home{width:100%!important;max-width:none!important}
+  #atyafBrandProductSections,#atyafFeaturedHome{min-width:0!important}
+  #atyafBrandProductSections .atyaf-brand-products-grid{min-width:0!important}
+  #atyafBrandProductSections .atyaf-brand-products-grid>*,#atyafFeaturedHome .product{min-width:0!important}
+  #atyafMobileBottomNav .atyaf-bottom-tab{max-width:none!important}
+}
+@media (min-width:768px) and (max-width:1023px){
+  html body main#store>section.container.benefits[aria-hidden="false"]{gap:8px!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{padding:12px!important;min-height:78px!important}
 }
 </style>
 </body>

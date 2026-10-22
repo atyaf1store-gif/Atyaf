@@ -23,8 +23,8 @@
   <style id="atyaf-first-paint-guard-css">
     html.atyaf-first-paint-pending{background:#fffdfa!important}
     html.atyaf-first-paint-pending body{background:#fffdfa!important}
-    html.atyaf-first-paint-pending body > :not(#atyafIntroV12):not(script):not(style){visibility:hidden!important}
-    html.atyaf-first-paint-pending #atyafIntroV12{visibility:visible!important}
+    html.atyaf-first-paint-pending body > :not(#atyafIntroV12):not(#atyafLaunchV56):not(script):not(style){visibility:hidden!important}
+    html.atyaf-first-paint-pending #atyafIntroV12,html.atyaf-first-paint-pending #atyafLaunchV56{visibility:visible!important}
     @media(prefers-reduced-motion:reduce){#atyafIntroV12{transition:none!important}}
   </style>
   <style>
@@ -1723,8 +1723,49 @@ html body .header{
  }
 }
 </style>
+
+  <!-- V56: lightweight launch animation, matching the supplied 3.5-second reference. -->
+  <style id="atyaf-v56-launch-css">
+  #atyafLaunchV56{position:fixed;inset:0;z-index:2147483001;background:#f7f3eb;display:grid;place-items:center;overflow:hidden;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility .38s ease}
+  #atyafLaunchV56.atyaf-launch-done{opacity:0;visibility:hidden;pointer-events:none}
+  #atyafLaunchV56 .atyaf-launch-mark{display:flex;direction:ltr;align-items:center;justify-content:center;gap:10px;white-space:nowrap;max-width:100%;font-family:Georgia,'Times New Roman',serif;will-change:transform,opacity;animation:atyafV56Mark 2.15s cubic-bezier(.22,1,.36,1) both}
+  #atyafLaunchV56 .atyaf-launch-en{color:#28241d;font-size:clamp(15px,4vw,24px);letter-spacing:.025em}
+  #atyafLaunchV56 .atyaf-launch-tile{width:clamp(35px,9vw,55px);height:clamp(35px,9vw,55px);display:grid;place-items:center;background:#fff;border-radius:8px;box-shadow:0 3px 14px #00000012;overflow:hidden;color:#ba9851;font-size:27px;font-weight:bold;flex:none}
+  #atyafLaunchV56 .atyaf-launch-tile img{width:100%;height:100%;object-fit:contain}
+  #atyafLaunchV56 .atyaf-launch-ar{font-family:Tahoma,Arial,sans-serif;font-size:clamp(16px,4.5vw,25px);color:#28241d;font-weight:700}
+  #atyafLaunchV56 .atyaf-launch-gold{color:#c8a34c}
+  @keyframes atyafV56Mark{0%{opacity:0;transform:translateX(-62vw) scale(.9)}30%{opacity:1;transform:translateX(0) scale(1)}55%{opacity:1;transform:translateY(0) scale(1)}80%{opacity:1;transform:translateY(-18vh) scale(.83)}100%{opacity:0;transform:translateY(-22vh) scale(.65)}}
+  @media(prefers-reduced-motion:reduce){#atyafLaunchV56 .atyaf-launch-mark{animation:none;opacity:1}#atyafLaunchV56{transition:none!important}}
+  </style>
 </head>
 <body>
+  <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
+  <div id="atyafLaunchV56" aria-label="جاري فتح متجر أطياف" role="status">
+    <div class="atyaf-launch-mark"><span class="atyaf-launch-en">ATYAF</span><span class="atyaf-launch-tile" id="atyafLaunchV56Logo">✦</span><span class="atyaf-launch-ar">أطياف</span></div>
+  </div>
+  <script id="atyaf-v56-launch-js">
+  (function(){
+    const el=document.getElementById('atyafLaunchV56');if(!el)return;window.atyafV56LaunchPlayed=true;
+    let finished=false;
+    const close=()=>{if(finished)return;finished=true;window.atyafV56LaunchPlayed=true;window.atyafReleaseFirstPaint?.();el.classList.add('atyaf-launch-done');setTimeout(()=>el.remove(),460)};
+    // Reuse the actual store logo if the existing profile settings have already loaded.
+    const applyLogo=()=>{
+      const source=document.querySelector('.atyaf-profile-image-slot img, .atyaf-mobile-profile .atyaf-profile-image-slot img');
+      const tile=document.getElementById('atyafLaunchV56Logo');
+      if(source?.src && tile && !tile.querySelector('img')){
+        const logo=document.createElement('img');logo.src=source.src;logo.alt='شعار أطياف';
+        logo.addEventListener('error',()=>logo.remove());tile.replaceChildren(logo);
+      }
+    };
+    document.addEventListener('atyaf:settings-applied',applyLogo,{once:true});
+    window.addEventListener('load',applyLogo,{once:true});
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(close,reduced?450:2150);
+    // Emergency release protects visitors when loading scripts fail.
+    setTimeout(close,3800);
+  })();
+  </script>
+
 
   <header class="header">
     <div class="container headrow atyaf-head-balanced">
@@ -2574,6 +2615,8 @@ window.addEventListener("focus",atyafLoadLowerAds);
  const safeUrl=v=>{try{const u=new URL(String(v),location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
  function remove(){clearTimeout(timer);clearTimeout(closingTimer);timer=null;const e=document.getElementById('atyafIntroV12');if(e){e.classList.add('intro-leaving');closingTimer=setTimeout(()=>e.remove(),480)}}
  window.atyafApplyAdminIntroV12=function(raw){
+   // V56 opening animation is the single startup layer, preventing duplicate intro overlays.
+   if(window.atyafV56LaunchPlayed)return;
    let x=raw;if(typeof x==='string'){try{x=JSON.parse(x)}catch{x=null}}
    if(!x||typeof x!=='object'||x.enabled!==true){lastSignature=null;remove();return}
    const once=x.showOnce!==false;

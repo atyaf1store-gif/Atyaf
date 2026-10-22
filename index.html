@@ -2313,7 +2313,7 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
     }
     function styafGalleryStep(delta){const main=document.getElementById('styafGalleryMain');styafGalleryPick(Number(main?.dataset.index||0)+delta)}
     function styafFeedScroll(direction){const rail=document.getElementById('styafRelatedRail');if(rail)rail.scrollBy({left:direction*rail.clientWidth*.78,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
-    function styafDetailFavorite(id){toggleFav(id);const p=products.find(x=>String(x.id)===String(id));const b=document.getElementById('styafDetailFav');if(b&&p){const yes=state.favs.map(String).includes(String(id));b.textContent=yes?'♥':'♡';b.setAttribute('aria-pressed',String(yes))}}
+    function styafDetailFavorite(id){toggleFav(id);const p=products.find(x=>String(x.id)===String(id));const b=document.getElementById('styafDetailFav');if(b&&p){const yes=state.favs.map(String).includes(String(id));b.setAttribute('aria-pressed',String(yes));b.classList.toggle('is-active',yes)}}
     function styafDetailWhatsApp(){
       const number=String(ATYAAF_WHATSAPP_NUMBER||'').replace(/[^0-9]/g,'');
       if(!number){showMessage('رقم واتساب غير متاح','يرجى التواصل مع إدارة المتجر.');return}
@@ -2367,7 +2367,7 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
           </div>
         </section>
         ${related.length?`<section class="styaf-related"><div class="styaf-related-head"><h2>منتجات قد تعجبك</h2></div><div class="styaf-related-grid" id="styafRelatedRail" tabindex="0" aria-label="منتجات مشابهة من نفس الماركة">${recs}</div></section>`:''}
-        <div class="styaf-v47-cta" role="group" aria-label="إجراءات المنتج"><button type="button" id="styafDetailFav" class="styaf-v47-heart" aria-label="المفضلة" aria-pressed="${liked}" onclick='styafDetailFavorite(${safeId})'>${liked?'♥':'♡'}</button><span class="styaf-v47-cta-price"><small>السعر</small><b dir="ltr">${currentPrice}</b></span><button type="button" class="btn btn-primary styaf-detail-buy" ${soldOut?'disabled aria-disabled="true"':''} onclick='styafDetailAdd(${safeId})'>${soldOut?'نفدت الكمية':'أضف للسلة'}</button><button type="button" class="styaf-v47-whatsapp" onclick="${whatsappClick}" aria-label="الاستفسار عبر واتساب"><svg width="27" height="27" viewBox="0 0 32 32" aria-hidden="true" fill="currentColor"><path d="M16 .8A15.2 15.2 0 0 0 2.9 23.7L.8 31l7.5-2A15.2 15.2 0 1 0 16 .8Zm0 27.6a12.3 12.3 0 0 1-6.3-1.7l-.5-.3-4.4 1.2 1.2-4.3-.3-.5A12.4 12.4 0 1 1 16 28.4Zm6.8-9.2c-.4-.2-2.2-1.1-2.6-1.2-.3-.1-.6-.2-.8.2-.2.4-1 1.2-1.2 1.4-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.8-2.2-2-2.6-.2-.4 0-.6.2-.8l.6-.7.4-.6c.1-.2 0-.5-.1-.7l-1.2-2.9c-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.7.1-1 .5s-1.3 1.3-1.3 3.1 1.3 3.7c.2.5 2.6 4 6.3 5.6.9.4 1.6.6 2.2.7 1 .2 1.9.2 2.6-.2.8-.4 2.2-1.5 2.5-2.9.3-1.4.3-2.6-.1-2.8Z"/></svg></button></div>
+        <div class="styaf-v47-cta" role="group" aria-label="إجراءات المنتج"><button type="button" id="styafDetailFav" class="styaf-v47-heart" aria-label="المفضلة" aria-pressed="${liked}" onclick='styafDetailFavorite(${safeId})'><svg class="styaf-v51-heart-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.9a5.4 5.4 0 0 0-7.6 0L12 6.1l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.5a5.4 5.4 0 0 0 0-7.6Z"/></svg></button><span class="styaf-v47-cta-price"><small>السعر</small><b dir="rtl" lang="ar">${currentPrice}</b></span><button type="button" class="btn btn-primary styaf-detail-buy" ${soldOut?'disabled aria-disabled="true"':''} onclick='styafDetailAdd(${safeId})'>${soldOut?'نفدت الكمية':'أضف للسلة'}</button><button type="button" class="styaf-v47-whatsapp" onclick="${whatsappClick}" aria-label="الاستفسار عبر واتساب"><svg class="styaf-v51-wa-svg" viewBox="0 0 32 32" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M16 3.2a12.7 12.7 0 0 0-10.8 19.4L3.4 29l6.6-1.7A12.8 12.8 0 1 0 16 3.2Z" fill="none" stroke="#fff" stroke-width="2.25" stroke-linejoin="round"/><path d="M11.2 9.8c-.5 0-1.3.4-1.8 1.1-.6.8-1 1.9-.7 3.1.6 2.8 4.1 6.7 7.7 8.2 2.2 1 4.6.8 5.9-.9.3-.4.5-.9.4-1.3-.1-.3-2.5-1.4-2.9-1.4s-.7.6-1.2 1.1c-.4.4-.7.6-1.2.4-2.5-1-4.5-3-5.6-5.4-.2-.4.2-.8.6-1.3.3-.4.5-.7.3-1.1l-1.2-2.4c-.1-.2-.2-.3-.3-.3Z" fill="#fff"/></svg></button></div>
         <nav class="styaf-v47-bottom-nav" aria-label="التنقل في المتجر" dir="rtl"><button type="button" onclick="closeProductDetails();window.scrollTo({top:0,behavior:'smooth'})" aria-label="تسوق"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span><small>تسوق</small></button><button type="button" onclick="closeProductDetails();document.querySelector('#atyafMobileBottomNav [data-atyaf-tab=brands]')?.click()" aria-label="الفئات"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx=".6"/><rect x="14" y="3" width="7" height="7" rx=".6"/><rect x="3" y="14" width="7" height="7" rx=".6"/><rect x="14" y="14" width="7" height="7" rx=".6"/></svg></span><small>الفئات</small></button><button type="button" onclick="closeProductDetails();document.querySelector('#nav [data-atyaf-main-tab=best]')?.click()" aria-label="رائج"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 17 7-7 4 4 7-8"/><path d="M16 6h5v5"/></svg></span><small>رائج</small></button><button type="button" onclick="closeProductDetails();openCart()" aria-label="السلة"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1"/><circle cx="19" cy="20" r="1"/><path d="M2 3h2l3 13h13l2-9H5"/></svg></span><small>السلة</small></button><button type="button" onclick="closeProductDetails();document.querySelector('#atyafMobileBottomNav [data-atyaf-tab=account]')?.click()" aria-label="حسابي"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-2a8 8 0 0 1 16 0v2"/></svg></span><small>حسابي</small></button></nav>
       </main>`;
       const modal=document.getElementById('productModal');modal.classList.add('styaf-detail-mode','open');modal.scrollTop=0;document.body.style.overflow='hidden';
@@ -4946,6 +4946,74 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
  #productModal.styaf-detail-mode .styaf-v47-whatsapp{width:42px!important}
 }
 </style>
+
+<style id="atyaf-v51-detail-purchase-bar-legibility">
+/* Surgical fix to mobile product detail purchase strip only. No other pages affected. */
+@media (max-width:760px){
+  #productModal.styaf-detail-mode .styaf-v47-cta{
+    display:grid!important;
+    grid-template-columns:46px minmax(76px,92px) minmax(0,1fr) 48px!important;
+    align-items:center!important;direction:ltr!important;
+    gap:7px!important;padding:7px 9px!important;
+    overflow:hidden!important;
+  }
+  #productModal.styaf-detail-mode .styaf-v47-heart{
+    grid-column:1!important;justify-self:stretch!important;
+    width:46px!important;min-width:0!important;height:50px!important;
+    padding:0!important;display:grid!important;place-items:center!important;
+    font-size:0!important;line-height:1!important;overflow:hidden!important;
+    border:1px solid #dedbd7!important;background:#fff!important;
+  }
+  #productModal.styaf-detail-mode .styaf-v51-heart-svg{
+    display:block!important;width:26px!important;height:26px!important;
+    stroke:#666!important;stroke-width:1.65!important;
+    fill:none!important;overflow:visible!important;
+  }
+  #productModal.styaf-detail-mode .styaf-v47-heart[aria-pressed="true"] .styaf-v51-heart-svg{fill:#c55348!important;stroke:#c55348!important}
+  #productModal.styaf-detail-mode .styaf-v47-cta-price{
+    grid-column:2!important;min-width:0!important;width:100%!important;
+    display:flex!important;flex-direction:column!important;align-items:center!important;
+    justify-content:center!important;gap:2px!important;
+    margin:0!important;padding:0!important;overflow:hidden!important;
+    text-align:center!important;direction:rtl!important;white-space:nowrap!important;
+    font-family:Tahoma,Arial,sans-serif!important;
+  }
+  #productModal.styaf-detail-mode .styaf-v47-cta-price small{
+    display:block!important;position:static!important;margin:0!important;padding:0!important;
+    color:#777!important;font-size:11px!important;line-height:1.15!important;
+  }
+  #productModal.styaf-detail-mode .styaf-v47-cta-price b{
+    display:block!important;max-width:100%!important;margin:0!important;padding:0!important;
+    font-size:clamp(11px,3.1vw,15px)!important;font-weight:800!important;line-height:1.4!important;
+    letter-spacing:-.25px!important;color:#b7830f!important;white-space:nowrap!important;
+    font-variant-numeric:tabular-nums!important;
+  }
+  #productModal.styaf-detail-mode .styaf-detail-buy{
+    grid-column:3!important;min-width:0!important;width:100%!important;
+    padding:0 5px!important;height:50px!important;white-space:nowrap!important;
+  }
+  #productModal.styaf-detail-mode .styaf-v47-whatsapp{
+    grid-column:4!important;display:grid!important;place-items:center!important;
+    width:48px!important;min-width:0!important;height:50px!important;
+    padding:0!important;margin:0!important;border:0!important;
+    background:#17c957!important;opacity:1!important;color:#fff!important;
+  }
+  #productModal.styaf-detail-mode .styaf-v47-whatsapp .styaf-v51-wa-svg{
+    display:block!important;visibility:visible!important;opacity:1!important;
+    width:31px!important;height:31px!important;max-width:none!important;max-height:none!important;
+    fill:none!important;color:#fff!important;filter:none!important;
+  }
+  #productModal.styaf-detail-mode .styaf-v47-whatsapp .styaf-v51-wa-svg path:first-child{fill:none!important;stroke:#fff!important;stroke-width:2.25!important}
+  #productModal.styaf-detail-mode .styaf-v47-whatsapp .styaf-v51-wa-svg path:last-child{fill:#fff!important;stroke:none!important}
+}
+@media (max-width:365px){
+  #productModal.styaf-detail-mode .styaf-v47-cta{grid-template-columns:40px minmax(65px,78px) minmax(0,1fr) 42px!important;gap:5px!important;padding:7px 6px!important}
+  #productModal.styaf-detail-mode .styaf-v47-heart{width:40px!important}
+  #productModal.styaf-detail-mode .styaf-v47-whatsapp{width:42px!important}
+  #productModal.styaf-detail-mode .styaf-v47-cta-price b{font-size:11px!important}
+}
+</style>
+
 </body>
 </html>
 

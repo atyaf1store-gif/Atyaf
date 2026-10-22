@@ -1738,7 +1738,7 @@ html body .header{
 <div class="actions atyaf-head-left customer-tools" aria-label="الهدايا والبحث">
   <button type="button" id="atyafRefMenuButton" class="customer-tool atyaf-ref-menu-button" aria-label="فتح القائمة الرئيسية" aria-expanded="false" aria-controls="atyafRefMenuPanel"><svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
   <button class="customer-tool" data-store-action="gifts" title="الهدايا" aria-label="الهدايا">🎁</button>
-  <button class="customer-tool atyaf-search-toggle" type="button" title="البحث" aria-label="البحث" onclick="toggleHeaderSearch(event)">⌕</button>
+  <button class="customer-tool atyaf-search-toggle" type="button" title="البحث" aria-label="البحث" onclick="toggleHeaderSearch(event)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
   <div class="atyaf-search-popover" id="atyafSearchPopover">
     <input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." autocomplete="off" />
     <button type="button" onclick="closeHeaderSearch()" aria-label="إغلاق البحث">×</button>
@@ -5132,6 +5132,74 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
   #nav .navrow{gap:19px!important}
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{padding:7px 4px!important;gap:2px 4px!important}
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{font-size:12px!important}
+}
+</style>
+
+
+<!-- V53: mobile HEADER ICONS ONLY. No changes to advertising, navigation, benefits or product UI. -->
+<style id="atyaf-v53-mobile-header-icons-only">
+@media (max-width:767px){
+  /* One menu and one search on the left; one favorite on the right. */
+  html body header.header .atyaf-head-left [data-store-action="gifts"],
+  html body header.header .atyaf-head-right [data-store-action="cart"]{
+    display:none!important;
+  }
+  html body header.header .atyaf-head-left #atyafRefMenuButton,
+  html body header.header .atyaf-head-left .atyaf-search-toggle,
+  html body header.header .atyaf-head-right [data-store-action="favorites"]{
+    display:inline-flex!important;
+    visibility:visible!important;opacity:1!important;
+    align-items:center!important;justify-content:center!important;
+    width:37px!important;height:40px!important;min-width:37px!important;
+    margin:0!important;padding:0!important;flex:0 0 37px!important;
+    background:transparent!important;color:#fff!important;
+    border:0!important;box-shadow:none!important;
+  }
+  html body header.header .atyaf-head-left{
+    left:10px!important;right:auto!important;
+    direction:ltr!important;gap:6px!important;
+  }
+  html body header.header .atyaf-head-right{
+    right:10px!important;left:auto!important;gap:0!important;
+  }
+  html body header.header .atyaf-head-left svg{
+    width:24px!important;height:24px!important;
+    display:block!important;stroke:currentColor!important;
+  }
+  html body header.header .atyaf-head-right [data-store-action="favorites"]{
+    font-family:Arial,sans-serif!important;font-size:34px!important;
+    font-weight:300!important;line-height:1!important;
+  }
+  html body header.header .atyaf-head-right #favCount{display:none!important}
+  /* Keep the logo truly centered, independently of either icon group. */
+  html body header.header .headrow.atyaf-head-balanced{
+    position:relative!important;display:flex!important;
+    align-items:center!important;justify-content:center!important;
+    min-height:58px!important;height:58px!important;
+  }
+  html body header.header .atyaf-mobile-profile{
+    display:flex!important;position:absolute!important;
+    top:50%!important;left:50%!important;right:auto!important;
+    transform:translate(-50%,-50%)!important;
+    justify-content:center!important;align-items:center!important;
+    max-width:calc(100% - 180px)!important;width:auto!important;
+    height:50px!important;margin:0!important;padding:0!important;
+  }
+  html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot,
+  html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{
+    max-width:100%!important;max-height:48px!important;
+    object-fit:contain!important;
+  }
+
+}
+@media (max-width:359px){
+  html body header.header .atyaf-head-left{left:5px!important;gap:2px!important}
+  html body header.header .atyaf-head-right{right:5px!important}
+  html body header.header .atyaf-head-left #atyafRefMenuButton,
+  html body header.header .atyaf-head-left .atyaf-search-toggle,
+  html body header.header .atyaf-head-right [data-store-action="favorites"]{
+    width:33px!important;min-width:33px!important;flex-basis:33px!important;
+  }
 }
 </style>
 

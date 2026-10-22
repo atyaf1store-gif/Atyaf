@@ -3750,35 +3750,35 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
   const pct=(k,a,b)=>{const n=number(x[k],a,b);return n===null?null:n+'%'};
   set('.atyaf-brand-products-grid .product','background',color(x.cardBackground));
   set('.atyaf-brand-products-grid .product','border-color',color(x.cardBorder));
-  set('.atyaf-brand-products-grid .product','border-radius',px('cardRadius',0,50));
-  set('.atyaf-brand-products-grid .product','width',pct('cardWidth',45,100));
+  set('.atyaf-brand-products-grid .product','border-radius',px('cardRadius',0,10000));
+  set('.atyaf-brand-products-grid .product','width',pct('cardWidth',0,10000));
   set('.atyaf-brand-products-grid .product-visual','background',color(x.imageBackground));
-  set('.atyaf-brand-products-grid .product-visual','height',px('imageHeight',120,600));
-  set('.atyaf-brand-products-grid .product-visual>img','width',pct('imageWidth',20,100));
+  set('.atyaf-brand-products-grid .product-visual','height',px('imageHeight',0,10000));
+  set('.atyaf-brand-products-grid .product-visual>img','width',pct('imageWidth',0,10000));
   set('.atyaf-brand-products-grid .product-info h3','color',color(x.nameColor));
-  set('.atyaf-brand-products-grid .product-info h3','font-size',px('nameSize',10,32));
+  set('.atyaf-brand-products-grid .product-info h3','font-size',px('nameSize',0,10000));
   set('.atyaf-brand-products-grid .product-info small','color',color(x.brandColor));
-  set('.atyaf-brand-products-grid .product-info small','font-size',px('brandSize',8,24));
+  set('.atyaf-brand-products-grid .product-info small','font-size',px('brandSize',0,10000));
   set('.atyaf-brand-products-grid .price','color',color(x.priceColor));
-  set('.atyaf-brand-products-grid .price','font-size',px('priceSize',10,32));
+  set('.atyaf-brand-products-grid .price','font-size',px('priceSize',0,10000));
   set('.atyaf-brand-products-grid .tag:not(.atyaf-sold-out)','background',color(x.badgeBackground));
   set('.atyaf-brand-products-grid .tag:not(.atyaf-sold-out)','color',color(x.badgeTextColor));
-  set('.atyaf-brand-products-grid .tag','font-size',px('badgeSize',8,24));
+  set('.atyaf-brand-products-grid .tag','font-size',px('badgeSize',0,10000));
   set('.atyaf-brand-products-grid .atyaf-cart-action','background',color(x.cartBackground));
   set('.atyaf-brand-products-grid .atyaf-cart-action','color',color(x.cartTextColor));
   set('.atyaf-brand-products-grid .atyaf-gift-action','background',color(x.giftBackground));
   set('.atyaf-brand-products-grid .atyaf-gift-action','color',color(x.giftTextColor));
-  set('.atyaf-brand-products-grid .product-actions button','height',px('buttonHeight',30,80));
-  set('.atyaf-brand-products-grid .product-actions button','font-size',px('buttonFontSize',9,24));
-  set('.atyaf-brand-products-grid .product-actions button','border-radius',px('buttonRadius',0,40));
+  set('.atyaf-brand-products-grid .product-actions button','height',px('buttonHeight',0,10000));
+  set('.atyaf-brand-products-grid .product-actions button','font-size',px('buttonFontSize',0,10000));
+  set('.atyaf-brand-products-grid .product-actions button','border-radius',px('buttonRadius',0,10000));
   // The visible catalog is #atyafBrandProductSections, not the legacy #productGrid.
   // Make the three admin column controls authoritative for the actual visible cards.
-  const desktop=number(x.columnsDesktop,1,8);
-  const tablet=number(x.columnsTablet,1,8);
-  const mobile=number(x.columnsMobile,1,8);
-  if(desktop!==null)rules.push(`#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${desktop},minmax(0,1fr))!important}`);
-  if(tablet!==null)rules.push(`@media(max-width:950px){#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${tablet},minmax(0,1fr))!important}}`);
-  if(mobile!==null)rules.push(`@media(max-width:600px){#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${mobile},minmax(0,1fr))!important}}`);
+  const desktop=number(x.columnsDesktop,1,24);
+  const tablet=number(x.columnsTablet,1,24);
+  const mobile=number(x.columnsMobile,1,24);
+  if(desktop!==null)rules.push(`#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${Math.floor(desktop)},minmax(0,1fr))!important}`);
+  if(tablet!==null)rules.push(`@media(max-width:950px){#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${Math.floor(tablet)},minmax(0,1fr))!important}}`);
+  if(mobile!==null)rules.push(`@media(max-width:600px){#atyafBrandProductSections .atyaf-brand-products-grid{grid-template-columns:repeat(${Math.floor(mobile)},minmax(0,1fr))!important}}`);
   target.textContent=rules.join('\n');
  }
  async function refresh(){
@@ -3816,7 +3816,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
   const px=(k,a,b)=>number(x[k],a,b,defaults[k])+'px';
   const col=k=>color(x[k],defaults[k]);
   const font=fonts.includes(x.fontFamily)?x.fontFamily:defaults.fontFamily;
-  const columns=k=>number(x[k],1,6,defaults[k]);
+  const columns=k=>Math.max(1,Math.floor(number(x[k],1,24,defaults[k])));
   style.textContent=`
   #productGrid.products{display:grid;align-items:stretch;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
   #productGrid .product{display:flex;flex-direction:column;min-width:0;min-height:100%;overflow:hidden;position:relative;background:#fff;border:1px solid #eeeae2;border-radius:16px;transition:transform .2s,box-shadow .2s}
@@ -3840,19 +3840,19 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
   #productGrid button:disabled{opacity:.55;cursor:not-allowed}
   @media(max-width:600px){#productGrid .product-info{padding:10px}#productGrid .product-actions{grid-template-columns:minmax(0,1fr) 40px}#productGrid .product-actions .btn-primary{grid-column:1/-1}#productGrid .product-actions .btn-outline{grid-column:1}#productGrid .gift-buy-btn{grid-column:2}}
 
-   #productGrid.products{grid-template-columns:repeat(${columns('columnsDesktop')},minmax(0,1fr))!important;gap:${px('gap',0,50)}!important}
-   #productGrid .product{width:${number(x.cardWidth,45,100,100)}%!important;justify-self:center!important;background:${col('cardBackground')}!important;border-color:${col('cardBorder')}!important;border-radius:${px('cardRadius',0,50)}!important;font-family:${font}!important}
-   #productGrid .product-visual{height:${px('imageHeight',120,600)}!important;min-height:0!important;aspect-ratio:auto!important;background:${col('imageBackground')}!important}
-   #productGrid .product-visual>img{width:${number(x.imageWidth,20,100,88)}%!important;height:100%!important;object-fit:contain!important;position:relative!important;inset:auto!important;margin:auto!important;padding:8px!important;background:transparent!important}
-   #productGrid .product-info h3{font-size:${px('nameSize',10,32)}!important;color:${col('nameColor')}!important}
-   #productGrid .product-info small{font-size:${px('brandSize',8,24)}!important;color:${col('brandColor')}!important}
-   #productGrid .product-info .price{font-size:${px('priceSize',10,32)}!important;color:${col('priceColor')}!important}
-   #productGrid .tag{background:${col('badgeBackground')}!important;color:${col('badgeTextColor')}!important;font-size:${px('badgeSize',8,24)}!important}
+   #productGrid.products{grid-template-columns:repeat(${columns('columnsDesktop')},minmax(0,1fr))!important;gap:${px('gap',0,10000)}!important}
+   #productGrid .product{width:${number(x.cardWidth,0,10000,100)}%!important;justify-self:center!important;background:${col('cardBackground')}!important;border-color:${col('cardBorder')}!important;border-radius:${px('cardRadius',0,10000)}!important;font-family:${font}!important}
+   #productGrid .product-visual{height:${px('imageHeight',0,10000)}!important;min-height:0!important;aspect-ratio:auto!important;background:${col('imageBackground')}!important}
+   #productGrid .product-visual>img{width:${number(x.imageWidth,0,10000,88)}%!important;height:100%!important;object-fit:contain!important;position:relative!important;inset:auto!important;margin:auto!important;padding:8px!important;background:transparent!important}
+   #productGrid .product-info h3{font-size:${px('nameSize',0,10000)}!important;color:${col('nameColor')}!important}
+   #productGrid .product-info small{font-size:${px('brandSize',0,10000)}!important;color:${col('brandColor')}!important}
+   #productGrid .product-info .price{font-size:${px('priceSize',0,10000)}!important;color:${col('priceColor')}!important}
+   #productGrid .tag{background:${col('badgeBackground')}!important;color:${col('badgeTextColor')}!important;font-size:${px('badgeSize',0,10000)}!important}
    #productGrid .product-actions .btn-primary{background:${col('cartBackground')}!important;color:${col('cartTextColor')}!important}
    #productGrid .product-actions .gift-buy-btn{background:${col('giftBackground')}!important;color:${col('giftTextColor')}!important}
-   #productGrid .product-actions .btn,#productGrid .product-actions .gift-buy-btn{height:${px('buttonHeight',30,80)}!important;min-height:${px('buttonHeight',30,80)}!important;font-size:${px('buttonFontSize',9,24)}!important;border-radius:${px('buttonRadius',0,40)}!important}
+   #productGrid .product-actions .btn,#productGrid .product-actions .gift-buy-btn{height:${px('buttonHeight',0,10000)}!important;min-height:${px('buttonHeight',0,10000)}!important;font-size:${px('buttonFontSize',0,10000)}!important;border-radius:${px('buttonRadius',0,10000)}!important}
    @media(max-width:950px){#productGrid.products{grid-template-columns:repeat(${columns('columnsTablet')},minmax(0,1fr))!important}}
-   @media(max-width:600px){#productGrid.products{grid-template-columns:repeat(${number(x.columnsMobile,1,2,2)},minmax(0,1fr))!important}}
+   @media(max-width:600px){#productGrid.products{grid-template-columns:repeat(${number(x.columnsMobile,1,24,2)},minmax(0,1fr))!important}}
   `;
   const badgeText=String(x.badgeText??'');
   document.querySelectorAll('#productGrid .product .tag').forEach(b=>{if(b.dataset.atyafPdBadgeOriginal===undefined)b.dataset.atyafPdBadgeOriginal=b.textContent; b.textContent=badgeText; b.hidden=!badgeText});

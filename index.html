@@ -5869,4 +5869,131 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 /* Single mobile rule set. The benefit text and colors still come from administration. */
 @media (max-width:600px){
  html body main#store>section.container.benefits[aria-hidden="false"]{
-  display:grid!important;grid-
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  width:100%!important;max-width:100%!important;margin:0!important;
+  padding:0 7px!important;gap:0!important;min-height:0!important;
+  height:auto!important;max-height:none!important;overflow:visible!important;
+  background:#fff!important;border:0!important;border-bottom:1px solid #e5e5e5!important;
+  direction:ltr!important;align-items:stretch!important;
+ }
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{
+  display:grid!important;grid-template-columns:26px minmax(0,1fr)!important;
+  grid-template-rows:auto auto auto!important;align-content:center!important;align-items:center!important;
+  box-sizing:border-box!important;min-width:0!important;min-height:52px!important;
+  height:auto!important;max-height:none!important;margin:0!important;padding:5px 5px!important;
+  gap:0 6px!important;background:transparent!important;border:0!important;
+  border-radius:0!important;box-shadow:none!important;direction:ltr!important;
+  text-align:right!important;overflow:visible!important;
+ }
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{
+  grid-column:1!important;grid-row:1/span 3!important;display:flex!important;
+  width:26px!important;height:26px!important;align-items:center!important;justify-content:center!important;
+  margin:0!important;font-size:23px!important;line-height:1!important;
+ }
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{
+  display:block!important;width:24px!important;height:24px!important;
+  max-width:24px!important;max-height:24px!important;fill:none!important;
+  stroke:currentColor!important;stroke-width:1.8!important;
+ }
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{
+  grid-column:2!important;grid-row:1!important;min-width:0!important;margin:0!important;
+  font-family:Tahoma,Arial,sans-serif!important;font-size:13px!important;
+  font-weight:800!important;line-height:1.22!important;text-align:right!important;
+  white-space:normal!important;direction:rtl!important;
+ }
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{
+  grid-column:2!important;grid-row:2!important;min-width:0!important;margin:1px 0 0!important;
+  font-family:Tahoma,Arial,sans-serif!important;font-size:10px!important;
+  line-height:1.2!important;text-align:right!important;direction:rtl!important;
+  white-space:normal!important;overflow-wrap:break-word!important;
+ }
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
+  grid-column:2!important;grid-row:3!important;justify-self:end!important;
+  font-size:10px!important;line-height:1.2!important;margin:0!important;
+  direction:rtl!important;text-align:right!important;
+ }
+}
+</style>
+
+<style id="atyaf-v74-single-logo-stable-home">
+/* One responsive profile only: V60 had forced BOTH variants visible. */
+@media (max-width:600px){
+ html body header.header .atyaf-profile{display:none!important;visibility:hidden!important}
+ html body header.header .atyaf-mobile-profile{display:flex!important;visibility:visible!important}
+}
+@media (min-width:601px){
+ html body header.header .atyaf-mobile-profile{display:none!important;visibility:hidden!important}
+ html body header.header .atyaf-profile{display:flex!important;visibility:visible!important}
+}
+/* Stable hero dimensions while slides load; do not change carousel functionality. */
+@media (max-width:600px){
+ html body main#store .hero-ad{height:auto!important;min-height:0!important;aspect-ratio: 710 / 438!important;overflow:hidden!important}
+ html body main#store .hero-ad-track,
+ html body main#store .hero-ad-slide{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+ html body main#store .hero-ad-slide img,
+ html body main#store .hero-ad-slide video{width:100%!important;height:100%!important;object-fit:cover!important}
+}
+</style>
+
+<style id="atyaf-v75-fixed-header-single-mark">
+/* Keep the shop header and its category navigation visible while scrolling. */
+@media (max-width:767px){
+ html body header.header{position:fixed!important;top:0!important;left:0!important;right:0!important;width:100%!important;z-index:10040!important;transform:none!important; margin:0!important}
+ html body header.header .headrow.atyaf-head-balanced{position:relative!important}
+ html body header.header .atyaf-profile{display:none!important;visibility:hidden!important}
+ html body header.header .atyaf-mobile-profile{display:flex!important;visibility:visible!important}
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot{display:flex!important;align-items:center!important;justify-content:center!important;width:44px!important;height:44px!important;max-width:44px!important;overflow:hidden!important;border-radius:8px!important}
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{max-height:44px!important;height:44px!important;object-fit:contain!important;flex-shrink:0!important}
+ #atyafV75HeaderSpacer{display:block!important;width:100%!important;height:var(--atyaf-v75-header-height,130px)!important;pointer-events:none!important}
+}
+</style>
+<script id="atyaf-v75-fixed-header-controller">
+(()=>{
+ 'use strict';
+ const header=document.querySelector('header.header');
+ if(!header)return;
+ const spacer=document.createElement('div');
+ spacer.id='atyafV75HeaderSpacer';
+ spacer.setAttribute('aria-hidden','true');
+ header.insertAdjacentElement('afterend',spacer);
+ const mobile=window.matchMedia('(max-width:767px)');
+ const resize=()=>{
+   if(!mobile.matches){spacer.style.display='none';spacer.style.height='0px';return;}
+   spacer.style.display='block';
+   const height=Math.ceil(header.getBoundingClientRect().height);
+   spacer.style.height=`${height}px`;
+   document.documentElement.style.setProperty('--atyaf-v75-header-height',`${height}px`);
+ };
+ const fixLogo=()=>{
+   const slot=header.querySelector('.atyaf-mobile-profile .atyaf-profile-image-slot');
+   const img=slot?.querySelector('img');
+   if(!slot||!img)return;
+   const apply=()=>{
+     if(!img.naturalWidth||!img.naturalHeight)return;
+     const ratio=img.naturalWidth/img.naturalHeight;
+     if(ratio>1.8){
+       // The uploaded logo contains the center emblem and side lettering.
+       // Crop the side lettering visually without changing the admin image.
+       img.style.setProperty('width',`${Math.min(240,44*ratio)}px`,'important');
+       img.style.setProperty('max-width','none','important');
+       img.style.setProperty('height','44px','important');
+     }else{
+       img.style.setProperty('width','44px','important');
+       img.style.setProperty('max-width','44px','important');
+     }
+   };
+   if(img.complete)apply();else img.addEventListener('load',apply,{once:true});
+ };
+ resize();fixLogo();
+ if('ResizeObserver' in window)new ResizeObserver(resize).observe(header);
+ window.addEventListener('resize',resize,{passive:true});
+ document.addEventListener('DOMContentLoaded',()=>{resize();fixLogo()},{once:true});
+ const observer=new MutationObserver(()=>{fixLogo();resize()});
+ observer.observe(header,{childList:true,subtree:true});
+ setTimeout(()=>observer.disconnect(),12000);
+})();
+</script>
+</body>
+</html>
+
+

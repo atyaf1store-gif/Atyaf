@@ -5816,28 +5816,28 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
  html body main#store #brands.section{padding-bottom:110px!important}
 }
 </style>
-<script id="atyaf-v67-reference-layout-js">
-(function(){
- function apply(){
-  if(document.getElementById('atyafRefBenefitsV67'))return;
-  const header=document.querySelector('header.header');
-  const bar=document.getElementById('topbar');
-  if(header&&bar&&header.nextElementSibling!==bar)header.insertAdjacentElement('afterend',bar);
-  if(bar){const t=bar.querySelector('span');if(t)t.textContent='عروض أسطورية الحق ما تلحق  ◁';}
-  const hero=document.querySelector('.hero-ad');
-  if(!hero)return;
-  const section=document.createElement('section');
-  section.id='atyafRefBenefitsV67';section.className='atyaf-ref-benefits';
-  section.setAttribute('aria-label','مميزات المتجر');
-  section.innerHTML='<div class="atyaf-ref-benefit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v11H3zM14 10h4l3 4v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg><div><strong>شحن مجاني</strong><small>شحن مجاني للطلبات فوق 200 ر.س</small></div></div><div class="atyaf-ref-benefit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9a8 8 0 1 1-1 6M4 4v5h5"/></svg><div><strong>إرجاع سهل</strong><small><u>اعرف المزيد</u></small></div></div>';
-  hero.insertAdjacentElement('afterend',section);
-  const brands=document.getElementById('brands');if(brands){const h=brands.querySelector('.section-head h2');if(h)h.textContent='الفئات';}
-  const nav=document.querySelector('.header .nav');if(nav)nav.scrollLeft=0;
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
-})();
-</script>
+
+<style id="atyaf-v68-precise-corrections">
+/* V68: remove duplicate service strip and keep the original live service features. */
+#atyafRefBenefitsV67{display:none!important}
+@media(max-width:767px){
+ html body header.header .atyaf-head-left [data-store-action="gifts"],
+ html body header.header .atyaf-head-right [data-store-action="cart"]{display:none!important}
+ html body header.header .atyaf-head-left{left:15px!important;gap:14px!important}
+ html body header.header .atyaf-head-right{right:15px!important}
+ html body header.header .atyaf-profile,html body header.header .atyaf-mobile-profile{max-width:42vw!important}
+ html body header.header .atyaf-profile-image-slot img{max-width:42vw!important;max-height:42px!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]{min-height:52px!important;max-height:68px!important;overflow:hidden!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{min-height:52px!important;padding:6px 5px!important}
+ html body main#store #brands.section{padding-top:12px!important;padding-bottom:95px!important}
+ html body main#store #brands>.section-head{margin-bottom:13px!important}
+ html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav{min-height:69px!important;padding:5px 2px calc(5px + env(safe-area-inset-bottom,0px))!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab{min-height:58px!important;gap:4px!important;padding:2px 0!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab svg{width:25px!important;height:25px!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab span{font-size:11px!important;line-height:1.3!important;font-weight:600!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg{width:26px!important;height:26px!important;box-sizing:content-box!important;padding:9px 15px!important;border-radius:999px!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab.active span{color:#d5a41d!important}
+}
+</style>
 </body>
 </html>
-
-

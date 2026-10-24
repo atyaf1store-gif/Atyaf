@@ -2805,10 +2805,10 @@ window.addEventListener("focus",atyafLoadLowerAds);
     // If no benefits settings were ever saved, show the two requested service tiles.
     // Explicitly disabled or empty saved lists remain respected.
     const fallback=[
-      {icon:'🚚',title:'شحن مجاني',text:'حسب شروط الشحن'},
-      {icon:'↶',title:'إرجاع سهل',text:'اطّلع على سياسة الاسترجاع'}
+      {icon:'🚚',title:'شحن مجاني',text:'شحن مجاني للطلبات فوق 200 ر س'},
+      {icon:'↶',title:'إرجاع سهل',text:''}
     ];
-    const items=Array.isArray(s?.items)?s.items:(s==null?fallback:[]);
+    const items=window.innerWidth<=600 ? fallback : (Array.isArray(s?.items)?s.items:(s==null?fallback:[]));
     const visibleItems=items.filter(it=>it && it.hidden!==true);
     const shouldShow=s?.enabled!==false && visibleItems.length>0;
     hide(sec,!shouldShow);
@@ -2916,6 +2916,27 @@ window.addEventListener("focus",atyafLoadLowerAds);
     if(window.innerWidth<=600){
       sec.style.setProperty('background','#fff','important');
       sec.style.setProperty('gap','0px','important');
+      // Reference layout: shipping at left, returns at right.
+      sec.style.setProperty('direction','ltr','important');
+      sec.style.setProperty('grid-template-columns','repeat(2,minmax(0,1fr))','important');
+      sec.style.setProperty('height','82px','important');
+      sec.style.setProperty('max-height','none','important');
+      sec.style.setProperty('overflow','visible','important');
+      cards.slice(0,2).forEach((card,index)=>{
+        card.style.setProperty('display','grid','important');
+        card.style.setProperty('grid-template-columns','30px minmax(0,1fr)','important');
+        card.style.setProperty('grid-template-rows','auto auto','important');
+        card.style.setProperty('column-gap','7px','important');
+        card.style.setProperty('align-content','center','important');
+        card.style.setProperty('height','82px','important');
+        card.style.setProperty('min-height','82px','important');
+        card.style.setProperty('padding','8px 4px','important');
+        card.style.setProperty('direction','ltr','important');
+        const icon=card.querySelector('i'),title=card.querySelector('b'),desc=card.querySelector('span');
+        if(icon){icon.style.setProperty('grid-column','1','important');icon.style.setProperty('grid-row','1 / 3','important');icon.style.setProperty('width','30px','important');icon.style.setProperty('margin','0','important');icon.style.setProperty('color','#45433f','important');}
+        if(title){title.style.setProperty('grid-column','2','important');title.style.setProperty('grid-row','1','important');title.style.setProperty('font-size','clamp(13px,3.7vw,20px)','important');title.style.setProperty('font-weight','800','important');title.style.setProperty('line-height','1.35','important');title.style.setProperty('color','#1e1c1a','important');title.style.setProperty('white-space','nowrap','important');title.style.setProperty('text-align','right','important');}
+        if(desc){desc.style.setProperty('grid-column','2','important');desc.style.setProperty('grid-row','2','important');desc.style.setProperty('font-size','clamp(9px,2.25vw,12px)','important');desc.style.setProperty('line-height','1.3','important');desc.style.setProperty('color','#85817d','important');desc.style.setProperty('white-space','nowrap','important');desc.style.setProperty('text-align','right','important');}
+      });
     }
   }
   window.atyafApplyBenefits=applyBenefits;
@@ -5839,5 +5860,17 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
  html body #atyafMobileBottomNav .atyaf-bottom-tab.active span{color:#d5a41d!important}
 }
 </style>
+
+<style id="atyaf-v69-benefits-reference">
+@media(max-width:600px){
+ html body main#store>section.container.benefits[aria-hidden="false"]{height:82px!important;min-height:82px!important;max-height:none!important;width:100%!important;overflow:visible!important;padding:0 9px!important;border-bottom:1px solid #e5e5e5!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{height:82px!important;min-height:82px!important;max-height:none!important;overflow:visible!important;border:0!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit+.benefit{border-left:0!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{width:27px!important;height:27px!important;stroke:#45433f!important;stroke-width:1.8!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{grid-column:2!important;grid-row:2!important;justify-self:end!important;font-size:clamp(10px,2.5vw,13px)!important;line-height:1.3!important;color:#777!important;text-decoration:underline!important}
+}
+</style>
 </body>
 </html>
+
+

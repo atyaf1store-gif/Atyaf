@@ -1793,6 +1793,106 @@ html,body{background:#fff!important;overflow-x:hidden!important}
 body{padding-bottom:65px!important}
 }
 </style>
+
+<style id="atyaf-v77-product-reference-exact-mobile">
+/* V77: storefront product cards only; keep product data, clicks, favorites and admin unchanged. */
+@media (max-width: 767px) {
+  html body #atyafBrandProductSections .atyaf-brand-products-grid,
+  html body #atyafFeaturedHome .atyaf-featured-grid,
+  html body #productGrid.products {
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+    direction:rtl!important;
+    align-items:stretch!important;
+  }
+  html body #atyafBrandProductSections .atyaf-brand-products-grid > .atyaf-reference-card,
+  html body #atyafFeaturedHome .atyaf-featured-grid > .atyaf-reference-card,
+  html body #productGrid.products > .product {
+    box-sizing:border-box!important;
+    display:flex!important;flex-direction:column!important;
+    width:100%!important;min-width:0!important;height:auto!important;
+    margin:0!important;overflow:hidden!important;
+    border:1px solid #e5e5e5!important;border-radius:7px!important;
+    background:#fff!important;box-shadow:0 1px 3px #0000000a!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card > .product-visual,
+  html body #atyafFeaturedHome .atyaf-reference-card > .product-visual,
+  html body #productGrid .product > .product-visual {
+    box-sizing:border-box!important;position:relative!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    flex:none!important;width:100%!important;height:auto!important;
+    aspect-ratio:1 / 1.16!important;min-height:0!important;
+    margin:0!important;padding:8px!important;
+    background:#fff!important;overflow:hidden!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card > .product-visual > img,
+  html body #atyafFeaturedHome .atyaf-reference-card > .product-visual > img,
+  html body #productGrid .product > .product-visual > img {
+    display:block!important;width:100%!important;height:100%!important;
+    max-width:100%!important;max-height:100%!important;
+    object-fit:contain!important;object-position:center!important;
+    margin:auto!important;padding:0!important;transform:none!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card > .product-info,
+  html body #atyafFeaturedHome .atyaf-reference-card > .product-info,
+  html body #productGrid .product > .product-info {
+    box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+    justify-content:center!important;gap:3px!important;flex:none!important;
+    min-height:51px!important;height:auto!important;
+    margin:0!important;padding:7px 9px 8px!important;
+    background:#fff!important;border-top:1px solid #eee!important;
+    direction:rtl!important;text-align:right!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card .product-info > h3,
+  html body #atyafFeaturedHome .atyaf-reference-card .product-info > h3,
+  html body #productGrid .product .product-info > h3 {
+    display:block!important;max-width:100%!important;margin:0!important;padding:0!important;
+    font-family:Tahoma,Arial,sans-serif!important;font-size:12px!important;
+    line-height:1.45!important;font-weight:400!important;color:#555!important;
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+    direction:rtl!important;text-align:right!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card .product-info > .price,
+  html body #atyafFeaturedHome .atyaf-reference-card .product-info > .price,
+  html body #productGrid .product .product-info > .price {
+    display:flex!important;align-items:baseline!important;justify-content:flex-end!important;
+    flex-wrap:wrap!important;gap:5px!important;margin:0!important;
+    font-family:Tahoma,Arial,sans-serif!important;font-size:15px!important;
+    font-weight:800!important;line-height:1.4!important;color:#e74c3c!important;
+    direction:ltr!important;font-variant-numeric:tabular-nums!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card .price > .old,
+  html body #atyafFeaturedHome .atyaf-reference-card .price > .old,
+  html body #productGrid .product .price > .old {
+    display:inline!important;font-size:11px!important;font-weight:400!important;
+    color:#999!important;text-decoration:line-through!important;white-space:nowrap!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card .favorite,
+  html body #atyafFeaturedHome .atyaf-reference-card .favorite,
+  html body #productGrid .product .favorite {
+    display:grid!important;place-items:center!important;position:absolute!important;
+    top:9px!important;right:9px!important;left:auto!important;z-index:9!important;
+    width:32px!important;height:32px!important;min-width:32px!important;
+    padding:0!important;border-radius:50%!important;border:1px solid #f0f0f0!important;
+    background:#fff!important;color:#888!important;font-size:20px!important;
+    line-height:1!important;box-shadow:0 1px 4px #0000000b!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card .atyaf-sale-corner,
+  html body #atyafFeaturedHome .atyaf-reference-card .atyaf-sale-corner {
+    display:inline-flex!important;position:absolute!important;top:0!important;left:0!important;
+    right:auto!important;z-index:8!important;align-items:center!important;
+    min-height:19px!important;padding:2px 5px!important;
+    border-radius:0 0 4px 0!important;background:#ed503f!important;
+    color:#fff!important;font:700 11px/1.2 Arial,sans-serif!important;
+  }
+  html body #atyafBrandProductSections .atyaf-reference-card .atyaf-stock-indicator,
+  html body #atyafBrandProductSections .atyaf-reference-card .product-actions,
+  html body #atyafFeaturedHome .atyaf-reference-card .atyaf-stock-indicator,
+  html body #atyafFeaturedHome .atyaf-reference-card .product-actions {display:none!important}
+}
+</style>
+
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -5997,5 +6097,4 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 </style>
 </body>
 </html>
-
 

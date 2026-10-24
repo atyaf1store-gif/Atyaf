@@ -5942,8 +5942,8 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
  html body header.header .headrow.atyaf-head-balanced{position:relative!important}
  html body header.header .atyaf-profile{display:none!important;visibility:hidden!important}
  html body header.header .atyaf-mobile-profile{display:flex!important;visibility:visible!important}
- html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot{display:flex!important;align-items:center!important;justify-content:center!important;width:44px!important;height:44px!important;max-width:44px!important;overflow:hidden!important;border-radius:8px!important}
- html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{max-height:44px!important;height:44px!important;object-fit:contain!important;flex-shrink:0!important}
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot{display:flex!important;align-items:center!important;justify-content:center!important;width:min(46vw,190px)!important;max-width:min(46vw,190px)!important;height:46px!important;overflow:visible!important;border-radius:0!important}
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{width:auto!important;max-width:100%!important;max-height:44px!important;height:auto!important;object-fit:contain!important;object-position:center!important;flex-shrink:1!important}
  #atyafV75HeaderSpacer{display:block!important;width:100%!important;height:var(--atyaf-v75-header-height,130px)!important;pointer-events:none!important}
 }
 </style>
@@ -5968,21 +5968,15 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
    const slot=header.querySelector('.atyaf-mobile-profile .atyaf-profile-image-slot');
    const img=slot?.querySelector('img');
    if(!slot||!img)return;
-   const apply=()=>{
-     if(!img.naturalWidth||!img.naturalHeight)return;
-     const ratio=img.naturalWidth/img.naturalHeight;
-     if(ratio>1.8){
-       // The uploaded logo contains the center emblem and side lettering.
-       // Crop the side lettering visually without changing the admin image.
-       img.style.setProperty('width',`${Math.min(240,44*ratio)}px`,'important');
-       img.style.setProperty('max-width','none','important');
-       img.style.setProperty('height','44px','important');
-     }else{
-       img.style.setProperty('width','44px','important');
-       img.style.setProperty('max-width','44px','important');
-     }
-   };
-   if(img.complete)apply();else img.addEventListener('load',apply,{once:true});
+   // Preserve the complete logo image; never crop its sides.
+   img.style.removeProperty('width');
+   img.style.removeProperty('max-width');
+   img.style.removeProperty('height');
+   img.style.removeProperty('object-position');
+   img.style.setProperty('width','auto','important');
+   img.style.setProperty('max-width','100%','important');
+   img.style.setProperty('height','auto','important');
+   img.style.setProperty('max-height','44px','important');
  };
  resize();fixLogo();
  if('ResizeObserver' in window)new ResizeObserver(resize).observe(header);
@@ -5993,6 +5987,14 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
  setTimeout(()=>observer.disconnect(),12000);
 })();
 </script>
+
+<style id="atyaf-v76-complete-logo-no-crop">
+@media (max-width:767px){
+ html body header.header .atyaf-mobile-profile{width:min(46vw,190px)!important;max-width:min(46vw,190px)!important;overflow:visible!important}
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot{width:100%!important;max-width:100%!important;height:46px!important;overflow:visible!important;clip-path:none!important}
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{width:auto!important;max-width:100%!important;height:auto!important;max-height:44px!important;object-fit:contain!important;object-position:center!important;clip-path:none!important}
+}
+</style>
 </body>
 </html>
 

@@ -5800,6 +5800,60 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 @media (min-width:768px){html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav{display:none!important}}
 @media (prefers-reduced-motion:reduce){html body .hero-ad-slide{transition:none!important}}
 </style>
+
+<!-- V66: reference-matched mobile layout; storefront logic and database untouched -->
+<style id="atyaf-v66-mobile-reference-corrections">
+@media(max-width:767px){
+ html body header.header .atyaf-head-left [data-store-action="gifts"],
+ html body header.header .atyaf-head-right [data-store-action="cart"]{display:none!important;visibility:hidden!important}
+ html body header.header .headrow.atyaf-head-balanced{height:57px!important;min-height:57px!important;padding:0 13px!important}
+ html body header.header .atyaf-head-left{left:14px!important;right:auto!important;gap:14px!important;direction:ltr!important}
+ html body header.header .atyaf-head-right{right:14px!important;left:auto!important;gap:0!important}
+ html body header.header .atyaf-head-left .customer-tool,html body header.header .atyaf-head-right .customer-tool{width:32px!important;min-width:32px!important;flex:0 0 32px!important;height:40px!important;min-height:40px!important}
+ html body header.header .atyaf-head-left svg,html body header.header .atyaf-head-right svg{width:25px!important;height:25px!important}
+ html body header.header .atyaf-profile,html body header.header .atyaf-mobile-profile{max-width:48vw!important;height:46px!important}
+ html body header.header .atyaf-profile-image-slot img{max-width:48vw!important;max-height:45px!important}
+ html body header.header #nav.nav{height:49px!important;min-height:49px!important;overflow-x:auto!important;scrollbar-width:none!important}
+ html body header.header #nav.nav::-webkit-scrollbar{display:none!important}
+ html body header.header #nav.nav .navrow{width:max-content!important;min-width:max-content!important;height:48px!important;min-height:48px!important;gap:29px!important;padding:0 14px!important;justify-content:flex-start!important;direction:ltr!important}
+ html body header.header #nav.nav .navrow>a[data-atyaf-main-tab]{font-size:12px!important;min-height:48px!important;letter-spacing:.1px!important;flex:0 0 auto!important}
+ html body #topbar.topbar{height:31px!important;min-height:31px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;white-space:nowrap!important;font-weight:700!important;font-size:12px!important;background:#d1a321!important}
+ html body #topbar.topbar>span{display:block!important;overflow:hidden!important;text-overflow:clip!important;white-space:nowrap!important;text-align:center!important}
+ html body main#store #home.hero-ad:not([hidden]){height:0!important;min-height:0!important;aspect-ratio:1.62!important;height:auto!important;max-height:none!important}
+ html body main#store #home .hero-ad-slide img,html body main#store #home .hero-ad-slide video{object-fit:cover!important;object-position:center center!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]{width:100%!important;padding:0 8px!important;min-height:55px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;direction:ltr!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{min-height:55px!important;padding:5px 4px!important;grid-template-columns:25px minmax(0,1fr)!important;gap:0 5px!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{width:25px!important;font-size:23px!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{font-size:13px!important;line-height:1.25!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{font-size:9px!important;line-height:1.3!important}
+ html body main#store #brands.section{padding:13px 10px 84px!important}
+ html body main#store #brands>.section-head{margin-bottom:14px!important;min-height:26px!important}
+ html body main#store #brands>.section-head h2{font-size:16px!important}
+ html body main#store #brands>.section-head .link{display:none!important}
+ html body main#store #brands .brands{gap:12px 10px!important;grid-template-columns:repeat(5,minmax(0,1fr))!important}
+ html body main#store #brands .brands>.brand-card>.atyaf-brand-logo-tile{border-radius:16px!important;aspect-ratio:1!important}
+ html body main#store #brands .brands>.brand-card>strong{font-size:10px!important;line-height:1.25!important;margin:3px 0 0!important}
+ html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav{height:69px!important;min-height:69px!important;padding:5px 2px calc(5px + env(safe-area-inset-bottom,0px))!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab{font-size:10px!important;gap:3px!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab svg{width:24px!important;height:24px!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg{width:27px!important;height:27px!important;padding:8px!important;border-radius:15px!important}
+}
+</style>
+<script id="atyaf-v66-mobile-reference-init">
+(function(){
+ 'use strict';
+ function apply(){
+  const nav=document.getElementById('nav');
+  if(nav && window.matchMedia('(max-width:767px)').matches && !nav.dataset.atyafV66Initialized){
+   nav.dataset.atyafV66Initialized='1';
+   nav.scrollLeft=0;
+  }
+  const title=document.querySelector('#brands .section-head h2');
+  if(title && !title.dataset.atyafV66Title){title.textContent='الفئات';title.dataset.atyafV66Title='1';}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+})();
+</script>
 </body>
 </html>
 

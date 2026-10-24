@@ -2864,8 +2864,8 @@ window.addEventListener("focus",atyafLoadLowerAds);
 
     // تطبيق مباشر على العناصر حتى لا تتغلب قواعد الجوال القديمة على إعدادات الإدارة.
     const cards=[...sec.querySelectorAll(':scope > .benefit')].filter(x=>x.style.display!=='none');
-    sec.style.setProperty('background',s?.sectionBackground||'#fbf8f2','important');
-    sec.style.setProperty('gap',n(s?.gap,14,0,60)+'px','important');
+    sec.style.setProperty('background',window.innerWidth<=600?'#ffffff':(s?.sectionBackground||'#fbf8f2'),'important');
+    sec.style.setProperty('gap',window.innerWidth<=600?'0px':n(s?.gap,14,0,60)+'px','important');
 
     const vw=window.innerWidth||document.documentElement.clientWidth||390;
     const cols=vw<=600?Math.min(2,visibleItems.length):Math.min(visibleItems.length,(vw<=850?n(s?.columnsTablet,2,1,4):n(s?.columnsDesktop,4,1,6)));
@@ -5865,135 +5865,54 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 </style>
 
 
-<style id="atyaf-v70-admin-benefits-compact">
+<style id="atyaf-v73-benefits-reference-clean">
+/* Single mobile rule set. The benefit text and colors still come from administration. */
 @media (max-width:600px){
- html body main#store>section.container.benefits[aria-hidden="false"]{
-   width:100%!important;max-width:100%!important;height:auto!important;
-   min-height:0!important;max-height:none!important;overflow:visible!important;
-   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
-   grid-auto-rows:auto!important;align-items:stretch!important;
-   padding:0 6px!important;margin:0!important;gap:0!important;
-   border-bottom:1px solid #e7e7e7!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{
-   box-sizing:border-box!important;height:auto!important;min-height:54px!important;
-   max-height:none!important;padding:5px 3px!important;overflow:visible!important;
-   grid-template-columns:25px minmax(0,1fr)!important;
-   grid-template-rows:auto auto auto!important;gap:1px 5px!important;
-   border:0!important;border-radius:0!important;box-shadow:none!important;
-   background:transparent!important;min-width:0!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{
-   width:25px!important;height:26px!important;grid-column:1!important;
-   grid-row:1/span 3!important;margin:0!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{
-   width:23px!important;height:23px!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b,
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{
-   grid-column:2!important;min-width:0!important;white-space:normal!important;
-   overflow-wrap:anywhere!important;text-align:right!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{
-   grid-row:1!important;line-height:1.3!important;margin:0!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{
-   grid-row:2!important;line-height:1.25!important;margin:0!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
-   grid-column:2!important;grid-row:3!important;line-height:1.25!important;
- }
-}
-</style>
-
-<style id="atyaf-v71-precise-compact-benefits">
-/* Only the customer-facing mobile benefits strip; admin items remain the data source. */
-@media (max-width:600px){
- html body main#store>section.container.benefits[aria-hidden="false"]{
-   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
-   width:100%!important;max-width:100%!important;min-height:0!important;max-height:none!important;
-   height:auto!important;overflow:visible!important;margin:0!important;padding:0 7px!important;
-   gap:0!important;background:#fff!important;border-bottom:1px solid #e4e4e4!important;
-   direction:ltr!important;align-items:stretch!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{
-   display:grid!important;grid-template-columns:24px minmax(0,1fr)!important;
-   grid-template-rows:auto auto auto!important;align-content:center!important;align-items:center!important;
-   gap:0 5px!important;box-sizing:border-box!important;min-width:0!important;
-   min-height:49px!important;height:auto!important;max-height:none!important;
-   margin:0!important;padding:5px 4px!important;
-   border:0!important;border-radius:0!important;box-shadow:none!important;
-   background:transparent!important;direction:ltr!important;text-align:right!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{
-   display:flex!important;align-items:center!important;justify-content:center!important;
-   grid-column:1!important;grid-row:1/span 3!important;
-   width:24px!important;height:24px!important;margin:0!important;
-   font-size:21px!important;line-height:1!important;color:#4c4a47!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{
-   width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{
-   grid-column:2!important;grid-row:1!important;min-width:0!important;
-   margin:0!important;font-size:13px!important;line-height:1.22!important;
-   font-weight:800!important;text-align:right!important;white-space:normal!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{
-   grid-column:2!important;grid-row:2!important;min-width:0!important;
-   margin:1px 0 0!important;font-size:10px!important;line-height:1.22!important;
-   text-align:right!important;white-space:normal!important;overflow-wrap:normal!important;
- }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
-   grid-column:2!important;grid-row:3!important;justify-self:end!important;
-   font-size:10px!important;line-height:1.2!important;margin:0!important;
- }
-}
-</style>
-
-<style id="atyaf-v72-reference-benefits-final">
-/* Mobile service strip: compact, full width, database-managed content. */
-@media(max-width:600px){
  html body main#store>section.container.benefits[aria-hidden="false"]{
   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  width:100%!important;max-width:100%!important;min-height:0!important;max-height:none!important;
-  height:auto!important;margin:0!important;padding:0 8px!important;gap:0!important;
+  width:100%!important;max-width:100%!important;margin:0!important;
+  padding:0 7px!important;gap:0!important;min-height:0!important;
+  height:auto!important;max-height:none!important;overflow:visible!important;
   background:#fff!important;border:0!important;border-bottom:1px solid #e5e5e5!important;
-  direction:ltr!important;overflow:visible!important;
+  direction:ltr!important;align-items:stretch!important;
  }
  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{
-  display:grid!important;grid-template-columns:24px minmax(0,1fr)!important;
-  grid-template-rows:auto auto auto!important;align-items:center!important;align-content:center!important;
-  min-height:49px!important;height:auto!important;max-height:none!important;
-  padding:4px 3px!important;margin:0!important;gap:0 5px!important;
-  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
-  text-align:right!important;direction:ltr!important;overflow:visible!important;
+  display:grid!important;grid-template-columns:26px minmax(0,1fr)!important;
+  grid-template-rows:auto auto auto!important;align-content:center!important;align-items:center!important;
+  box-sizing:border-box!important;min-width:0!important;min-height:52px!important;
+  height:auto!important;max-height:none!important;margin:0!important;padding:5px 5px!important;
+  gap:0 6px!important;background:transparent!important;border:0!important;
+  border-radius:0!important;box-shadow:none!important;direction:ltr!important;
+  text-align:right!important;overflow:visible!important;
  }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit+.benefit{border-left:0!important}
  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{
   grid-column:1!important;grid-row:1/span 3!important;display:flex!important;
-  width:24px!important;height:24px!important;align-items:center!important;justify-content:center!important;
-  margin:0!important;font-size:21px!important;line-height:1!important;
+  width:26px!important;height:26px!important;align-items:center!important;justify-content:center!important;
+  margin:0!important;font-size:23px!important;line-height:1!important;
  }
- html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{width:23px!important;height:23px!important;max-width:23px!important;max-height:23px!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{
+  display:block!important;width:24px!important;height:24px!important;
+  max-width:24px!important;max-height:24px!important;fill:none!important;
+  stroke:currentColor!important;stroke-width:1.8!important;
+ }
  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{
-  grid-column:2!important;grid-row:1!important;margin:0!important;min-width:0!important;
-  font-size:13px!important;line-height:1.24!important;font-weight:800!important;
-  white-space:normal!important;text-align:right!important;
+  grid-column:2!important;grid-row:1!important;min-width:0!important;margin:0!important;
+  font-family:Tahoma,Arial,sans-serif!important;font-size:13px!important;
+  font-weight:800!important;line-height:1.22!important;text-align:right!important;
+  white-space:normal!important;direction:rtl!important;
  }
  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{
   grid-column:2!important;grid-row:2!important;min-width:0!important;margin:1px 0 0!important;
-  font-size:10px!important;line-height:1.25!important;white-space:normal!important;
-  overflow-wrap:anywhere!important;text-align:right!important;
+  font-family:Tahoma,Arial,sans-serif!important;font-size:10px!important;
+  line-height:1.2!important;text-align:right!important;direction:rtl!important;
+  white-space:normal!important;overflow-wrap:break-word!important;
  }
  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
   grid-column:2!important;grid-row:3!important;justify-self:end!important;
-  margin:0!important;font-size:10px!important;line-height:1.25!important;
+  font-size:10px!important;line-height:1.2!important;margin:0!important;
+  direction:rtl!important;text-align:right!important;
  }
 }
 </style>
 </body>
 </html>
-
-

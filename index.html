@@ -2138,15 +2138,16 @@ body{padding-bottom:65px!important}
       let media=x.media??x.medias??x.slides??x.images??x.files??x.items??x.urls??[];
       if(typeof media==='string'){try{const p=JSON.parse(media);media=Array.isArray(p)?p:[media]}catch(e){media=media.split(/\\r?\\n|,/).map(v=>v.trim()).filter(Boolean)}}
       if(!Array.isArray(media))media=[media];media=media.map(atyafMediaUrl).filter(Boolean);
-      return {enabled:x.enabled!==false,media,interval:Math.max(1500,Number(x.interval||x.speed||3500)),fit:['contain','cover','fill','scale-down'].includes(x.fit)?x.fit:'contain',position:x.position||'center',link:String(x.link||x.url_link||'').trim(),heightDesktop:Number(x.heightDesktop??650),heightTablet:Number(x.heightTablet??520),heightMobile:Number(x.heightMobile??360)};
+      return {enabled:x.enabled!==false,media,interval:Math.min(60000,Math.max(2500,Number(x.interval||x.speed||4500)||4500)),fit:['contain','cover','fill','scale-down'].includes(x.fit)?x.fit:'contain',position:x.position||'center',link:String(x.link||x.url_link||'').trim(),heightDesktop:Number(x.heightDesktop??650),heightTablet:Number(x.heightTablet??520),heightMobile:Number(x.heightMobile??360)};
     }
-    function heroAdTo(n){if(!heroAdSlides.length)return;heroAdIndex=(Number(n)+heroAdSlides.length)%heroAdSlides.length;document.querySelectorAll('.hero-ad-slide').forEach((el,i)=>el.classList.toggle('active',i===heroAdIndex));document.querySelectorAll('.hero-ad-dot').forEach((el,i)=>el.classList.toggle('active',i===heroAdIndex));document.querySelectorAll('.hero-ad-slide video').forEach((v,i)=>{if(i===heroAdIndex){v.play().catch(()=>{})}else{v.pause()}})}
+    function heroAdTo(n){if(!heroAdSlides.length)return;const next=Number(n);if(!Number.isFinite(next))return;heroAdIndex=((Math.trunc(next)%heroAdSlides.length)+heroAdSlides.length)%heroAdSlides.length;const root=document.getElementById('home');if(!root)return;root.querySelectorAll('.hero-ad-slide').forEach((el,i)=>{const active=i===heroAdIndex;el.classList.toggle('active',active);el.setAttribute('aria-hidden',String(!active));});root.querySelectorAll('.hero-ad-dot').forEach((el,i)=>{el.classList.toggle('active',i===heroAdIndex);el.setAttribute('aria-current',i===heroAdIndex?'true':'false')});root.querySelectorAll('.hero-ad-slide video').forEach((v,i)=>{if(i===heroAdIndex&&!document.hidden){v.play().catch(()=>{})}else{v.pause()}})}
     function renderHeroAd(raw){
       const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;const a=normalizeHeroAd(raw);const heroBox=track.closest('.hero-ad');if(heroBox){const px=(v,d)=>Math.min(1600,Math.max(120,Number.isFinite(v)&&v>0?v:d))+'px';heroBox.style.setProperty('--atyaf-hero-height',px(a.heightDesktop,650));heroBox.style.setProperty('--atyaf-hero-tablet-height',px(a.heightTablet,520));heroBox.style.setProperty('--atyaf-hero-mobile-height',px(a.heightMobile,360));heroBox.style.setProperty('--atyaf-hero-fit',a.fit)}a.position=/^[a-z0-9% .-]{1,48}$/i.test(a.position)?a.position:'center';heroAdSlides=a.media;
       if(!a.enabled||!a.media.length){track.innerHTML='';dots.innerHTML='';track.closest('.hero-ad')?.setAttribute('hidden','');return} track.closest('.hero-ad')?.removeAttribute('hidden');
       track.innerHTML=a.media.map((url,i)=>{const v=/\\.(mp4|webm|ogg)(?:\\?|#|$)/i.test(url);const m=v?`<video src="${escapeHtml(url)}" muted playsinline autoplay loop preload="metadata" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}"></video>`:`<img src="${escapeHtml(url)}" alt="إعلان أطياف" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}" ${i?'loading="lazy"':''}>`;return `<div class="hero-ad-slide ${i===0?'active':''}">${m}${a.link?`<a class="hero-ad-link" href="${safeLink(a.link)}" aria-label="فتح الإعلان"></a>`:''}</div>`}).join('')+'<div class="hero-ad-shade"></div>';
-      dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;if(a.media.length>1)heroAdTimer=setInterval(()=>heroAdTo(heroAdIndex+1),a.interval);
+      dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;heroAdTo(0);if(a.media.length>1)heroAdTimer=setInterval(()=>{if(!document.hidden&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)heroAdTo(heroAdIndex+1)},a.interval);
     }
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&heroAdSlides.length)heroAdTo(heroAdIndex);else document.querySelectorAll('#home video').forEach(v=>v.pause())});
     window.atyafRenderHeroAds=renderHeroAd;
     // Unified admin bridge below is the only source of hero updates.
     async function loadHeroAds(){
@@ -6210,62 +6211,14 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 }
 </style>
 
-<!-- V81: compact advertising carousel with two random live-product cards per slide -->
-<style id="atyaf-v81-ad-products-css">
-#home.hero-ad .hero-ad-slide{isolation:isolate}
-#home.hero-ad .atyaf-ad-products{position:absolute;z-index:6;left:0;bottom:33px;display:flex;align-items:stretch;gap:6px;max-width:66%;padding:0 0 0 0;direction:ltr;pointer-events:none}
-#home.hero-ad .atyaf-ad-product{pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;width:clamp(58px,16.5vw,116px);background:#fff;border:0;border-radius:10px;color:#171717;text-decoration:none;box-shadow:0 2px 8px #0002;padding:0;cursor:pointer;font-family:Tahoma,Arial,sans-serif}
-#home.hero-ad .atyaf-ad-product img{display:block;width:100%!important;height:clamp(65px,19vw,132px)!important;object-fit:contain!important;object-position:center!important;background:#fff;padding:3px;box-sizing:border-box}
-#home.hero-ad .atyaf-ad-product span{font-size:clamp(9px,2.6vw,13px);font-weight:700;line-height:1.35;min-height:25px;display:flex;align-items:center;justify-content:center;white-space:nowrap;padding:2px 3px;direction:rtl}
-#home.hero-ad .atyaf-ad-products[hidden]{display:none!important}
-#home.hero-ad .hero-ad-slide:not(.active) .atyaf-ad-products{pointer-events:none}
-#home.hero-ad .hero-ad-dots{bottom:11px!important}
-@media(min-width:700px){#home.hero-ad .atyaf-ad-products{bottom:40px;gap:10px}#home.hero-ad .atyaf-ad-product{border-radius:12px}}
-@media(prefers-reduced-motion:reduce){#home.hero-ad .hero-ad-slide{transition:none!important}}
+<!-- V81: smooth crossfade advertising carousel, preserving admin content and responsive geometry. -->
+<style id="atyaf-v81-hero-crossfade">
+#home.hero-ad .hero-ad-track{isolation:isolate!important}
+#home.hero-ad .hero-ad-slide{opacity:0!important;visibility:visible!important;z-index:0!important;pointer-events:none!important;transition:opacity 950ms ease-in-out!important;will-change:opacity}
+#home.hero-ad .hero-ad-slide.active{opacity:1!important;z-index:1!important;pointer-events:auto!important}
+#home.hero-ad .hero-ad-dots{z-index:8!important}
+@media(prefers-reduced-motion:reduce){#home.hero-ad .hero-ad-slide{transition:none!important;will-change:auto!important}}
 </style>
-<script id="atyaf-v81-ad-products-js">
-(()=>{'use strict';
- const hero=document.getElementById('home');
- const track=document.getElementById('heroAdTrack');
- if(!hero||!track)return;
- let signature='', lastTrack='', updating=false;
- const validProducts=()=>Array.isArray(window.ATYAAF_LIVE_PRODUCTS)?window.ATYAAF_LIVE_PRODUCTS.filter(p=>p&&p.id!=null&&typeof p.image==='string'&&/^https?:\/\//i.test(p.image)&&Number.isFinite(Number(p.price))&&Number(p.price)>=0):[];
- const escapeText=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function pickTwo(items){const pool=items.slice();for(let i=0;i<Math.min(2,pool.length);i++){const j=i+Math.floor(Math.random()*(pool.length-i));[pool[i],pool[j]]=[pool[j],pool[i]];}return pool.slice(0,2)}
- function refresh(force=false){
-  if(updating)return;
-  const slides=[...track.querySelectorAll('.hero-ad-slide')];
-  const items=validProducts();
-  const nextSignature=items.map(p=>String(p.id)+'|'+p.image+'|'+p.price).join('~');
-  const trackSignature=slides.map(el=>el.querySelector('img,video')?.getAttribute('src')||'').join('|');
-  if(!force&&nextSignature===signature&&trackSignature===lastTrack&&slides.every(el=>el.querySelector('.atyaf-ad-products')))return;
-  signature=nextSignature;lastTrack=trackSignature;updating=true;
-  try{for(const slide of slides){slide.querySelector('.atyaf-ad-products')?.remove();if(!items.length)continue;
-   const holder=document.createElement('div');holder.className='atyaf-ad-products';holder.setAttribute('aria-label','منتجات مختارة عشوائياً');
-   for(const p of pickTwo(items)){
-    const button=document.createElement('button');button.type='button';button.className='atyaf-ad-product';button.dataset.productId=String(p.id);
-    const img=document.createElement('img');img.src=p.image;img.alt=String(p.name||'منتج');img.loading='lazy';img.decoding='async';
-    const price=document.createElement('span');price.textContent=Number(p.price).toLocaleString('ar-SA')+' ر.س';
-    button.append(img,price);holder.append(button);
-   }slide.append(holder);
-  }}finally{updating=false}
- }
- track.addEventListener('click',event=>{
-  const button=event.target.closest('.atyaf-ad-product');if(!button)return;
-  event.preventDefault();event.stopPropagation();
-  const id=button.dataset.productId;
-  if(typeof window.quickView==='function'){window.quickView(id);return}
-  const card=[...document.querySelectorAll('[data-product-id]')].find(el=>el.dataset.productId===id);
-  if(card){card.scrollIntoView({behavior:'smooth',block:'center'});return}
-  document.getElementById('products')?.scrollIntoView({behavior:'smooth'});
- },true);
- const observer=new MutationObserver(records=>{if(!updating&&records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&(n.classList?.contains('hero-ad-slide')||n.querySelector?.('.hero-ad-slide')))))refresh(true)});
- observer.observe(track,{childList:true});
- refresh(true);
- let attempts=0;const warmup=setInterval(()=>{refresh();if(++attempts>=30||validProducts().length){clearInterval(warmup)}},1000);
- setInterval(()=>refresh(),12000);
-})();
-</script>
 </body>
 </html>
 

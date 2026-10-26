@@ -2267,7 +2267,7 @@ body{padding-bottom:65px!important}
       if(f)f.textContent=state.favs.length;
     }
     function renderProducts(){window.ATYAAF_LIVE_PRODUCTS=products;let q=(document.getElementById('searchInput').value||'').trim().toLowerCase(), list=products.filter(p=>(state.filter==='all'||p.tags.includes(state.filter))&&(state.brand==='كل الماركات'||p.brand===state.brand)&&(!q||[p.name,p.brand,p.desc].join(' ').toLowerCase().includes(q)));let sort=document.getElementById('sortSelect').value;if(sort==='price-low')list.sort((a,b)=>a.price-b.price);if(sort==='price-high')list.sort((a,b)=>b.price-a.price);if(sort==='new')list.sort((a,b)=>b.id-a.id);document.getElementById('resultText').textContent=q?`نتائج البحث عن «${q}»`:state.brand==='كل الماركات'?'منتجاتنا الأكثر حبًا':`منتجات ${state.brand}`;document.getElementById('productGrid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">لم نعثر على ما تبحث عنه. جرّب كلمة أخرى أو تصفح كل المنتجات.</div>';updateCounts()}
-    function card(p){let soldOut=p.stock!==null&&p.stock!==undefined&&p.stock<=0;let liked=state.favs.map(String).includes(String(p.id));let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product" data-product-id="${p.id}"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${soldOut?'نفدت الكمية':p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav('${p.id}')">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="atyaf-stock-indicator">${soldOut?'نفدت الكمية':p.stock==null?'الكمية غير محددة':`المتوفر: ${p.stock} قطعة`}</div><div class="product-actions"><button class="btn btn-primary" ${soldOut?'disabled title="نفد المخزون"':''} onclick="addCart('${p.id}')">${soldOut?'نفدت الكمية':'أضف للسلة'}</button><button class="btn btn-outline" onclick="quickView('${p.id}')">عرض</button><button class="gift-buy-btn" onclick="buyAsGift('${p.id}')" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
+    function card(p){let soldOut=p.stock!==null&&p.stock!==undefined&&p.stock<=0;let liked=state.favs.map(String).includes(String(p.id));let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product" data-product-id="${p.id}"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${soldOut?'نفدت الكمية':p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav('${p.id}')">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="atyaf-stock-indicator">${soldOut?'نفدت الكمية':p.stock==null?'الكمية غير محددة':`المتوفر: ${p.stock} قطعة`}</div>${soldOut?'':`<button type="button" class="atyaf-quick-bag" aria-label="إضافة المنتج إلى السلة" title="إضافة إلى السلة" onclick="event.stopPropagation();addCart('${p.id}')"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="8" width="15" height="13" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg></button>`}<div class="product-actions"><button class="btn btn-primary" ${soldOut?'disabled title="نفد المخزون"':''} onclick="addCart('${p.id}')">${soldOut?'نفدت الكمية':'أضف للسلة'}</button><button class="btn btn-outline" onclick="quickView('${p.id}')">عرض</button><button class="gift-buy-btn" onclick="buyAsGift('${p.id}')" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
     function setFilter(f,el){state.filter=f;document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderProducts()}
     function filterBrand(b){
   state.brand=b;
@@ -3318,6 +3318,7 @@ window.addEventListener('load',()=>{
     <div class="product-info">
       <h3>${esc(p.name||'منتج')}</h3>
       <div class="price">${money(p.price)} ر.س ${p.old?`<span class="old">${money(p.old)} ر.س</span>`:''}</div><div class="atyaf-stock-indicator" role="status">${stockLabel}</div>
+      ${soldOut?'':`<button type="button" class="atyaf-quick-bag" aria-label="إضافة المنتج إلى السلة" title="إضافة إلى السلة" onclick="event.stopPropagation();addCart('${esc(id)}')"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="8" width="15" height="13" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg></button>`}
       <div class="product-actions atyaf-brand-actions">
        <button class="btn btn-primary atyaf-cart-action" ${soldOut?'disabled aria-disabled="true"':''} onclick="event.stopPropagation();addCart('${esc(id)}')"><span aria-hidden="true">${soldOut?'×':'＋'}</span> ${soldOut?'نفدت الكمية':'أضف للسلة'}</button>
        <button class="gift-buy-btn atyaf-gift-action" ${soldOut?'disabled aria-disabled="true"':''} onclick="event.stopPropagation();buyAsGift('${esc(id)}')" title="شراء كهدية" aria-label="شراء كهدية">🎁 شراء كهدية</button>
@@ -6270,6 +6271,24 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 #home.hero-ad .hero-ad-dot.active{width:19px!important;min-width:19px!important;background:#fff!important}
 #home.hero-ad .hero-ad-dot:focus-visible{outline:2px solid white!important;outline-offset:5px!important}
 @media(prefers-reduced-motion:reduce){#home.hero-ad .hero-ad-track::after{transition:none!important}}
+</style>
+
+<style id="atyaf-v83-working-quick-bag">
+/* Compact shopping-bag action, connected to the existing addCart flow. */
+#productGrid .product-info, .atyaf-reference-card .product-info{position:relative!important}
+#productGrid .atyaf-quick-bag, .atyaf-reference-card .atyaf-quick-bag{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ width:30px!important;height:30px!important;min-width:30px!important;
+ border:1px solid #d9c9a7!important;border-radius:50%!important;
+ background:#fff!important;color:#77746c!important;padding:0!important;
+ box-shadow:0 1px 3px #0000000c!important;cursor:pointer!important;
+ margin:7px 0 0 5px!important;vertical-align:middle!important;
+ position:relative!important;z-index:4!important;
+}
+#productGrid .atyaf-quick-bag svg, .atyaf-reference-card .atyaf-quick-bag svg{width:17px!important;height:17px!important;display:block!important}
+.atyaf-quick-bag:hover{color:#b28a30!important;border-color:#b28a30!important}
+.atyaf-quick-bag:focus-visible{outline:2px solid #b28a30!important;outline-offset:3px}
+html[data-atyaf-cart="hide"] .atyaf-quick-bag{display:none!important}
 </style>
 </body>
 </html>

@@ -2140,12 +2140,52 @@ body{padding-bottom:65px!important}
       if(!Array.isArray(media))media=[media];media=media.map(atyafMediaUrl).filter(Boolean);
       return {enabled:x.enabled!==false,media,interval:Math.min(60000,Math.max(2500,Number(x.interval||x.speed||4500)||4500)),fit:['contain','cover','fill','scale-down'].includes(x.fit)?x.fit:'contain',position:x.position||'center',link:String(x.link||x.url_link||'').trim(),heightDesktop:Number(x.heightDesktop??650),heightTablet:Number(x.heightTablet??520),heightMobile:Number(x.heightMobile??360)};
     }
-    function heroAdTo(n){if(!heroAdSlides.length)return;const next=Number(n);if(!Number.isFinite(next))return;heroAdIndex=((Math.trunc(next)%heroAdSlides.length)+heroAdSlides.length)%heroAdSlides.length;const root=document.getElementById('home');if(!root)return;root.querySelectorAll('.hero-ad-slide').forEach((el,i)=>{const active=i===heroAdIndex;el.classList.toggle('active',active);el.setAttribute('aria-hidden',String(!active));});root.querySelectorAll('.hero-ad-dot').forEach((el,i)=>{el.classList.toggle('active',i===heroAdIndex);el.setAttribute('aria-current',i===heroAdIndex?'true':'false')});root.querySelectorAll('.hero-ad-slide video').forEach((v,i)=>{if(i===heroAdIndex&&!document.hidden){v.play().catch(()=>{})}else{v.pause()}})}
+    let atyafAdTransitionTimer=null;
+    let atyafAdTransitioning=false;
+    function heroAdTo(n){
+      if(!heroAdSlides.length)return;
+      const requested=Number(n);
+      if(!Number.isFinite(requested))return;
+      const next=((Math.trunc(requested)%heroAdSlides.length)+heroAdSlides.length)%heroAdSlides.length;
+      const root=document.getElementById('home');
+      if(!root)return;
+      const slides=[...root.querySelectorAll('.hero-ad-slide')];
+      if(!slides.length)return;
+      const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(atyafAdTransitioning)return;
+      const activate=()=>{
+        heroAdIndex=next;
+        slides.forEach((el,i)=>{
+          const active=i===next;
+          el.classList.toggle('active',active);
+          el.setAttribute('aria-hidden',String(!active));
+        });
+        root.querySelectorAll('.hero-ad-dot').forEach((el,i)=>{
+          const active=i===next;
+          el.classList.toggle('active',active);
+          el.setAttribute('aria-current',active?'true':'false');
+          el.setAttribute('aria-pressed',String(active));
+        });
+        root.querySelectorAll('.hero-ad-slide video').forEach((v,i)=>{
+          if(i===next&&!document.hidden)v.play().catch(()=>{});
+          else v.pause();
+        });
+      };
+      if(next===heroAdIndex||reduced||document.hidden){activate();return;}
+      atyafAdTransitioning=true;
+      root.classList.add('atyaf-ad-fading');
+      clearTimeout(atyafAdTransitionTimer);
+      atyafAdTransitionTimer=setTimeout(()=>{
+        activate();
+        root.classList.remove('atyaf-ad-fading');
+        atyafAdTransitionTimer=setTimeout(()=>{atyafAdTransitioning=false;},470);
+      },390);
+    }
     function renderHeroAd(raw){
-      const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;const a=normalizeHeroAd(raw);const heroBox=track.closest('.hero-ad');if(heroBox){const px=(v,d)=>Math.min(1600,Math.max(120,Number.isFinite(v)&&v>0?v:d))+'px';heroBox.style.setProperty('--atyaf-hero-height',px(a.heightDesktop,650));heroBox.style.setProperty('--atyaf-hero-tablet-height',px(a.heightTablet,520));heroBox.style.setProperty('--atyaf-hero-mobile-height',px(a.heightMobile,360));heroBox.style.setProperty('--atyaf-hero-fit',a.fit)}a.position=/^[a-z0-9% .-]{1,48}$/i.test(a.position)?a.position:'center';heroAdSlides=a.media;
+      const track=document.getElementById('heroAdTrack'),dots=document.getElementById('heroAdDots');if(!track||!dots)return;clearInterval(heroAdTimer);heroAdTimer=null;clearTimeout(atyafAdTransitionTimer);atyafAdTransitioning=false;track.closest('.hero-ad')?.classList.remove('atyaf-ad-fading');const a=normalizeHeroAd(raw);const heroBox=track.closest('.hero-ad');if(heroBox){const px=(v,d)=>Math.min(1600,Math.max(120,Number.isFinite(v)&&v>0?v:d))+'px';heroBox.style.setProperty('--atyaf-hero-height',px(a.heightDesktop,650));heroBox.style.setProperty('--atyaf-hero-tablet-height',px(a.heightTablet,520));heroBox.style.setProperty('--atyaf-hero-mobile-height',px(a.heightMobile,360));heroBox.style.setProperty('--atyaf-hero-fit',a.fit)}a.position=/^[a-z0-9% .-]{1,48}$/i.test(a.position)?a.position:'center';heroAdSlides=a.media;
       if(!a.enabled||!a.media.length){track.innerHTML='';dots.innerHTML='';track.closest('.hero-ad')?.setAttribute('hidden','');return} track.closest('.hero-ad')?.removeAttribute('hidden');
       track.innerHTML=a.media.map((url,i)=>{const v=/\\.(mp4|webm|ogg)(?:\\?|#|$)/i.test(url);const m=v?`<video src="${escapeHtml(url)}" muted playsinline autoplay loop preload="metadata" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}"></video>`:`<img src="${escapeHtml(url)}" alt="إعلان أطياف" style="object-fit:${escapeHtml(a.fit)};object-position:${escapeHtml(a.position)}" ${i?'loading="lazy"':''}>`;return `<div class="hero-ad-slide ${i===0?'active':''}">${m}${a.link?`<a class="hero-ad-link" href="${safeLink(a.link)}" aria-label="فتح الإعلان"></a>`:''}</div>`}).join('')+'<div class="hero-ad-shade"></div>';
-      dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;heroAdTo(0);if(a.media.length>1)heroAdTimer=setInterval(()=>{if(!document.hidden&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)heroAdTo(heroAdIndex+1)},a.interval);
+      dots.innerHTML=a.media.length>1?a.media.map((_,i)=>`<button class="hero-ad-dot ${i===0?'active':''}" onclick="heroAdTo(${i})" aria-label="إعلان ${i+1}"></button>`).join(''):'';heroAdIndex=0;heroAdTo(0);if(a.media.length>1)heroAdTimer=setInterval(()=>{if(!document.hidden&&!atyafAdTransitioning)heroAdTo(heroAdIndex+1)},a.interval);
     }
     document.addEventListener('visibilitychange',()=>{if(!document.hidden&&heroAdSlides.length)heroAdTo(heroAdIndex);else document.querySelectorAll('#home video').forEach(v=>v.pause())});
     window.atyafRenderHeroAds=renderHeroAd;
@@ -6219,7 +6259,17 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 #home.hero-ad .hero-ad-dots{z-index:8!important}
 @media(prefers-reduced-motion:reduce){#home.hero-ad .hero-ad-slide{transition:none!important;will-change:auto!important}}
 </style>
+
+<!-- V82: fade-through-dark like supplied screen recording; compact pagination with white active dash. -->
+<style id="atyaf-v82-video-match">
+#home.hero-ad .hero-ad-slide{transition:none!important;will-change:auto!important}
+#home.hero-ad .hero-ad-track::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.76);opacity:0;pointer-events:none;z-index:6;transition:opacity 390ms ease-in-out}
+#home.hero-ad.atyaf-ad-fading .hero-ad-track::after{opacity:1}
+#home.hero-ad .hero-ad-dots:not(:empty){z-index:9!important;bottom:18px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:13px!important;padding:0!important;background:transparent!important;backdrop-filter:none!important;border:0!important;box-shadow:none!important}
+#home.hero-ad .hero-ad-dot,#home.hero-ad .hero-ad-dot.active{box-sizing:border-box!important;display:block!important;flex:0 0 auto!important;width:5px!important;min-width:5px!important;max-width:none!important;height:5px!important;min-height:5px!important;padding:0!important;margin:0!important;border:0!important;border-radius:999px!important;background:rgba(255,255,255,.56)!important;box-shadow:none!important;transform:none!important;transition:width 180ms ease,background-color 180ms ease!important}
+#home.hero-ad .hero-ad-dot.active{width:19px!important;min-width:19px!important;background:#fff!important}
+#home.hero-ad .hero-ad-dot:focus-visible{outline:2px solid white!important;outline-offset:5px!important}
+@media(prefers-reduced-motion:reduce){#home.hero-ad .hero-ad-track::after{transition:none!important}}
+</style>
 </body>
 </html>
-
-

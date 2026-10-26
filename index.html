@@ -6047,44 +6047,28 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
  #atyafV75HeaderSpacer{display:block!important;width:100%!important;height:var(--atyaf-v75-header-height,130px)!important;pointer-events:none!important}
 }
 </style>
-<script id="atyaf-v75-fixed-header-controller">
+<script id="atyaf-v78-fixed-header-controller">
 (()=>{
- 'use strict';
- const header=document.querySelector('header.header');
- if(!header)return;
- const spacer=document.createElement('div');
- spacer.id='atyafV75HeaderSpacer';
- spacer.setAttribute('aria-hidden','true');
- header.insertAdjacentElement('afterend',spacer);
- const mobile=window.matchMedia('(max-width:767px)');
- const resize=()=>{
-   if(!mobile.matches){spacer.style.display='none';spacer.style.height='0px';return;}
-   spacer.style.display='block';
-   const height=Math.ceil(header.getBoundingClientRect().height);
-   spacer.style.height=`${height}px`;
-   document.documentElement.style.setProperty('--atyaf-v75-header-height',`${height}px`);
- };
- const fixLogo=()=>{
-   const slot=header.querySelector('.atyaf-mobile-profile .atyaf-profile-image-slot');
-   const img=slot?.querySelector('img');
-   if(!slot||!img)return;
-   // Preserve the complete logo image; never crop its sides.
-   img.style.removeProperty('width');
-   img.style.removeProperty('max-width');
-   img.style.removeProperty('height');
-   img.style.removeProperty('object-position');
-   img.style.setProperty('width','auto','important');
-   img.style.setProperty('max-width','100%','important');
-   img.style.setProperty('height','auto','important');
-   img.style.setProperty('max-height','44px','important');
- };
- resize();fixLogo();
- if('ResizeObserver' in window)new ResizeObserver(resize).observe(header);
- window.addEventListener('resize',resize,{passive:true});
- document.addEventListener('DOMContentLoaded',()=>{resize();fixLogo()},{once:true});
- const observer=new MutationObserver(()=>{fixLogo();resize()});
- observer.observe(header,{childList:true,subtree:true});
- setTimeout(()=>observer.disconnect(),12000);
+  'use strict';
+  const init=()=>{
+    const header=document.querySelector('header.header');
+    if(!header)return;
+    let spacer=document.getElementById('atyafV75HeaderSpacer');
+    if(!spacer){spacer=document.createElement('div');spacer.id='atyafV75HeaderSpacer';spacer.setAttribute('aria-hidden','true');header.after(spacer)}
+    const mq=matchMedia('(max-width:767px)');
+    let previous=-1;
+    const measure=()=>{
+      if(!mq.matches){spacer.hidden=true;spacer.style.height='0px';previous=-1;return}
+      spacer.hidden=false;
+      const h=Math.ceil(header.getBoundingClientRect().height);
+      if(h!==previous){previous=h;spacer.style.height=h+'px';document.documentElement.style.setProperty('--atyaf-v75-header-height',h+'px')}
+    };
+    if('ResizeObserver' in window)new ResizeObserver(()=>requestAnimationFrame(measure)).observe(header);
+    window.addEventListener('resize',measure,{passive:true});
+    window.addEventListener('orientationchange',measure,{passive:true});
+    measure();
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 
@@ -6095,6 +6079,53 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
  html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{width:auto!important;max-width:100%!important;height:auto!important;max-height:44px!important;object-fit:contain!important;object-position:center!important;clip-path:none!important}
 }
 </style>
+
+<style id="atyaf-v78-gisaah-mobile-reference">
+/* V78 — scoped mobile visual alignment. Existing store/admin functionality is untouched. */
+@media(max-width:767px){
+ html{scroll-padding-top:122px!important}
+ html body{--atyaf-ref-brown:#302720;--atyaf-ref-gold:#d7a51d;background:#fff!important}
+ html body header.header{position:fixed!important;inset:0 0 auto!important;z-index:10040!important;background:#302720!important;transform:none!important;box-shadow:none!important}
+ html body header.header .headrow.atyaf-head-balanced{height:61px!important;min-height:61px!important;padding:0 12px!important;overflow:visible!important}
+ html body header.header .atyaf-head-left{left:13px!important;gap:12px!important}
+ html body header.header .atyaf-head-right{right:13px!important}
+ html body header.header .atyaf-head-left .customer-tool,html body header.header .atyaf-head-right .customer-tool{width:34px!important;height:40px!important;min-width:34px!important;min-height:40px!important;border:0!important;background:transparent!important;color:white!important;box-shadow:none!important}
+ html body header.header .atyaf-head-left svg,html body header.header .atyaf-head-right svg{width:27px!important;height:27px!important;stroke:#fff!important;stroke-width:1.9!important}
+ html body header.header .atyaf-profile{display:none!important}
+ html body header.header .atyaf-mobile-profile{display:flex!important;visibility:visible!important;position:absolute!important;left:50%!important;top:50%!important;right:auto!important;transform:translate(-50%,-50%)!important;width:min(49vw,225px)!important;max-width:min(49vw,225px)!important;height:54px!important;overflow:visible!important;z-index:5!important}
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot{width:100%!important;max-width:100%!important;height:52px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:visible!important;border:0!important;background:transparent!important}
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img{display:block!important;width:auto!important;height:auto!important;max-width:100%!important;max-height:51px!important;object-fit:contain!important;object-position:center!important;clip-path:none!important}
+ html body header.header #nav.nav{height:49px!important;min-height:49px!important;border-top:1px solid #ffffffa6!important;border-bottom:1px solid #ffffffa6!important;background:#302720!important;overflow-x:auto!important}
+ html body header.header #nav.nav .navrow{min-height:48px!important;height:48px!important;padding:0 13px!important;gap:clamp(25px,6vw,39px)!important;direction:ltr!important}
+ html body header.header #nav.nav .navrow>a[data-atyaf-main-tab]{min-height:48px!important;font:700 13px/1.2 Arial,Tahoma,sans-serif!important;color:#ddd8d4!important;white-space:nowrap!important}
+ html body header.header #nav.nav .navrow>a.atyaf-tab-active{color:#d7a51d!important}
+ html body header.header #nav.nav .navrow>a.atyaf-tab-active::after{height:3px!important;background:#d7a51d!important;bottom:0!important}
+ html body #atyafV75HeaderSpacer{display:block!important;min-height:110px!important;background:#fff!important}
+ html body #topbar.topbar{height:32px!important;min-height:32px!important;background:#d7a51d!important;color:#17130d!important;padding:0 32px!important}
+ html body #topbar.topbar>span{color:#17130d!important}
+ html body #topbar.topbar>button{color:#17130d!important}
+ html body main#store #home.hero-ad:not([hidden]){height:auto!important;min-height:0!important;aspect-ratio:710/438!important;margin:0!important;overflow:hidden!important}
+ html body main#store #home .hero-ad-slide img,html body main#store #home .hero-ad-slide video{object-fit:cover!important;object-position:center!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]{width:100%!important;max-width:100%!important;min-height:65px!important;max-height:none!important;overflow:visible!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;padding:0 7px!important;background:#fff!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{min-height:65px!important;height:auto!important;padding:7px 5px!important;display:grid!important;grid-template-columns:27px minmax(0,1fr)!important;gap:2px 6px!important;align-content:center!important;border-radius:0!important;box-shadow:none!important;background:transparent!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{font-size:13px!important;line-height:1.3!important}
+ html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span,html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a{font-size:10px!important;line-height:1.35!important}
+ html body main#store #brands.section{padding:15px 12px 20px!important;background:#fff!important}
+ html body main#store #brands>.section-head{margin-bottom:14px!important}
+ html body main#store #brands>.section-head h2{font-size:17px!important}
+ html body main#store #brands .brands{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:15px 9px!important}
+ html body main#store #brands .brands>.brand-card>.atyaf-brand-logo-tile{aspect-ratio:1!important;border-radius:17px!important;padding:2px!important}
+ html body main#store #brands .brands>.brand-card>strong{font-size:11px!important;line-height:1.35!important}
+ html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav{min-height:73px!important;padding:6px 3px calc(7px + env(safe-area-inset-bottom,0px))!important;background:#fff!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab{min-height:59px!important;gap:4px!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab svg{width:26px!important;height:26px!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab span{font-size:11px!important;font-weight:700!important}
+ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg{width:26px!important;height:26px!important;padding:9px 15px!important;border-radius:999px!important}
+ html body main#store{padding-bottom:78px!important}
+}
+@media(min-width:768px){html body #atyafV75HeaderSpacer{display:none!important}}
+</style>
 </body>
 </html>
+
 

@@ -2985,18 +2985,18 @@ window.addEventListener("focus",atyafLoadLowerAds);
       const icon=card.querySelector('i');
       if(icon){
         icon.style.setProperty('color',s?.iconColor||'#b47a4f','important');
-        icon.style.setProperty('font-size',(window.innerWidth<=600?Math.min(22,n(s?.iconSize,24,8,80)):n(s?.iconSize,24,8,80))+'px','important');
+        icon.style.setProperty('font-size',(window.innerWidth<=600?Math.min(20,n(s?.iconSize,24,8,80)):n(s?.iconSize,24,8,80))+'px','important');
       }
       const title=card.querySelector('b,strong,h3,h4');
       if(title){
         title.style.setProperty('color',s?.titleColor||'#17352e','important');
-        title.style.setProperty('font-size',(window.innerWidth<=600?Math.min(13,n(s?.titleSize,16,8,60)):n(s?.titleSize,16,8,60))+'px','important');
+        title.style.setProperty('font-size',(window.innerWidth<=600?Math.min(12,n(s?.titleSize,16,8,60)):n(s?.titleSize,16,8,60))+'px','important');
         title.style.setProperty('font-weight',n(s?.titleWeight,700,400,900),'important');
       }
       const desc=card.querySelector('span,p,small');
       if(desc){
         desc.style.setProperty('color',s?.textColor||'#707b75','important');
-        desc.style.setProperty('font-size',(window.innerWidth<=600?Math.min(10,n(s?.textSize,13,7,48)):n(s?.textSize,13,7,48))+'px','important');
+        desc.style.setProperty('font-size',(window.innerWidth<=600?Math.min(9,n(s?.textSize,13,7,48)):n(s?.textSize,13,7,48))+'px','important');
         desc.style.setProperty('font-weight',n(s?.textWeight,400,300,800),'important');
       }
       // Iconography matches the reference for shipping and easy returns.
@@ -3025,20 +3025,20 @@ window.addEventListener("focus",atyafLoadLowerAds);
       sec.style.setProperty('gap','0','important');
       cards.forEach(card=>{
         card.style.setProperty('display','grid','important');
-        card.style.setProperty('grid-template-columns','25px minmax(0,1fr)','important');
+        card.style.setProperty('grid-template-columns','21px minmax(0,1fr)','important');
         card.style.setProperty('grid-template-rows','auto auto auto','important');
         card.style.setProperty('align-content','center','important');
         card.style.setProperty('align-items','center','important');
-        card.style.setProperty('column-gap','5px','important');
-        card.style.setProperty('row-gap','1px','important');
+        card.style.setProperty('column-gap','4px','important');
+        card.style.setProperty('row-gap','0px','important');
         card.style.setProperty('height','auto','important');
-        card.style.setProperty('min-height','54px','important');
-        card.style.setProperty('padding','5px 3px','important');
+        card.style.setProperty('min-height','46px','important');
+        card.style.setProperty('padding','3px 3px','important');
         card.style.setProperty('direction','ltr','important');
         const icon=card.querySelector('i'),title=card.querySelector('b,strong,h3,h4'),desc=card.querySelector('span,p,small');
-        if(icon){icon.style.setProperty('grid-column','1','important');icon.style.setProperty('grid-row','1 / 4','important');icon.style.setProperty('width','25px','important');icon.style.setProperty('margin','0','important')}
-        if(title){title.style.setProperty('grid-column','2','important');title.style.setProperty('grid-row','1','important');title.style.setProperty('line-height','1.3','important');title.style.setProperty('white-space','normal','important');title.style.setProperty('overflow-wrap','anywhere','important');title.style.setProperty('text-align','right','important')}
-        if(desc){desc.style.setProperty('grid-column','2','important');desc.style.setProperty('grid-row','2','important');desc.style.setProperty('line-height','1.25','important');desc.style.setProperty('white-space','normal','important');desc.style.setProperty('overflow-wrap','anywhere','important');desc.style.setProperty('text-align','right','important')}
+        if(icon){icon.style.setProperty('grid-column','1','important');icon.style.setProperty('grid-row','1 / 4','important');icon.style.setProperty('width','21px','important');icon.style.setProperty('margin','0','important')}
+        if(title){title.style.setProperty('grid-column','2','important');title.style.setProperty('grid-row','1','important');title.style.setProperty('line-height','1.2','important');title.style.setProperty('white-space','normal','important');title.style.setProperty('overflow-wrap','anywhere','important');title.style.setProperty('text-align','right','important')}
+        if(desc){desc.style.setProperty('grid-column','2','important');desc.style.setProperty('grid-row','2','important');desc.style.setProperty('line-height','1.2','important');desc.style.setProperty('white-space','normal','important');desc.style.setProperty('overflow-wrap','anywhere','important');desc.style.setProperty('text-align','right','important')}
       });
     }
   }
@@ -6162,6 +6162,52 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
   html body main#store{padding-bottom:68px!important}
 }
 @media(max-width:359px){html body main#store #brands .brands{gap:10px 5px!important}html body main#store #brands .brands>.brand-card>strong{font-size:9px!important}}
+</style>
+
+<style id="atyaf-v80-reference-compact-benefits">
+/* Reference: a compact, full-width two-column services strip on phones. */
+@media (max-width:600px){
+  html body main#store>section.container.benefits[aria-hidden="false"]{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;max-width:100%!important;min-height:46px!important;
+    height:auto!important;margin:0!important;padding:0 6px!important;gap:0!important;
+    border:0!important;border-bottom:1px solid #e7e7e7!important;
+    background:#fff!important;box-shadow:none!important;direction:ltr!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{
+    display:grid!important;grid-template-columns:21px minmax(0,1fr)!important;
+    grid-template-rows:auto auto auto!important;align-content:center!important;
+    align-items:center!important;min-width:0!important;min-height:46px!important;
+    height:auto!important;margin:0!important;padding:3px!important;
+    column-gap:4px!important;row-gap:0!important;border:0!important;
+    border-radius:0!important;background:transparent!important;box-shadow:none!important;
+    direction:ltr!important;text-align:right!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{
+    grid-column:1!important;grid-row:1/span 3!important;width:21px!important;
+    height:22px!important;display:flex!important;align-items:center!important;
+    justify-content:center!important;margin:0!important;font-size:20px!important;
+    color:#45413e!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{
+    width:21px!important;height:21px!important;max-width:21px!important;max-height:21px!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{
+    grid-column:2!important;grid-row:1!important;margin:0!important;
+    font-size:12px!important;font-weight:800!important;line-height:1.2!important;
+    color:#1d1b19!important;direction:rtl!important;text-align:right!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span,
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
+    grid-column:2!important;margin:1px 0 0!important;font-size:9px!important;
+    font-weight:400!important;line-height:1.2!important;color:#898582!important;
+    direction:rtl!important;text-align:right!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{grid-row:2!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
+    grid-row:3!important;justify-self:end!important;text-decoration:underline!important;
+  }
+}
 </style>
 </body>
 </html>

@@ -6290,5 +6290,70 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 .atyaf-quick-bag:focus-visible{outline:2px solid #b28a30!important;outline-offset:3px}
 html[data-atyaf-cart="hide"] .atyaf-quick-bag{display:none!important}
 </style>
+
+<style id="atyaf-v84-reference-bag-fix">
+/* V84: visible bag beside the price on ALL storefront card variants. */
+#atyafBrandProductSections .atyaf-reference-card .product-info,
+#atyafFeaturedHome .atyaf-reference-card .product-info,
+#atyafScentResultGrid .atyaf-reference-card .product-info{position:relative!important;padding-bottom:43px!important;min-height:91px!important}
+#atyafBrandProductSections .atyaf-reference-card .atyaf-quick-bag,
+#atyafFeaturedHome .atyaf-reference-card .atyaf-quick-bag,
+#atyafScentResultGrid .atyaf-reference-card .atyaf-quick-bag{
+ display:grid!important;place-items:center!important;position:absolute!important;
+ bottom:8px!important;left:40px!important;right:auto!important;top:auto!important;
+ width:29px!important;height:29px!important;min-width:29px!important;
+ margin:0!important;padding:0!important;border-radius:50%!important;
+ border:1px solid #d8c8a3!important;background:#fff!important;color:#857d6e!important;
+ z-index:20!important;opacity:1!important;visibility:visible!important;
+ box-shadow:0 1px 4px #00000012!important;
+}
+#atyafBrandProductSections .atyaf-reference-card .atyaf-quick-bag svg,
+#atyafFeaturedHome .atyaf-reference-card .atyaf-quick-bag svg,
+#atyafScentResultGrid .atyaf-reference-card .atyaf-quick-bag svg{width:16px!important;height:16px!important;max-width:none!important}
+#atyafBrandProductSections .atyaf-reference-card .atyaf-quick-bag:disabled,
+#atyafFeaturedHome .atyaf-reference-card .atyaf-quick-bag:disabled,
+#atyafScentResultGrid .atyaf-reference-card .atyaf-quick-bag:disabled{opacity:.4!important;cursor:not-allowed!important}
+@media(max-width:600px){
+ #atyafBrandProductSections .atyaf-reference-card .atyaf-quick-bag,
+ #atyafFeaturedHome .atyaf-reference-card .atyaf-quick-bag,
+ #atyafScentResultGrid .atyaf-reference-card .atyaf-quick-bag{left:37px!important;bottom:7px!important;width:28px!important;height:28px!important;min-width:28px!important}
+}
+</style>
+<script id="atyaf-v84-reference-bag-js">
+(()=>{
+ 'use strict';
+ const selector='#atyafBrandProductSections .atyaf-reference-card, #atyafFeaturedHome .atyaf-reference-card, #atyafScentResultGrid .atyaf-reference-card';
+ const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="8" width="15" height="13" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>';
+ function update(){
+  document.querySelectorAll(selector).forEach(card=>{
+   const info=card.querySelector('.product-info');
+   const id=card.dataset.productId;
+   if(!info||!id||info.querySelector('.atyaf-quick-bag'))return;
+   const button=document.createElement('button');
+   button.type='button';button.className='atyaf-quick-bag';
+   button.setAttribute('aria-label','إضافة إلى السلة');button.title='إضافة إلى السلة';
+   button.dataset.productId=id;button.innerHTML=icon;
+   const soldOut=!!card.querySelector('.atyaf-cart-action:disabled,.product-actions .btn-primary:disabled') || /نفدت الكمية/.test(card.querySelector('.tag')?.textContent||'');
+   button.disabled=soldOut;
+   info.appendChild(button);
+  });
+ }
+ let pending=false;
+ function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;update()})}
+ document.addEventListener('click',event=>{
+  const button=event.target.closest('.atyaf-reference-card .atyaf-quick-bag');
+  if(!button||button.disabled)return;
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.addCart==='function'){
+   Promise.resolve(window.addCart(button.dataset.productId)).catch(err=>console.error('ATYAF add to cart failed:',err));
+  }else{
+   console.error('ATYAF: addCart is unavailable');
+   if(typeof window.showMessage==='function')window.showMessage('تعذر الإضافة','يرجى تحديث الصفحة والمحاولة مجدداً');
+  }
+ });
+ function start(){update();const root=document.querySelector('#store')||document.body;new MutationObserver(schedule).observe(root,{childList:true,subtree:true})}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
 </body>
 </html>

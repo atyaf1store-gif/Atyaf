@@ -1884,17 +1884,17 @@ body{padding-bottom:65px!important}
 }
 </style>
 
-<style id="atyaf-cinematic-intro-v92">
-/* Isolated splash styling. Does not modify the header, hero, product cards or navigation. */
-#atyafIntroV12.atyaf-cinematic-intro{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;z-index:2147483000!important;overflow:hidden!important;display:block!important;opacity:1!important;transition:opacity .5s ease!important;isolation:isolate!important}
-#atyafIntroV12.atyaf-cinematic-intro.intro-leaving{opacity:0!important;pointer-events:none!important}
-#atyafIntroV12.atyaf-cinematic-intro .intro-media{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;z-index:0!important;display:block!important;opacity:0;transform:scale(1.045);transition:opacity .65s ease,transform var(--cinematic-duration,4500ms) cubic-bezier(.2,.6,.3,1)!important}
-#atyafIntroV12.atyaf-cinematic-intro.intro-ready .intro-media{opacity:1;transform:scale(1)}
-#atyafIntroV12 .atyaf-cinematic-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,.08);z-index:2}
-#atyafIntroV12 .atyaf-cinematic-progress:after{content:"";display:block;width:100%;height:100%;background:#c9a45a;transform-origin:left;animation:atyafCinematicProgress var(--cinematic-duration,4500ms) linear both}
-#atyafIntroV12 .atyaf-cinematic-skip{position:absolute;z-index:3;top:calc(18px + env(safe-area-inset-top,0px));left:18px;padding:8px 16px;border-radius:999px;background:rgba(15,20,19,.48);border:1px solid rgba(255,255,255,.5);color:white;font:600 12px Tahoma,Arial,sans-serif;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-@keyframes atyafCinematicProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-cinematic-intro .intro-media{transform:none!important;transition:opacity .2s ease!important}#atyafIntroV12 .atyaf-cinematic-progress:after{animation:none!important}}
+<style id="atyaf-intro-v93-rebuilt">
+/* Rebuilt, isolated full-screen intro. The image/video comes only from admin. */
+#atyafIntroV12.atyaf-rebuilt-intro{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:2147483000!important;display:block!important;overflow:hidden!important;isolation:isolate!important;background:#fffdfa!important;opacity:1;transition:opacity .55s ease!important}
+#atyafIntroV12.atyaf-rebuilt-intro.intro-leaving{opacity:0!important;pointer-events:none!important}
+#atyafIntroV12.atyaf-rebuilt-intro .intro-media{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;max-width:none!important;z-index:0!important;object-fit:var(--admin-intro-fit,cover)!important;object-position:var(--admin-intro-position,center)!important;opacity:0;transform:scale(1.035);transition:opacity .65s ease,transform 5s cubic-bezier(.18,.6,.25,1)!important}
+#atyafIntroV12.atyaf-rebuilt-intro.intro-ready .intro-media{opacity:1;transform:scale(1)}
+#atyafIntroV12.atyaf-rebuilt-intro .intro-skip-new{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:18px;z-index:2;padding:9px 18px;border-radius:100px;border:1px solid #ffffff80;background:#121a1a80;color:#fff;font:600 13px Tahoma,Arial,sans-serif;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);cursor:pointer}
+#atyafIntroV12.atyaf-rebuilt-intro .intro-track-new{position:absolute;bottom:0;left:0;right:0;height:3px;background:#ffffff55;z-index:2}
+#atyafIntroV12.atyaf-rebuilt-intro .intro-track-new::after{content:"";display:block;height:100%;width:100%;background:#d2ab58;transform-origin:left;animation:atyafIntroTrack var(--admin-intro-duration,4500ms) linear both}
+@keyframes atyafIntroTrack{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-rebuilt-intro .intro-media{transform:none!important;transition:opacity .2s ease!important}#atyafIntroV12.atyaf-rebuilt-intro .intro-track-new::after{animation:none!important}}
 </style>
 </head>
 <body>
@@ -2781,47 +2781,41 @@ window.addEventListener("focus",atyafLoadLowerAds);
 </script>
 <script>
 
-/* ATYAF cinematic startup — media is supplied exclusively by admin settings. */
+/* ATYAF rebuilt startup: only admin-provided media, no fixed artwork or logo. */
 (function(){
-  let started=false, timer=null;
-  const safeUrl=value=>{try{const u=new URL(String(value||''),location.href);return /^(https?:)$/.test(u.protocol)?u.href:''}catch{return ''}};
-  const durationOf=value=>{const n=Number(value);return Number.isFinite(n)?Math.min(15000,Math.max(1500,n)):4500};
+  let shown=false;
+  const safeUrl=(value)=>{try{const url=new URL(String(value||''),location.href);return ['http:','https:'].includes(url.protocol)?url.href:''}catch{return ''}};
+  const durationOf=(value)=>{const n=Number(value);return Number.isFinite(n)&&n>0?Math.max(1800,Math.min(15000,n)):4500};
   window.atyafApplyAdminIntroV12=function(raw){
-    if(started)return;
-    let config=raw;
-    if(typeof config==='string'){try{config=JSON.parse(config)}catch{config=null}}
-    if(!config||typeof config!=='object'||config.enabled===false){window.atyafReleaseFirstPaint?.();return}
-    const url=safeUrl(config.mediaUrl)||safeUrl(config.logoImage);
-    if(!url){window.atyafReleaseFirstPaint?.();return}
-    started=true;
-    const isVideo=config.mediaType==='video' && Boolean(safeUrl(config.mediaUrl));
-    const root=document.createElement('section');
-    root.id='atyafIntroV12';root.className='atyaf-cinematic-intro';
-    root.setAttribute('aria-label','شاشة بداية المتجر');root.setAttribute('aria-busy','true');
-    const media=document.createElement(isVideo?'video':'img');
-    media.className='intro-media';
-    media.style.objectFit=config.mediaFit==='contain'?'contain':'cover';
-    media.style.objectPosition=['top','center','bottom'].includes(config.mediaPosition)?config.mediaPosition:'center';
-    if(isVideo){media.muted=true;media.autoplay=true;media.playsInline=true;media.preload='auto';media.loop=false}
-    else{media.alt='';media.decoding='async'}
-    const progress=document.createElement('div');progress.className='atyaf-cinematic-progress';progress.setAttribute('aria-hidden','true');
-    const close=document.createElement('button');close.type='button';close.className='atyaf-cinematic-skip';close.textContent='تخطي';close.setAttribute('aria-label','تخطي شاشة البداية');
-    root.append(media,progress,close);
-    let ended=false;
-    function finish(){if(ended)return;ended=true;clearTimeout(timer);root.classList.add('intro-leaving');root.setAttribute('aria-busy','false');setTimeout(()=>root.remove(),550)}
-    close.addEventListener('click',finish);
+    if(shown)return;
+    let cfg=raw;
+    if(typeof cfg==='string'){try{cfg=JSON.parse(cfg)}catch{cfg=null}}
+    if(!cfg||typeof cfg!=='object'||cfg.enabled===false){window.atyafReleaseFirstPaint?.();return}
+    const source=safeUrl(cfg.mediaUrl)||safeUrl(cfg.logoImage);
+    if(!source){window.atyafReleaseFirstPaint?.();return}
+    shown=true;
+    const video=cfg.mediaType==='video'&&!!safeUrl(cfg.mediaUrl);
+    const duration=durationOf(cfg.duration);
+    const root=document.createElement('section');root.id='atyafIntroV12';root.className='atyaf-rebuilt-intro';root.setAttribute('aria-label','شاشة بداية المتجر');
+    root.style.setProperty('--admin-intro-duration',duration+'ms');
+    root.style.setProperty('--admin-intro-fit',cfg.mediaFit==='contain'?'contain':'cover');
+    root.style.setProperty('--admin-intro-position',['top','center','bottom'].includes(cfg.mediaPosition)?cfg.mediaPosition:'center');
+    const media=document.createElement(video?'video':'img');media.className='intro-media';
+    if(video){media.muted=true;media.autoplay=true;media.playsInline=true;media.loop=false;media.preload='auto'}else{media.alt='';media.decoding='async'}
+    const skip=document.createElement('button');skip.type='button';skip.className='intro-skip-new';skip.textContent='تخطي';skip.setAttribute('aria-label','تخطي شاشة البداية');
+    const track=document.createElement('div');track.className='intro-track-new';track.setAttribute('aria-hidden','true');
+    root.append(media,skip,track);
+    let finished=false, timeout;
+    const finish=()=>{if(finished)return;finished=true;clearTimeout(timeout);root.classList.add('intro-leaving');window.atyafReleaseFirstPaint?.();setTimeout(()=>root.remove(),600)};
+    skip.addEventListener('click',finish);
     media.addEventListener('error',finish,{once:true});
-    if(isVideo)media.addEventListener('ended',finish,{once:true});
-    const duration=durationOf(config.duration);
-    root.style.setProperty('--cinematic-duration',duration+'ms');
-    // Respect the actual uploaded image: no fixed logo, title, or background artwork.
-    root.style.background=config.backgroundColor||'#fffdfa';
+    if(video)media.addEventListener('ended',finish,{once:true});
     document.body.appendChild(root);
-    media.src=url;
+    media.src=source;
     window.atyafReleaseFirstPaint?.();
-    requestAnimationFrame(()=>root.classList.add('intro-ready'));
-    timer=setTimeout(finish,duration);
-    if(isVideo)media.play().catch(finish);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>root.classList.add('intro-ready')));
+    timeout=setTimeout(finish,duration);
+    if(video)media.play().catch(finish);
   };
 })();
 
@@ -6437,5 +6431,3 @@ html body .atyaf-v88-bag{display:none!important}
 
 </body>
 </html>
-
-

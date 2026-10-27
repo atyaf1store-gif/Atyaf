@@ -17,14 +17,14 @@
       document.documentElement.classList.remove('atyaf-first-paint-pending');
     };
     // Never trap visitors on a blank screen if the database or CDN is unavailable.
-    setTimeout(window.atyafReleaseFirstPaint,1200);
+    setTimeout(window.atyafReleaseFirstPaint,4500);
   })();
   </script>
   <style id="atyaf-first-paint-guard-css">
     html.atyaf-first-paint-pending{background:#fffdfa!important}
     html.atyaf-first-paint-pending body{background:#fffdfa!important}
-    html.atyaf-first-paint-pending body > :not(#atyafIntroV12):not(#atyafLaunchV56):not(script):not(style){visibility:visible!important}
-    html.atyaf-first-paint-pending #atyafIntroV12,html.atyaf-first-paint-pending #atyafLaunchV56{visibility:visible!important}
+    html.atyaf-first-paint-pending body > :not(#atyafIntroV12):not(script):not(style){visibility:hidden!important}
+    html.atyaf-first-paint-pending #atyafIntroV12{visibility:visible!important}
     @media(prefers-reduced-motion:reduce){#atyafIntroV12{transition:none!important}}
   </style>
   <style>
@@ -1457,6 +1457,9 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
 
 
 <style id="atyaf-intro-v12-css">
+#atyafIntroV12{width:100vw;width:100dvw;height:100vh;height:100dvh;padding:0!important;margin:0!important;inset:0!important;display:block!important}
+#atyafIntroV12 .intro-media{inset:0!important;width:100%!important;height:100%!important;max-width:none!important;display:block!important}
+
 #atyafIntroV12{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;isolation:isolate;background:#17352e;color:#fff;opacity:1;transition:opacity .45s ease}
 #atyafIntroV12[hidden]{display:none!important}#atyafIntroV12.intro-leaving{opacity:0;pointer-events:none}
 #atyafIntroV12 .intro-media{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:var(--intro-fit,cover);object-position:var(--intro-position,center)}
@@ -1725,18 +1728,6 @@ html body .header{
 </style>
 
   <!-- V56: lightweight launch animation, matching the supplied 3.5-second reference. -->
-  <style id="atyaf-v56-launch-css">
-  #atyafLaunchV56{position:fixed;inset:0;z-index:2147483001;background:#f7f3eb;display:grid;place-items:center;overflow:hidden;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility .38s ease}
-  #atyafLaunchV56.atyaf-launch-done{opacity:0;visibility:hidden;pointer-events:none}
-  #atyafLaunchV56 .atyaf-launch-mark{display:flex;direction:ltr;align-items:center;justify-content:center;gap:10px;white-space:nowrap;max-width:100%;font-family:Georgia,'Times New Roman',serif;will-change:transform,opacity;animation:atyafV56Mark 2.15s cubic-bezier(.22,1,.36,1) both}
-  #atyafLaunchV56 .atyaf-launch-en{color:#28241d;font-size:clamp(15px,4vw,24px);letter-spacing:.025em}
-  #atyafLaunchV56 .atyaf-launch-tile{width:clamp(35px,9vw,55px);height:clamp(35px,9vw,55px);display:grid;place-items:center;background:#fff;border-radius:8px;box-shadow:0 3px 14px #00000012;overflow:hidden;color:#ba9851;font-size:27px;font-weight:bold;flex:none}
-  #atyafLaunchV56 .atyaf-launch-tile img{width:100%;height:100%;object-fit:contain}
-  #atyafLaunchV56 .atyaf-launch-ar{font-family:Tahoma,Arial,sans-serif;font-size:clamp(16px,4.5vw,25px);color:#28241d;font-weight:700}
-  #atyafLaunchV56 .atyaf-launch-gold{color:#c8a34c}
-  @keyframes atyafV56Mark{0%{opacity:0;transform:translateX(-62vw) scale(.9)}30%{opacity:1;transform:translateX(0) scale(1)}55%{opacity:1;transform:translateY(0) scale(1)}80%{opacity:1;transform:translateY(-18vh) scale(.83)}100%{opacity:0;transform:translateY(-22vh) scale(.65)}}
-  @media(prefers-reduced-motion:reduce){#atyafLaunchV56 .atyaf-launch-mark{animation:none;opacity:1}#atyafLaunchV56{transition:none!important}}
-  </style>
 <style id="atyaf-v67-reference-precision">
 /* Mobile reference layout: original store data and handlers retained. */
 @media(max-width:600px){
@@ -1895,79 +1886,8 @@ body{padding-bottom:65px!important}
 
 </head>
 <body>
-  <!-- V93: Intro media uses dedicated mediaUrl; logoImage stays a logo. -->
-  <div id="atyafLaunchV56" role="status" aria-label="جاري فتح متجر أطياف" style="display:none">
-    
-  </div>
-  <style id="atyaf-v92-intro-fullscreen-css">
-    #atyafLaunchV56{background:#f7f3eb;isolation:isolate}
-    #atyafLaunchV56 .atyaf-launch-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
-    #atyafLaunchV56 .atyaf-launch-mark{position:relative;z-index:1}
-    #atyafLaunchV56.atyaf-has-cover .atyaf-launch-mark{display:none!important}
-    #atyafLaunchV56 .atyaf-launch-en,#atyafLaunchV56 .atyaf-launch-ar{color:#28241d}
-    #atyafLaunchV56 .atyaf-launch-shade{position:absolute;inset:0;z-index:0;pointer-events:none}
-  </style>
-  <style id="atyaf-v95-intro-motion">
-    #atyafLaunchV56.atyaf-v95-visible{display:block!important;position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;z-index:2147483001!important;overflow:hidden!important;background:transparent!important;opacity:1;visibility:visible!important;isolation:isolate}
-    #atyafLaunchV56 .atyaf-launch-cover{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;display:block!important;object-fit:cover;object-position:center;transform:scale(1.075);animation:atyafV95Reveal 3.8s cubic-bezier(.2,.7,.2,1) both;will-change:transform,opacity}
-    #atyafLaunchV56.atyaf-v95-exit{opacity:0!important;transition:opacity .55s ease!important;pointer-events:none!important}
-    @keyframes atyafV95Reveal{from{transform:scale(1.075);filter:brightness(.84)}to{transform:scale(1);filter:brightness(1)}}
-    @media(prefers-reduced-motion:reduce){#atyafLaunchV56 .atyaf-launch-cover{animation:none!important;transform:none!important}}
-  </style>
-  <script id="atyaf-v95-launch-js">
-  (function(){
-    'use strict';
-    const layer=document.getElementById('atyafLaunchV56');
-    if(!layer)return;
-    window.atyafV56LaunchPlayed=true; // disable legacy duplicate intro
-    const abort=new AbortController();
-    let done=false, active=false, playbackTimer;
-    const release=()=>window.atyafReleaseFirstPaint?.();
-    function finish(){
-      if(done)return;
-      done=true;clearTimeout(playbackTimer);abort.abort();release();
-      if(!active){layer.remove();return}
-      layer.classList.add('atyaf-v95-exit');
-      setTimeout(()=>layer.remove(),600);
-    }
-    function urlOf(v){try{const u=new URL(String(v||''),location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
-    function show(media,cfg){
-      if(done)return;
-      active=true;media.className='atyaf-launch-cover';
-      media.style.objectFit=cfg.mediaFit==='contain'?'contain':'cover';
-      media.style.objectPosition=['center','top','bottom'].includes(cfg.mediaPosition)?cfg.mediaPosition:'center';
-      layer.replaceChildren(media);layer.classList.add('atyaf-has-cover','atyaf-v95-visible');
-      release();
-      const ms=Number(cfg.duration);
-      const duration=Number.isFinite(ms)?Math.max(1600,Math.min(6500,ms)):3500;
-      playbackTimer=setTimeout(finish,duration);
-    }
-    // Avoid a white blank screen during slow requests: reveal the shop while fetching.
-    const watchdog=setTimeout(()=>{if(!active)finish()},2400);
-    (async()=>{
-      try{
-        const base='https://zgvkiqoxmtifuvgcmrqc.supabase.co';
-        const key='sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl';
-        const response=await fetch(base+'/rest/v1/settings?key=eq.intro&select=value,updated_at,id&order=updated_at.desc,id.desc&limit=1',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store',signal:abort.signal});
-        if(!response.ok)throw new Error('Intro settings '+response.status);
-        let cfg=(await response.json())?.[0]?.value;
-        if(typeof cfg==='string')cfg=JSON.parse(cfg);
-        if(!cfg||cfg.enabled!==true){finish();return}
-        const src=urlOf(cfg.mediaUrl);
-        if(!src){finish();return}
-        if(cfg.mediaType==='video'){
-          const v=document.createElement('video');v.muted=true;v.autoplay=true;v.playsInline=true;v.loop=true;v.preload='auto';
-          v.addEventListener('loadeddata',()=>{clearTimeout(watchdog);show(v,cfg);v.play().catch(()=>{})},{once:true});
-          v.addEventListener('error',finish,{once:true});v.src=src;v.load();
-        }else{
-          const img=new Image();img.alt='';img.decoding='async';
-          img.onload=()=>{clearTimeout(watchdog);show(img,cfg)};
-          img.onerror=finish;img.src=src;
-        }
-      }catch(err){if(err.name!=='AbortError')console.warn('ATYAF intro load:',err);finish()}
-    })();
-  })();
-  </script>
+  <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
+
 
   <header class="header">
     <div class="container headrow atyaf-head-balanced">
@@ -2849,54 +2769,39 @@ window.addEventListener("focus",atyafLoadLowerAds);
 </script>
 <script>
 
-/* ATYAF V12: the only intro renderer. Reads settings.intro, never shows a hard-coded splash. */
+/* ATYAF startup: admin media only; never render a hardcoded brand, color or logo. */
 (function(){
- let timer=null,lastSignature=null,completed=null,closingTimer=null;
- const key='atyaf-intro-v12-seen';
- const number=(v,d,a,b)=>Number.isFinite(+v)?Math.max(a,Math.min(b,+v)):d;
- const color=(v,d)=>/^#[a-f0-9]{3}(?:[a-f0-9]{3})?$/i.test(String(v||''))?v:d;
- const safeUrl=v=>{try{const u=new URL(String(v),location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
- function remove(){clearTimeout(timer);clearTimeout(closingTimer);timer=null;const e=document.getElementById('atyafIntroV12');if(e){e.classList.add('intro-leaving');closingTimer=setTimeout(()=>e.remove(),480)}}
+ let timer=null, closingTimer=null, activeSignature=null, shown=false;
+ const safeUrl=v=>{try{const u=new URL(String(v||''),location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
+ const number=(v,d,min,max)=>Number.isFinite(Number(v))?Math.max(min,Math.min(max,Number(v))):d;
+ function remove(){clearTimeout(timer);clearTimeout(closingTimer);const el=document.getElementById('atyafIntroV12');if(el){el.classList.add('intro-leaving');closingTimer=setTimeout(()=>el.remove(),480)}}
  window.atyafApplyAdminIntroV12=function(raw){
-   // V56 opening animation is the single startup layer, preventing duplicate intro overlays.
-   if(window.atyafV56LaunchPlayed)return;
    let x=raw;if(typeof x==='string'){try{x=JSON.parse(x)}catch{x=null}}
-   if(!x||typeof x!=='object'||x.enabled!==true){lastSignature=null;remove();return}
-   const once=x.showOnce!==false;
-   if(once&&sessionStorage.getItem(key)==='1'){remove();return}
-   const signature=JSON.stringify(x);
-   if(signature===completed || (signature===lastSignature&&document.getElementById('atyafIntroV12')))return;
-   lastSignature=signature;clearTimeout(timer);clearTimeout(closingTimer);
-   document.getElementById('atyafIntroV12')?.remove();
-   const e=document.createElement('section');e.id='atyafIntroV12';e.setAttribute('aria-label','شاشة بداية متجر أطياف');e.setAttribute('role','dialog');e.setAttribute('aria-modal','true');
-   e.dataset.align=['right','left','center'].includes(x.align)?x.align:'center';
-   e.style.background=color(x.backgroundColor,'#17352e');e.style.color=color(x.textColor,'#ffffff');
-   e.style.setProperty('--intro-overlay',color(x.overlayColor,'#102820'));e.style.setProperty('--intro-opacity',number(x.overlayOpacity,45,0,100)/100);
-   e.style.setProperty('--intro-fit',x.mediaFit==='contain'?'contain':'cover');
-   e.style.setProperty('--intro-position',['center','top','bottom'].includes(x.mediaPosition)?x.mediaPosition:'center');
-   e.style.setProperty('--intro-title-size',number(x.titleSize,66,22,110)+'px');
-   e.style.setProperty('--intro-radius',number(x.buttonRadius,12,0,40)+'px');
-   e.style.setProperty('--intro-button',color(x.buttonColor,'#ffffff'));e.style.setProperty('--intro-button-text',color(x.buttonTextColor,'#17352e'));
-   e.style.setProperty('--intro-progress',color(x.accentColor,'#d4aa75'));
-   const duration=number(x.duration,4500,1500,30000);e.style.setProperty('--intro-duration',duration+'ms');
-   const mediaUrl=safeUrl(x.mediaUrl),mediaType=x.mediaType==='video'?'video':'image';
-   if(mediaUrl){const m=document.createElement(mediaType==='video'?'video':'img');m.className='intro-media';m.src=mediaUrl;
-     if(mediaType==='video'){m.autoplay=true;m.muted=true;m.loop=true;m.playsInline=true;m.setAttribute('aria-hidden','true');m.addEventListener('error',()=>m.remove());}
-     else{m.alt='';m.addEventListener('error',()=>m.remove())}e.appendChild(m)}
-   const overlay=document.createElement('div');overlay.className='intro-overlay';e.appendChild(overlay);
-   const body=document.createElement('div');body.className='intro-body';
-   const fonts=['Georgia, serif','Tahoma, Arial, sans-serif','Arial, sans-serif',"'Times New Roman', serif"];
-   body.style.fontFamily=fonts.includes(x.fontFamily)?x.fontFamily:'Tahoma, Arial, sans-serif';
-   const logo=safeUrl(x.logoImage);if(logo){const img=document.createElement('img');img.className='intro-logo';img.src=logo;img.alt='شعار أطياف';body.appendChild(img)}
-   const add=(tag,cls,value)=>{if(!String(value||'').trim())return;const n=document.createElement(tag);n.className=cls;n.textContent=String(value);body.appendChild(n)};
-   add('div','intro-kicker',x.kicker);add('h1','intro-title',x.title);add('p','intro-description',x.description);
-   const finish=()=>{completed=signature;if(once)sessionStorage.setItem(key,'1');remove()};
-   if(x.buttonText){const btn=document.createElement('a');btn.className='intro-cta';btn.textContent=String(x.buttonText);btn.href=safeUrl(x.buttonLink)||'#';
-     btn.addEventListener('click',ev=>{if(btn.getAttribute('href')==='#')ev.preventDefault();finish()});body.appendChild(btn)}
-   e.appendChild(body);
-   if(x.showSkip!==false){const skip=document.createElement('button');skip.type='button';skip.className='intro-skip';skip.textContent=String(x.skipText||'تخطي');skip.onclick=finish;e.appendChild(skip)}
-   if(x.showProgress!==false){const progress=document.createElement('div');progress.className='intro-progress';e.appendChild(progress)}
-   document.body.appendChild(e);timer=setTimeout(finish,duration);
+   // Never replay on settings polling, focus or realtime updates.
+   if(shown)return;
+   if(!x||typeof x!=='object'||x.enabled===false){window.atyafReleaseFirstPaint?.();return}
+   const url=safeUrl(x.mediaUrl)||safeUrl(x.logoImage);
+   if(!url){window.atyafReleaseFirstPaint?.();return}
+   shown=true;
+   activeSignature=JSON.stringify([url,x.mediaType,x.duration,x.mediaFit,x.mediaPosition]);
+   const el=document.createElement('section');el.id='atyafIntroV12';el.setAttribute('aria-label','شاشة بداية متجر أطياف');el.setAttribute('role','status');
+   el.style.background='#fff';
+   el.style.setProperty('--intro-fit',x.mediaFit==='contain'?'contain':'cover');
+   el.style.setProperty('--intro-position',['center','top','bottom'].includes(x.mediaPosition)?x.mediaPosition:'center');
+   const isVideo=x.mediaType==='video' && !!safeUrl(x.mediaUrl);
+   const media=document.createElement(isVideo?'video':'img');media.className='intro-media';
+   media.style.zIndex='0';media.style.objectFit=x.mediaFit==='contain'?'contain':'cover';
+   media.style.objectPosition=['center','top','bottom'].includes(x.mediaPosition)?x.mediaPosition:'center';
+   let done=false;
+   const finish=()=>{if(done)return;done=true;remove()};
+   if(isVideo){media.autoplay=true;media.muted=true;media.playsInline=true;media.loop=false;media.addEventListener('ended',finish,{once:true});media.addEventListener('error',finish,{once:true})}
+   else {media.alt='';media.decoding='async';media.addEventListener('error',finish,{once:true})}
+   media.src=url;el.appendChild(media);
+   document.body.appendChild(el);
+   window.atyafReleaseFirstPaint?.();
+   const duration=number(x.duration,4500,1200,15000);
+   timer=setTimeout(finish,duration);
+   if(isVideo)media.play().catch(finish);
  };
 })();
 

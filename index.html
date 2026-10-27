@@ -6321,68 +6321,68 @@ html[data-atyaf-cart="hide"] .atyaf-quick-bag{display:inline-flex!important}
 </style>
 
 
-<style id="atyaf-v85-bag-visible">
-/* Shopping bag always sits beside the favorite control in the price row. */
-#productGrid .product-info, .atyaf-reference-card .product-info {position:relative!important;min-height:92px!important;padding-bottom:38px!important}
-#productGrid .product-info>.atyaf-quick-bag,
-.atyaf-reference-card .product-info>.atyaf-quick-bag,
-html[data-atyaf-cart="hide"] #productGrid .product-info>.atyaf-quick-bag,
-html[data-atyaf-cart="hide"] .atyaf-reference-card .product-info>.atyaf-quick-bag {
- display:flex!important;position:absolute!important;bottom:7px!important;left:42px!important;right:auto!important;top:auto!important;
- width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;
- align-items:center!important;justify-content:center!important;border:1px solid #d9c9a7!important;
- border-radius:50%!important;background:#fff!important;color:#79766f!important;
- margin:0!important;padding:0!important;opacity:1!important;visibility:visible!important;
- z-index:25!important;box-shadow:0 1px 3px #00000012!important;pointer-events:auto!important;
+
+
+<style id="atyaf-v86-functional-cart-button">
+/* V86: Put the bag INSIDE the actual visible price row, not below a clipped card. */
+#productGrid .product-info>.price,
+.atyaf-reference-card .product-info>.price{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:5px!important;min-height:34px!important;position:relative!important;overflow:visible!important}
+#productGrid .price>.atyaf-quick-bag,
+.atyaf-reference-card .price>.atyaf-quick-bag,
+html[data-atyaf-cart="hide"] .price>.atyaf-quick-bag{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ position:relative!important;inset:auto!important;transform:none!important;
+ flex:0 0 30px!important;width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;
+ padding:0!important;margin:0 4px!important;opacity:1!important;visibility:visible!important;
+ border:1px solid #d8c8a3!important;border-radius:50%!important;
+ background:#fff!important;color:#81796c!important;box-shadow:0 1px 4px #00000012!important;
+ pointer-events:auto!important;z-index:15!important;cursor:pointer!important;
 }
-#productGrid .atyaf-quick-bag svg,.atyaf-reference-card .atyaf-quick-bag svg{width:16px!important;height:16px!important;display:block!important}
-@media(max-width:600px){#productGrid .product-info>.atyaf-quick-bag,.atyaf-reference-card .product-info>.atyaf-quick-bag{left:36px!important}}
+#productGrid .price>.atyaf-quick-bag svg,.atyaf-reference-card .price>.atyaf-quick-bag svg{display:block!important;width:17px!important;height:17px!important;max-width:none!important;flex:none!important}
+#productGrid .price>.atyaf-quick-bag:focus-visible,.atyaf-reference-card .price>.atyaf-quick-bag:focus-visible{outline:2px solid #c69c30!important;outline-offset:2px!important}
+#productGrid .product-info,.atyaf-reference-card .product-info{padding-bottom:9px!important;overflow:visible!important}
+@media(max-width:600px){#productGrid .price>.atyaf-quick-bag,.atyaf-reference-card .price>.atyaf-quick-bag{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;flex-basis:28px!important}}
 </style>
-<script id="atyaf-v85-bag-repair">
+<script id="atyaf-v86-functional-cart-button">
 (()=>{
  'use strict';
  const selector='#productGrid .product[data-product-id], .atyaf-reference-card[data-product-id]';
  const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="8" width="15" height="13" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>';
- function sync(){
+ function update(){
   document.querySelectorAll(selector).forEach(card=>{
-   const info=card.querySelector('.product-info');
-   const id=card.dataset.productId;
-   if(!info||!id)return;
-   const soldOut=/نفدت الكمية/.test(card.querySelector('.tag')?.textContent||'')||!!card.querySelector('.atyaf-cart-action:disabled,.product-actions .btn-primary:disabled');
-   let button=info.querySelector('.atyaf-quick-bag');
-   if(soldOut){if(button)button.remove();return}
-   if(button){
-    // The previous version attached two handlers to some cards. Keep only one.
-    if(button.dataset.v85Ready==='1')return;
-    const replacement=button.cloneNode(true);replacement.removeAttribute('onclick');button.replaceWith(replacement);button=replacement;
-   }else{
-    button=document.createElement('button');button.className='atyaf-quick-bag';button.type='button';button.innerHTML=icon;info.appendChild(button);
-   }
-   button.dataset.v85Ready='1';button.dataset.productId=id;
-   button.setAttribute('aria-label','إضافة إلى السلة');button.title='إضافة إلى السلة';
+   const price=card.querySelector('.product-info>.price');
+   const id=card.getAttribute('data-product-id');
+   if(!price||!id)return;
+   const unavailable=!!card.querySelector('.atyaf-cart-action:disabled,.product-actions .btn-primary:disabled')||/نفدت الكمية/.test(card.querySelector('.atyaf-stock-indicator')?.textContent||'');
+   card.querySelectorAll('.atyaf-quick-bag').forEach(btn=>{if(btn.parentElement!==price||unavailable)btn.remove()});
+   if(unavailable)return;
+   let btn=price.querySelector('.atyaf-quick-bag');
+   if(!btn){btn=document.createElement('button');btn.type='button';btn.className='atyaf-quick-bag';btn.innerHTML=icon;price.appendChild(btn)}
+   btn.removeAttribute('onclick');btn.dataset.cartProductId=id;
+   btn.title='إضافة إلى السلة';btn.setAttribute('aria-label','إضافة إلى السلة');
   });
  }
- document.addEventListener('click',e=>{
-  const button=e.target.closest('.atyaf-quick-bag[data-v85-ready="1"]');
-  if(!button||button.disabled)return;
-  e.preventDefault();e.stopPropagation();
-  const id=button.dataset.productId;
+ document.addEventListener('click',async event=>{
+  const btn=event.target.closest('.price>.atyaf-quick-bag[data-cart-product-id]');
+  if(!btn||btn.disabled)return;
+  event.preventDefault();event.stopImmediatePropagation();
   if(typeof window.addCart!=='function'){
-   console.error('ATYAF: addCart is unavailable');
-   if(typeof window.showMessage==='function')window.showMessage('تعذر الإضافة','يرجى تحديث الصفحة والمحاولة مجدداً');
+   console.error('ATYAF V86: original addCart function is not available');
+   if(typeof window.showMessage==='function')window.showMessage('تعذر إضافة المنتج','يرجى إعادة تحميل الصفحة');
    return;
   }
-  button.disabled=true;
-  Promise.resolve().then(()=>window.addCart(id)).catch(err=>{
-   console.error('ATYAF: failed to add product to cart',err);
-   if(typeof window.showMessage==='function')window.showMessage('تعذر الإضافة','يرجى المحاولة مرة أخرى');
-  }).finally(()=>{if(button.isConnected)button.disabled=false});
+  btn.disabled=true;
+  try{await window.addCart(btn.dataset.cartProductId)}
+  catch(error){console.error('ATYAF V86 cart error:',error);if(typeof window.showMessage==='function')window.showMessage('تعذر الإضافة','يرجى المحاولة مجددًا')}
+  finally{if(btn.isConnected)btn.disabled=false}
  },true);
- let scheduled=false;
- function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;sync()})}
- function start(){sync();new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true})}
+ let queued=false;
+ function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;update()})}
+ function start(){update();const observer=new MutationObserver(records=>{if(records.some(r=>r.type==='childList'&&[...r.addedNodes].some(n=>n.nodeType===1&&(n.matches?.(selector)||n.querySelector?.(selector)))))schedule()});observer.observe(document.body,{subtree:true,childList:true});window.addEventListener('atyaf:products-rendered',schedule)}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
 </body>
 </html>
+
+

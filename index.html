@@ -3783,7 +3783,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </style>
 
 <style id="atyaf-product-actions-authoritative">
-html[data-atyaf-cart="hide"] .atyaf-cart-action,html[data-atyaf-cart="hide"] [onclick*="addCart("]{display:none!important}
+html[data-atyaf-cart="hide"] .atyaf-cart-action{display:none!important}
 html[data-atyaf-gift="hide"] .atyaf-gift-action,html[data-atyaf-gift="hide"] [onclick*="buyAsGift("]{display:none!important}
 </style>
 <script id="atyaf-product-actions-authoritative-js">
@@ -6288,7 +6288,7 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 #productGrid .atyaf-quick-bag svg, .atyaf-reference-card .atyaf-quick-bag svg{width:17px!important;height:17px!important;display:block!important}
 .atyaf-quick-bag:hover{color:#b28a30!important;border-color:#b28a30!important}
 .atyaf-quick-bag:focus-visible{outline:2px solid #b28a30!important;outline-offset:3px}
-html[data-atyaf-cart="hide"] .atyaf-quick-bag{display:none!important}
+html[data-atyaf-cart="hide"] .atyaf-quick-bag{display:inline-flex!important}
 </style>
 
 <style id="atyaf-v84-reference-bag-fix">
@@ -6319,39 +6319,68 @@ html[data-atyaf-cart="hide"] .atyaf-quick-bag{display:none!important}
  #atyafScentResultGrid .atyaf-reference-card .atyaf-quick-bag{left:37px!important;bottom:7px!important;width:28px!important;height:28px!important;min-width:28px!important}
 }
 </style>
-<script id="atyaf-v84-reference-bag-js">
+
+
+<style id="atyaf-v85-bag-visible">
+/* Shopping bag always sits beside the favorite control in the price row. */
+#productGrid .product-info, .atyaf-reference-card .product-info {position:relative!important;min-height:92px!important;padding-bottom:38px!important}
+#productGrid .product-info>.atyaf-quick-bag,
+.atyaf-reference-card .product-info>.atyaf-quick-bag,
+html[data-atyaf-cart="hide"] #productGrid .product-info>.atyaf-quick-bag,
+html[data-atyaf-cart="hide"] .atyaf-reference-card .product-info>.atyaf-quick-bag {
+ display:flex!important;position:absolute!important;bottom:7px!important;left:42px!important;right:auto!important;top:auto!important;
+ width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;
+ align-items:center!important;justify-content:center!important;border:1px solid #d9c9a7!important;
+ border-radius:50%!important;background:#fff!important;color:#79766f!important;
+ margin:0!important;padding:0!important;opacity:1!important;visibility:visible!important;
+ z-index:25!important;box-shadow:0 1px 3px #00000012!important;pointer-events:auto!important;
+}
+#productGrid .atyaf-quick-bag svg,.atyaf-reference-card .atyaf-quick-bag svg{width:16px!important;height:16px!important;display:block!important}
+@media(max-width:600px){#productGrid .product-info>.atyaf-quick-bag,.atyaf-reference-card .product-info>.atyaf-quick-bag{left:36px!important}}
+</style>
+<script id="atyaf-v85-bag-repair">
 (()=>{
  'use strict';
- const selector='#atyafBrandProductSections .atyaf-reference-card, #atyafFeaturedHome .atyaf-reference-card, #atyafScentResultGrid .atyaf-reference-card';
- const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="8" width="15" height="13" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>';
- function update(){
+ const selector='#productGrid .product[data-product-id], .atyaf-reference-card[data-product-id]';
+ const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="8" width="15" height="13" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>';
+ function sync(){
   document.querySelectorAll(selector).forEach(card=>{
    const info=card.querySelector('.product-info');
    const id=card.dataset.productId;
-   if(!info||!id||info.querySelector('.atyaf-quick-bag'))return;
-   const button=document.createElement('button');
-   button.type='button';button.className='atyaf-quick-bag';
+   if(!info||!id)return;
+   const soldOut=/نفدت الكمية/.test(card.querySelector('.tag')?.textContent||'')||!!card.querySelector('.atyaf-cart-action:disabled,.product-actions .btn-primary:disabled');
+   let button=info.querySelector('.atyaf-quick-bag');
+   if(soldOut){if(button)button.remove();return}
+   if(button){
+    // The previous version attached two handlers to some cards. Keep only one.
+    if(button.dataset.v85Ready==='1')return;
+    const replacement=button.cloneNode(true);replacement.removeAttribute('onclick');button.replaceWith(replacement);button=replacement;
+   }else{
+    button=document.createElement('button');button.className='atyaf-quick-bag';button.type='button';button.innerHTML=icon;info.appendChild(button);
+   }
+   button.dataset.v85Ready='1';button.dataset.productId=id;
    button.setAttribute('aria-label','إضافة إلى السلة');button.title='إضافة إلى السلة';
-   button.dataset.productId=id;button.innerHTML=icon;
-   const soldOut=!!card.querySelector('.atyaf-cart-action:disabled,.product-actions .btn-primary:disabled') || /نفدت الكمية/.test(card.querySelector('.tag')?.textContent||'');
-   button.disabled=soldOut;
-   info.appendChild(button);
   });
  }
- let pending=false;
- function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;update()})}
- document.addEventListener('click',event=>{
-  const button=event.target.closest('.atyaf-reference-card .atyaf-quick-bag');
+ document.addEventListener('click',e=>{
+  const button=e.target.closest('.atyaf-quick-bag[data-v85-ready="1"]');
   if(!button||button.disabled)return;
-  event.preventDefault();event.stopPropagation();
-  if(typeof window.addCart==='function'){
-   Promise.resolve(window.addCart(button.dataset.productId)).catch(err=>console.error('ATYAF add to cart failed:',err));
-  }else{
+  e.preventDefault();e.stopPropagation();
+  const id=button.dataset.productId;
+  if(typeof window.addCart!=='function'){
    console.error('ATYAF: addCart is unavailable');
    if(typeof window.showMessage==='function')window.showMessage('تعذر الإضافة','يرجى تحديث الصفحة والمحاولة مجدداً');
+   return;
   }
- });
- function start(){update();const root=document.querySelector('#store')||document.body;new MutationObserver(schedule).observe(root,{childList:true,subtree:true})}
+  button.disabled=true;
+  Promise.resolve().then(()=>window.addCart(id)).catch(err=>{
+   console.error('ATYAF: failed to add product to cart',err);
+   if(typeof window.showMessage==='function')window.showMessage('تعذر الإضافة','يرجى المحاولة مرة أخرى');
+  }).finally(()=>{if(button.isConnected)button.disabled=false});
+ },true);
+ let scheduled=false;
+ function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;sync()})}
+ function start(){sync();new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true})}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>

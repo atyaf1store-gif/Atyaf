@@ -6445,7 +6445,52 @@ html body .atyaf-v88-bag{display:none!important}
 <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 .8A15.1 15.1 0 0 0 3 23.5L.9 31l7.7-2A15.2 15.2 0 1 0 16 .8Zm0 27.6a12.3 12.3 0 0 1-6.3-1.7l-.5-.3-4.6 1.2 1.2-4.5-.3-.5A12.4 12.4 0 1 1 16 28.4Zm6.8-9.3c-.4-.2-2.2-1.1-2.6-1.2-.3-.1-.6-.2-.8.2-.2.3-1 1.2-1.2 1.4-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8l.6-.7.4-.6c.1-.2.1-.5 0-.7l-1.2-2.8c-.3-.7-.6-.6-.8-.6h-.7c-.3 0-.7.1-1 .5s-1.3 1.3-1.3 3.1 1.3 3.3 1.6 3.5 3.9 5.5 5.5 2.2 1.8 3.2 2.1c1.3.4 2.5.3 3.5.2 1.1-.2 2.2-1.1 2.5-2.2.3-1.1.3-2 .2-2.2-.1-.2-.3-.3-.7-.5Z"/></svg>
 </a>
 
+
+<!-- V91: compact, evenly aligned mobile navigation; circular Trending; smaller WhatsApp -->
+<style id="atyaf-v91-compact-navigation">
+@media (max-width:767px) {
+ html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
+  height:calc(62px + env(safe-area-inset-bottom,0px))!important;
+  min-height:62px!important;
+  padding:3px 4px calc(5px + env(safe-area-inset-bottom,0px))!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  align-items:center!important;
+ }
+ html body #atyafMobileBottomNav .atyaf-bottom-tab {
+  height:52px!important;min-height:52px!important;
+  gap:3px!important;padding:1px 0!important;
+  justify-content:center!important;
+ }
+ html body #atyafMobileBottomNav .atyaf-bottom-tab > svg {
+  width:21px!important;height:21px!important;
+  min-width:21px!important;min-height:21px!important;
+  padding:0!important;flex-shrink:0!important;
+ }
+ html body #atyafMobileBottomNav .atyaf-bottom-tab > span {
+  font-size:10px!important;line-height:13px!important;font-weight:600!important;
+  letter-spacing:0!important;
+ }
+ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] {
+  gap:3px!important;
+ }
+ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > svg {
+  box-sizing:border-box!important;width:36px!important;height:36px!important;
+  min-width:36px!important;min-height:36px!important;
+  padding:9px!important;border-radius:50%!important;
+  background:#201b18!important;color:#e3b438!important;stroke:#e3b438!important;
+ }
+ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > span {
+  font-size:10px!important;line-height:12px!important;
+ }
+ html body #atyafV90WhatsApp {
+  width:48px!important;height:48px!important;
+  left:12px!important;bottom:calc(83px + env(safe-area-inset-bottom,0px))!important;
+  box-shadow:0 4px 12px rgba(0,0,0,.16)!important;
+ }
+ html body #atyafV90WhatsApp svg {width:27px!important;height:27px!important}
+ html body main#store {padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))!important}
+}
+</style>
+
 </body>
 </html>
-
-

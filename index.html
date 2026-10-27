@@ -1895,16 +1895,16 @@ body{padding-bottom:65px!important}
 
 </head>
 <body>
-  <!-- V92: Full-screen opening artwork controlled by settings.intro. -->
+  <!-- V93: Intro media uses dedicated mediaUrl; logoImage stays a logo. -->
   <div id="atyafLaunchV56" role="status" aria-label="جاري فتح متجر أطياف">
     <div class="atyaf-launch-mark" aria-hidden="true"><span class="atyaf-launch-en">ATYAF</span><span class="atyaf-launch-tile">✦</span><span class="atyaf-launch-ar">أطياف</span></div>
   </div>
   <style id="atyaf-v92-intro-fullscreen-css">
-    #atyafLaunchV56{background:#17352e!important;isolation:isolate}
+    #atyafLaunchV56{background:#f7f3eb;isolation:isolate}
     #atyafLaunchV56 .atyaf-launch-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
     #atyafLaunchV56 .atyaf-launch-mark{position:relative;z-index:1}
     #atyafLaunchV56.atyaf-has-cover .atyaf-launch-mark{display:none!important}
-    #atyafLaunchV56 .atyaf-launch-en,#atyafLaunchV56 .atyaf-launch-ar{color:#fff}
+    #atyafLaunchV56 .atyaf-launch-en,#atyafLaunchV56 .atyaf-launch-ar{color:#28241d}
     #atyafLaunchV56 .atyaf-launch-shade{position:absolute;inset:0;z-index:0;pointer-events:none}
   </style>
   <script id="atyaf-v92-launch-js">
@@ -1936,9 +1936,9 @@ body{padding-bottom:65px!important}
       try{
         const cfg=await load();
         if(finished)return;
-        const bg=hex(cfg.backgroundColor);if(bg)el.style.setProperty('background',bg,'important');
-        // A dedicated background image takes priority. Legacy logoImage also fills the whole screen.
-        const artwork=safeUrl(cfg.mediaUrl)||safeUrl(cfg.logoImage);
+        const bg=hex(cfg.backgroundColor);if(bg)el.style.backgroundColor=bg;
+        // Full-screen media is independent from the small centered logo. Never stretch logoImage.
+        const artwork=safeUrl(cfg.mediaUrl);
         if(artwork){
           const isVideo=cfg.mediaType==='video'&&!!safeUrl(cfg.mediaUrl);
           if(isVideo){
@@ -6505,3 +6505,5 @@ html body .atyaf-v88-bag{display:none!important}
 
 </body>
 </html>
+
+

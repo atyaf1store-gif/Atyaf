@@ -1895,61 +1895,72 @@ body{padding-bottom:65px!important}
 
 </head>
 <body>
-  <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
-  <div id="atyafLaunchV56" aria-label="جاري فتح متجر أطياف" role="status">
-    <div class="atyaf-launch-mark"><span class="atyaf-launch-en">ATYAF</span><span class="atyaf-launch-tile" id="atyafLaunchV56Logo">✦</span><span class="atyaf-launch-ar">أطياف</span></div>
+  <!-- V92: Full-screen opening artwork controlled by settings.intro. -->
+  <div id="atyafLaunchV56" role="status" aria-label="جاري فتح متجر أطياف">
+    <div class="atyaf-launch-mark" aria-hidden="true"><span class="atyaf-launch-en">ATYAF</span><span class="atyaf-launch-tile">✦</span><span class="atyaf-launch-ar">أطياف</span></div>
   </div>
-  <script id="atyaf-v56-launch-js">
+  <style id="atyaf-v92-intro-fullscreen-css">
+    #atyafLaunchV56{background:#17352e!important;isolation:isolate}
+    #atyafLaunchV56 .atyaf-launch-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
+    #atyafLaunchV56 .atyaf-launch-mark{position:relative;z-index:1}
+    #atyafLaunchV56.atyaf-has-cover .atyaf-launch-mark{display:none!important}
+    #atyafLaunchV56 .atyaf-launch-en,#atyafLaunchV56 .atyaf-launch-ar{color:#fff}
+    #atyafLaunchV56 .atyaf-launch-shade{position:absolute;inset:0;z-index:0;pointer-events:none}
+  </style>
+  <script id="atyaf-v92-launch-js">
   (function(){
+    'use strict';
     const el=document.getElementById('atyafLaunchV56');if(!el)return;
     window.atyafV56LaunchPlayed=true;
-    const tile=document.getElementById('atyafLaunchV56Logo');
-    let finished=false,closing=false;
-    const finish=()=>{if(finished)return;finished=true;window.atyafReleaseFirstPaint?.();el.classList.add('atyaf-launch-done');setTimeout(()=>el.remove(),460)};
-    const startAnimation=()=>{
-      if(closing||finished)return;closing=true;
-      el.classList.add('atyaf-launch-ready');
-      const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-      setTimeout(finish,reduced?480:2200);
+    const controller=new AbortController();let finished=false;
+    const finish=()=>{if(finished)return;finished=true;controller.abort();window.atyafReleaseFirstPaint?.();el.classList.add('atyaf-launch-done');setTimeout(()=>el.remove(),480)};
+    const BASE='https://zgvkiqoxmtifuvgcmrqc.supabase.co';
+    const ANON='sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl';
+    const safeUrl=value=>{try{const u=new URL(String(value||''),location.href);return /^https?:$/.test(u.protocol)?u.href:''}catch{return ''}};
+    const hex=value=>/^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(value||''))?value:null;
+    const load=async()=>{
+      const url=BASE+'/rest/v1/settings?key=eq.intro&select=value,updated_at,id&order=updated_at.desc,id.desc&limit=1';
+      const response=await fetch(url,{headers:{apikey:ANON,Authorization:'Bearer '+ANON},cache:'no-store',signal:controller.signal});
+      if(!response.ok)throw Error('Intro settings: '+response.status);
+      let value=(await response.json())?.[0]?.value;
+      if(typeof value==='string')value=JSON.parse(value);
+      return value&&typeof value==='object'?value:{};
     };
-    function valueOf(row){let v=row?.value;if(typeof v==='string'){try{v=JSON.parse(v)}catch{return null}}return v&&typeof v==='object'?v:null}
-    function safeImage(url){try{const u=new URL(String(url||''),location.href);return /^https?:$/.test(u.protocol)?u.href:''}catch{return ''}}
-    async function loadSettings(key){
-      const endpoint=BASE+'/rest/v1/settings?key=eq.'+encodeURIComponent(key)+'&select=value,updated_at,id&order=updated_at.desc,id.desc&limit=1';
-      const response=await fetch(endpoint,{headers:{apikey:ANON,Authorization:'Bearer '+ANON},cache:'no-store',signal:controller.signal});
-      if(!response.ok)throw new Error('Settings '+key+': HTTP '+response.status);
-      return valueOf((await response.json())?.[0]);
-    }
-    async function showImage(url){
-      const safe=safeImage(url);if(!safe)return false;
-      const image=new Image();image.alt='شعار شاشة البداية';image.decoding='async';image.src=safe;
-      try{await Promise.race([image.decode(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('image timeout')),2600))]);
-        if(finished)return false;tile.replaceChildren(image);return true;
-      }catch{return false}
-    }
-    const controller=new AbortController();
-    const BASE='https://zgvkiqoxmtifuvgcmrqc.supabase.co', ANON='sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl';
-    // The admin saves startup artwork under settings.intro.logoImage, not under the header profile.
-    // Read it before running the entrance motion; only fall back to the header logo if intro has none.
+    const preload=src=>new Promise(resolve=>{
+      const img=new Image();let done=false;
+      const end=ok=>{if(done)return;done=true;resolve(ok)};
+      img.onload=()=>end(true);img.onerror=()=>end(false);img.src=src;
+      setTimeout(()=>end(false),2600);
+    });
     (async()=>{
       try{
-        const intro=await loadSettings('intro');
-        const introLogo=safeImage(intro?.logoImage);
-        let success=introLogo?await showImage(introLogo):false;
-        if(!success){const profile=await loadSettings('profile');success=await showImage(profile?.logoImage)}
-        if(!success)tile.replaceChildren(); // no misleading star or fabricated logo
-        if(intro?.backgroundColor && /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(intro.backgroundColor))el.style.background=intro.backgroundColor;
-      }catch(error){
-        console.warn('ATYAF startup logo unavailable:',error);
-        tile.replaceChildren();
-      }finally{startAnimation()}
+        const cfg=await load();
+        if(finished)return;
+        const bg=hex(cfg.backgroundColor);if(bg)el.style.setProperty('background',bg,'important');
+        // A dedicated background image takes priority. Legacy logoImage also fills the whole screen.
+        const artwork=safeUrl(cfg.mediaUrl)||safeUrl(cfg.logoImage);
+        if(artwork){
+          const isVideo=cfg.mediaType==='video'&&!!safeUrl(cfg.mediaUrl);
+          if(isVideo){
+            const video=document.createElement('video');video.className='atyaf-launch-cover';
+            video.src=artwork;video.muted=true;video.autoplay=true;video.playsInline=true;video.loop=true;
+            video.addEventListener('loadeddata',()=>{if(!finished)el.classList.add('atyaf-has-cover')},{once:true});
+            video.addEventListener('error',()=>video.remove(),{once:true});el.prepend(video);
+            video.play().catch(()=>{});
+          }else if(await preload(artwork)&&!finished){
+            const img=document.createElement('img');img.className='atyaf-launch-cover';img.alt='';img.src=artwork;
+            img.style.objectFit=cfg.mediaFit==='contain'?'contain':'cover';
+            img.style.objectPosition=['top','bottom','center'].includes(cfg.mediaPosition)?cfg.mediaPosition:'center';
+            el.prepend(img);el.classList.add('atyaf-has-cover');
+          }
+        }
+        const delay=Number.isFinite(Number(cfg.duration))?Math.max(900,Math.min(7000,Number(cfg.duration))):2200;
+        setTimeout(finish,delay);
+      }catch(error){console.warn('ATYAF intro fallback:',error);setTimeout(finish,900)}
     })();
-    // Never strand visitors behind the splash if network / image loading hangs.
-    setTimeout(()=>{controller.abort();startAnimation()},5400);
     setTimeout(finish,8500);
   })();
   </script>
-
 
   <header class="header">
     <div class="container headrow atyaf-head-balanced">

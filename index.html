@@ -6323,25 +6323,42 @@ html[data-atyaf-cart="hide"] .atyaf-quick-bag{display:inline-flex!important}
 
 
 
-<style id="atyaf-v88-cart-corner">
-/* V88: attach cart control to card, independent of price and info layout. */
-html body .product[data-product-id],html body .atyaf-reference-card[data-product-id]{position:relative!important}
-html body .product[data-product-id] > .atyaf-v88-bag,html body .atyaf-reference-card[data-product-id] > .atyaf-v88-bag{
- position:absolute!important;inset:auto auto 9px 9px!important;display:flex!important;align-items:center!important;justify-content:center!important;
- width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;box-sizing:border-box!important;
- padding:0!important;margin:0!important;border:1px solid #d7c8a8!important;border-radius:50%!important;
- background:#fff!important;color:#7d786d!important;opacity:1!important;visibility:visible!important;
- transform:none!important;pointer-events:auto!important;z-index:60!important;box-shadow:0 1px 3px #00000018!important;
- cursor:pointer!important;-webkit-appearance:none!important;appearance:none!important
+<style id="atyaf-v89-cart-aligned">
+/* One cart button inside each product information panel, never floating over navigation. */
+html body .product[data-product-id]>.product-info,
+html body .atyaf-reference-card[data-product-id]>.product-info{
+  position:relative!important;
+  padding-bottom:12px!important;
+  min-height:105px!important;
 }
-html body .atyaf-v88-bag svg{width:17px!important;height:17px!important;display:block!important}
-html body .product[data-product-id] > .product-info,html body .atyaf-reference-card[data-product-id] > .product-info{padding-bottom:42px!important}
-html body .product[data-product-id] > .product-info > .price,html body .atyaf-reference-card[data-product-id] > .product-info > .price{padding-left:35px!important}
-html body .product[data-product-id] .atyaf-quick-bag{display:none!important}
-html body .atyaf-v88-bag:focus-visible{outline:2px solid #c99b26!important;outline-offset:2px!important}
-html body .atyaf-v88-bag:disabled{opacity:.55!important;cursor:wait!important}
+html body .product-info>.atyaf-v89-bag{
+  position:absolute!important;left:9px!important;right:auto!important;bottom:9px!important;top:auto!important;
+  display:grid!important;place-items:center!important;
+  width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;
+  margin:0!important;padding:0!important;box-sizing:border-box!important;
+  border:1px solid #d7c8a8!important;border-radius:50%!important;
+  background:#fff!important;color:#77746c!important;box-shadow:0 1px 4px #00000012!important;
+  opacity:1!important;visibility:visible!important;transform:none!important;z-index:3!important;
+  cursor:pointer!important;appearance:none!important;
+}
+html body .product-info>.atyaf-v89-bag svg{display:block!important;width:17px!important;height:17px!important;max-width:17px!important}
+html body .product-info>.atyaf-v89-bag:focus-visible{outline:2px solid #c99b26!important;outline-offset:2px!important}
+html body .product-info>.atyaf-v89-bag:disabled{opacity:.5!important;cursor:wait!important}
+/* Reserve horizontal space for the price; keep the control in the same row. */
+html body .product[data-product-id]>.product-info>.price,
+html body .atyaf-reference-card[data-product-id]>.product-info>.price{
+  padding-left:37px!important;min-height:32px!important;
+}
+/* Legacy injected and inline buttons are replaced by the single V89 control. */
+html body .product[data-product-id] .atyaf-quick-bag,
+html body .atyaf-reference-card[data-product-id] .atyaf-quick-bag,
+html body .atyaf-v88-bag{display:none!important}
+@media(max-width:600px){
+ html body .product-info>.atyaf-v89-bag{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;left:8px!important;bottom:8px!important}
+ html body .product-info>.atyaf-v89-bag svg{width:16px!important;height:16px!important}
+}
 </style>
-<script id="atyaf-v88-cart-corner">
+<script id="atyaf-v89-cart-aligned">
 (()=>{
  'use strict';
  const selector='.product[data-product-id],.atyaf-reference-card[data-product-id]';
@@ -6349,26 +6366,32 @@ html body .atyaf-v88-bag:disabled{opacity:.55!important;cursor:wait!important}
  function refresh(){
   document.querySelectorAll(selector).forEach(card=>{
    const id=card.getAttribute('data-product-id');
-   if(!id||!card.querySelector('.product-info'))return;
+   const info=Array.from(card.children).find(el=>el.classList.contains('product-info'));
+   if(!id||!info)return;
    const soldOut=!!card.querySelector('.atyaf-cart-action:disabled,.product-actions .btn-primary:disabled')||/نفدت الكمية/.test(card.querySelector('.atyaf-stock-indicator')?.textContent||'');
-   let bag=Array.from(card.children).find(el=>el.classList?.contains('atyaf-v88-bag'));
-   if(soldOut){bag?.remove();return}
-   if(!bag){bag=document.createElement('button');bag.type='button';bag.className='atyaf-v88-bag';bag.innerHTML=icon;card.appendChild(bag)}
-   bag.dataset.cartProductId=id;bag.setAttribute('aria-label','إضافة إلى السلة');bag.title='إضافة إلى السلة';
+   card.querySelectorAll(':scope > .atyaf-v88-bag, :scope > .atyaf-v89-bag').forEach(el=>el.remove());
+   let bag=info.querySelector(':scope > .atyaf-v89-bag');
+   if(soldOut){bag?.remove();return;}
+   if(!bag){bag=document.createElement('button');bag.type='button';bag.className='atyaf-v89-bag';bag.innerHTML=icon;info.appendChild(bag);}
+   bag.dataset.cartProductId=id;
+   bag.setAttribute('aria-label','إضافة إلى السلة');bag.title='إضافة إلى السلة';
   });
  }
  let pending=false;
- function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;refresh()})}
+ function schedule(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;refresh();});}
  document.addEventListener('click',async event=>{
-  const bag=event.target.closest('.atyaf-v88-bag[data-cart-product-id]');if(!bag||bag.disabled)return;
+  const bag=event.target.closest('.atyaf-v89-bag[data-cart-product-id]');
+  if(!bag||bag.disabled)return;
   event.preventDefault();event.stopImmediatePropagation();
-  if(typeof window.addCart!=='function'){console.error('ATYAF V88: cart handler missing');return}
+  if(typeof window.addCart!=='function'){console.error('ATYAF: addCart is unavailable');return;}
   bag.disabled=true;
-  try{await window.addCart(bag.dataset.cartProductId)}catch(err){console.error('ATYAF V88 cart error',err)}finally{if(bag.isConnected)bag.disabled=false}
+  try{await window.addCart(bag.dataset.cartProductId)}catch(err){console.error('ATYAF cart:',err)}finally{if(bag.isConnected)bag.disabled=false;}
  },true);
  function init(){refresh();new MutationObserver(records=>{
   if(records.some(r=>Array.from(r.addedNodes).some(n=>n.nodeType===1&&(n.matches?.(selector)||n.querySelector?.(selector)))))schedule();
- }).observe(document.body,{childList:true,subtree:true});window.addEventListener('atyaf:products-rendered',schedule)}
+ }).observe(document.body,{childList:true,subtree:true});
+ window.addEventListener('atyaf:products-rendered',schedule);
+ }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>

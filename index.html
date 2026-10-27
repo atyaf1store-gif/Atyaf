@@ -1884,6 +1884,18 @@ body{padding-bottom:65px!important}
 }
 </style>
 
+<style id="atyaf-cinematic-intro-v92">
+/* Isolated splash styling. Does not modify the header, hero, product cards or navigation. */
+#atyafIntroV12.atyaf-cinematic-intro{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;z-index:2147483000!important;overflow:hidden!important;display:block!important;opacity:1!important;transition:opacity .5s ease!important;isolation:isolate!important}
+#atyafIntroV12.atyaf-cinematic-intro.intro-leaving{opacity:0!important;pointer-events:none!important}
+#atyafIntroV12.atyaf-cinematic-intro .intro-media{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;z-index:0!important;display:block!important;opacity:0;transform:scale(1.045);transition:opacity .65s ease,transform var(--cinematic-duration,4500ms) cubic-bezier(.2,.6,.3,1)!important}
+#atyafIntroV12.atyaf-cinematic-intro.intro-ready .intro-media{opacity:1;transform:scale(1)}
+#atyafIntroV12 .atyaf-cinematic-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,.08);z-index:2}
+#atyafIntroV12 .atyaf-cinematic-progress:after{content:"";display:block;width:100%;height:100%;background:#c9a45a;transform-origin:left;animation:atyafCinematicProgress var(--cinematic-duration,4500ms) linear both}
+#atyafIntroV12 .atyaf-cinematic-skip{position:absolute;z-index:3;top:calc(18px + env(safe-area-inset-top,0px));left:18px;padding:8px 16px;border-radius:999px;background:rgba(15,20,19,.48);border:1px solid rgba(255,255,255,.5);color:white;font:600 12px Tahoma,Arial,sans-serif;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+@keyframes atyafCinematicProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-cinematic-intro .intro-media{transform:none!important;transition:opacity .2s ease!important}#atyafIntroV12 .atyaf-cinematic-progress:after{animation:none!important}}
+</style>
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -2769,40 +2781,48 @@ window.addEventListener("focus",atyafLoadLowerAds);
 </script>
 <script>
 
-/* ATYAF startup: admin media only; never render a hardcoded brand, color or logo. */
+/* ATYAF cinematic startup — media is supplied exclusively by admin settings. */
 (function(){
- let timer=null, closingTimer=null, activeSignature=null, shown=false;
- const safeUrl=v=>{try{const u=new URL(String(v||''),location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
- const number=(v,d,min,max)=>Number.isFinite(Number(v))?Math.max(min,Math.min(max,Number(v))):d;
- function remove(){clearTimeout(timer);clearTimeout(closingTimer);const el=document.getElementById('atyafIntroV12');if(el){el.classList.add('intro-leaving');closingTimer=setTimeout(()=>el.remove(),480)}}
- window.atyafApplyAdminIntroV12=function(raw){
-   let x=raw;if(typeof x==='string'){try{x=JSON.parse(x)}catch{x=null}}
-   // Never replay on settings polling, focus or realtime updates.
-   if(shown)return;
-   if(!x||typeof x!=='object'||x.enabled===false){window.atyafReleaseFirstPaint?.();return}
-   const url=safeUrl(x.mediaUrl)||safeUrl(x.logoImage);
-   if(!url){window.atyafReleaseFirstPaint?.();return}
-   shown=true;
-   activeSignature=JSON.stringify([url,x.mediaType,x.duration,x.mediaFit,x.mediaPosition]);
-   const el=document.createElement('section');el.id='atyafIntroV12';el.setAttribute('aria-label','شاشة بداية متجر أطياف');el.setAttribute('role','status');
-   el.style.background='#fff';
-   el.style.setProperty('--intro-fit',x.mediaFit==='contain'?'contain':'cover');
-   el.style.setProperty('--intro-position',['center','top','bottom'].includes(x.mediaPosition)?x.mediaPosition:'center');
-   const isVideo=x.mediaType==='video' && !!safeUrl(x.mediaUrl);
-   const media=document.createElement(isVideo?'video':'img');media.className='intro-media';
-   media.style.zIndex='0';media.style.objectFit=x.mediaFit==='contain'?'contain':'cover';
-   media.style.objectPosition=['center','top','bottom'].includes(x.mediaPosition)?x.mediaPosition:'center';
-   let done=false;
-   const finish=()=>{if(done)return;done=true;remove()};
-   if(isVideo){media.autoplay=true;media.muted=true;media.playsInline=true;media.loop=false;media.addEventListener('ended',finish,{once:true});media.addEventListener('error',finish,{once:true})}
-   else {media.alt='';media.decoding='async';media.addEventListener('error',finish,{once:true})}
-   media.src=url;el.appendChild(media);
-   document.body.appendChild(el);
-   window.atyafReleaseFirstPaint?.();
-   const duration=number(x.duration,4500,1200,15000);
-   timer=setTimeout(finish,duration);
-   if(isVideo)media.play().catch(finish);
- };
+  let started=false, timer=null;
+  const safeUrl=value=>{try{const u=new URL(String(value||''),location.href);return /^(https?:)$/.test(u.protocol)?u.href:''}catch{return ''}};
+  const durationOf=value=>{const n=Number(value);return Number.isFinite(n)?Math.min(15000,Math.max(1500,n)):4500};
+  window.atyafApplyAdminIntroV12=function(raw){
+    if(started)return;
+    let config=raw;
+    if(typeof config==='string'){try{config=JSON.parse(config)}catch{config=null}}
+    if(!config||typeof config!=='object'||config.enabled===false){window.atyafReleaseFirstPaint?.();return}
+    const url=safeUrl(config.mediaUrl)||safeUrl(config.logoImage);
+    if(!url){window.atyafReleaseFirstPaint?.();return}
+    started=true;
+    const isVideo=config.mediaType==='video' && Boolean(safeUrl(config.mediaUrl));
+    const root=document.createElement('section');
+    root.id='atyafIntroV12';root.className='atyaf-cinematic-intro';
+    root.setAttribute('aria-label','شاشة بداية المتجر');root.setAttribute('aria-busy','true');
+    const media=document.createElement(isVideo?'video':'img');
+    media.className='intro-media';
+    media.style.objectFit=config.mediaFit==='contain'?'contain':'cover';
+    media.style.objectPosition=['top','center','bottom'].includes(config.mediaPosition)?config.mediaPosition:'center';
+    if(isVideo){media.muted=true;media.autoplay=true;media.playsInline=true;media.preload='auto';media.loop=false}
+    else{media.alt='';media.decoding='async'}
+    const progress=document.createElement('div');progress.className='atyaf-cinematic-progress';progress.setAttribute('aria-hidden','true');
+    const close=document.createElement('button');close.type='button';close.className='atyaf-cinematic-skip';close.textContent='تخطي';close.setAttribute('aria-label','تخطي شاشة البداية');
+    root.append(media,progress,close);
+    let ended=false;
+    function finish(){if(ended)return;ended=true;clearTimeout(timer);root.classList.add('intro-leaving');root.setAttribute('aria-busy','false');setTimeout(()=>root.remove(),550)}
+    close.addEventListener('click',finish);
+    media.addEventListener('error',finish,{once:true});
+    if(isVideo)media.addEventListener('ended',finish,{once:true});
+    const duration=durationOf(config.duration);
+    root.style.setProperty('--cinematic-duration',duration+'ms');
+    // Respect the actual uploaded image: no fixed logo, title, or background artwork.
+    root.style.background=config.backgroundColor||'#fffdfa';
+    document.body.appendChild(root);
+    media.src=url;
+    window.atyafReleaseFirstPaint?.();
+    requestAnimationFrame(()=>root.classList.add('intro-ready'));
+    timer=setTimeout(finish,duration);
+    if(isVideo)media.play().catch(finish);
+  };
 })();
 
 /* ATYAAF ADMIN <-> STORE FULL SETTINGS BRIDGE START */

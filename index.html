@@ -1896,69 +1896,66 @@ body{padding-bottom:65px!important}
 </head>
 <body>
   <!-- V93: Intro media uses dedicated mediaUrl; logoImage stays a logo. -->
-  <div id="atyafLaunchV56" role="status" aria-label="جاري فتح متجر أطياف">
-    <div class="atyaf-launch-mark" aria-hidden="true"><span class="atyaf-launch-en">ATYAF</span><span class="atyaf-launch-tile">✦</span><span class="atyaf-launch-ar">أطياف</span></div>
-  </div>
-  <style id="atyaf-v92-intro-fullscreen-css">
-    #atyafLaunchV56{background:#f7f3eb;isolation:isolate}
-    #atyafLaunchV56 .atyaf-launch-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
-    #atyafLaunchV56 .atyaf-launch-mark{position:relative;z-index:1}
-    #atyafLaunchV56.atyaf-has-cover .atyaf-launch-mark{display:none!important}
-    #atyafLaunchV56 .atyaf-launch-en,#atyafLaunchV56 .atyaf-launch-ar{color:#28241d}
-    #atyafLaunchV56 .atyaf-launch-shade{position:absolute;inset:0;z-index:0;pointer-events:none}
+  <div id="atyafLaunchV56" role="status" aria-label="صورة بداية المتجر" hidden></div>
+  <style id="atyaf-v94-intro-media-only-css">
+    #atyafLaunchV56[hidden]{display:none!important}
+    #atyafLaunchV56{background:transparent!important}
+    #atyafLaunchV56 .atyaf-launch-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}
   </style>
-  <script id="atyaf-v92-launch-js">
-  (function(){
+  <script id="atyaf-v94-intro-media-only-js">
+  (()=>{
     'use strict';
-    const el=document.getElementById('atyafLaunchV56');if(!el)return;
+    const el=document.getElementById('atyafLaunchV56');
+    if(!el)return;
     window.atyafV56LaunchPlayed=true;
-    const controller=new AbortController();let finished=false;
-    const finish=()=>{if(finished)return;finished=true;controller.abort();window.atyafReleaseFirstPaint?.();el.classList.add('atyaf-launch-done');setTimeout(()=>el.remove(),480)};
+    const controller=new AbortController();
+    let finished=false;
+    const finish=()=>{
+      if(finished)return;
+      finished=true;controller.abort();window.atyafReleaseFirstPaint?.();
+      el.classList.add('atyaf-launch-done');
+      setTimeout(()=>el.remove(),400);
+    };
     const BASE='https://zgvkiqoxmtifuvgcmrqc.supabase.co';
     const ANON='sb_publishable_sEmW4aedA_jNmXACWZUwIg_am6sMtdl';
-    const safeUrl=value=>{try{const u=new URL(String(value||''),location.href);return /^https?:$/.test(u.protocol)?u.href:''}catch{return ''}};
-    const hex=value=>/^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(value||''))?value:null;
-    const load=async()=>{
-      const url=BASE+'/rest/v1/settings?key=eq.intro&select=value,updated_at,id&order=updated_at.desc,id.desc&limit=1';
-      const response=await fetch(url,{headers:{apikey:ANON,Authorization:'Bearer '+ANON},cache:'no-store',signal:controller.signal});
-      if(!response.ok)throw Error('Intro settings: '+response.status);
-      let value=(await response.json())?.[0]?.value;
-      if(typeof value==='string')value=JSON.parse(value);
-      return value&&typeof value==='object'?value:{};
+    const safeUrl=value=>{
+      try{const u=new URL(String(value||''),location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}
+      catch{return ''}
     };
-    const preload=src=>new Promise(resolve=>{
-      const img=new Image();let done=false;
-      const end=ok=>{if(done)return;done=true;resolve(ok)};
-      img.onload=()=>end(true);img.onerror=()=>end(false);img.src=src;
-      setTimeout(()=>end(false),2600);
-    });
+    const show=(node,cfg)=>{
+      if(finished)return;
+      node.className='atyaf-launch-cover';
+      node.style.objectFit=cfg.mediaFit==='contain'?'contain':'cover';
+      node.style.objectPosition=['top','bottom','center'].includes(cfg.mediaPosition)?cfg.mediaPosition:'center';
+      el.replaceChildren(node);el.hidden=false;
+      window.atyafReleaseFirstPaint?.();
+      const duration=Number(cfg.duration);
+      setTimeout(finish,Number.isFinite(duration)?Math.max(900,Math.min(duration,10000)):2500);
+    };
     (async()=>{
       try{
-        const cfg=await load();
-        if(finished)return;
-        const bg=hex(cfg.backgroundColor);if(bg)el.style.backgroundColor=bg;
-        // Full-screen media is independent from the small centered logo. Never stretch logoImage.
-        const artwork=safeUrl(cfg.mediaUrl);
-        if(artwork){
-          const isVideo=cfg.mediaType==='video'&&!!safeUrl(cfg.mediaUrl);
-          if(isVideo){
-            const video=document.createElement('video');video.className='atyaf-launch-cover';
-            video.src=artwork;video.muted=true;video.autoplay=true;video.playsInline=true;video.loop=true;
-            video.addEventListener('loadeddata',()=>{if(!finished)el.classList.add('atyaf-has-cover')},{once:true});
-            video.addEventListener('error',()=>video.remove(),{once:true});el.prepend(video);
-            video.play().catch(()=>{});
-          }else if(await preload(artwork)&&!finished){
-            const img=document.createElement('img');img.className='atyaf-launch-cover';img.alt='';img.src=artwork;
-            img.style.objectFit=cfg.mediaFit==='contain'?'contain':'cover';
-            img.style.objectPosition=['top','bottom','center'].includes(cfg.mediaPosition)?cfg.mediaPosition:'center';
-            el.prepend(img);el.classList.add('atyaf-has-cover');
-          }
+        const response=await fetch(BASE+'/rest/v1/settings?key=eq.intro&select=value,updated_at,id&order=updated_at.desc,id.desc&limit=1',{
+          headers:{apikey:ANON,Authorization:'Bearer '+ANON},cache:'no-store',signal:controller.signal
+        });
+        if(!response.ok)throw new Error('Intro settings HTTP '+response.status);
+        let cfg=(await response.json())?.[0]?.value;
+        if(typeof cfg==='string')cfg=JSON.parse(cfg);
+        if(!cfg||typeof cfg!=='object'||cfg.enabled===false){finish();return}
+        const url=safeUrl(cfg.mediaUrl);
+        if(!url){finish();return}
+        if(cfg.mediaType==='video'){
+          const video=document.createElement('video');
+          video.muted=true;video.autoplay=true;video.playsInline=true;video.loop=true;
+          video.preload='auto';video.src=url;
+          video.addEventListener('loadeddata',()=>{show(video,cfg);video.play().catch(()=>finish())},{once:true});
+          video.addEventListener('error',finish,{once:true});
+        }else{
+          const img=new Image();img.alt='';img.decoding='async';
+          img.onload=()=>show(img,cfg);img.onerror=finish;img.src=url;
         }
-        const delay=Number.isFinite(Number(cfg.duration))?Math.max(900,Math.min(7000,Number(cfg.duration))):2200;
-        setTimeout(finish,delay);
-      }catch(error){console.warn('ATYAF intro fallback:',error);setTimeout(finish,900)}
+      }catch(error){console.warn('Intro image unavailable:',error);finish()}
     })();
-    setTimeout(finish,8500);
+    setTimeout(finish,4500);
   })();
   </script>
 
@@ -6453,57 +6450,4 @@ html body .atyaf-v88-bag{display:none!important}
 @media(prefers-reduced-motion:reduce){#atyafV90WhatsApp{transition:none!important}}
 </style>
 <a id="atyafV90WhatsApp" href="https://wa.me/967774523109?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D9%85%D9%86%D8%AA%D8%AC%D8%A7%D8%AA%20%D8%A3%D8%B7%D9%8A%D8%A7%D9%81" target="_blank" rel="noopener noreferrer" aria-label="تواصل مع أطياف عبر واتساب" title="تواصل معنا عبر واتساب">
-<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 .8A15.1 15.1 0 0 0 3 23.5L.9 31l7.7-2A15.2 15.2 0 1 0 16 .8Zm0 27.6a12.3 12.3 0 0 1-6.3-1.7l-.5-.3-4.6 1.2 1.2-4.5-.3-.5A12.4 12.4 0 1 1 16 28.4Zm6.8-9.3c-.4-.2-2.2-1.1-2.6-1.2-.3-.1-.6-.2-.8.2-.2.3-1 1.2-1.2 1.4-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8l.6-.7.4-.6c.1-.2.1-.5 0-.7l-1.2-2.8c-.3-.7-.6-.6-.8-.6h-.7c-.3 0-.7.1-1 .5s-1.3 1.3-1.3 3.1 1.3 3.3 1.6 3.5 3.9 5.5 5.5 2.2 1.8 3.2 2.1c1.3.4 2.5.3 3.5.2 1.1-.2 2.2-1.1 2.5-2.2.3-1.1.3-2 .2-2.2-.1-.2-.3-.3-.7-.5Z"/></svg>
-</a>
-
-
-<!-- V91: compact, evenly aligned mobile navigation; circular Trending; smaller WhatsApp -->
-<style id="atyaf-v91-compact-navigation">
-@media (max-width:767px) {
- html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
-  height:calc(62px + env(safe-area-inset-bottom,0px))!important;
-  min-height:62px!important;
-  padding:3px 4px calc(5px + env(safe-area-inset-bottom,0px))!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  align-items:center!important;
- }
- html body #atyafMobileBottomNav .atyaf-bottom-tab {
-  height:52px!important;min-height:52px!important;
-  gap:3px!important;padding:1px 0!important;
-  justify-content:center!important;
- }
- html body #atyafMobileBottomNav .atyaf-bottom-tab > svg {
-  width:21px!important;height:21px!important;
-  min-width:21px!important;min-height:21px!important;
-  padding:0!important;flex-shrink:0!important;
- }
- html body #atyafMobileBottomNav .atyaf-bottom-tab > span {
-  font-size:10px!important;line-height:13px!important;font-weight:600!important;
-  letter-spacing:0!important;
- }
- html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] {
-  gap:3px!important;
- }
- html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > svg {
-  box-sizing:border-box!important;width:36px!important;height:36px!important;
-  min-width:36px!important;min-height:36px!important;
-  padding:9px!important;border-radius:50%!important;
-  background:#201b18!important;color:#e3b438!important;stroke:#e3b438!important;
- }
- html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > span {
-  font-size:10px!important;line-height:12px!important;
- }
- html body #atyafV90WhatsApp {
-  width:48px!important;height:48px!important;
-  left:12px!important;bottom:calc(83px + env(safe-area-inset-bottom,0px))!important;
-  box-shadow:0 4px 12px rgba(0,0,0,.16)!important;
- }
- html body #atyafV90WhatsApp svg {width:27px!important;height:27px!important}
- html body main#store {padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))!important}
-}
-</style>
-
-</body>
-</html>
-
-
+<svg viewBox="0 0 32 32" a

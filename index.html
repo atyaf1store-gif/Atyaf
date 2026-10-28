@@ -6,26 +6,59 @@
   <meta name="theme-color" content="#17352e" />
   <meta name="description" content="أطياف | ATYAF — متجر العطور والهدايا." />
   <title>أطياف | ATYAF</title>
-  <!-- ATYAF: first-paint guard. Keeps old/default theme from flashing before settings arrive. -->
+  <!-- ATYAF V98: unified reference-style loading shell; no legacy theme flash. -->
   <script id="atyaf-first-paint-guard">
   (function(){
     document.documentElement.classList.add('atyaf-first-paint-pending');
-    var released=false;
+    let released=false;
     window.atyafReleaseFirstPaint=function(){
       if(released)return;
       released=true;
       document.documentElement.classList.remove('atyaf-first-paint-pending');
+      const shell=document.getElementById('atyafLoadingShell');
+      if(shell){shell.classList.add('atyaf-loading-done');setTimeout(()=>shell.remove(),240);}
     };
-    // Never trap visitors on a blank screen if the database or CDN is unavailable.
-    setTimeout(window.atyafReleaseFirstPaint,4500);
+    // Network fallback: never block shopping indefinitely.
+    setTimeout(window.atyafReleaseFirstPaint,9000);
   })();
   </script>
   <style id="atyaf-first-paint-guard-css">
-    html.atyaf-first-paint-pending{background:#fffdfa!important}
-    html.atyaf-first-paint-pending body{background:#fffdfa!important}
-    html.atyaf-first-paint-pending body > :not(#atyafIntroV12):not(script):not(style){visibility:hidden!important}
+    html.atyaf-first-paint-pending,html.atyaf-first-paint-pending body{background:#f7f7f7!important}
+    html.atyaf-first-paint-pending body > :not(#atyafIntroV12):not(#atyafLoadingShell):not(script):not(style){visibility:hidden!important}
     html.atyaf-first-paint-pending #atyafIntroV12{visibility:visible!important}
-    @media(prefers-reduced-motion:reduce){#atyafIntroV12{transition:none!important}}
+    #atyafLoadingShell{position:fixed;inset:0;z-index:2147483000;overflow:hidden;background:#f7f7f7;color:#27221e;font-family:Arial,Tahoma,sans-serif;direction:ltr;transition:opacity .22s ease;pointer-events:auto}
+    #atyafLoadingShell.atyaf-loading-done{opacity:0;pointer-events:none}
+    #atyafLoadingShell .als-status{height:env(safe-area-inset-top,0px);background:#d8a51e}
+    #atyafLoadingShell .als-head{height:59px;background:#302720;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 17px}
+    #atyafLoadingShell .als-side{display:flex;align-items:center;gap:19px;font-size:27px;font-weight:300;min-width:66px}
+    #atyafLoadingShell .als-brand{display:flex;align-items:center;gap:7px;font-family:Georgia,serif;font-size:16px;letter-spacing:1px;white-space:nowrap}
+    #atyafLoadingShell .als-brand b{font-family:Tahoma,Arial,sans-serif;font-size:18px;letter-spacing:0}
+    #atyafLoadingShell .als-mark{width:34px;height:34px;border:2px solid #d8a51e;border-radius:10px;display:grid;place-items:center;background:#fff;color:#d8a51e;font-size:17px}
+    #atyafLoadingShell .als-tabs{height:49px;display:flex;align-items:stretch;gap:23px;overflow:hidden;padding:0 13px;background:#302720;border-top:1px solid #9b9086;color:#d6d2ce;white-space:nowrap;font-size:13px;font-weight:700}
+    #atyafLoadingShell .als-tabs span{display:flex;align-items:center;flex:0 0 auto;position:relative}
+    #atyafLoadingShell .als-tabs .als-active{color:#d8a51e}
+    #atyafLoadingShell .als-tabs .als-active:after{content:"";position:absolute;bottom:0;left:0;width:100%;height:3px;border-radius:3px;background:#d8a51e}
+    #atyafLoadingShell .als-hero{height:clamp(180px,53vw,370px);background:#f7f7f7}
+    #atyafLoadingShell .als-services{height:68px;background:#fff;display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e8e8e8}
+    #atyafLoadingShell .als-service{display:flex;align-items:center;justify-content:center;gap:9px;direction:rtl;min-width:0}
+    #atyafLoadingShell .als-service strong{display:block;font-size:14px;color:#24211e}
+    #atyafLoadingShell .als-service small{display:block;font-size:11px;color:#8a8783}
+    #atyafLoadingShell .als-service .als-icon{font-size:27px;color:#45413e}
+    #atyafLoadingShell .als-content{background:#fff;padding:15px 11px 95px;min-height:290px}
+    #atyafLoadingShell .als-title{font-weight:800;font-size:19px;text-align:right;margin:0 0 17px}
+    #atyafLoadingShell .als-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+    #atyafLoadingShell .als-tile{min-width:0}
+    #atyafLoadingShell .als-box{aspect-ratio:1;border-radius:20px;background:#e8edf3;animation:alsPulse 1.6s ease-in-out infinite alternate}
+    #atyafLoadingShell .als-line{height:11px;border-radius:12px;background:#e8edf3;margin:9px 5px 0}
+    #atyafLoadingShell .als-bottom{position:absolute;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));height:calc(70px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:#fff;border-top:1px solid #eee;align-items:center;text-align:center;color:#777;gap:0}
+    #atyafLoadingShell .als-bottom span{display:grid;justify-items:center;gap:4px;font-size:10px;font-weight:700}
+    #atyafLoadingShell .als-bottom i{font-size:23px;font-style:normal}
+    #atyafLoadingShell .als-bottom .als-selected{color:#d8a51e}
+    #atyafLoadingShell .als-bottom .als-trend i{background:#211c18;color:#d8a51e;border-radius:15px;padding:5px 12px}
+    #atyafIntroV12,.atyaf-intro-flying-logo{z-index:2147483100!important}
+    @keyframes alsPulse{to{background:#dfe5ed}}
+    @media(max-width:370px){#atyafLoadingShell .als-tabs{gap:17px;font-size:11px}#atyafLoadingShell .als-brand{font-size:13px}#atyafLoadingShell .als-brand b{font-size:15px}#atyafLoadingShell .als-grid{gap:7px}#atyafLoadingShell .als-box{border-radius:14px}}
+    @media(prefers-reduced-motion:reduce){#atyafLoadingShell *,#atyafIntroV12{animation:none!important;transition:none!important}}
   </style>
   <style>
     :root{--ink:#17231f;--muted:#707b75;--cream:#f8f4ed;--paper:#fffdfa;--green:#17352e;--green2:#214c41;--copper:#b47a4f;--gold:#d6aa62;--line:#e9e1d6;--danger:#b54c3f;--shadow:0 18px 50px #17352e12;--radius:22px;--font:Tahoma,Arial,sans-serif}
@@ -1887,6 +1920,16 @@ body{padding-bottom:65px!important}
 </style>
 </head>
 <body>
+<div id="atyafLoadingShell" role="status" aria-label="جارٍ تحميل متجر أطياف" aria-live="polite">
+  <div class="als-status"></div>
+  <div class="als-head"><div class="als-side"><span aria-hidden="true">☰</span><span aria-hidden="true">⌕</span></div><div class="als-brand"><span>ATYAF</span><span class="als-mark" aria-hidden="true">✦</span><b>أطياف</b></div><div class="als-side" style="justify-content:flex-end" aria-hidden="true">♡</div></div>
+  <div class="als-tabs"><span class="als-active">All</span><span>Offers</span><span>Trending</span><span>New arrivals</span><span>Scents</span><span>Products</span></div>
+  <div class="als-hero" aria-hidden="true"></div>
+  <div class="als-services"><div class="als-service"><div><strong>شحن مجاني</strong><small>على الطلبات المؤهلة</small></div><span class="als-icon" aria-hidden="true">♧</span></div><div class="als-service"><div><strong>إرجاع سهل</strong><small>اعرف المزيد</small></div><span class="als-icon" aria-hidden="true">↶</span></div></div>
+  <div class="als-content"><h2 class="als-title">الفئات</h2><div class="als-grid" aria-hidden="true"><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div></div></div>
+  <div class="als-bottom" aria-hidden="true"><span class="als-selected"><i>⌂</i>تسوق</span><span><i>▦</i>الفئات</span><span class="als-trend"><i>↗</i>رائج</span><span><i>🛒</i>السلة</span><span><i>♙</i>حسابي</span></div>
+</div>
+
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
 
 

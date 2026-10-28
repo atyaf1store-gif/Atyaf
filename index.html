@@ -3035,18 +3035,18 @@ window.addEventListener("focus",atyafLoadLowerAds);
       const icon=card.querySelector('i');
       if(icon){
         icon.style.setProperty('color',s?.iconColor||'#b47a4f','important');
-        icon.style.setProperty('font-size',(window.innerWidth<=600?Math.min(26,n(s?.iconSize,26,8,80)):n(s?.iconSize,24,8,80))+'px','important');
+        icon.style.setProperty('font-size',(window.innerWidth<=600?Math.min(20,n(s?.iconSize,24,8,80)):n(s?.iconSize,24,8,80))+'px','important');
       }
       const title=card.querySelector('b,strong,h3,h4');
       if(title){
         title.style.setProperty('color',s?.titleColor||'#17352e','important');
-        title.style.setProperty('font-size',(window.innerWidth<=600?Math.min(15,n(s?.titleSize,16,8,60)):n(s?.titleSize,16,8,60))+'px','important');
+        title.style.setProperty('font-size',(window.innerWidth<=600?Math.min(12,n(s?.titleSize,16,8,60)):n(s?.titleSize,16,8,60))+'px','important');
         title.style.setProperty('font-weight',n(s?.titleWeight,700,400,900),'important');
       }
       const desc=card.querySelector('span,p,small');
       if(desc){
         desc.style.setProperty('color',s?.textColor||'#707b75','important');
-        desc.style.setProperty('font-size',(window.innerWidth<=600?Math.min(11,n(s?.textSize,13,7,48)):n(s?.textSize,13,7,48))+'px','important');
+        desc.style.setProperty('font-size',(window.innerWidth<=600?Math.min(9,n(s?.textSize,13,7,48)):n(s?.textSize,13,7,48))+'px','important');
         desc.style.setProperty('font-weight',n(s?.textWeight,400,300,800),'important');
       }
       // Iconography matches the reference for shipping and easy returns.
@@ -3060,7 +3060,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
         card.style.setProperty('background','transparent','important');
         card.style.setProperty('border','0','important');
         card.style.setProperty('border-radius','0','important');
-        card.style.setProperty('padding','5px 4px','important');
+        card.style.setProperty('padding','4px 3px','important');
       }
     });
     if(window.innerWidth<=600){
@@ -6216,58 +6216,71 @@ html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg
 </style>
 
 <style id="atyaf-v80-reference-compact-benefits">
-/* V100: ONLY mobile store-benefits strip, matched to the supplied Gisaah reference. */
+/* ATYAF: reference-matched benefits only; admin content and all other UI remain unchanged. */
 @media (max-width:600px){
   html body main#store>section.container.benefits[aria-hidden="false"]{
-    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    box-sizing:border-box!important;display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
     width:100%!important;max-width:100%!important;
-    min-height:56px!important;height:auto!important;max-height:none!important;
-    margin:0!important;padding:5px 10px!important;gap:0!important;
+    min-height:82px!important;height:auto!important;max-height:none!important;
+    margin:0!important;padding:0 10px!important;gap:0!important;
+    overflow:visible!important;background:#fff!important;
     border:0!important;border-bottom:1px solid #e5e5e5!important;
-    background:#fff!important;box-shadow:none!important;direction:ltr!important;
+    box-shadow:none!important;direction:ltr!important;
   }
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{
-    display:grid!important;grid-template-columns:28px minmax(0,1fr)!important;
-    grid-template-rows:auto auto auto!important;align-content:center!important;
-    align-items:center!important;min-width:0!important;min-height:50px!important;
-    height:auto!important;margin:0!important;padding:5px 4px!important;
-    column-gap:7px!important;row-gap:0!important;border:0!important;
-    border-radius:0!important;background:transparent!important;box-shadow:none!important;
+    box-sizing:border-box!important;display:grid!important;
+    grid-template-columns:32px minmax(0,1fr)!important;
+    grid-template-rows:auto auto auto!important;
+    align-content:center!important;align-items:center!important;
+    min-width:0!important;min-height:82px!important;height:auto!important;
+    margin:0!important;padding:9px 6px!important;
+    column-gap:8px!important;row-gap:2px!important;
+    border:0!important;border-radius:0!important;
+    background:transparent!important;box-shadow:none!important;
     direction:ltr!important;text-align:right!important;
   }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit+.benefit{
+    border-left:0!important;
+  }
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{
-    grid-column:1!important;grid-row:1/span 3!important;width:28px!important;
-    height:30px!important;display:flex!important;align-items:center!important;
-    justify-content:center!important;margin:0!important;font-size:26px!important;
-    color:#45413e!important;
+    grid-column:1!important;grid-row:1/span 3!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    width:32px!important;height:34px!important;margin:0!important;
+    font-size:29px!important;font-style:normal!important;color:#55524f!important;
   }
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{
-    width:28px!important;height:28px!important;max-width:28px!important;max-height:28px!important;
-    fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;
-    stroke-linecap:round!important;stroke-linejoin:round!important;
+    display:block!important;width:30px!important;height:30px!important;
+    max-width:30px!important;max-height:30px!important;
+    stroke:#55524f!important;stroke-width:1.7!important;fill:none!important;
   }
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{
     grid-column:2!important;grid-row:1!important;margin:0!important;
-    font-size:15px!important;font-weight:800!important;line-height:1.25!important;
+    font:800 15px/1.3 Tahoma,Arial,sans-serif!important;
     color:#1d1b19!important;direction:rtl!important;text-align:right!important;
   }
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span,
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
-    grid-column:2!important;margin:1px 0 0!important;font-size:10.5px!important;
-    font-weight:400!important;line-height:1.3!important;color:#85817f!important;
-    direction:rtl!important;text-align:right!important;
+    grid-column:2!important;margin:0!important;
+    font:400 11px/1.4 Tahoma,Arial,sans-serif!important;
+    color:#85817e!important;direction:rtl!important;text-align:right!important;
+    white-space:normal!important;
   }
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span{grid-row:2!important}
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{
     grid-row:3!important;justify-self:end!important;text-decoration:underline!important;
   }
 }
-@media (max-width:359px){
-  html body main#store>section.container.benefits[aria-hidden="false"]{padding-inline:4px!important}
-  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{grid-template-columns:24px minmax(0,1fr)!important;column-gap:4px!important}
-  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{font-size:12px!important}
+@media (max-width:360px){
+  html body main#store>section.container.benefits[aria-hidden="false"]{padding:0 5px!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit{
+    grid-template-columns:27px minmax(0,1fr)!important;column-gap:5px!important;padding:8px 3px!important;
+  }
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i{width:27px!important;font-size:25px!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>i svg{width:25px!important;height:25px!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>b{font-size:13px!important}
   html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>span,
-  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{font-size:9px!important}
+  html body main#store>section.container.benefits[aria-hidden="false"]>.benefit>a.atyaf-ref-policy-link{font-size:10px!important}
 }
 </style>
 

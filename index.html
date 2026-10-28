@@ -1876,6 +1876,15 @@ body{padding-bottom:65px!important}
 @keyframes atyaf-v94-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v94-media{transition:none!important;transform:none!important}#atyafIntroV12 .atyaf-v94-progress{animation:none!important}}
 </style>
+<style id="atyaf-intro-flight-v97">
+/* Splash logo flies into the existing header logo; no header layout changes. */
+#atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
+#atyafIntroV12 .atyaf-v94-media{transition:opacity .8s ease,transform 1.1s cubic-bezier(.16,1,.3,1)!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v94-media{animation:atyafIntroBreathe 2.4s ease-in-out both}
+@keyframes atyafIntroBreathe{0%{filter:blur(7px);transform:translateY(20px) scale(.8);opacity:0}55%{filter:blur(0);transform:translateY(-5px) scale(1.055);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+.atyaf-intro-flying-logo{position:fixed!important;z-index:2147483001!important;pointer-events:none!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;object-fit:contain!important;max-width:none!important;max-height:none!important;transform-origin:center center!important;will-change:top,left,width,height,opacity,filter!important}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v94-media{animation:none!important}.atyaf-intro-flying-logo{transition:none!important}}
+</style>
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -2773,6 +2782,15 @@ window.addEventListener("focus",atyafLoadLowerAds);
     try { const u = new URL(input.trim(), location.href); return ['https:', 'http:'].includes(u.protocol) ? u.href : ''; }
     catch (_) { return ''; }
   }
+  function findHeaderLogo() {
+    // The storefront has separate desktop/mobile logos; choose the visible one.
+    const nodes = [...document.querySelectorAll('header.header .atyaf-profile-image-slot img, header.header .atyaf-profile-image-slot, header.header .atyaf-profile img, header.header .brand img')];
+    return nodes.find(el => {
+      const r = el.getBoundingClientRect();
+      const st = getComputedStyle(el);
+      return r.width > 8 && r.height > 8 && st.display !== 'none' && st.visibility !== 'hidden' && r.top >= -5;
+    }) || null;
+  }
   function close(immediate) {
     if (!state) { release(); return; }
     const s = state;
@@ -2780,12 +2798,41 @@ window.addEventListener("focus",atyafLoadLowerAds);
     clearTimeout(s.timer);
     clearTimeout(s.loadTimer);
     if (s.video) { try { s.media.pause(); } catch (_) {} }
-    if (immediate) s.root.remove();
-    else {
+    if (immediate) { s.root.remove(); release(); return; }
+    const target = findHeaderLogo();
+    const source = s.media.getBoundingClientRect();
+    const dest = target && target.getBoundingClientRect();
+    const canFly = !s.video && s.loaded && dest && source.width > 0 && source.height > 0 &&
+      dest.width > 0 && dest.height > 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!canFly) {
       s.root.classList.add('atyaf-v94-exit');
       setTimeout(() => s.root.remove(), 460);
+      release();
+      return;
     }
+    // Use a separate image so it can animate above the fading splash.
+    const flying = s.media.cloneNode(false);
+    flying.removeAttribute('id');
+    flying.className = 'atyaf-intro-flying-logo';
+    Object.assign(flying.style, {
+      top: source.top + 'px', left: source.left + 'px',
+      width: source.width + 'px', height: source.height + 'px',
+      opacity: '1', filter: 'drop-shadow(0 12px 24px rgba(23,53,46,.12))',
+      transition: 'top 1000ms cubic-bezier(.22,1,.36,1),left 1000ms cubic-bezier(.22,1,.36,1),width 1000ms cubic-bezier(.22,1,.36,1),height 1000ms cubic-bezier(.22,1,.36,1),opacity 250ms ease 800ms,filter 1000ms ease'
+    });
+    document.body.appendChild(flying);
+    s.media.style.opacity = '0';
+    s.root.classList.add('atyaf-v94-exit');
     release();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      Object.assign(flying.style, {
+        top: dest.top + 'px', left: dest.left + 'px',
+        width: dest.width + 'px', height: dest.height + 'px',
+        opacity: '0', filter: 'drop-shadow(0 0 0 transparent)'
+      });
+    }));
+    setTimeout(() => s.root.remove(), 650);
+    setTimeout(() => flying.remove(), 1120);
   }
   window.atyafApplyAdminIntroV12 = function (raw) {
     let cfg = raw;

@@ -2765,6 +2765,8 @@ window.addEventListener("focus",atyafLoadLowerAds);
 (function () {
   'use strict';
   let state = null;
+  // Display at most once per page load, even when admin settings auto-refresh.
+  let introAlreadyShown = false;
   const release = () => { try { window.atyafReleaseFirstPaint?.(); } catch (e) { console.warn('ATYAF intro:', e); } };
   function validURL(input) {
     if (typeof input !== 'string' || !input.trim()) return '';
@@ -2792,6 +2794,8 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const mediaURL = validURL(cfg.mediaUrl);
     const url = mediaURL || validURL(cfg.logoImage);
     if (!url) { close(true); return; }
+    // Settings sync runs repeatedly; never restart a completed or skipped intro.
+    if (introAlreadyShown) { release(); return; }
     const video = cfg.mediaType === 'video' && !!mediaURL;
     const n = Number(cfg.duration);
     const duration = Number.isFinite(n) && n > 0 ? Math.min(12000, Math.max(1500, n)) : 3200;
@@ -2799,6 +2803,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     if (state && state.signature === signature) return;
     close(true);
     if (!document.body) { release(); return; }
+    introAlreadyShown = true;
     const root = document.createElement('section');
     root.id = 'atyafIntroV12';
     root.className = 'atyaf-v94-intro';

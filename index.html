@@ -6541,31 +6541,28 @@ html body .atyaf-v88-bag{display:none!important}
 }
 </style>
 
-<style id="atyaf-v100-related-vertical">
-/* Product detail recommendations: one item per row, never a horizontal carousel. */
+<style id="atyaf-v101-related-natural-grid">
+/* Recommendations retain normal product-card layout; page scrolls vertically. */
 #productModal.styaf-detail-mode .styaf-related-grid,
 #productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   grid-auto-flow: row !important;
   grid-auto-columns: auto !important;
   gap: 14px !important;
   width: 100% !important;
   max-width: 100% !important;
-  overflow-x: hidden !important;
-  overflow-y: visible !important;
+  overflow: visible !important;
   scroll-snap-type: none !important;
   padding: 8px 0 18px !important;
+  transform: none !important;
 }
 #productModal.styaf-detail-mode .styaf-related-item {
+  display: block !important;
   width: 100% !important;
   min-width: 0 !important;
-  max-width: 100% !important;
+  max-width: none !important;
   scroll-snap-align: none !important;
-  display: grid !important;
-  grid-template-columns: minmax(100px, 32%) minmax(0, 1fr) !important;
-  align-items: center !important;
-  gap: 14px !important;
   text-align: right !important;
 }
 #productModal.styaf-detail-mode .styaf-related-img {
@@ -6575,14 +6572,19 @@ html body .atyaf-v88-bag{display:none!important}
 }
 #productModal.styaf-detail-mode .styaf-related-meta {
   min-width: 0 !important;
-  padding: 12px !important;
+  padding: 10px !important;
 }
 #productModal.styaf-detail-mode .styaf-feed-controls { display: none !important; }
-@media (max-width: 480px) {
-  #productModal.styaf-detail-mode .styaf-related-item {
-    grid-template-columns: minmax(92px, 35%) minmax(0, 1fr) !important;
-    gap: 9px !important;
+@media (max-width: 900px) {
+  #productModal.styaf-detail-mode .styaf-related-grid,
+  #productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
   }
+}
+@media (max-width: 360px) {
+  #productModal.styaf-detail-mode .styaf-related-grid,
+  #productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid { gap: 8px !important; }
   #productModal.styaf-detail-mode .styaf-related-meta { padding: 8px !important; }
 }
 </style>

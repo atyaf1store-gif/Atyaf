@@ -163,7 +163,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <dialog id="productDialog"><div class="modal"><button class="close" onclick="productDialog.close()">×</button><h2>المنتج</h2><input type="hidden" id="pId"><div class="grid">
 <div class="field"><label>الاسم</label><input id="pName"></div><div class="field"><label>الماركة</label><input id="pBrand"></div>
 <div class="field"><label>السعر</label><input id="pPrice" type="number"></div><div class="field"><label>السعر القديم</label><input id="pOld" type="number"></div>
-<div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field"><label>الكمية المتوفرة بالمخزون</label><input id="pStock" type="number" min="0" step="1" placeholder="اتركه فارغًا إن كان غير محدد"></div><div class="field"><label>نشط/مخفي</label><select id="pActive"><option value="true">ظاهر</option><option value="false">مخفي</option></select></div>
+<div class="field full"><label>الوصف</label><textarea id="pDesc"></textarea></div><div class="field full"><label for="pFragranceNotes">المكونات العطرية — للتصنيف التلقائي</label><textarea id="pFragranceNotes" rows="3" maxlength="1200" placeholder="مثال: عود، مسك، ورد، عنبر"></textarea><small class="muted">اكتب المكونات الفعلية فقط وافصل بينها بفاصلة. تُحفظ ضمن وصف المنتج ليتعرف عليها المتجر دون تعديل قاعدة البيانات.</small></div><div class="field"><label>الكمية المتوفرة بالمخزون</label><input id="pStock" type="number" min="0" step="1" placeholder="اتركه فارغًا إن كان غير محدد"></div><div class="field"><label>نشط/مخفي</label><select id="pActive"><option value="true">ظاهر</option><option value="false">مخفي</option></select></div>
 <div class="field"><label>ترتيب</label><input id="pSort" type="number"></div><div class="field full upload"><label>صورة المنتج — رفع مباشر</label><input id="pImageFile" type="file" accept="image/*"><div id="pImagePreview"></div></div>
 <div class="field full upload" id="atyafExtraImagesEditor"><label>صور إضافية لصفحة تفاصيل المنتج فقط (لا تغيّر صورة بطاقة المتجر)</label><input id="pExtraImageFiles" type="file" accept="image/*" multiple><small class="muted">يمكنك رفع عدة صور، حذف صورة، وتغيير ترتيبها قبل الحفظ. ستظهر في معرض تفاصيل المنتج فقط.</small><div id="pExtraImagesPreview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px"></div></div>
 </div><div class="toolbar" style="margin-top:12px"><button type="button" class="btn" onclick="saveProduct()">حفظ</button><button class="btn red" onclick="deleteProduct()">حذف المنتج</button></div></div></dialog>
@@ -559,7 +559,28 @@ function atyafRenderExtraImages(){
 }
 function atyafRemoveExtraImage(i){atyafExtraImages.splice(i,1);atyafRenderExtraImages()}
 function atyafMoveExtraImage(i,delta){const j=i+delta;if(j<0||j>=atyafExtraImages.length)return;[atyafExtraImages[i],atyafExtraImages[j]]=[atyafExtraImages[j],atyafExtraImages[i]];atyafRenderExtraImages()}
-function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pImageFile.value='';document.getElementById('pExtraImageFiles').value='';atyafExtraImages=atyafReadExtraImages(p.images);atyafRenderExtraImages();pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';pDesc.value=p.description||p.desc||'';document.getElementById('pStock').value=p.stock_quantity??'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
+// Fragrance notes are stored in the existing description column; no database migration.
+const ATYAF_NOTES_PREFIX='المكونات العطرية:';
+function atyafExtractFragranceNotes(raw){
+ const text=String(raw??'');
+ const lines=text.split(/\r?\n/);
+ const notes=[];
+ const description=[];
+ for(const line of lines){
+  const match=line.match(/^\s*المكونات العطرية\s*[:：]\s*(.*?)\s*$/);
+  if(match){if(match[1])notes.push(match[1]);}
+  else description.push(line);
+ }
+ return {description:description.join('\n').trim(),notes:notes.join('، ').trim()};
+}
+function atyafMergeFragranceNotes(description,notes){
+ const cleaned=atyafExtractFragranceNotes(description).description;
+ const list=String(notes??'').split(/[,،\n]+/).map(x=>x.trim()).filter(Boolean);
+ const unique=[...new Set(list)];
+ if(unique.join('، ').length>1200)throw new Error('المكونات العطرية طويلة جدًا');
+ return cleaned+(unique.length?(cleaned?'\n\n':'')+ATYAF_NOTES_PREFIX+' '+unique.join('، '):'');
+}
+function editProduct(id=''){let p=PRODUCTS.find(x=>String(x.id)===String(id))||{};pImageFile.value='';document.getElementById('pExtraImageFiles').value='';atyafExtraImages=atyafReadExtraImages(p.images);atyafRenderExtraImages();pId.value=p.id||'';pName.value=p.name||p.title||'';pBrand.value=p.brand||'';pPrice.value=p.price||'';pOld.value=p.old_price||p.old||'';const scentParsed=atyafExtractFragranceNotes(p.description||p.desc||'');pDesc.value=scentParsed.description;document.getElementById('pFragranceNotes').value=scentParsed.notes;document.getElementById('pStock').value=p.stock_quantity??'';pActive.value=String(p.is_active!==false);pSort.value=p.sort_order||0;pImagePreview.innerHTML=(p.image_url||p.image)?`<img src="${esc(p.image_url||p.image)}" style="max-width:180px;max-height:140px;border-radius:10px">`:'';productDialog.showModal()}
 async function saveProduct(){
  try{
   const btn=document.querySelector('#productDialog .toolbar .btn:not(.red)');
@@ -588,7 +609,7 @@ async function saveProduct(){
     brand:pBrand.value.trim(),
     price:Number(pPrice.value)||0,
     old_price:Number(pOld.value)||0,
-    description:pDesc.value.trim(),
+    description:atyafMergeFragranceNotes(pDesc.value,document.getElementById('pFragranceNotes').value),
     image_url:image,
     images:extraImages,
     is_active:pActive.value==='true',

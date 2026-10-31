@@ -4593,7 +4593,7 @@ main#store > section.benefits[aria-hidden="true"]{display:none!important}
 (()=>{
 'use strict';
 const root=document.getElementById('atyafScentsCatalog'),tiles=document.getElementById('atyafScentTiles'),results=document.getElementById('atyafScentResults'),grid=document.getElementById('atyafScentResultGrid');if(!root||!tiles||!grid)return;
-const defaults=[{title:'عود',emoji:'🪵',keywords:'عود,oud'},{title:'مسك',emoji:'🌿',keywords:'مسك,musk'},{title:'ورد',emoji:'🌹',keywords:'ورد,rose,floral,زهور'},{title:'فانيليا',emoji:'🌼',keywords:'فانيليا,vanilla'},{title:'فاكهة',emoji:'🍊',keywords:'فواكه,فاكهه,fruit,fruity'}];
+const defaults=[{title:'عودي',emoji:'🪵',keywords:'عود,oud,agarwood'},{title:'مسكي',emoji:'🌿',keywords:'مسك,musk,musky'},{title:'زهري',emoji:'🌹',keywords:'ورد,rose,floral,زهور,ياسمين,jasmine,فاوانيا,peony'},{title:'خشبي',emoji:'🌳',keywords:'خشب,خشبي,woody,wood,صندل,sandalwood,ارز,cedar'},{title:'فاكهي',emoji:'🍑',keywords:'فاكهه,فاكهي,فاكهه,fruit,fruity,توت,berry,خوخ,peach'},{title:'حمضي',emoji:'🍋',keywords:'حمضيات,citrus,ليمون,lemon,برغموت,bergamot,برتقال,orange'},{title:'حلو',emoji:'🍦',keywords:'فانيليا,فانيلا,vanilla,كراميل,caramel,برالين,praline,حلو,gourmand'},{title:'عنبري',emoji:'🧡',keywords:'عنبر,amber,ambery,راتنج,resin'},{title:'بحري',emoji:'🌊',keywords:'بحري,مائي,marine,aquatic,sea'},{title:'شرقي',emoji:'✨',keywords:'شرقي,oriental,توابل,spicy,زعفران,saffron,هيل,cardamom'},{title:'جلدي',emoji:'🤎',keywords:'جلد,جلدي,leather,leathery'},{title:'منعش',emoji:'🍃',keywords:'منعش,fresh,اخضر,green,نعناع,mint,لافندر,lavender'}];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=v=>String(v??'').toLocaleLowerCase('ar').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[\u064b-\u065f]/g,'').trim();
 const num=(v,d,min,max)=>{const n=Number(v);return Number.isFinite(n)?Math.max(min,Math.min(max,Math.round(n))):d};
@@ -4606,7 +4606,16 @@ root.style.setProperty('--sc-cols',num(cfg.columnsDesktop,5,1,10));root.style.se
 let style=document.getElementById('atyaf-scent-responsive-live');if(!style){style=document.createElement('style');style.id='atyaf-scent-responsive-live';document.head.appendChild(style)}style.textContent='@media(max-width:1024px){#atyafScentsCatalog{--sc-cols:'+num(cfg.columnsTablet,5,1,10)+'}}@media(max-width:600px){#atyafScentsCatalog{--sc-cols:'+num(cfg.columnsMobile,5,1,8)+'}}';
 const items=Array.isArray(cfg.items)?cfg.items:defaults;tiles.innerHTML=items.map((x,i)=>x.hidden?'':`<button type="button" class="atyaf-scent-tile" data-sc-index="${i}"><span class="atyaf-scent-art">${/^https?:\/\//i.test(x.image||'')?`<img loading="lazy" src="${esc(x.image)}" alt="${esc(x.title)}">`:esc(x.emoji||'✦')}</span><strong>${esc(x.title||'رائحة')}</strong></button>`).join('');if(selected!==null)renderResults();}
 function products(){return Array.isArray(window.ATYAAF_LIVE_PRODUCTS)?window.ATYAAF_LIVE_PRODUCTS:[]}
-function matches(p,item){const words=String(item.keywords||item.title||'').split(/[,،\n]+/).map(norm).filter(w=>w.length>=2);if(!words.length)return false;const raw=Array.isArray(p.tags)?p.tags.join(' '):'';const hay=norm([p.name,p.brand,p.desc,p.description,p.label,raw].join(' '));return words.some(w=>hay.includes(w))}
+function matches(p,item){
+  const words=String(item.keywords||item.title||'').split(/[,،\n]+/).map(norm).filter(w=>w.length>=2);
+  if(!words.length)return false;
+  // Only fragrance-related product metadata: never infer a scent from the brand name.
+  const tags=Array.isArray(p.tags)?p.tags.join(' '):String(p.tags||'');
+  const notes=Array.isArray(p.fragranceNotes)?p.fragranceNotes.join(' '):String(p.fragranceNotes||p.scentNotes||p.notes||'');
+  const fields=[tags,notes,p.scent,p.fragranceFamily,p.desc,p.description].filter(v=>typeof v==='string');
+  const hay=' '+norm(fields.join(' ')).replace(/[^\p{L}\p{N}]+/gu,' ')+' ';
+  return words.some(word=>hay.includes(' '+word+' '));
+}
 function renderResults(){if(selected===null||!cfg)return;const x=(Array.isArray(cfg.items)?cfg.items:defaults)[selected];if(!x)return;root.querySelector('#atyafScentResultTitle').textContent='عطور '+x.title;tiles.hidden=true;results.hidden=false;
 const found=products().filter(p=>matches(p,x));root.querySelector('#atyafScentCount').textContent=found.length+' منتج';root.querySelector('#atyafScentEmpty').hidden=found.length>0;
 const source=document.querySelectorAll('#atyafBrandProductSections .atyaf-reference-card[data-product-id]');const lookup=new Map([...source].map(card=>[card.getAttribute('data-product-id'),card]));const fragment=document.createDocumentFragment();for(const p of found){const card=lookup.get(String(p.id));if(card){const clone=card.cloneNode(true);clone.hidden=false;clone.style.display='';fragment.appendChild(clone)}}grid.replaceChildren(fragment);}

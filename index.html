@@ -2330,6 +2330,44 @@ body{padding-bottom:65px!important}
         closeFavorites();quickView(id);
       }
     });
+    // V99: capture the real add-to-cart source without altering existing handlers.
+    let atyafCartClick = null;
+    document.addEventListener('click', function(event) {
+      const source = event.target.closest('.atyaf-v89-bag, .atyaf-quick-bag, .atyaf-cart-action, .product-actions .btn-primary, [onclick*="addCart("]');
+      if (source) atyafCartClick = { element: source, time: performance.now() };
+    }, true);
+    function atyafFlyToCart() {
+      const click = atyafCartClick;
+      atyafCartClick = null;
+      if (!click || performance.now() - click.time > 1500 || !click.element.isConnected) return;
+      const source = click.element;
+      const target = Array.from(document.querySelectorAll('#atyafMobileBottomNav [data-atyaf-tab="cart"], #atyafMobileBottomNav [data-atyaf-tab="basket"], #atyafMobileBottomNav [onclick*="Cart"], .header [data-store-action="cart"], #cartBtn'))
+        .find(el => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden');
+      if (!target) return;
+      const from = (source.closest('.product, .atyaf-reference-card')?.querySelector('.product-visual img, img') || source).getBoundingClientRect();
+      const to = target.getBoundingClientRect();
+      if (!from.width || !to.width) return;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced || !Element.prototype.animate) return;
+      const flyer = document.createElement('span');
+      flyer.className = 'atyaf-v99-cart-flyer';
+      flyer.setAttribute('aria-hidden', 'true');
+      flyer.textContent = '✦';
+      flyer.style.cssText = 'position:fixed;z-index:2147483000;left:0;top:0;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#17352e;color:#f5cf79;font-size:21px;box-shadow:0 5px 18px #17352e55;pointer-events:none;will-change:transform,opacity';
+      document.body.appendChild(flyer);
+      const x = from.left + from.width / 2 - 15;
+      const y = from.top + from.height / 2 - 15;
+      const dx = to.left + to.width / 2 - 15 - x;
+      const dy = to.top + to.height / 2 - 15 - y;
+      const animation = flyer.animate([
+        {transform:`translate(${x}px,${y}px) scale(1)`,opacity:1,offset:0},
+        {transform:`translate(${x + dx*.42}px,${y + dy*.18 - 65}px) scale(.9)`,opacity:1,offset:.48},
+        {transform:`translate(${x + dx}px,${y + dy}px) scale(.22)`,opacity:.35,offset:1}
+      ], {duration:740,easing:'cubic-bezier(.22,.75,.25,1)'});
+      animation.onfinish = () => {flyer.remove();target.animate([{transform:'scale(1)'},{transform:'scale(1.2)'},{transform:'scale(1)'}],{duration:330,easing:'ease-out'});};
+      animation.oncancel = () => flyer.remove();
+      window.setTimeout(() => flyer.remove(), 1100);
+    }
     async function addCart(id){
       id=String(id||'').trim();
       if(!id)return;
@@ -2355,13 +2393,12 @@ body{padding-bottom:65px!important}
       }
       save();
       renderCart();
+      atyafFlyToCart();
       // لا نجعل قاعدة البيانات شرطاً لعمل السلة.
       if(window.atyafDb){
         try{await syncCartItem(item)}
         catch(e){console.warn('ATYAAF cart sync:',e)}
       }
-      showMessage('أضيف إلى السلة','تمت إضافة المنتج إلى سلتك بنجاح.');
-      return true;
       return true;
     }
     async function changeQty(id,delta){

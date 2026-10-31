@@ -1422,21 +1422,6 @@ html{scroll-padding-top:125px}body{background:var(--cream);letter-spacing:.05px}
 @media (prefers-reduced-motion:reduce){.styaf-related-item{transition:none}}
 </style>
 
-<style id="styaf-detail-v4-feed">
-/* Product recommendation feed: horizontal swipe + accessible navigation */
-#productModal.styaf-detail-mode .styaf-related-grid{display:grid!important;grid-auto-flow:column!important;grid-auto-columns:clamp(170px,23%,255px)!important;grid-template-columns:none!important;gap:16px!important;overflow-x:auto!important;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:8px 3px 24px;scrollbar-width:thin;scrollbar-color:#b47a4f #eee6dc}
-#productModal.styaf-detail-mode .styaf-related-item{scroll-snap-align:start;min-width:0;display:flex;flex-direction:column;width:100%;font:inherit}
-#productModal.styaf-detail-mode .styaf-related-img{width:100%;aspect-ratio:1/1}
-#productModal.styaf-detail-mode .styaf-related-meta{flex:1;display:flex;flex-direction:column}
-#productModal.styaf-detail-mode .styaf-related-meta strong{margin-top:auto}
-.styaf-feed-controls{display:flex;gap:8px;align-items:center}
-.styaf-feed-controls button{width:42px;height:42px;border-radius:50%;border:1px solid #e4d7c6;background:white;color:#17352e;font-size:22px;display:grid;place-items:center}
-.styaf-feed-controls button:disabled{opacity:.35;cursor:not-allowed}
-#productModal.styaf-detail-mode .styaf-related-item:focus-visible,.styaf-feed-controls button:focus-visible{outline:3px solid #b47a4f;outline-offset:3px}
-@media (max-width:760px){#productModal.styaf-detail-mode .styaf-related-grid{grid-auto-columns:minmax(165px,65%)!important;gap:11px!important} .styaf-feed-controls button{width:36px;height:36px}}
-@media (prefers-reduced-motion:reduce){#productModal.styaf-detail-mode .styaf-related-grid{scroll-behavior:auto}}
-</style>
-
 <style id="styaf-video-reference-v5">
 /* GISAAH reference video: airy white product page, prominent gallery, horizontal same-brand recommendations */
 #productModal.styaf-detail-mode,#productModal.styaf-detail-mode .modal-card{background:#fff!important}
@@ -4085,31 +4070,6 @@ document.addEventListener('click',function(e){const target=e.target.closest('.pr
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.getElementById('productModal')?.classList.contains('open'))closeProductDetails()});
 </script>
 
-<script id="styaf-detail-v4-feed-js">
-(function(){
-  function setup(){
-    const modal=document.getElementById('productModal');
-    if(!modal||!modal.classList.contains('styaf-detail-mode'))return;
-    const feed=modal.querySelector('.styaf-related-grid');
-    const head=modal.querySelector('.styaf-related-head');
-    if(!feed||!head||head.querySelector('.styaf-feed-controls'))return;
-    feed.setAttribute('aria-label','منتجات أخرى من نفس العلامة التجارية');
-    feed.setAttribute('tabindex','0');
-    const controls=document.createElement('div');controls.className='styaf-feed-controls';
-    controls.innerHTML='<button type="button" data-feed-step="-1" aria-label="السابق">›</button><button type="button" data-feed-step="1" aria-label="التالي">‹</button>';
-    head.appendChild(controls);
-    function update(){const max=feed.scrollWidth-feed.clientWidth;controls.querySelector('[data-feed-step="-1"]').disabled=feed.scrollLeft>=-2;controls.querySelector('[data-feed-step="1"]').disabled=feed.scrollLeft<=-max+2;}
-    controls.addEventListener('click',function(e){const b=e.target.closest('[data-feed-step]');if(!b)return;const step=Number(b.dataset.feedStep);feed.scrollBy({left:-step*(feed.querySelector('.styaf-related-item')?.getBoundingClientRect().width||220)-step*16,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});setTimeout(update,400)});
-    feed.addEventListener('scroll',update,{passive:true});requestAnimationFrame(update);
-  }
-  document.addEventListener('DOMContentLoaded',function(){
-    const modal=document.getElementById('productModal');if(!modal)return;
-    const observer=new MutationObserver(setup);observer.observe(modal,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
-    setup();
-  });
-})();
-</script>
-
 <!-- ATYAF V24: visible brand grids obey product_design columns, including tablet/mobile. -->
 <!-- ATYAF: isolated product card controls for brand sections; no layout reset -->
 <style id="atyaf-brand-card-admin-controls"></style>
@@ -6581,5 +6541,53 @@ html body .atyaf-v88-bag{display:none!important}
 }
 </style>
 
+<style id="atyaf-v100-related-vertical">
+/* Product detail recommendations: one item per row, never a horizontal carousel. */
+#productModal.styaf-detail-mode .styaf-related-grid,
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-auto-flow: row !important;
+  grid-auto-columns: auto !important;
+  gap: 14px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+  scroll-snap-type: none !important;
+  padding: 8px 0 18px !important;
+}
+#productModal.styaf-detail-mode .styaf-related-item {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  scroll-snap-align: none !important;
+  display: grid !important;
+  grid-template-columns: minmax(100px, 32%) minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 14px !important;
+  text-align: right !important;
+}
+#productModal.styaf-detail-mode .styaf-related-img {
+  width: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  min-width: 0 !important;
+}
+#productModal.styaf-detail-mode .styaf-related-meta {
+  min-width: 0 !important;
+  padding: 12px !important;
+}
+#productModal.styaf-detail-mode .styaf-feed-controls { display: none !important; }
+@media (max-width: 480px) {
+  #productModal.styaf-detail-mode .styaf-related-item {
+    grid-template-columns: minmax(92px, 35%) minmax(0, 1fr) !important;
+    gap: 9px !important;
+  }
+  #productModal.styaf-detail-mode .styaf-related-meta { padding: 8px !important; }
+}
+</style>
+
 </body>
 </html>
+
+

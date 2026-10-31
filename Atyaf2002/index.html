@@ -780,7 +780,7 @@ setTimeout(()=>{
     unlock();
     await loadAll();
    }else{
-    msg('',false);
+    msg('انتهت جلسة الدخول أو لم يحتفظ المتصفح بها. سجّل الدخول مرة واحدة، وتجنب التصفح الخاص أو مسح بيانات الموقع.',false);
     $('atyafLockEmail')?.focus();
    }
   }catch(e){
@@ -819,8 +819,13 @@ setTimeout(()=>{
  $('atyafLockBtn').onclick=signIn;
  $('atyafLockPass').onkeydown=e=>{if(e.key==='Enter')signIn()};
  $('atyafLockEmail').onkeydown=e=>{if(e.key==='Enter')$('atyafLockPass')?.focus()};
+ // Only an explicit sign-out should immediately lock the interface.
+ // A temporary null session during initialization or token refresh is not a logout.
  db?.auth?.onAuthStateChange((event,session)=>{
-  if(event==='SIGNED_OUT'||!session)lock();
+  if(event==='SIGNED_OUT'){
+   SETTINGS=[];PRODUCTS=[];
+   lock();
+  }
  });
  init();
 })();

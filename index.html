@@ -3058,20 +3058,36 @@ window.addEventListener("focus",atyafLoadLowerAds);
       let card=current[i];
       if(!card){
         card=document.createElement('div');card.className='benefit';
-        card.innerHTML='<i>✦</i><b></b><span></span>';sec.appendChild(card);
+        card.innerHTML='<i aria-hidden="true"></i><b></b><span></span>';sec.appendChild(card);
       }
       hide(card,it?.hidden===true);
       const icon=card.querySelector('i'),title=card.querySelector('b,strong,h3,h4'),desc=card.querySelector('span,p,small');
-      if(icon)icon.textContent=it.icon||it.symbol||it.textIcon||'✦';
+      if(icon)icon.textContent=it.icon||it.symbol||it.textIcon||'';
       if(title)title.textContent=it.title||it.name||'';
       if(desc)desc.textContent=it.text||it.description||'';
-      // A functional policy link on the returns card (not an invented URL).
-      const returnsCard=/إرجاع|استرجاع|ارجاع/.test(String(it.title||it.name||''));
+      // Link to the existing store information panels; never invent external URLs.
+      const serviceName=String(it.title||it.name||'');
+      const returnsCard=/إرجاع|استرجاع|ارجاع|استبدال/.test(serviceName);
+      const shippingCard=/شحن|توصيل/.test(serviceName);
       let policyLink=card.querySelector('.atyaf-ref-policy-link');
-      if(returnsCard){
-        if(!policyLink){policyLink=document.createElement('a');policyLink.className='atyaf-ref-policy-link';policyLink.href='#';card.appendChild(policyLink)}
+      if(returnsCard||shippingCard){
+        if(!policyLink){
+          policyLink=document.createElement('a');
+          policyLink.className='atyaf-ref-policy-link';
+          policyLink.href='#';
+          card.appendChild(policyLink);
+        }
         policyLink.textContent='اعرف المزيد';
-        policyLink.onclick=e=>{e.preventDefault();if(typeof window.atyafOpenPolicy==='function')window.atyafOpenPolicy('returns','الاستبدال والاسترجاع')};
+        policyLink.onclick=e=>{
+          e.preventDefault();
+          if(returnsCard){
+            if(typeof window.atyafOpenPolicy==='function')window.atyafOpenPolicy('returns','الاستبدال والاسترجاع');
+            else if(typeof window.showReturnsInfo==='function')window.showReturnsInfo();
+          }else{
+            if(typeof window.showShippingInfo==='function')window.showShippingInfo();
+            else if(typeof window.atyafOpenPolicy==='function')window.atyafOpenPolicy('shipping','الشحن والتوصيل');
+          }
+        };
       }else if(policyLink){policyLink.remove()}
 
     });
@@ -3120,6 +3136,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
         const svgStart='<svg viewBox="0 0 24 24" aria-hidden="true">';
         if(/شحن|توصيل/.test(name))icon.innerHTML=svgStart+'<path d="M2 6h12v11H2zM14 10h4l4 4v3h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>';
         else if(/إرجاع|استرجاع|ارجاع/.test(name))icon.innerHTML=svgStart+'<path d="M4 8V3m0 5h5M4 8a9 9 0 1 1-1 8"/></svg>';
+        else if(icon.textContent.trim()==='✦')icon.textContent='';
       }
       if(window.innerWidth<=600){
         card.style.setProperty('background','transparent','important');

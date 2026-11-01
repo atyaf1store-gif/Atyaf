@@ -1302,6 +1302,26 @@ section.benefits>.benefit span,.benefits>.benefit span{
 <style id="atyaf-functional-coupons-v1">
 .atyaf-coupon-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}.atyaf-coupon-row input{text-transform:uppercase}.atyaf-coupon-row .btn{min-width:92px;height:44px;padding:8px 16px}.atyaf-coupon-message{min-height:22px;margin-top:6px;font-size:12px}.atyaf-coupon-message.ok{color:#18704f}.atyaf-coupon-message.err{color:#a33c32}.atyaf-checkout-summary{margin:4px 0 14px;padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:var(--cream)}.atyaf-checkout-summary>div{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:13px}.atyaf-checkout-summary #checkoutDiscountRow{color:#18704f}.atyaf-checkout-summary .atyaf-checkout-final{margin-top:7px;padding-top:9px;border-top:1px solid var(--line);font-size:15px;color:var(--green)}@media (max-width:480px){.atyaf-coupon-row{grid-template-columns:1fr auto}.atyaf-coupon-row .btn{min-width:78px;padding-inline:11px}.atyaf-checkout-summary{padding:11px 12px}}
 </style>
+<style id="atyaf-cart-reference-v105">
+/* Cart-only presentation: all existing cart handlers remain unchanged. */
+#atyafCartPage .atyaf-cart-items{gap:16px}
+#atyafCartPage .atyaf-cart-row{direction:ltr;grid-template-columns:clamp(74px,22vw,96px) minmax(0,1fr) 38px;gap:16px;min-height:146px;padding:17px;background:#fff;border:1px solid #e1e5e8;border-radius:23px;box-shadow:0 5px 17px rgba(27,38,43,.045);align-items:center}
+#atyafCartPage .atyaf-cart-img{width:100%;height:112px;background:#f7f8f8;border:1px solid #e3e7e9;border-radius:17px;overflow:hidden}
+#atyafCartPage .atyaf-cart-img img{width:100%;height:100%;object-fit:contain;padding:7px}
+#atyafCartPage .atyaf-cart-row .atyaf-cart-details{min-width:0;direction:rtl;text-align:left;align-self:center}
+#atyafCartPage .atyaf-cart-row h3{margin:0 0 6px;font-size:clamp(14px,2.7vw,18px);font-weight:800;color:#30343a;line-height:1.45;overflow-wrap:anywhere}
+#atyafCartPage .atyaf-cart-price{margin:0 0 14px;color:#b8954b;font-weight:800;font-size:16px}
+#atyafCartPage .atyaf-cart-qty{direction:ltr;display:flex;align-items:center;gap:12px}
+#atyafCartPage .atyaf-cart-qty button{width:46px;height:46px;flex:0 0 46px;border-radius:12px;background:#edf1f3;color:#586575;font-size:25px;display:grid;place-items:center;line-height:1;transition:background .15s ease}
+#atyafCartPage .atyaf-cart-qty button:active{background:#dce4e8}
+#atyafCartPage .atyaf-cart-qty button:focus-visible,#atyafCartPage .atyaf-cart-remove:focus-visible{outline:3px solid #d6aa62;outline-offset:2px}
+#atyafCartPage .atyaf-cart-qty b{min-width:20px;text-align:center;font-size:17px;color:#3d4550}
+#atyafCartPage .atyaf-cart-remove{align-self:center;width:38px;height:42px;padding:7px;display:grid;place-items:center;background:transparent;color:#aab5be;border-radius:10px}
+#atyafCartPage .atyaf-cart-remove svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#atyafCartPage .atyaf-cart-remove:hover{background:#fff0ef;color:#b54c3f}
+@media(max-width:480px){#atyafCartPage .atyaf-cart-row{grid-template-columns:76px minmax(0,1fr) 30px;gap:11px;padding:13px;min-height:136px;border-radius:20px}#atyafCartPage .atyaf-cart-img{height:94px}#atyafCartPage .atyaf-cart-qty{gap:9px}#atyafCartPage .atyaf-cart-qty button{width:39px;height:40px;flex-basis:39px;font-size:23px}#atyafCartPage .atyaf-cart-price{font-size:14px;margin-bottom:10px}#atyafCartPage .atyaf-cart-remove{width:30px;padding:3px}}
+@media(max-width:350px){#atyafCartPage .atyaf-cart-row{grid-template-columns:62px minmax(0,1fr) 28px;gap:8px;padding:10px}#atyafCartPage .atyaf-cart-img{height:82px}#atyafCartPage .atyaf-cart-qty button{width:34px;height:36px;flex-basis:34px}}
+</style>
 <style id="atyaf-cart-page-whatsapp-v2">
 #atyafCartPage{display:none;position:fixed;inset:0;z-index:10050;background:#fbfaf5;min-height:100vh;height:100dvh;overflow-y:auto;padding:28px 0 70px}#atyafCartPage.open{display:block}
 .atyaf-cart-page-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:28px}.atyaf-cart-page-title{display:flex;align-items:center;gap:12px}.atyaf-cart-page-title h2{font-size:clamp(27px,4vw,40px);margin:0}.atyaf-cart-bag{color:#d6a522;font-size:28px}
@@ -3578,7 +3598,7 @@ const cartProductView=x=>{
   const ce=document.getElementById('atyafCartPageCount');if(ce)ce.textContent=count+' '+(count===1?'منتج':'منتجات');
   box.innerHTML=!state.cart?.length?'<div class="atyaf-cart-empty-page">السلة فارغة حاليًا.</div>':state.cart.map(x=>{
    const p=cartProductView(x),img=p.image,q=Math.max(1,Number(x.qty)||1),price=Number(p.price)||0;
-   return `<article class="atyaf-cart-row"><div class="atyaf-cart-img">${img?`<img src="${img}" alt="${p.name}">`:''}</div><div><h3>${p.name}</h3><div class="atyaf-cart-price">${money(price)}</div><div class="atyaf-cart-qty"><button type="button" aria-label="نقص الكمية" onclick="atyafCartPageQty('${String(x.id)}',-1)">−</button><b>${q}</b><button type="button" aria-label="زيادة الكمية" onclick="atyafCartPageQty('${String(x.id)}',1)">＋</button></div></div><button class="atyaf-cart-remove" type="button" aria-label="حذف المنتج" onclick="atyafCartPageRemove('${String(x.id)}')">🗑</button></article>`
+   return `<article class="atyaf-cart-row"><div class="atyaf-cart-img">${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy">`:''}</div><div class="atyaf-cart-details"><h3>${escapeHtml(p.name)}</h3><div class="atyaf-cart-price">${money(price)}</div><div class="atyaf-cart-qty"><button type="button" aria-label="نقص الكمية" onclick="atyafCartPageQty('${String(x.id)}',-1)">−</button><b>${q}</b><button type="button" aria-label="زيادة الكمية" onclick="atyafCartPageQty('${String(x.id)}',1)">＋</button></div></div><button class="atyaf-cart-remove" type="button" aria-label="حذف المنتج" onclick="atyafCartPageRemove('${String(x.id)}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v6M14 11v6"/></svg></button></article>`
   }).join('');
   const sub=typeof cartTotal==='function'?cartTotal():0,fin=typeof checkoutPayable==='function'?checkoutPayable():sub;
   const discount=Math.max(0,sub-fin);
@@ -6552,86 +6572,3 @@ html body .atyaf-v88-bag{display:none!important}
   box-sizing:border-box!important;width:36px!important;height:36px!important;
   min-width:36px!important;min-height:36px!important;
   padding:9px!important;border-radius:50%!important;
-  background:#201b18!important;color:#e3b438!important;stroke:#e3b438!important;
- }
- html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > span {
-  font-size:10px!important;line-height:12px!important;
- }
- html body #atyafV90WhatsApp {
-  width:48px!important;height:48px!important;
-  left:12px!important;bottom:calc(83px + env(safe-area-inset-bottom,0px))!important;
-  box-shadow:0 4px 12px rgba(0,0,0,.16)!important;
- }
- html body #atyafV90WhatsApp svg {width:27px!important;height:27px!important}
- html body main#store {padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))!important}
-}
-</style>
-
-<style id="atyaf-v101-related-natural-grid">
-/* Recommendations retain normal product-card layout; page scrolls vertically. */
-#productModal.styaf-detail-mode .styaf-related-grid,
-#productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  grid-auto-flow: row !important;
-  grid-auto-columns: auto !important;
-  gap: 14px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: visible !important;
-  scroll-snap-type: none !important;
-  padding: 8px 0 18px !important;
-  transform: none !important;
-}
-#productModal.styaf-detail-mode .styaf-related-item {
-  display: block !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: none !important;
-  scroll-snap-align: none !important;
-  text-align: right !important;
-}
-#productModal.styaf-detail-mode .styaf-related-img {
-  width: 100% !important;
-  aspect-ratio: 1 / 1 !important;
-  min-width: 0 !important;
-}
-#productModal.styaf-detail-mode .styaf-related-meta {
-  min-width: 0 !important;
-  padding: 10px !important;
-}
-#productModal.styaf-detail-mode .styaf-feed-controls { display: none !important; }
-@media (max-width: 900px) {
-  #productModal.styaf-detail-mode .styaf-related-grid,
-  #productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
-  }
-}
-@media (max-width: 360px) {
-  #productModal.styaf-detail-mode .styaf-related-grid,
-  #productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid { gap: 8px !important; }
-  #productModal.styaf-detail-mode .styaf-related-meta { padding: 8px !important; }
-}
-</style>
-
-<script id="atyaf-store-fonts-v1">
-(()=>{'use strict';
-const FONTS={"Tahoma": "Tahoma, Arial, sans-serif", "Cairo": "Cairo, Tahoma, sans-serif", "Tajawal": "Tajawal, Tahoma, sans-serif", "IBM Plex Sans Arabic": "IBM Plex Sans Arabic, Tahoma, sans-serif", "Almarai": "Almarai, Tahoma, sans-serif", "Noto Kufi Arabic": "Noto Kufi Arabic, Tahoma, sans-serif", "Changa": "Changa, Tahoma, sans-serif", "Amiri": "Amiri, Georgia, serif", "Reem Kufi": "Reem Kufi, Tahoma, sans-serif", "Readex Pro": "Readex Pro, Tahoma, sans-serif", "Alexandria": "Alexandria, Tahoma, sans-serif"};
-const defaults={general:'Tahoma',headings:'inherit',products:'inherit',prices:'inherit',buttons:'inherit',navigation:'inherit',size:100,weight:'normal'};
-let last='';
-function apply(raw){let v=raw;try{if(typeof v==='string')v=JSON.parse(v)}catch{return}if(!v||typeof v!=='object'||Array.isArray(v))v={};v={...defaults,...v};if(!Object.hasOwn(FONTS,v.general))v.general='Tahoma';for(const k of ['headings','products','prices','buttons','navigation'])if(v[k]!=='inherit'&&!Object.hasOwn(FONTS,v[k]))v[k]='inherit';const size=Number(v.size);v.size=Number.isInteger(size)&&size>=80&&size<=125?size:100;v.weight=['normal','500','700'].includes(v.weight)?v.weight:'normal';const sig=JSON.stringify(v);if(sig===last)return;last=sig;
-const family=k=>FONTS[v[k]==='inherit'?v.general:v[k]];
-const selectors=[['body, body input, body textarea, body select','general'],['h1,h2,h3,h4,h5,h6,.section-head h2,.hero h1','headings'],['.product h3,.product h4,.product-name,.product-title,.styaf-related-meta h3,.styaf-related-meta h4','products'],['.price,.product-price,.old-price,.product .price,.styaf-related-meta .price','prices'],['button,.btn,[role="button"],.btn-primary,.btn-outline','buttons'],['.nav,.nav a,.navrow,.atyaf-mobile-bottom-nav,.atyaf-mobile-bottom-nav button,.styaf-v47-bottom-nav,.styaf-v47-bottom-nav button','navigation']];
-const css=selectors.map(([s,k])=>s+'{font-family:'+family(k)+' !important;}').join('\n')+'\nbody{font-size:'+v.size+'% !important;font-weight:'+v.weight+';}';
-let style=document.getElementById('atyaf-fonts-runtime');if(!style){style=document.createElement('style');style.id='atyaf-fonts-runtime';document.head.append(style)}style.textContent=css;
-const needed=new Set(Object.values(v).filter(x=>Object.hasOwn(FONTS,x)&&x!=='Tahoma'));const linkId='atyaf-fonts-google-css';let link=document.getElementById(linkId);if(!needed.size){link?.remove();return}const familyNames=[...needed].map(n=>'family='+encodeURIComponent(n).replace(/%20/g,'+')+':wght@400;500;700').join('&');const href='https://fonts.googleapis.com/css2?'+familyNames+'&display=swap';if(!link){link=document.createElement('link');link.id=linkId;link.rel='stylesheet';document.head.append(link)}if(link.href!==href)link.href=href;
-}
-async function refresh(){const db=window.atyafDb;if(!db)return;try{const {data,error}=await db.from('settings').select('value').eq('key','store_fonts').order('updated_at',{ascending:false}).limit(1);if(error)throw error;apply(data?.[0]?.value||defaults)}catch(e){console.warn('ATYAF font settings:',e)}}
-apply(defaults);let count=0;const boot=setInterval(()=>{if(window.atyafDb){clearInterval(boot);refresh();setInterval(()=>{if(!document.hidden)refresh()},60000)}else if(++count>=40)clearInterval(boot)},250);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
-})();</script>
-</body>
-</html>
-
-

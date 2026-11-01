@@ -51,7 +51,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 </div>
 
 <div class="app"><aside><div class="logo">ATYAAF PRO</div><div class="sub">إدارة كاملة لكل تفصيل في المتجر</div><div class="nav">
-<button class="active" data-tab="dashboard">الرئيسية</button>
+<button class="active" data-tab="dashboard">الرئيسية</button><button data-tab="storeFonts">إدارة خطوط المتجر</button>
 <button data-tab="hero">الإعلان العلوي</button><button data-tab="lowerAd">الإعلان السفلي</button>
 <button data-tab="topbar">الشريط العلوي</button><button data-tab="header">الهيدر والبحث</button><button data-tab="profile">البروفايل واسم المتجر</button><button data-tab="intro">شاشة البداية</button><button data-tab="nav">القائمة الرئيسية</button>
 <button data-tab="benefits">مزايا المتجر</button><button data-tab="brands">الماركات</button><button data-tab="products">المنتجات</button><button data-tab="scentCatalog">الروائح</button>
@@ -61,7 +61,7 @@ body.atyaf-admin-locked>.app,body.atyaf-admin-locked>header,body.atyaf-admin-loc
 <div class="top"><div><h1 style="margin:0">لوحة إدارة أطياف الكاملة</h1><div class="muted">كل قسم مستقل: إضافة • تعديل • حذف • إخفاء • رفع صور وفيديو مباشرة</div></div><div class="toolbar"><button class="btn alt" onclick="loadAll()">↻ تحديث</button><button class="btn red" type="button" onclick="atyafAdminLogout()">تسجيل الخروج</button></div></div>
 <div id="status" class="status">جاري الاتصال…</div>
 
-<section id="dashboard" class="panel active"><div class="card"><h2>إدارة كاملة</h2><p>اختر أي قسم من القائمة. كل جزء يُحفظ مستقلاً في جدول <b>settings</b>، والوسائط تُرفع مباشرة إلى Supabase Storage بدون لصق روابط.</p></div></section>
+<section id="storeFonts" class="panel"><div class="card"><h2>إدارة خطوط المتجر</h2><p class="muted">تغيير الخط العام أو تخصيص الخطوط لكل قسم. التغييرات تُحفظ في إعدادات المتجر.</p><div id="atyafFontControls" class="grid"></div><div id="atyafFontPreview" dir="rtl" style="margin:18px 0;padding:20px;border:1px solid #e4ddd2;border-radius:14px;background:#fff;font-size:23px">أطياف للعطور — أناقة تدوم معك | ATYAF STORE 123</div><div class="toolbar"><button class="btn" type="button" id="atyafFontSave">حفظ الخطوط</button><button class="btn alt" type="button" id="atyafFontReset">استعادة الخطوط الافتراضية</button></div><p id="atyafFontStatus" role="status" aria-live="polite"></p></div></section><section id="dashboard" class="panel active"><div class="card"><h2>إدارة كاملة</h2><p>اختر أي قسم من القائمة. كل جزء يُحفظ مستقلاً في جدول <b>settings</b>، والوسائط تُرفع مباشرة إلى Supabase Storage بدون لصق روابط.</p></div></section>
 
 <section id="hero" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية العلوية</h2><div id="heroEditor"></div></div></section>
 <section id="lowerAd" class="panel"><div class="card section-editor"><h2>الشاشة الإعلانية تحت الهدية</h2><div id="lowerEditor"></div></div></section>
@@ -1112,4 +1112,24 @@ window.atyafRenderScentCatalogAdmin=draw;
  window.atyafRenderHomeSectionsAdmin=render;
 })();
 </script>
+<script id="atyaf-font-manager-admin-v1">
+(()=>{'use strict';
+const FONTS={"Tahoma": "Tahoma, Arial, sans-serif", "Cairo": "Cairo, Tahoma, sans-serif", "Tajawal": "Tajawal, Tahoma, sans-serif", "IBM Plex Sans Arabic": "IBM Plex Sans Arabic, Tahoma, sans-serif", "Almarai": "Almarai, Tahoma, sans-serif", "Noto Kufi Arabic": "Noto Kufi Arabic, Tahoma, sans-serif", "Changa": "Changa, Tahoma, sans-serif", "Amiri": "Amiri, Georgia, serif", "Reem Kufi": "Reem Kufi, Tahoma, sans-serif", "Readex Pro": "Readex Pro, Tahoma, sans-serif", "Alexandria": "Alexandria, Tahoma, sans-serif"};
+const KEYS=[['general','الخط العام'],['headings','العناوين'],['products','أسماء المنتجات'],['prices','الأسعار'],['buttons','الأزرار'],['navigation','القوائم والتنقل']];
+const root=document.getElementById('atyafFontControls');if(!root)return;
+const defaults={general:'Tahoma',headings:'inherit',products:'inherit',prices:'inherit',buttons:'inherit',navigation:'inherit',size:100,weight:'normal'};
+const get=()=>{try{const v=getSetting('store_fonts',{});return {...defaults,...(v&&typeof v==='object'&&!Array.isArray(v)?v:{})}}catch{return {...defaults}}};
+const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){const v=get();root.innerHTML=KEYS.map(([k,label])=>'<label class="field"><span>'+label+'</span><select data-font="'+k+'">'+(k==='general'?'':'<option value="inherit">اتباع الخط العام</option>')+Object.keys(FONTS).map(name=>'<option value="'+safe(name)+'">'+safe(name)+'</option>').join('')+'</select></label>').join('')+'<label class="field"><span>الحجم العام (%)</span><input data-font="size" type="number" min="80" max="125" step="1"></label><label class="field"><span>سُمك الخط العام</span><select data-font="weight"><option value="normal">طبيعي</option><option value="500">متوسط</option><option value="700">عريض</option></select></label>';
+root.querySelectorAll('[data-font]').forEach(el=>{el.value=v[el.dataset.font]??defaults[el.dataset.font]});preview()}
+function preview(){const v=read(false);const p=document.getElementById('atyafFontPreview');p.style.fontFamily=FONTS[v.general]||FONTS.Tahoma;p.style.fontWeight=v.weight;p.style.fontSize=(23*v.size/100)+'px'}
+function read(validate=true){const v={};root.querySelectorAll('[data-font]').forEach(el=>v[el.dataset.font]=el.value);v.size=Number(v.size);if(validate){if(!Object.hasOwn(FONTS,v.general))throw Error('الخط العام غير صالح');for(const [k] of KEYS.slice(1))if(v[k]!=='inherit'&&!Object.hasOwn(FONTS,v[k]))throw Error('خط غير صالح: '+k);if(!Number.isInteger(v.size)||v.size<80||v.size>125)throw Error('الحجم يجب أن يكون بين 80 و125');if(!['normal','500','700'].includes(v.weight))throw Error('سُمك غير صالح')}return v}
+function message(t,error=false){const el=document.getElementById('atyafFontStatus');el.textContent=t;el.style.color=error?'#a9443c':'#17352e'}
+root.addEventListener('input',preview);root.addEventListener('change',preview);
+async function save(v){if(!db)throw Error('قاعدة البيانات غير متصلة');const existing=SETTINGS.find(x=>x.key==='store_fonts');const query=existing?db.from('settings').update({value:v}).eq('id',existing.id):db.from('settings').insert({key:'store_fonts',value:v});const {data,error}=await query.select('id,value');if(error)throw error;if(!data?.length)throw Error('لم تؤكد قاعدة البيانات الحفظ؛ راجع صلاحيات settings');const {data:check,error:err}=await db.from('settings').select('value').eq('id',data[0].id).single();if(err)throw err;const parsed=typeof check.value==='string'?JSON.parse(check.value):check.value;if(JSON.stringify(parsed)!==JSON.stringify(v))throw Error('تعذر التحقق من القيم المحفوظة');await loadAll()}
+document.getElementById('atyafFontSave').addEventListener('click',async e=>{e.currentTarget.disabled=true;message('جاري الحفظ…');try{await save(read());message('تم حفظ الخطوط والتحقق منها ✓')}catch(err){message('فشل الحفظ: '+err.message,true)}finally{e.currentTarget.disabled=false}});
+document.getElementById('atyafFontReset').addEventListener('click',async e=>{if(!confirm('استعادة خطوط المتجر الافتراضية؟'))return;e.currentTarget.disabled=true;try{await save({...defaults});message('تمت استعادة الخطوط الافتراضية ✓')}catch(err){message('فشل الاستعادة: '+err.message,true)}finally{e.currentTarget.disabled=false}});
+const previous=window.loadAll;if(typeof previous==='function')window.loadAll=async function(...args){const result=await previous.apply(this,args);render();return result};
+document.addEventListener('DOMContentLoaded',render);render();
+})();</script>
 </body></html>

@@ -1963,6 +1963,30 @@ body{padding-bottom:65px!important}
  #atyafCartPage .atyaf-cart-qty b{width:18px!important}
 }
 </style>
+
+<!-- ATYAF V107: keep the existing store header and logo visible on the cart page. -->
+<style id="atyaf-v107-cart-visible-store-header">
+/* Scoped to the cart view: do not modify the store header elsewhere. */
+body.atyaf-cart-page-open > header.header,
+body.atyaf-cart-page-open header.header {
+  position:fixed!important;
+  z-index:10060!important;
+  visibility:visible!important;
+}
+/* The cart stays scrollable beneath the original, functional header. */
+body.atyaf-cart-page-open #atyafCartPage {
+  z-index:10050!important;
+  box-sizing:border-box!important;
+  padding-top:calc(110px + 18px)!important;
+  scroll-padding-top:128px;
+}
+@media(max-width:767px){
+  body.atyaf-cart-page-open #atyafCartPage {
+    padding-top:calc(89px + 16px)!important;
+    scroll-padding-top:105px;
+  }
+}
+</style>
 </head>
 <body>
 <div id="atyafLoadingShell" role="status" aria-label="جارٍ تحميل متجر أطياف" aria-live="polite">

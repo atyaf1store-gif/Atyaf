@@ -6716,20 +6716,44 @@ apply(defaults);let count=0;const boot=setInterval(()=>{if(window.atyafDb){clear
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
 })();</script>
 
-<!-- ATYAF V108: transparent home header only; preserve cart and other UI. -->
-<style id="atyaf-v108-transparent-home-header">
-/* Transparent surface, while keeping the existing header layout and controls. */
-html body:not(.atyaf-cart-page-open):has(#home:not([hidden])) > header.header {
-  background: transparent !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
+<style id="atyaf-v108-home-glass">
+/* V108 — Glassmorphism confined to storefront home sections.
+   No changes to cart, product dialogs, admin, or JS behavior. */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  html body main#store {
+    background: linear-gradient(145deg, rgba(233,239,235,.42), rgba(251,246,238,.36));
+  }
+  html body main#store #home .hero-ad-shade {
+    background: linear-gradient(180deg,rgba(18,34,30,.06),rgba(18,34,30,.19)) !important;
+    pointer-events:none;
+  }
+  html body main#store .benefit,
+  html body main#store .brand-card,
+  html body main#store .atyaf-scent-tile {
+    background:rgba(255,255,255,.56) !important;
+    border:1px solid rgba(255,255,255,.72) !important;
+    -webkit-backdrop-filter:blur(16px) saturate(145%);
+    backdrop-filter:blur(16px) saturate(145%);
+    box-shadow:0 8px 26px rgba(24,46,39,.075),inset 0 1px rgba(255,255,255,.5) !important;
+  }
+  html body main#store .chip:not(.active),
+  html body main#store #sortSelect {
+    background:rgba(255,255,255,.64) !important;
+    border:1px solid rgba(255,255,255,.76) !important;
+    -webkit-backdrop-filter:blur(12px);
+    backdrop-filter:blur(12px);
+  }
 }
-html body:not(.atyaf-cart-page-open):has(#home:not([hidden])) > header.header .nav {
-  background: transparent !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
+@media (prefers-reduced-transparency: reduce) {
+  html body main#store .benefit,
+  html body main#store .brand-card,
+  html body main#store .atyaf-scent-tile,
+  html body main#store .chip:not(.active),
+  html body main#store #sortSelect {
+    background:#fffdfa !important;
+    -webkit-backdrop-filter:none !important;
+    backdrop-filter:none !important;
+  }
 }
 </style>
 </body>

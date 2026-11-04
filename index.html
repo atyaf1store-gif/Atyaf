@@ -1884,8 +1884,8 @@ body{padding-bottom:65px!important}
 
 <style id="atyaf-v94-intro-style">
 /* Restored classic centered intro. Scoped exclusively to the startup overlay. */
-#atyafIntroV12.atyaf-v94-intro{position:fixed!important;inset:0!important;z-index:2147483000!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;width:100%!important;height:100vh!important;height:100dvh!important;background:#f5f0e8!important;opacity:1;isolation:isolate;transition:opacity .45s ease!important}
-#atyafIntroV12.atyaf-v94-intro::before{content:"";position:absolute;top:0;right:0;left:0;height:max(3px,env(safe-area-inset-top,0px));background:#d7a21d;opacity:.7;z-index:2}
+#atyafIntroV12.atyaf-v94-intro{position:fixed!important;inset:0!important;z-index:2147483000!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;width:100%!important;height:100vh!important;height:100dvh!important;background:transparent!important;opacity:1;isolation:isolate;transition:opacity .45s ease!important}
+#atyafIntroV12.atyaf-v94-intro::before{content:none!important}
 #atyafIntroV12 .atyaf-v94-media{display:block!important;position:relative!important;inset:auto!important;width:min(180px,45vw)!important;height:min(180px,45vw)!important;max-width:180px!important;max-height:180px!important;object-fit:contain!important;object-position:center!important;background:transparent!important;opacity:0;transform:translateY(9px) scale(.94);transition:opacity .65s ease,transform 1.05s cubic-bezier(.2,.8,.2,1);filter:none!important;z-index:1}
 #atyafIntroV12.atyaf-v94-visible .atyaf-v94-media{opacity:1;transform:translateY(0) scale(1)}
 #atyafIntroV12 .atyaf-v94-skip{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);left:18px;z-index:3;border:1px solid #d5c8b6;border-radius:999px;padding:9px 16px;min-height:40px;background:rgba(255,255,255,.75);color:#554536;font:600 13px system-ui,sans-serif;cursor:pointer}
@@ -1894,6 +1894,13 @@ body{padding-bottom:65px!important}
 #atyafIntroV12.atyaf-v94-exit{opacity:0!important;pointer-events:none!important}
 @keyframes atyaf-v94-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v94-media{transition:none!important;transform:none!important}#atyafIntroV12 .atyaf-v94-progress{animation:none!important}}
+</style>
+<style id="atyaf-intro-transparent-v108">
+/* Transparent intro: show the real storefront behind the existing logo animation. */
+html.atyaf-first-paint-pending:has(#atyafIntroV12) body > :not(#atyafIntroV12):not(#atyafLoadingShell):not(script):not(style){visibility:visible!important}
+html:has(#atyafIntroV12) #atyafLoadingShell{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+#atyafIntroV12.atyaf-v94-intro{background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+#atyafIntroV12.atyaf-v94-intro::before{content:none!important}
 </style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */

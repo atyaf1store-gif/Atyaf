@@ -6716,44 +6716,54 @@ apply(defaults);let count=0;const boot=setInterval(()=>{if(window.atyafDb){clear
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
 })();</script>
 
-<style id="atyaf-v108-home-glass">
-/* V108 — Glassmorphism confined to storefront home sections.
-   No changes to cart, product dialogs, admin, or JS behavior. */
+<style id="atyaf-v109-real-glass">
+/* V109: true frosted glass on the fixed storefront header.
+   All rules are visual only; checkout, admin and product behavior remain intact. */
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  html body main#store {
-    background: linear-gradient(145deg, rgba(233,239,235,.42), rgba(251,246,238,.36));
+  html body header.header {
+    background:rgba(48,39,32,.38)!important;
+    -webkit-backdrop-filter:blur(22px) saturate(160%)!important;
+    backdrop-filter:blur(22px) saturate(160%)!important;
+    border-bottom:1px solid rgba(255,255,255,.28)!important;
+    box-shadow:0 8px 28px rgba(22,24,22,.10)!important;
+    isolation:isolate;
   }
-  html body main#store #home .hero-ad-shade {
-    background: linear-gradient(180deg,rgba(18,34,30,.06),rgba(18,34,30,.19)) !important;
-    pointer-events:none;
+  html body header.header .headrow.atyaf-head-balanced,
+  html body header.header #nav.nav {
+    background:rgba(48,39,32,.10)!important;
+    box-shadow:none!important;
   }
+  html body header.header #nav.nav {
+    border-top:1px solid rgba(255,255,255,.24)!important;
+    border-bottom:1px solid rgba(255,255,255,.22)!important;
+  }
+  html body #atyafV75HeaderSpacer {background:transparent!important;}
   html body main#store .benefit,
   html body main#store .brand-card,
   html body main#store .atyaf-scent-tile {
-    background:rgba(255,255,255,.56) !important;
-    border:1px solid rgba(255,255,255,.72) !important;
+    background:rgba(255,255,255,.56)!important;
+    border:1px solid rgba(255,255,255,.72)!important;
     -webkit-backdrop-filter:blur(16px) saturate(145%);
     backdrop-filter:blur(16px) saturate(145%);
-    box-shadow:0 8px 26px rgba(24,46,39,.075),inset 0 1px rgba(255,255,255,.5) !important;
+    box-shadow:0 8px 26px rgba(24,46,39,.075),inset 0 1px rgba(255,255,255,.5)!important;
   }
   html body main#store .chip:not(.active),
   html body main#store #sortSelect {
-    background:rgba(255,255,255,.64) !important;
-    border:1px solid rgba(255,255,255,.76) !important;
+    background:rgba(255,255,255,.64)!important;
+    border:1px solid rgba(255,255,255,.76)!important;
     -webkit-backdrop-filter:blur(12px);
     backdrop-filter:blur(12px);
   }
 }
 @media (prefers-reduced-transparency: reduce) {
+  html body header.header,
+  html body header.header .headrow.atyaf-head-balanced,
+  html body header.header #nav.nav {background:#302720!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}
   html body main#store .benefit,
   html body main#store .brand-card,
   html body main#store .atyaf-scent-tile,
   html body main#store .chip:not(.active),
-  html body main#store #sortSelect {
-    background:#fffdfa !important;
-    -webkit-backdrop-filter:none !important;
-    backdrop-filter:none !important;
-  }
+  html body main#store #sortSelect {background:#fffdfa!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}
 }
 </style>
 </body>

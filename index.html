@@ -2113,7 +2113,7 @@ body.atyaf-cart-page-open #atyafCartPage {
 <aside class="atyaf-order-summary"><h3>ملخص الطلب</h3><div class="atyaf-summary-line"><span>المجموع الفرعي</span><strong id="atyafCartSubtotal">0 ر.س</strong></div><div class="atyaf-summary-line"><span>التوصيل</span><span>يحدد حسب الموقع</span></div><div class="atyaf-summary-line atyaf-summary-total"><span>الإجمالي</span><strong id="atyafCartFinalTotal">0 ر.س</strong></div>
 <div class="atyaf-coupon-box"><div class="atyaf-coupon-title">كوبون الخصم</div><div class="atyaf-coupon-row"><input id="atyafCartCouponInput" class="atyaf-coupon-input" placeholder="أدخل كود الخصم"><button class="atyaf-coupon-apply" type="button" onclick="atyafApplyCartCoupon()">تطبيق</button></div><div id="atyafCartCouponMsg" class="atyaf-coupon-msg"></div></div><div id="atyafCartDiscountLine" class="atyaf-summary-line atyaf-discount-line"><span>الخصم</span><strong id="atyafCartDiscount">0 ر.س</strong></div><div class="atyaf-delivery-note">التالي: أدخل عنوان التوصيل</div><textarea id="atyafWhatsAppAddress" class="atyaf-address-box" placeholder="المدينة، الحي، الشارع..."></textarea>
 <div class="atyaf-method-title">طريقة الطلب</div><div class="atyaf-whatsapp-method"><span style="font-size:25px">◉</span><div><b>عبر واتساب</b><small>أرسل تفاصيل طلبك مباشرة لتأكيده مع فريقنا</small></div></div>
-<button class="atyaf-whatsapp-send" type="button" onclick="atyafSendCartDirectWhatsApp()">◉ إرسال الطلب عبر واتساب</button></aside></div></div></section>
+<button class="atyaf-whatsapp-send" type="button" onclick="atyafSendCartDirectWhatsApp()">◉ إرسال الطلب عبر واتساب</button></aside></div></div><div id="atyafCartFooterMount" aria-label="معلومات المتجر وروابط التواصل"></div></section>
   <div class="modal" id="giftModal" onclick="if(event.target===this)closeGift()"><div class="modal-card"><button class="close" onclick="closeGift()">×</button><h2>جهّز هديتك</h2><p style="color:var(--muted)">أضف تغليفًا فاخرًا إلى سلتك، وسنجهزها بعناية.</p><div class="gift-options"><label class="brand-card" style="display:block;text-align:right;cursor:pointer"><input type="radio" name="wrap" value="25" checked /> تغليف أطياف الكريمي <b style="float:left">25 ر.س</b></label><label class="brand-card" style="display:block;text-align:right;cursor:pointer;margin-top:10px"><input type="radio" name="wrap" value="45" /> صندوق المناسبات الفاخر <b style="float:left">45 ر.س</b></label></div><button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="addGift()">إضافة للسلة</button></div></div>
   
 
@@ -3705,7 +3705,7 @@ const cartProductView=x=>{
     image:p.image_url||p.image||p.img||x.image_url||x.image||x.img||''
   };
 };
- window.atyafOpenCartPage=function(){const page=document.getElementById('atyafCartPage');if(!page)return;document.getElementById('cartDrawer')?.classList.remove('open');page.classList.add('open');document.body.classList.add('atyaf-cart-page-open');renderAtyafCartPage();page.scrollTop=0};window.atyafCloseCartPage=function(){document.getElementById('atyafCartPage')?.classList.remove('open');document.body.classList.remove('atyaf-cart-page-open')};
+ window.atyafOpenCartPage=function(){const page=document.getElementById('atyafCartPage');if(!page)return;window.atyafSyncCartFooter?.();document.getElementById('cartDrawer')?.classList.remove('open');page.classList.add('open');document.body.classList.add('atyaf-cart-page-open');renderAtyafCartPage();page.scrollTop=0};window.atyafCloseCartPage=function(){document.getElementById('atyafCartPage')?.classList.remove('open');document.body.classList.remove('atyaf-cart-page-open')};
  window.renderAtyafCartPage=function(){
   const box=document.getElementById('atyafCartPageItems');if(!box)return;
   // أصلح بيانات العناصر القديمة المحفوظة قبل إضافة snapshot للمنتج.
@@ -6961,6 +6961,45 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()}
   html body #atyafV90WhatsApp::before {opacity:.35!important}
 }
 </style>
+
+<!-- ATYAF V116: Reuse the live storefront footer inside the scrollable cart page. -->
+<style id="atyaf-v116-cart-footer-css">
+  #atyafCartPage #atyafCartFooterMount{margin-top:clamp(36px,6vw,76px);width:100%;clear:both}
+  #atyafCartPage #atyafCartFooterMount:empty{display:none}
+  #atyafCartPage #atyafCartFooterMount > footer{display:block;width:100%;margin:0;padding:45px 0 max(34px,env(safe-area-inset-bottom));position:relative;inset:auto;transform:none}
+  #atyafCartPage #atyafCartFooterMount .footer-grid{direction:rtl}
+  #atyafCartPage #atyafCartFooterMount a{cursor:pointer}
+  @media(max-width:600px){
+    #atyafCartPage #atyafCartFooterMount{margin-top:34px}
+    #atyafCartPage #atyafCartFooterMount > footer{padding-bottom:calc(90px + env(safe-area-inset-bottom))!important}
+  }
+</style>
+<script id="atyaf-v116-cart-footer-js">
+(function(){
+  'use strict';
+  window.atyafSyncCartFooter=function(){
+    const mount=document.getElementById('atyafCartFooterMount');
+    const original=document.querySelector('footer#contact');
+    if(!mount||!original)return;
+    const copy=original.cloneNode(true);
+    copy.removeAttribute('id');
+    copy.setAttribute('data-atyaf-cart-footer','');
+    // Anchor navigation must close the fixed cart before scrolling to a store section.
+    copy.querySelectorAll('a[href^="#"]').forEach(function(link){
+      link.addEventListener('click',function(event){
+        const targetId=link.getAttribute('href');
+        if(!targetId||targetId==='#')return;
+        const target=document.getElementById(targetId.slice(1));
+        if(!target)return;
+        event.preventDefault();
+        if(typeof window.atyafCloseCartPage==='function')window.atyafCloseCartPage();
+        requestAnimationFrame(function(){target.scrollIntoView({behavior:'smooth',block:'start'});});
+      });
+    });
+    mount.replaceChildren(copy);
+  };
+})();
+</script>
 </body>
 </html>
 

@@ -7135,5 +7135,31 @@ html body button.styaf-v2-up svg{display:block!important;width:23px!important;he
 html body button.styaf-v2-up svg path{stroke:#fff!important;fill:none!important;stroke-width:2.3!important;opacity:1!important}
 html body button.styaf-v2-up.visible{opacity:1!important;visibility:visible!important;pointer-events:auto!important}
 </style>
+
+<!-- V125: navigation spacing only; preserves links and tab handlers -->
+<style id="atyaf-v125-balanced-arabic-tabs">
+.header .nav .container.navrow {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:clamp(12px,2.4vw,26px)!important;
+  width:max-content!important;
+  min-width:100%!important;
+  max-width:none!important;
+  padding-inline:clamp(14px,3vw,24px)!important;
+  box-sizing:border-box!important;
+}
+.header .nav .navrow > a {
+  flex:0 0 auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:44px!important;
+  line-height:1.25!important;
+  font-size:clamp(11px,2.7vw,14px)!important;
+  letter-spacing:0!important;
+  white-space:nowrap!important;
+}
+</style>
 </body>
 </html>

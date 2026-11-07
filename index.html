@@ -6866,6 +6866,74 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()}
 }
 @media(prefers-reduced-motion:reduce){.styaf-v2-up{transition:none!important}}
 </style>
+<!-- V114: visual-only floating actions refinement; preserves existing links and click handlers -->
+<style id="atyaf-v114-floating-actions">
+@media (max-width:767px) {
+  html body #atyafV90WhatsApp {
+    isolation:isolate!important;
+    overflow:visible!important;
+    will-change:transform;
+    animation:atyafV114WaBreath 2.8s ease-in-out infinite!important;
+  }
+  html body #atyafV90WhatsApp::before,
+  html body #atyafV90WhatsApp::after {
+    content:"";
+    position:absolute;
+    inset:-4px;
+    border:2px solid rgba(32,207,99,.48);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:-1;
+    animation:atyafV114WaRipple 2.8s ease-out infinite;
+  }
+  html body #atyafV90WhatsApp::after {animation-delay:1.4s}
+  html body #atyafV90WhatsApp:active {animation-play-state:paused!important;transform:scale(.94)!important}
+  html body .styaf-v2-up {
+    left:28px!important;
+    bottom:calc(187px + env(safe-area-inset-bottom,0px))!important;
+    width:36px!important;
+    height:36px!important;
+    background:rgba(35,57,50,.94)!important;
+    color:#fff!important;
+    border:1px solid rgba(255,255,255,.8)!important;
+    font-size:23px!important;
+    font-weight:400!important;
+    isolation:isolate!important;
+    overflow:visible!important;
+  }
+  html body .styaf-v2-up::before {
+    content:"";
+    position:absolute;
+    inset:-4px;
+    border-radius:50%;
+    border:2px solid transparent;
+    border-top-color:#fff;
+    border-right-color:rgba(255,255,255,.85);
+    pointer-events:none;
+    animation:atyafV114ArrowOrbit 2.2s linear infinite;
+  }
+  html body .styaf-v2-up:not(.visible)::before {animation-play-state:paused}
+}
+@keyframes atyafV114WaBreath {
+  0%,100% {box-shadow:0 7px 18px rgba(0,0,0,.2),0 0 0 0 rgba(32,207,99,.16)}
+  50% {box-shadow:0 8px 20px rgba(0,0,0,.2),0 0 0 5px rgba(32,207,99,.07)}
+}
+@keyframes atyafV114WaRipple {
+  0% {opacity:0;transform:scale(.9)}
+  15% {opacity:.7}
+  75%,100% {opacity:0;transform:scale(1.48)}
+}
+@keyframes atyafV114ArrowOrbit {to {transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce) {
+  html body #atyafV90WhatsApp,
+  html body #atyafV90WhatsApp::before,
+  html body #atyafV90WhatsApp::after,
+  html body .styaf-v2-up::before {animation:none!important}
+  html body #atyafV90WhatsApp::before,
+  html body #atyafV90WhatsApp::after {display:none!important}
+  html body .styaf-v2-up::before {border-color:rgba(255,255,255,.8)!important}
+}
+</style>
 </body>
 </html>
 

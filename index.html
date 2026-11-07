@@ -2057,6 +2057,48 @@ body.atyaf-cart-page-open #atyafCartPage {
   }
 }
 </style>
+
+<style id="atyaf-v130-compact-section-spacing">
+/* V130: mobile storefront section rhythm only. No markup or JS changes. */
+@media (max-width:767px) {
+  html body main#store #atyafFeaturedHome .atyaf-featured-section,
+  html body main#store #atyafBrandProductSections > section.atyaf-brand-products {
+    box-sizing:border-box!important;
+    padding-top:18px!important;
+    padding-bottom:12px!important;
+    margin-top:0!important;
+    margin-bottom:0!important;
+    min-height:0!important;
+  }
+  html body main#store #atyafFeaturedHome .atyaf-featured-section > .section-head,
+  html body main#store #atyafBrandProductSections > section.atyaf-brand-products > .section-head {
+    box-sizing:border-box!important;
+    display:flex!important;
+    flex-direction:row!important;
+    direction:rtl!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    min-height:28px!important;
+    height:auto!important;
+    padding:0!important;
+    margin:0 0 12px!important;
+    gap:10px!important;
+  }
+  html body main#store #atyafFeaturedHome .atyaf-featured-section > .section-head h2,
+  html body main#store #atyafBrandProductSections > section.atyaf-brand-products > .section-head h2 {
+    font-family:Tahoma,Arial,sans-serif!important;
+    font-size:17px!important;
+    font-weight:700!important;
+    line-height:1.5!important;
+    margin:0!important;
+  }
+  html body main#store #atyafFeaturedHome .atyaf-featured-section > .atyaf-featured-grid,
+  html body main#store #atyafBrandProductSections > section.atyaf-brand-products > .atyaf-brand-products-grid {
+    margin-top:0!important;
+    margin-bottom:0!important;
+  }
+}
+</style>
 </head>
 <body>
 <div id="atyafLoadingShell" role="status" aria-label="جارٍ تحميل متجر أطياف" aria-live="polite">
@@ -7501,4 +7543,5 @@ html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]::after {
 </style>
 </body>
 </html>
+
 

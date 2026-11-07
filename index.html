@@ -1928,6 +1928,43 @@ body{padding-bottom:65px!important}
 .atyaf-intro-flying-brand .atyaf-v112-ar{font:600 23px Amiri,Georgia,serif;color:#201a16}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar,#atyafIntroV12 .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}}
 </style>
+<style id="atyaf-v119-reference-intro-motion">
+/* Intro-only motion: mirrored wordmarks converge on the centered logo.
+   The logo performs a restrained 3D flip; the existing exit-to-header remains intact. */
+#atyafIntroV12 .atyaf-v112-brand{perspective:700px!important;transform-style:preserve-3d!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{
+  animation:atyaf119Left 1250ms cubic-bezier(.18,.85,.24,1) 80ms both!important;
+}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{
+  animation:atyaf119Right 1250ms cubic-bezier(.18,.85,.24,1) 80ms both!important;
+}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{
+  animation:atyaf119Center 1400ms cubic-bezier(.18,.85,.24,1) 40ms both!important;
+  backface-visibility:visible;
+}
+@keyframes atyaf119Left{
+  0%{opacity:0;transform:translate3d(-65px,0,0) rotateY(-65deg);filter:blur(5px)}
+  68%{opacity:1;transform:translate3d(4px,0,0) rotateY(7deg);filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) rotateY(0);filter:blur(0)}
+}
+@keyframes atyaf119Right{
+  0%{opacity:0;transform:translate3d(65px,0,0) rotateY(65deg);filter:blur(5px)}
+  68%{opacity:1;transform:translate3d(-4px,0,0) rotateY(-7deg);filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0) rotateY(0);filter:blur(0)}
+}
+@keyframes atyaf119Center{
+  0%{opacity:0;transform:scale(.55) rotateY(90deg);filter:blur(6px)}
+  65%{opacity:1;transform:scale(1.09) rotateY(-12deg);filter:blur(0)}
+  100%{opacity:1;transform:scale(1) rotateY(0);filter:blur(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  #atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,
+  #atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,
+  #atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{
+    animation:none!important;opacity:1!important;transform:none!important;filter:none!important;
+  }
+}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
@@ -7008,3 +7045,4 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()}
 </style>
 </body>
 </html>
+

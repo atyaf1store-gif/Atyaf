@@ -7186,6 +7186,110 @@ html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]::after {
   html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]{font-size:9.5px!important;padding:0 1px!important;letter-spacing:-.35px!important}
 }
 </style>
+
+<style id="atyaf-v127-reference-product-cards">
+/* V127: visual refinements limited to storefront product cards on mobile. */
+@media (max-width:767px) {
+  html body #productGrid.products,
+  html body #atyafBrandProductSections .atyaf-brand-products-grid,
+  html body #atyafFeaturedHome .atyaf-featured-grid,
+  html body #atyafScentResultGrid {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    column-gap:8px!important;row-gap:9px!important;
+    align-items:stretch!important;
+  }
+  html body #productGrid.products>.product,
+  html body #atyafBrandProductSections .atyaf-brand-products-grid>.atyaf-reference-card,
+  html body #atyafFeaturedHome .atyaf-featured-grid>.atyaf-reference-card,
+  html body #atyafScentResultGrid>.atyaf-reference-card {
+    border:1px solid #e2e2e2!important;
+    border-radius:7px!important;
+    box-shadow:none!important;
+    background:#fff!important;
+    overflow:hidden!important;
+  }
+  html body #productGrid .product>.product-visual,
+  html body #atyafBrandProductSections .atyaf-reference-card>.product-visual,
+  html body #atyafFeaturedHome .atyaf-reference-card>.product-visual,
+  html body #atyafScentResultGrid .atyaf-reference-card>.product-visual {
+    aspect-ratio:1 / 1.18!important;
+    height:auto!important;min-height:0!important;
+    padding:10px!important;background:#fff!important;
+    border:0!important;border-radius:0!important;
+  }
+  html body #productGrid .product>.product-visual>img,
+  html body #atyafBrandProductSections .atyaf-reference-card>.product-visual>img,
+  html body #atyafFeaturedHome .atyaf-reference-card>.product-visual>img,
+  html body #atyafScentResultGrid .atyaf-reference-card>.product-visual>img {
+    width:100%!important;height:100%!important;
+    object-fit:contain!important;object-position:center!important;
+    padding:0!important;margin:auto!important;
+  }
+  html body #productGrid .product>.product-info,
+  html body #atyafBrandProductSections .atyaf-reference-card>.product-info,
+  html body #atyafFeaturedHome .atyaf-reference-card>.product-info,
+  html body #atyafScentResultGrid .atyaf-reference-card>.product-info {
+    min-height:72px!important;height:auto!important;
+    padding:8px 9px 35px!important;
+    border-top:1px solid #ededed!important;
+    gap:2px!important;background:#fff!important;
+    text-align:right!important;
+  }
+  html body #productGrid .product .product-info>h3,
+  html body #atyafBrandProductSections .atyaf-reference-card .product-info>h3,
+  html body #atyafFeaturedHome .atyaf-reference-card .product-info>h3,
+  html body #atyafScentResultGrid .atyaf-reference-card .product-info>h3 {
+    font:400 11px/1.45 Tahoma,Arial,sans-serif!important;
+    color:#777!important;white-space:nowrap!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;
+    margin:0!important;
+  }
+  html body #productGrid .product .product-info>.price,
+  html body #atyafBrandProductSections .atyaf-reference-card .product-info>.price,
+  html body #atyafFeaturedHome .atyaf-reference-card .product-info>.price,
+  html body #atyafScentResultGrid .atyaf-reference-card .product-info>.price {
+    font:700 14px/1.4 Tahoma,Arial,sans-serif!important;
+    color:#c64b4e!important;gap:5px!important;
+    margin:0!important;
+  }
+  html body #productGrid .product .price .old,
+  html body #atyafBrandProductSections .atyaf-reference-card .price .old,
+  html body #atyafFeaturedHome .atyaf-reference-card .price .old,
+  html body #atyafScentResultGrid .atyaf-reference-card .price .old {
+    display:inline!important;font-size:10px!important;
+    font-weight:400!important;color:#999!important;
+    text-decoration:line-through!important;
+  }
+  html body #productGrid .product .favorite,
+  html body #atyafBrandProductSections .atyaf-reference-card .favorite,
+  html body #atyafFeaturedHome .atyaf-reference-card .favorite,
+  html body #atyafScentResultGrid .atyaf-reference-card .favorite {
+    width:29px!important;height:29px!important;min-width:29px!important;
+    top:9px!important;right:9px!important;
+    border:1px solid #eeeeee!important;border-radius:50%!important;
+    background:#fff!important;box-shadow:0 1px 3px #0000000b!important;
+    font-size:18px!important;color:#888!important;
+  }
+  html body #productGrid .product .atyaf-sale-corner,
+  html body #atyafBrandProductSections .atyaf-reference-card .atyaf-sale-corner,
+  html body #atyafFeaturedHome .atyaf-reference-card .atyaf-sale-corner,
+  html body #atyafScentResultGrid .atyaf-reference-card .atyaf-sale-corner {
+    top:0!important;left:0!important;right:auto!important;
+    padding:3px 5px!important;border-radius:0 0 4px 0!important;
+    font:700 11px/1.2 Arial,sans-serif!important;
+    background:#df493d!important;color:#fff!important;
+  }
+  /* Keep the existing working add-to-cart control in its original corner. */
+  html body .product[data-product-id]>.product-info,
+  html body .atyaf-reference-card[data-product-id]>.product-info {
+    min-height:72px!important;padding-bottom:35px!important;
+  }
+  html body .product-info>.atyaf-v89-bag {
+    width:28px!important;height:28px!important;
+    min-width:28px!important;min-height:28px!important;
+    left:8px!important;bottom:7px!important;
+  }
+}
+</style>
 </body>
 </html>
-

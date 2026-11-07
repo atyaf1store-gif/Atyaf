@@ -7136,29 +7136,54 @@ html body button.styaf-v2-up svg path{stroke:#fff!important;fill:none!important;
 html body button.styaf-v2-up.visible{opacity:1!important;visibility:visible!important;pointer-events:auto!important}
 </style>
 
-<!-- V125: navigation spacing only; preserves links and tab handlers -->
+<!-- V126: equal six-column Arabic navigation; links and handlers unchanged -->
 <style id="atyaf-v125-balanced-arabic-tabs">
-.header .nav .container.navrow {
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:clamp(12px,2.4vw,26px)!important;
-  width:max-content!important;
-  min-width:100%!important;
-  max-width:none!important;
-  padding-inline:clamp(14px,3vw,24px)!important;
+/* Six equal cells across the viewport, including equal outer edges. */
+html body header.header #nav.nav {
+  width:100%!important;
+  overflow-x:hidden!important;
+}
+html body header.header #nav.nav .container.navrow {
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  justify-content:stretch!important;
+  direction:ltr!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0 6px!important;
+  gap:0!important;
   box-sizing:border-box!important;
 }
-.header .nav .navrow > a {
-  flex:0 0 auto!important;
-  display:inline-flex!important;
+html body header.header #nav.nav .navrow > a[data-atyaf-main-tab] {
+  display:flex!important;
   align-items:center!important;
   justify-content:center!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0 2px!important;
+  flex:none!important;
   min-height:44px!important;
-  line-height:1.25!important;
-  font-size:clamp(11px,2.7vw,14px)!important;
-  letter-spacing:0!important;
+  text-align:center!important;
+  direction:rtl!important;
   white-space:nowrap!important;
+  letter-spacing:-.2px!important;
+  font-size:clamp(10px,2.6vw,14px)!important;
+  line-height:1.25!important;
+}
+/* Center the active underline within its own equally sized cell. */
+html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]::after {
+  left:15%!important;
+  right:15%!important;
+  width:70%!important;
+}
+@media(max-width:380px){
+  html body header.header #nav.nav .container.navrow{padding:0 3px!important}
+  html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]{font-size:9.5px!important;padding:0 1px!important;letter-spacing:-.35px!important}
 }
 </style>
 </body>

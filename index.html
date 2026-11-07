@@ -2062,7 +2062,7 @@ body.atyaf-cart-page-open #atyafCartPage {
 <div id="atyafLoadingShell" role="status" aria-label="جارٍ تحميل متجر أطياف" aria-live="polite">
   <div class="als-status"></div>
   <div class="als-head"><div class="als-side"><span aria-hidden="true">☰</span><span aria-hidden="true">⌕</span></div><div class="als-brand"><span>ATYAF</span><span class="als-mark" aria-hidden="true">✦</span><b>أطياف</b></div><div class="als-side" style="justify-content:flex-end" aria-hidden="true">♡</div></div>
-  <div class="als-tabs"><span class="als-active">All</span><span>Offers</span><span>Trending</span><span>New arrivals</span><span>Scents</span><span>Products</span></div>
+  <div class="als-tabs"><span class="als-active">الكل</span><span>العروض</span><span>الرائج</span><span>وصل حديثًا</span><span>الروائح</span><span>المنتجات</span></div>
   <div class="als-hero" aria-hidden="true"></div>
   <div class="als-services"><div class="als-service"><div><strong>شحن مجاني</strong><small>على الطلبات المؤهلة</small></div><span class="als-icon" aria-hidden="true">♧</span></div><div class="als-service"><div><strong>إرجاع سهل</strong><small>اعرف المزيد</small></div><span class="als-icon" aria-hidden="true">↶</span></div></div>
   <div class="als-content"><h2 class="als-title">الفئات</h2><div class="als-grid" aria-hidden="true"><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div><div class="als-tile"><div class="als-box"></div><div class="als-line"></div></div></div></div>
@@ -2091,7 +2091,7 @@ body.atyaf-cart-page-open #atyafCartPage {
   </div>
 </div>
     </div>
-    <nav class="nav" id="nav" aria-label="الأقسام الرئيسية"><div class="container navrow" dir="ltr"><a href="#home" data-atyaf-main-tab="all" class="atyaf-tab-active">ALL</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="sale">Offers</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="best">Trending</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="new">New arrivals</a><a href="#atyafScentsCatalog" data-atyaf-main-tab="scents">Scents</a><a href="#atyafBrandProductSections" data-atyaf-main-tab="products">Products</a></div></nav>
+    <nav class="nav" id="nav" aria-label="الأقسام الرئيسية"><div class="container navrow" dir="ltr"><a href="#home" data-atyaf-main-tab="all" class="atyaf-tab-active">الكل</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="sale">العروض</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="best">الرائج</a><a href="#atyafFeaturedHome" data-atyaf-main-tab="new">وصل حديثًا</a><a href="#atyafScentsCatalog" data-atyaf-main-tab="scents">الروائح</a><a href="#atyafBrandProductSections" data-atyaf-main-tab="products">المنتجات</a></div></nav>
   </header>
   <div id="atyafRefMenuPanel" class="atyaf-ref-menu-panel" hidden aria-label="القائمة الرئيسية" dir="rtl"></div>
   <div class="topbar" id="topbar"><span>شحن مجاني للطلبات فوق ٣٥٠ ر.س — اكتشف عطرك الجديد اليوم</span><button onclick="toggleTopbar()" aria-label="إغلاق">×</button></div>
@@ -5136,9 +5136,9 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
  'use strict';
  const nav=document.getElementById('nav');if(!nav)return;
  const row=nav.querySelector('.navrow');if(!row)return;
- const tabs=[['all','ALL','#home'],['sale','Offers','#atyafFeaturedHome'],
-   ['best','Trending','#atyafFeaturedHome'],['new','New arrivals','#atyafFeaturedHome'],
-   ['scents','Scents','#atyafScentsCatalog'],['products','Products','#atyafBrandProductSections']];
+ const tabs=[['all','الكل','#home'],['sale','العروض','#atyafFeaturedHome'],
+   ['best','الرائج','#atyafFeaturedHome'],['new','وصل حديثًا','#atyafFeaturedHome'],
+   ['scents','الروائح','#atyafScentsCatalog'],['products','المنتجات','#atyafBrandProductSections']];
  let active='all';
  const markup=()=>tabs.map(([id,label,href])=>'<a href="'+href+'" data-atyaf-main-tab="'+id+'"'+(id===active?' class="atyaf-tab-active"':'')+'>'+label+'</a>').join('');
  const correct=()=>{const links=[...row.children];return links.length===tabs.length&&links.every((a,i)=>

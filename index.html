@@ -1907,6 +1907,27 @@ body{padding-bottom:65px!important}
 #atyafIntroV12 .atyaf-v94-skip,#atyafIntroV12 .atyaf-v94-progress{display:none!important}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v112-brand{transition:none!important;transform:none!important}}
 </style>
+<style id="atyaf-v113-interactive-intro">
+/* V113: staged reveal inspired by the reference video; isolated to intro. */
+#atyafIntroV12 .atyaf-v112-brand{opacity:1!important;transform:none!important;transition:none!important;gap:7px!important;overflow:visible}
+#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar,#atyafIntroV12 .atyaf-v112-logo{will-change:transform,opacity,filter}
+#atyafIntroV12 .atyaf-v112-en{opacity:0;transform:translateX(-55vw);filter:blur(5px)}
+#atyafIntroV12 .atyaf-v112-ar{opacity:0;transform:translateX(55vw);filter:blur(5px)}
+#atyafIntroV12 .atyaf-v112-logo{opacity:0;transform:scale(.45) rotate(-12deg);filter:blur(8px)}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{animation:atyaf113En 1050ms cubic-bezier(.18,.9,.24,1.08) 100ms both}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{animation:atyaf113Ar 1050ms cubic-bezier(.18,.9,.24,1.08) 100ms both}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:atyaf113Logo 1200ms cubic-bezier(.18,.9,.24,1.1) 80ms both}
+@keyframes atyaf113En{0%{opacity:0;transform:translateX(-55vw);filter:blur(5px)}70%{opacity:1;filter:blur(0)}100%{opacity:1;transform:translateX(0);filter:blur(0)}}
+@keyframes atyaf113Ar{0%{opacity:0;transform:translateX(55vw);filter:blur(5px)}70%{opacity:1;filter:blur(0)}100%{opacity:1;transform:translateX(0);filter:blur(0)}}
+@keyframes atyaf113Logo{0%{opacity:0;transform:scale(.45) rotate(-12deg);filter:blur(8px)}65%{opacity:1;transform:scale(1.13) rotate(2deg);filter:blur(0)}100%{opacity:1;transform:scale(1) rotate(0);filter:blur(0)}}
+#atyafIntroV12 .atyaf-v94-media{animation:none!important;opacity:1!important;filter:none!important;transform:none!important}
+.atyaf-intro-flying-brand{position:fixed!important;z-index:2147483001!important;pointer-events:none!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;direction:ltr!important;white-space:nowrap!important;transform-origin:center center!important;will-change:transform,opacity!important}
+.atyaf-intro-flying-brand .atyaf-v112-logo{display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;border:1px solid #e6d9b8;border-radius:13px;background:#fff;overflow:hidden}
+.atyaf-intro-flying-brand .atyaf-v94-media{width:44px!important;height:44px!important;object-fit:contain!important}
+.atyaf-intro-flying-brand .atyaf-v112-en{font:500 19px Georgia,serif;color:#201a16}
+.atyaf-intro-flying-brand .atyaf-v112-ar{font:600 23px Amiri,Georgia,serif;color:#201a16}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar,#atyafIntroV12 .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
@@ -2971,29 +2992,39 @@ window.addEventListener("focus",atyafLoadLowerAds);
       release();
       return;
     }
-    // Use a separate image so it can animate above the fading splash.
-    const flying = s.media.cloneNode(false);
-    flying.removeAttribute('id');
-    flying.className = 'atyaf-intro-flying-logo';
+    // Animate the entire wordmark to the existing header logo (not just the image).
+    const brand = s.root.querySelector('.atyaf-v112-brand');
+    const box = brand && brand.getBoundingClientRect();
+    if (!box || !box.width || !box.height) {
+      s.root.classList.add('atyaf-v94-exit');
+      setTimeout(() => s.root.remove(), 650);
+      release();
+      return;
+    }
+    const flying = brand.cloneNode(true);
+    flying.className = 'atyaf-intro-flying-brand';
     Object.assign(flying.style, {
-      top: source.top + 'px', left: source.left + 'px',
-      width: source.width + 'px', height: source.height + 'px',
-      opacity: '1', filter: 'drop-shadow(0 12px 24px rgba(23,53,46,.12))',
-      transition: 'top 1000ms cubic-bezier(.22,1,.36,1),left 1000ms cubic-bezier(.22,1,.36,1),width 1000ms cubic-bezier(.22,1,.36,1),height 1000ms cubic-bezier(.22,1,.36,1),opacity 250ms ease 800ms,filter 1000ms ease'
+      left: box.left + 'px', top: box.top + 'px', width: box.width + 'px', height: box.height + 'px',
+      opacity: '1', transform: 'translate3d(0,0,0) scale(1)',
+      transition: 'transform 1050ms cubic-bezier(.22,1,.36,1), opacity 250ms ease 820ms'
     });
     document.body.appendChild(flying);
-    s.media.style.opacity = '0';
+    // Make the animated clone match the visible final positions, regardless of timing.
+    flying.querySelectorAll('.atyaf-v112-en,.atyaf-v112-ar,.atyaf-v112-logo').forEach(el => {
+      el.style.animation = 'none'; el.style.opacity = '1'; el.style.transform = 'none'; el.style.filter = 'none';
+    });
+    brand.style.opacity = '0';
     s.root.classList.add('atyaf-v94-exit');
     release();
+    const scale = Math.min(1, dest.height / box.height);
+    const dx = dest.left + dest.width / 2 - (box.left + box.width / 2);
+    const dy = dest.top + dest.height / 2 - (box.top + box.height / 2);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      Object.assign(flying.style, {
-        top: dest.top + 'px', left: dest.left + 'px',
-        width: dest.width + 'px', height: dest.height + 'px',
-        opacity: '0', filter: 'drop-shadow(0 0 0 transparent)'
-      });
+      flying.style.transform = `translate3d(${dx}px,${dy}px,0) scale(${scale})`;
+      flying.style.opacity = '0';
     }));
     setTimeout(() => s.root.remove(), 650);
-    setTimeout(() => flying.remove(), 1120);
+    setTimeout(() => flying.remove(), 1200);
   }
   window.atyafApplyAdminIntroV12 = function (raw) {
     let cfg = raw;
@@ -3055,7 +3086,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       s.loaded = true;
       clearTimeout(s.loadTimer);
       root.classList.add('atyaf-v94-visible');
-      s.timer = setTimeout(finish, duration);
+      s.timer = setTimeout(finish, Math.max(duration, 2100));
     };
     skip.addEventListener('click', finish);
     media.addEventListener('error', finish, { once: true });

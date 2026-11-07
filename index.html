@@ -1895,6 +1895,18 @@ body{padding-bottom:65px!important}
 @keyframes atyaf-v94-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v94-media{transition:none!important;transform:none!important}#atyafIntroV12 .atyaf-v94-progress{animation:none!important}}
 </style>
+<style id="atyaf-v112-brand-splash">
+/* V112: isolated, reference-matched cream splash with centered store logo. */
+#atyafIntroV12.atyaf-v94-intro{background:#f7f3eb!important}
+#atyafIntroV12 .atyaf-v112-brand{display:flex;align-items:center;justify-content:center;gap:5px;direction:ltr;max-width:calc(100vw - 32px);white-space:nowrap;opacity:0;transform:translateY(9px);transition:opacity .65s ease,transform .8s ease}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand{opacity:1;transform:translateY(0)}
+#atyafIntroV12 .atyaf-v112-en{font-family:Georgia,'Times New Roman',serif;font-size:clamp(16px,4.1vw,19px);font-weight:500;letter-spacing:-.5px;color:#201a16}
+#atyafIntroV12 .atyaf-v112-ar{font-family:'Amiri',Georgia,serif;font-size:clamp(18px,4.8vw,23px);font-weight:600;color:#201a16;line-height:1.2}
+#atyafIntroV12 .atyaf-v112-logo{width:48px;height:48px;flex:0 0 48px;border:1px solid #e6d9b8;border-radius:13px;display:grid;place-items:center;background:#fff;box-shadow:0 3px 9px rgba(50,36,20,.11);overflow:hidden}
+#atyafIntroV12 .atyaf-v94-media{width:44px!important;height:44px!important;max-width:44px!important;max-height:44px!important;object-fit:contain!important;opacity:1!important;transform:none!important;animation:none!important;transition:none!important}
+#atyafIntroV12 .atyaf-v94-skip,#atyafIntroV12 .atyaf-v94-progress{display:none!important}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v112-brand{transition:none!important;transform:none!important}}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
@@ -2992,7 +3004,10 @@ window.addEventListener("focus",atyafLoadLowerAds);
     if (!url) { close(true); return; }
     // Settings sync runs repeatedly; never restart a completed or skipped intro.
     if (introAlreadyShown) { release(); return; }
-    const video = cfg.mediaType === 'video' && !!mediaURL;
+    const video = false; // V112 splash always uses a static store logo.
+    const headerLogo = findHeaderLogo();
+    const headerLogoURL = headerLogo && headerLogo.tagName === 'IMG' ? validURL(headerLogo.currentSrc || headerLogo.src) : '';
+    const splashLogoURL = headerLogoURL || validURL(cfg.logoImage) || url;
     const n = Number(cfg.duration);
     const duration = Number.isFinite(n) && n > 0 ? Math.min(12000, Math.max(1500, n)) : 3200;
     const signature = JSON.stringify([url, video, duration]);
@@ -3016,7 +3031,22 @@ window.addEventListener("focus",atyafLoadLowerAds);
     progress.className = 'atyaf-v94-progress';
     progress.style.animationDuration = duration + 'ms';
     progress.setAttribute('aria-hidden', 'true');
-    root.append(media, skip, progress);
+    // Reference layout: ATYAF [store logo] أطياف, horizontally centered.
+    const brand = document.createElement('div');
+    brand.className = 'atyaf-v112-brand';
+    const en = document.createElement('span');
+    en.className = 'atyaf-v112-en';
+    en.textContent = 'ATYAF';
+    const logoBox = document.createElement('span');
+    logoBox.className = 'atyaf-v112-logo';
+    const ar = document.createElement('span');
+    ar.className = 'atyaf-v112-ar';
+    ar.lang = 'ar';
+    ar.dir = 'rtl';
+    ar.textContent = 'أطياف';
+    brand.append(en, logoBox, ar);
+    logoBox.append(media);
+    root.append(brand, skip, progress);
     const s = { root, media, video, signature, timer: 0, loadTimer: 0, loaded: false };
     state = s;
     const finish = () => { if (state === s) close(false); };
@@ -3033,7 +3063,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     if (video) media.addEventListener('ended', finish, { once: true });
     document.body.append(root);
     s.loadTimer = setTimeout(finish, 6000);
-    media.src = url;
+    media.src = splashLogoURL;
     if (video) media.play().catch(finish);
     else if (media.complete && media.naturalWidth > 0) loaded();
     release();

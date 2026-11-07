@@ -1928,38 +1928,42 @@ body{padding-bottom:65px!important}
 .atyaf-intro-flying-brand .atyaf-v112-ar{font:600 23px Amiri,Georgia,serif;color:#201a16}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar,#atyafIntroV12 .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}}
 </style>
-<style id="atyaf-v121-side-mirror-intro">
-/* V121 — side-by-side horizontal reflections, strictly within the splash. */
-#atyafIntroV12 .atyaf-v112-brand{perspective:900px!important;overflow:visible!important;isolation:isolate}
-#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{position:relative!important;display:inline-block!important;isolation:isolate;white-space:nowrap}
-#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{
-  content:attr(data-reflection);position:absolute;top:0;width:100%;height:100%;
-  font:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;
-  white-space:nowrap;text-align:center;direction:ltr;transform:scaleX(-1);
-  opacity:.34;pointer-events:none;filter:blur(.45px);
-  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 65%);
-  mask-image:linear-gradient(to right,transparent 0%,#000 65%);
+<style id="atyaf-v121-horizontal-mirror-intro">
+/* Isolated splash animation: horizontal word reflections, then fly to existing header mark. */
+#atyafIntroV12 .atyaf-v112-brand{direction:ltr!important;overflow:visible!important;isolation:isolate!important;gap:7px!important}
+#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{position:relative!important;display:inline-block!important;overflow:visible!important;isolation:visible!important;white-space:nowrap!important}
+/* The reflected copy is BESIDE each word, not underneath it. */
+#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after,
+.atyaf-intro-flying-brand .atyaf-v112-en::after,.atyaf-intro-flying-brand .atyaf-v112-ar::after{
+ content:attr(data-reflection);position:absolute;top:0;width:100%;height:100%;
+ font:inherit;letter-spacing:inherit;line-height:inherit;color:inherit;text-align:center;
+ white-space:nowrap;pointer-events:none;display:block;
+ transform:scaleX(-1);opacity:0;filter:blur(1px);
+ -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 75%);
+ mask-image:linear-gradient(to right,transparent 0%,#000 75%);
 }
-/* English reflection faces outward to the left; Arabic reflection faces outward to the right. */
-#atyafIntroV12 .atyaf-v112-en::after{right:calc(100% + 5px);left:auto}
-#atyafIntroV12 .atyaf-v112-ar::after{left:calc(100% + 5px);right:auto;direction:rtl;
-  -webkit-mask-image:linear-gradient(to left,transparent 0%,#000 65%);
-  mask-image:linear-gradient(to left,transparent 0%,#000 65%)}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{animation:atyaf121En 1450ms cubic-bezier(.2,.8,.2,1) 80ms both!important}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{animation:atyaf121Ar 1450ms cubic-bezier(.2,.8,.2,1) 80ms both!important}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:atyaf121Logo 1500ms cubic-bezier(.2,.8,.2,1) 70ms both!important}
-@keyframes atyaf121En{0%{opacity:0;transform:translateX(-80px) rotateY(75deg);filter:blur(5px)}65%{opacity:1;transform:translateX(4px) rotateY(-9deg);filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
-@keyframes atyaf121Ar{0%{opacity:0;transform:translateX(80px) rotateY(-75deg);filter:blur(5px)}65%{opacity:1;transform:translateX(-4px) rotateY(9deg);filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
-@keyframes atyaf121Logo{0%{opacity:0;transform:scale(.55) rotateY(80deg);filter:blur(5px)}70%{opacity:1;transform:scale(1.07) rotateY(-8deg);filter:none}100%{opacity:1;transform:none;filter:none}}
-/* Opposing outward exit, with the reflection attached to each word. */
-#atyafIntroV12.atyaf-v121-depart .atyaf-v112-en{animation:atyaf121EnOut 650ms cubic-bezier(.55,0,.9,.4) both!important}
-#atyafIntroV12.atyaf-v121-depart .atyaf-v112-ar{animation:atyaf121ArOut 650ms cubic-bezier(.55,0,.9,.4) both!important}
-#atyafIntroV12.atyaf-v121-depart .atyaf-v112-logo{animation:atyaf121LogoOut 650ms ease-in both!important}
-@keyframes atyaf121EnOut{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:translateX(-48vw) rotateY(-45deg);filter:blur(5px)}}
-@keyframes atyaf121ArOut{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:translateX(48vw) rotateY(45deg);filter:blur(5px)}}
-@keyframes atyaf121LogoOut{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:scale(.6) rotateY(65deg);filter:blur(4px)}}
-#atyafIntroV12.atyaf-v121-depart{transition:opacity .22s ease .48s!important;opacity:0!important;pointer-events:none!important}
-@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}}
+#atyafIntroV12 .atyaf-v112-en::after,.atyaf-intro-flying-brand .atyaf-v112-en::after{right:calc(100% + 5px)}
+#atyafIntroV12 .atyaf-v112-ar::after,.atyaf-intro-flying-brand .atyaf-v112-ar::after{
+ left:calc(100% + 5px);
+ -webkit-mask-image:linear-gradient(to left,transparent 0%,#000 75%);
+ mask-image:linear-gradient(to left,transparent 0%,#000 75%);
+}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{animation:atyaf121En 1100ms cubic-bezier(.18,.85,.22,1) 100ms both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{animation:atyaf121Ar 1100ms cubic-bezier(.18,.85,.22,1) 100ms both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:atyaf121Logo 1150ms cubic-bezier(.18,.85,.22,1) 90ms both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after{animation:atyaf121ReflectionLeft 2300ms ease-in-out 350ms both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:atyaf121ReflectionRight 2300ms ease-in-out 350ms both!important}
+@keyframes atyaf121En{0%{opacity:0;transform:translateX(-48px) rotateY(85deg);filter:blur(5px)}65%{opacity:1;transform:translateX(3px) rotateY(-8deg);filter:none}100%{opacity:1;transform:none;filter:none}}
+@keyframes atyaf121Ar{0%{opacity:0;transform:translateX(48px) rotateY(-85deg);filter:blur(5px)}65%{opacity:1;transform:translateX(-3px) rotateY(8deg);filter:none}100%{opacity:1;transform:none;filter:none}}
+@keyframes atyaf121Logo{0%{opacity:0;transform:scale(.58) rotateY(100deg);filter:blur(5px)}70%{opacity:1;transform:scale(1.06);filter:none}100%{opacity:1;transform:none;filter:none}}
+@keyframes atyaf121ReflectionLeft{0%,10%{opacity:0;transform:translateX(22px) scaleX(-1)}30%,64%{opacity:.38;transform:translateX(0) scaleX(-1)}100%{opacity:0;transform:translateX(-65px) scaleX(-1)}}
+@keyframes atyaf121ReflectionRight{0%,10%{opacity:0;transform:translateX(-22px) scaleX(-1)}30%,64%{opacity:.38;transform:translateX(0) scaleX(-1)}100%{opacity:0;transform:translateX(65px) scaleX(-1)}}
+/* Flying clone: no lingering duplicate reflections during transition. */
+.atyaf-intro-flying-brand .atyaf-v112-en::after,.atyaf-intro-flying-brand .atyaf-v112-ar::after{display:none!important}
+@media(prefers-reduced-motion:reduce){
+ #atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}
+ #atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{display:none!important}
+}
 </style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
@@ -3014,19 +3018,50 @@ window.addEventListener("focus",atyafLoadLowerAds);
     clearTimeout(s.loadTimer);
     if (s.video) { try { s.media.pause(); } catch (_) {} }
     if (immediate) { s.root.remove(); release(); return; }
-    const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced || !s.loaded) {
+    const target = findHeaderLogo();
+    const source = s.media.getBoundingClientRect();
+    const dest = target && target.getBoundingClientRect();
+    const canFly = !s.video && s.loaded && dest && source.width > 0 && source.height > 0 &&
+      dest.width > 0 && dest.height > 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!canFly) {
       s.root.classList.add('atyaf-v94-exit');
       setTimeout(() => s.root.remove(), 460);
       release();
       return;
     }
-    // Preserve the complete intro during the opposing exit; release storefront afterwards.
-    s.root.classList.add('atyaf-v121-depart');
-    setTimeout(() => {
-      s.root.remove();
+    // Animate the entire wordmark to the existing header logo (not just the image).
+    const brand = s.root.querySelector('.atyaf-v112-brand');
+    const box = brand && brand.getBoundingClientRect();
+    if (!box || !box.width || !box.height) {
+      s.root.classList.add('atyaf-v94-exit');
+      setTimeout(() => s.root.remove(), 650);
       release();
-    }, 720);
+      return;
+    }
+    const flying = brand.cloneNode(true);
+    flying.className = 'atyaf-intro-flying-brand';
+    Object.assign(flying.style, {
+      left: box.left + 'px', top: box.top + 'px', width: box.width + 'px', height: box.height + 'px',
+      opacity: '1', transform: 'translate3d(0,0,0) scale(1)',
+      transition: 'transform 1050ms cubic-bezier(.22,1,.36,1), opacity 250ms ease 820ms'
+    });
+    document.body.appendChild(flying);
+    // Make the animated clone match the visible final positions, regardless of timing.
+    flying.querySelectorAll('.atyaf-v112-en,.atyaf-v112-ar,.atyaf-v112-logo').forEach(el => {
+      el.style.animation = 'none'; el.style.opacity = '1'; el.style.transform = 'none'; el.style.filter = 'none';
+    });
+    brand.style.opacity = '0';
+    s.root.classList.add('atyaf-v94-exit');
+    release();
+    const scale = Math.min(1, dest.height / box.height);
+    const dx = dest.left + dest.width / 2 - (box.left + box.width / 2);
+    const dy = dest.top + dest.height / 2 - (box.top + box.height / 2);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      flying.style.transform = `translate3d(${dx}px,${dy}px,0) scale(${scale})`;
+      flying.style.opacity = '0';
+    }));
+    setTimeout(() => s.root.remove(), 650);
+    setTimeout(() => flying.remove(), 1200);
   }
   window.atyafApplyAdminIntroV12 = function (raw) {
     let cfg = raw;
@@ -3090,7 +3125,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       s.loaded = true;
       clearTimeout(s.loadTimer);
       root.classList.add('atyaf-v94-visible');
-      s.timer = setTimeout(finish, Math.max(duration, 2100));
+      s.timer = setTimeout(finish, Math.max(duration, 2950));
     };
     skip.addEventListener('click', finish);
     media.addEventListener('error', finish, { once: true });

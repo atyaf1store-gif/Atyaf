@@ -4286,33 +4286,43 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   up.setAttribute('aria-label', 'العودة إلى أعلى الصفحة');
   up.setAttribute('title', 'العودة إلى الأعلى');
-  up.textContent = '↑';
+  // SVG avoids font-dependent arrow rendering on Safari/iOS.
+  up.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="23" height="23" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20V4M5.5 10.5 12 4l6.5 6.5" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-  const scrollTopOf = el => el === window ? window.scrollY : el.scrollTop;
+  function scrollable(el) {
+    if (!el || el === document.body || el === document.documentElement) return false;
+    const css = getComputedStyle(el);
+    return /(auto|scroll|overlay)/.test(css.overflowY) && el.scrollHeight > el.clientHeight + 12;
+  }
   function activeScroller() {
     const cart = document.getElementById('atyafCartPage');
-    if (cart?.classList.contains('open')) return cart;
-    const candidates = [
-      document.querySelector('#productModal.open'),
-      document.querySelector('.modal.open .modal-card'),
-      document.querySelector('.drawer.open .cart-list')
-    ].filter(Boolean);
-    return candidates.find(el => el.scrollHeight > el.clientHeight + 10) || window;
+    if (cart && getComputedStyle(cart).display !== 'none' && (cart.classList.contains('open') || cart.getBoundingClientRect().height > 0)) return cart;
+    const dialogs = [...document.querySelectorAll('#productModal, .modal.open, .drawer.open, [role="dialog"], .panel.active')]
+      .filter(el => getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden');
+    for (const dialog of dialogs.reverse()) {
+      if (scrollable(dialog)) return dialog;
+      const descendants = [...dialog.querySelectorAll('*')].filter(scrollable);
+      if (descendants.length) return descendants[0];
+    }
+    const other = [...document.querySelectorAll('main, .page.active, .screen.active')].find(scrollable);
+    return other || window;
   }
+  const topOf = el => el === window ? (window.scrollY || document.documentElement.scrollTop || 0) : el.scrollTop;
   function sync() {
     const target = activeScroller();
-    up.classList.toggle('visible', scrollTopOf(target) > 160);
-    up.style.zIndex = target === window ? '100' : '10100';
+    const visible = topOf(target) > 160;
+    up.classList.toggle('visible', visible);
+    up.style.setProperty('z-index', '2147483000', 'important');
   }
   up.addEventListener('click', function () {
     const target = activeScroller();
-    if (target === window) window.scrollTo({ top: 0, behavior: 'smooth' });
-    else target.scrollTo({ top: 0, behavior: 'smooth' });
+    target.scrollTo({top:0,behavior:'smooth'});
   });
-  // Capture scroll events from the window AND independently scrollable store screens.
-  document.addEventListener('scroll', sync, { passive: true, capture: true });
-  window.addEventListener('scroll', sync, { passive: true });
-  document.addEventListener('click', () => requestAnimationFrame(sync), { passive: true });
+  document.addEventListener('scroll', sync, {passive:true,capture:true});
+  window.addEventListener('scroll', sync, {passive:true});
+  document.addEventListener('click', () => requestAnimationFrame(sync), {passive:true});
+  const observer = new MutationObserver(() => requestAnimationFrame(sync));
+  ['atyafCartPage','productModal'].forEach(id => {const el=document.getElementById(id);if(el)observer.observe(el,{attributes:true,attributeFilter:['class','style']});});
   sync();
 });
 </script>
@@ -7117,7 +7127,13 @@ html body .styaf-v2-up.visible {
   }
 }
 </style>
+
+<!-- V123: isolated Safari-safe white arrow and overlay visibility -->
+<style id="atyaf-v123-arrow-final">
+html body button.styaf-v2-up{z-index:2147483000!important;color:#fff!important;-webkit-text-fill-color:#fff!important;display:grid!important;place-items:center!important}
+html body button.styaf-v2-up svg{display:block!important;width:23px!important;height:23px!important;min-width:23px!important;min-height:23px!important;overflow:visible!important;flex:none!important;transform:none!important}
+html body button.styaf-v2-up svg path{stroke:#fff!important;fill:none!important;stroke-width:2.3!important;opacity:1!important}
+html body button.styaf-v2-up.visible{opacity:1!important;visibility:visible!important;pointer-events:auto!important}
+</style>
 </body>
 </html>
-
-

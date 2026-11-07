@@ -4265,7 +4265,57 @@ html[data-atyaf-gift="hide"] .atyaf-gift-action,html[data-atyaf-gift="hide"] [on
 })();
 </script>
 
-<script id="styaf-v2-interactions">document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-styaf-filter]').forEach(function(el){el.addEventListener('click',function(){var filter=el.getAttribute('data-styaf-filter');var chip=document.querySelector('.filters .chip[data-filter="'+filter+'"]');if(chip&&typeof window.setFilter==='function'){window.setFilter(filter,chip)}document.getElementById('products')?.scrollIntoView({behavior:'smooth',block:'start'})})});var up=document.createElement('button');up.type='button';up.className='styaf-v2-up';up.setAttribute('aria-label','العودة إلى أعلى الصفحة');up.textContent='↑';document.body.appendChild(up);up.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});function sync(){up.classList.toggle('visible',window.scrollY>320)}window.addEventListener('scroll',sync,{passive:true});sync()});</script>
+<script id="styaf-v2-interactions">
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('[data-styaf-filter]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      const filter = el.getAttribute('data-styaf-filter');
+      const chip = document.querySelector('.filters .chip[data-filter="' + CSS.escape(filter || '') + '"]');
+      if (chip && typeof window.setFilter === 'function') window.setFilter(filter, chip);
+      document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Reuse the existing arrow: one button, one scroll handler, no changes to WhatsApp.
+  let up = document.querySelector('.styaf-v2-up');
+  if (!up) {
+    up = document.createElement('button');
+    up.type = 'button';
+    up.className = 'styaf-v2-up';
+    document.body.appendChild(up);
+  }
+  up.setAttribute('aria-label', 'العودة إلى أعلى الصفحة');
+  up.setAttribute('title', 'العودة إلى الأعلى');
+  up.textContent = '↑';
+
+  const scrollTopOf = el => el === window ? window.scrollY : el.scrollTop;
+  function activeScroller() {
+    const cart = document.getElementById('atyafCartPage');
+    if (cart?.classList.contains('open')) return cart;
+    const candidates = [
+      document.querySelector('#productModal.open'),
+      document.querySelector('.modal.open .modal-card'),
+      document.querySelector('.drawer.open .cart-list')
+    ].filter(Boolean);
+    return candidates.find(el => el.scrollHeight > el.clientHeight + 10) || window;
+  }
+  function sync() {
+    const target = activeScroller();
+    up.classList.toggle('visible', scrollTopOf(target) > 160);
+    up.style.zIndex = target === window ? '100' : '10100';
+  }
+  up.addEventListener('click', function () {
+    const target = activeScroller();
+    if (target === window) window.scrollTo({ top: 0, behavior: 'smooth' });
+    else target.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  // Capture scroll events from the window AND independently scrollable store screens.
+  document.addEventListener('scroll', sync, { passive: true, capture: true });
+  window.addEventListener('scroll', sync, { passive: true });
+  document.addEventListener('click', () => requestAnimationFrame(sync), { passive: true });
+  sync();
+});
+</script>
 <script id="styaf-product-click-v3">
 document.addEventListener('click',function(e){const target=e.target.closest('.product-visual,.product-info h3');if(!target||e.target.closest('button,a'))return;const card=target.closest('.product[data-product-id]');if(!card||card.hasAttribute('onclick'))return;if(typeof quickView==='function')quickView(card.dataset.productId)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.getElementById('productModal')?.classList.contains('open'))closeProductDetails()});
@@ -7045,5 +7095,29 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()}
 #atyafV90WhatsApp > svg { width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important;max-width:27px!important;max-height:27px!important;display:block!important;flex:none!important;overflow:visible!important;transform:none!important;filter:none!important;opacity:1!important;stroke:none!important; }
 #atyafV90WhatsApp > svg > path {fill:#fff!important;fill-rule:evenodd!important;clip-rule:evenodd!important;stroke:none!important;opacity:1!important;transform:none!important;}
 </style>
+
+<style id="atyaf-v122-arrow-white-global-fix">
+html body .styaf-v2-up,
+html body .styaf-v2-up.visible {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  background:#294d40!important;
+  border:1px solid rgba(255,255,255,.88)!important;
+  text-shadow:none!important;
+  font-family:Arial,sans-serif!important;
+  font-size:25px!important;
+  font-weight:400!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+@media (max-width:767px) {
+  html body .styaf-v2-up {
+    left:18px!important;
+    bottom:calc(139px + env(safe-area-inset-bottom,0px))!important;
+  }
+}
+</style>
 </body>
 </html>
+
+

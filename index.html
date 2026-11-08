@@ -2540,14 +2540,35 @@ body.atyaf-cart-page-open #atyafCartPage {
       const y = from.top + from.height / 2 - 15;
       const dx = to.left + to.width / 2 - 15 - x;
       const dy = to.top + to.height / 2 - 15 - y;
+      // V131: deliberate, curved flight with a soft landing in the cart.
+      const duration = 1180;
+      const arc = Math.min(145, Math.max(55, Math.abs(dy) * 0.20));
       const animation = flyer.animate([
-        {transform:`translate(${x}px,${y}px) scale(1)`,opacity:1,offset:0},
-        {transform:`translate(${x + dx*.42}px,${y + dy*.18 - 65}px) scale(.9)`,opacity:1,offset:.48},
-        {transform:`translate(${x + dx}px,${y + dy}px) scale(.22)`,opacity:.35,offset:1}
-      ], {duration:740,easing:'cubic-bezier(.22,.75,.25,1)'});
-      animation.onfinish = () => {flyer.remove();target.animate([{transform:'scale(1)'},{transform:'scale(1.2)'},{transform:'scale(1)'}],{duration:330,easing:'ease-out'});};
-      animation.oncancel = () => flyer.remove();
-      window.setTimeout(() => flyer.remove(), 1100);
+        {transform:`translate3d(${x}px,${y}px,0) scale(1)`,opacity:1,offset:0},
+        {transform:`translate3d(${x + dx * .12}px,${y - arc * .45}px,0) scale(1.13)`,opacity:1,offset:.22},
+        {transform:`translate3d(${x + dx * .53}px,${y + dy * .32 - arc}px,0) scale(.96)`,opacity:1,offset:.56},
+        {transform:`translate3d(${x + dx * .86}px,${y + dy * .78 - arc * .28}px,0) scale(.62)`,opacity:.95,offset:.84},
+        {transform:`translate3d(${x + dx}px,${y + dy}px,0) scale(.16)`,opacity:0,offset:1}
+      ], {duration, easing:'cubic-bezier(.35,.05,.2,1)', fill:'forwards'});
+      let cleaned = false;
+      const cleanup = () => {
+        if (cleaned) return;
+        cleaned = true;
+        flyer.remove();
+      };
+      animation.onfinish = () => {
+        cleanup();
+        if (target.isConnected && typeof target.animate === 'function') {
+          target.animate([
+            {transform:'scale(1)',offset:0},
+            {transform:'scale(1.16)',offset:.38},
+            {transform:'scale(.96)',offset:.72},
+            {transform:'scale(1)',offset:1}
+          ], {duration:480,easing:'ease-out'});
+        }
+      };
+      animation.oncancel = cleanup;
+      window.setTimeout(cleanup, duration + 250);
     }
     async function addCart(id){
       id=String(id||'').trim();
@@ -7543,5 +7564,3 @@ html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]::after {
 </style>
 </body>
 </html>
-
-

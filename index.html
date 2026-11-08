@@ -2126,7 +2126,7 @@ body.atyaf-cart-page-open #atyafCartPage {
 <div class="actions atyaf-head-left customer-tools" aria-label="الهدايا والبحث">
   <button type="button" id="atyafRefMenuButton" class="customer-tool atyaf-ref-menu-button" aria-label="فتح القائمة الرئيسية" aria-expanded="false" aria-controls="atyafRefMenuPanel"><svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
   <button class="customer-tool" data-store-action="gifts" title="الهدايا" aria-label="الهدايا">🎁</button>
-  <button class="customer-tool atyaf-search-toggle" type="button" title="البحث" aria-label="البحث" onclick="toggleHeaderSearch(event)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
+  <button class="customer-tool atyaf-search-toggle" type="button" title="البحث" aria-label="البحث" aria-controls="atyafSearchPopover" aria-expanded="false"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
   <div class="atyaf-search-popover" id="atyafSearchPopover">
     <input id="searchInput" oninput="renderProducts()" placeholder="ابحث عن عطر، ماركة أو نفحة..." autocomplete="off" />
     <button type="button" onclick="closeHeaderSearch()" aria-label="إغلاق البحث">×</button>
@@ -7664,6 +7664,82 @@ html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]::after {
       }catch{sync();}
     }
   });
+})();
+</script>
+
+<!-- V133: precise search icon and search field correction; other store systems unchanged. -->
+<style id="atyaf-v133-search-precision">
+html body header.header .atyaf-head-left .atyaf-search-toggle{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  width:38px!important;min-width:38px!important;height:40px!important;min-height:40px!important;
+  flex:0 0 38px!important;padding:0!important;margin:0!important;
+  border:0!important;border-radius:10px!important;background:transparent!important;
+  color:#fff!important;box-shadow:none!important;line-height:1!important;
+  -webkit-tap-highlight-color:transparent;
+}
+html body header.header .atyaf-head-left .atyaf-search-toggle svg{
+  display:block!important;width:25px!important;height:25px!important;
+  min-width:25px!important;min-height:25px!important;
+  max-width:25px!important;max-height:25px!important;
+  flex:0 0 25px!important;overflow:visible!important;
+  stroke:currentColor!important;stroke-width:1.9!important;fill:none!important;
+  transform:none!important;position:static!important;
+}
+html body header.header .atyaf-head-left .atyaf-search-toggle:focus-visible{
+  outline:2px solid #d7ab50!important;outline-offset:2px!important;
+}
+html body #atyafSearchPopover{
+  display:none!important;position:fixed!important;
+  top:calc(var(--atyaf-search-panel-top,110px) + 8px)!important;
+  left:12px!important;right:12px!important;
+  width:auto!important;max-width:520px!important;
+  margin:0 auto!important;padding:7px 9px!important;
+  border:1px solid rgba(185,159,121,.35)!important;border-radius:17px!important;
+  background:rgba(255,253,249,.97)!important;
+  box-shadow:0 12px 32px rgba(0,0,0,.18)!important;
+  backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;
+  direction:rtl!important;align-items:center!important;gap:8px!important;
+  z-index:2147482000!important;
+}
+html body #atyafSearchPopover.open{display:flex!important}
+html body #atyafSearchPopover #searchInput{
+  display:block!important;flex:1 1 auto!important;min-width:0!important;
+  height:42px!important;padding:0 12px!important;margin:0!important;
+  background:transparent!important;border:0!important;outline:none!important;
+  font-size:14px!important;line-height:1.5!important;color:#27332e!important;
+  text-align:right!important;box-shadow:none!important;
+}
+html body #atyafSearchPopover>button{
+  display:grid!important;place-items:center!important;flex:0 0 36px!important;
+  width:36px!important;height:36px!important;padding:0!important;
+  border-radius:50%!important;background:#f2eee7!important;color:#534f48!important;
+  font-size:23px!important;line-height:1!important;
+}
+@media(max-width:390px){html body header.header .atyaf-head-left .atyaf-search-toggle{
+  width:34px!important;min-width:34px!important;flex-basis:34px!important;
+}}
+@media(prefers-reduced-motion:reduce){html body #atyafSearchPopover{transition:none!important}}
+</style>
+<script id="atyaf-v133-search-position">
+(()=>{
+  'use strict';
+  const pop=document.getElementById('atyafSearchPopover');
+  const toggle=document.querySelector('header.header .atyaf-search-toggle');
+  const header=document.querySelector('header.header');
+  if(!pop||!toggle||!header)return;
+  // A fixed popup inside a translated toolbar is clipped/mispositioned on iOS.
+  // Reparent only the popup, preserving its input, handlers and search logic.
+  document.body.appendChild(pop);
+  const sync=()=>{
+    const rect=header.getBoundingClientRect();
+    const top=Math.max(0,Math.min(window.innerHeight-70,rect.bottom));
+    document.documentElement.style.setProperty('--atyaf-search-panel-top',top+'px');
+    toggle.setAttribute('aria-expanded',String(pop.classList.contains('open')));
+  };
+  new MutationObserver(sync).observe(pop,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('resize',sync,{passive:true});
+  window.addEventListener('scroll',()=>{if(pop.classList.contains('open'))sync()},{passive:true});
+  sync();
 })();
 </script>
 </body>

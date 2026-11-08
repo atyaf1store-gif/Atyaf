@@ -7562,5 +7562,110 @@ html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]::after {
   }
 }
 </style>
+
+<!-- V132: reference-matched mobile bottom navigation, active highlight and live cart count -->
+<style id="atyaf-v132-bottom-navigation">
+@media (max-width:767px) {
+  html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    direction:ltr!important;align-items:center!important;gap:0!important;
+    height:calc(68px + env(safe-area-inset-bottom,0px))!important;
+    min-height:0!important;padding:5px 5px calc(6px + env(safe-area-inset-bottom,0px))!important;
+    background:#fff!important;border-top:1px solid #e9e9e9!important;
+    box-shadow:0 -2px 9px rgba(0,0,0,.025)!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab {
+    position:relative!important;display:flex!important;flex-direction:column!important;
+    align-items:center!important;justify-content:center!important;
+    width:100%!important;min-width:0!important;height:56px!important;min-height:0!important;
+    padding:3px 0!important;margin:0!important;gap:4px!important;
+    background:transparent!important;border:0!important;color:#777773!important;
+    font-family:Arial,Tahoma,sans-serif!important;text-decoration:none!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab > svg {
+    display:block!important;box-sizing:border-box!important;
+    width:24px!important;height:24px!important;min-width:0!important;min-height:0!important;
+    padding:0!important;border-radius:0!important;background:transparent!important;
+    stroke:currentColor!important;stroke-width:1.8!important;fill:none!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab > span {
+    display:block!important;color:inherit!important;font:500 10px/1.2 Tahoma,Arial,sans-serif!important;
+    white-space:nowrap!important;letter-spacing:0!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab.active {
+    color:#c39a35!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab.active::before {
+    content:"";position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+    width:43px;height:2px;border-radius:99px;
+    background:linear-gradient(90deg,transparent,#d7b15d 28%,#e4c97c 50%,#d7b15d 72%,transparent);
+    box-shadow:0 2px 9px rgba(214,168,65,.42);pointer-events:none;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > svg {
+    width:44px!important;height:44px!important;min-width:0!important;min-height:0!important;
+    box-sizing:border-box!important;padding:11px!important;
+    border-radius:50%!important;background:#1b1c1b!important;
+    color:#e6ba4b!important;stroke:#e6ba4b!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] {
+    gap:0!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > span {
+    margin-top:1px!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="cart"] .atyaf-v132-cart-badge {
+    position:absolute!important;top:0!important;left:calc(50% + 8px)!important;
+    display:grid!important;place-items:center!important;
+    min-width:16px!important;height:16px!important;padding:0 3px!important;
+    box-sizing:border-box!important;border-radius:999px!important;
+    border:1.5px solid #fff!important;background:#e74838!important;
+    color:#fff!important;font:700 10px/1 Arial,sans-serif!important;
+    box-shadow:0 1px 3px rgba(0,0,0,.1)!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-v132-cart-badge[hidden]{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #atyafMobileBottomNav .atyaf-bottom-tab{transition:none!important}
+}
+</style>
+<script id="atyaf-v132-cart-badge-sync">
+(()=>{
+  'use strict';
+  const nav=document.getElementById('atyafMobileBottomNav');
+  const cartTab=nav?.querySelector('[data-atyaf-tab="cart"]');
+  if(!cartTab||cartTab.querySelector('.atyaf-v132-cart-badge'))return;
+  const badge=document.createElement('span');
+  badge.className='atyaf-v132-cart-badge';
+  badge.setAttribute('aria-hidden','true');
+  cartTab.appendChild(badge);
+  const counter=document.getElementById('cartCount');
+  function sync(){
+    let count=Number.parseInt(counter?.textContent||'',10);
+    if(!Number.isFinite(count)){
+      try{
+        const items=JSON.parse(localStorage.getItem('atyaaf-cart')||'[]');
+        count=Array.isArray(items)?items.reduce((sum,item)=>sum+Math.max(0,Number(item.qty)||0),0):0;
+      }catch{count=0;}
+    }
+    count=Math.max(0,Math.floor(count));
+    badge.hidden=count===0;
+    badge.textContent=count>99?'99+':String(count);
+    cartTab.setAttribute('aria-label',`السلة، ${count} منتج`);
+  }
+  sync();
+  if(counter)new MutationObserver(sync).observe(counter,{childList:true,characterData:true,subtree:true});
+  window.addEventListener('storage',event=>{
+    if(event.key==='atyaaf-cart'){
+      try{
+        const items=JSON.parse(event.newValue||'[]');
+        const count=Array.isArray(items)?items.reduce((sum,item)=>sum+Math.max(0,Number(item.qty)||0),0):0;
+        badge.hidden=count===0;badge.textContent=count>99?'99+':String(count);
+        cartTab.setAttribute('aria-label',`السلة، ${count} منتج`);
+      }catch{sync();}
+    }
+  });
+})();
+</script>
 </body>
 </html>
+

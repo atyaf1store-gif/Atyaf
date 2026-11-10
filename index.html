@@ -4712,7 +4712,7 @@ main#store>.benefits:not([aria-hidden="true"])>.benefit i{font-size:19px!importa
  .atyaf-mobile-bottom-nav .atyaf-bottom-tab svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
  .atyaf-mobile-bottom-nav .atyaf-bottom-tab.active{color:#b98a24;font-weight:700}
  .atyaf-mobile-bottom-nav .atyaf-bottom-tab[data-atyaf-tab="trending"] svg{color:#17352e}
- body.atyaf-cart-page-open .atyaf-mobile-bottom-nav,body:has(#atyafIntroV12) .atyaf-mobile-bottom-nav{display:none!important}
+ body.atyaf-cart-page-open .atyaf-mobile-bottom-nav{display:none!important}
  html{scroll-padding-top:130px}
 }
 /* V34: two-column flat service strip like the supplied reference image. */
@@ -6075,7 +6075,7 @@ body.atyaf-single-brand-view #atyafFeaturedHome,body.atyaf-scent-only #atyafFeat
   html body #atyafMobileBottomNav .atyaf-bottom-tab svg{width:25px!important;height:25px!important}
   html body #atyafMobileBottomNav .atyaf-bottom-tab.active{color:#b98a24!important}
   html body.atyaf-cart-page-open #atyafMobileBottomNav,
-  html body:has(#atyafIntroV12) #atyafMobileBottomNav{display:none!important}
+  html body:has(#atyafIntroV12.atyaf-v94-visible) #atyafMobileBottomNav{display:none!important}
 
   html body .modal,
   html body .drawer{left:0!important;right:0!important;width:100%!important;max-width:none!important;transform:none!important}
@@ -7804,6 +7804,38 @@ html body #atyafSearchPopover>button{
   html body.atyaf-cart-page-open header.header #nav.nav .navrow {
     background:transparent!important;
   }
+</style>
+
+<!-- V137: cart-only corrective patch. Overrides older rules that hid bottom navigation. -->
+<style id="atyaf-v137-cart-header-and-bottom-nav-fix">
+@media (max-width:767px) {
+  html body.atyaf-cart-page-open #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
+    display:grid!important;
+    position:fixed!important;
+    inset:auto 0 0 0!important;
+    visibility:visible!important;
+    opacity:1!important;
+    transform:none!important;
+    z-index:10100!important;
+    pointer-events:auto!important;
+  }
+  html body.atyaf-cart-page-open #atyafCartPage {
+    padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))!important;
+    scroll-padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))!important;
+  }
+}
+/* Only cart view uses translucent glass; main storefront remains solid. */
+html body.atyaf-cart-page-open > header.header,
+html body.atyaf-cart-page-open header.header,
+html body.atyaf-cart-page-open header.header .headrow.atyaf-head-balanced,
+html body.atyaf-cart-page-open header.header #nav.nav {
+  background-color:rgba(48,39,32,.38)!important;
+  background:rgba(48,39,32,.38)!important;
+  background-image:none!important;
+  -webkit-backdrop-filter:blur(13px) saturate(125%)!important;
+  backdrop-filter:blur(13px) saturate(125%)!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow {background:transparent!important}
 </style>
 </body>
 </html>

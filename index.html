@@ -2211,7 +2211,7 @@ body.atyaf-cart-page-open #atyafCartPage {
     <button class="atyaf-bottom-tab" type="button" data-atyaf-tab="account" onclick="openCustomerCenter()"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-7 8-7s8 2 8 7"/></svg><span>حسابي</span></button>
   </nav>
   <section class="admin" id="admin"><div class="container"><div class="section-head"><div><span class="eyebrow">مساحة الإدارة</span><h2>لوحة أطياف</h2><p>تحكم سريع بالمحتوى والإعدادات — نسخة تفاعلية تجريبية</p></div><button class="btn btn-outline" onclick="closeAdmin()">العودة للمتجر</button></div><div class="admin-grid"><aside class="admin-nav"><button class="active">نظرة عامة</button><button>المنتجات</button><button>الطلبات</button><button>التصميم</button></aside><div><div class="stat-grid"><div class="stat"><span>طلبات اليوم</span><b>٢٤</b><small>+١٨٪ عن أمس</small></div><div class="stat"><span>إجمالي المنتجات</span><b id="adminProducts">6</b><small>منشورة ونشطة</small></div><div class="stat"><span>المبيعات</span><b>١٢٫٨K</b><small>ر.س هذا الشهر</small></div></div><div class="admin-card" style="margin-top:18px"><h3>إعدادات سريعة</h3><div class="settings-row"><span>شريط الإعلانات العلوي</span><button class="switch on" id="switchTop" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>عرض قسم الهدايا</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="settings-row"><span>الوضع التجريبي للطلبات</span><button class="switch on" onclick="toggleSetting(this)"><i></i></button></div><div class="notice">ملاحظة: هذه نسخة HTML مستقلة. ربط Supabase والدفع الحقيقي يحتاج طبقة خادم ومفاتيح بيئة آمنة.</div></div></div></div></section>
-  <footer id="contact"><div class="container"><div class="footer-grid"><div><div class="footer-brand">أطياف | ATYAF</div><p style="color:#9db3a6;font-size:13px">عطور مختارة بعناية، لتصنع لحظات تبقى.</p></div><div><h3>المتجر</h3><a href="#products">كل المنتجات</a><a href="#brands">الماركات</a><a href="#scents">الهدايا</a></div><div><h3>خدمة العملاء</h3><a href="javascript:void(0)" onclick="showContactInfo()">تواصل معنا</a><a href="javascript:void(0)" onclick="showShippingInfo()">الشحن والتوصيل</a><a href="javascript:void(0)" onclick="showReturnsInfo()">الاستبدال والاسترجاع</a></div><div><h3>تابعنا</h3><a href="javascript:void(0)" onclick="openSocial('instagram')">Instagram</a><a href="javascript:void(0)" onclick="openSocial('tiktok')">TikTok</a><a href="javascript:void(0)" onclick="openSocial('whatsapp')">WhatsApp</a></div></div><div class="copyright"><span>© 2026 ATYAF — أطياف. جميع الحقوق محفوظة.</span><span>صُنع بذوق ✦</span></div></div></footer>
+  <footer id="contact"><div class="container"><div class="footer-grid"><div><div class="footer-brand atyaf-footer-logo" aria-label="شعار أطياف"><img id="atyafFooterLogoImage" alt="شعار متجر أطياف" decoding="async" hidden><span id="atyafFooterLogoFallback">أطياف | ATYAF</span></div><p style="color:#9db3a6;font-size:13px">عطور مختارة بعناية، لتصنع لحظات تبقى.</p></div><div><h3>المتجر</h3><a href="#products">كل المنتجات</a><a href="#brands">الماركات</a><a href="#scents">الهدايا</a></div><div><h3>خدمة العملاء</h3><a href="javascript:void(0)" onclick="showContactInfo()">تواصل معنا</a><a href="javascript:void(0)" onclick="showShippingInfo()">الشحن والتوصيل</a><a href="javascript:void(0)" onclick="showReturnsInfo()">الاستبدال والاسترجاع</a></div><div class="atyaf-footer-social"><h3>تابعنا</h3><a class="atyaf-footer-social-link" href="javascript:void(0)" onclick="openSocial('instagram')" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a><a class="atyaf-footer-social-link" href="javascript:void(0)" onclick="openSocial('tiktok')" aria-label="Tiktok" title="Tiktok"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a4.5 4.5 0 1 1-4.5-4.5"/><path d="M14 3c.7 3.5 2.8 5.2 6 5.5"/></svg></a><a class="atyaf-footer-social-link" href="javascript:void(0)" onclick="openSocial('whatsapp')" aria-label="Whatsapp" title="Whatsapp"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.3 11.6a8.3 8.3 0 0 1-12.2 7.3L3 20l1.2-4.8a8.3 8.3 0 1 1 16.1-3.6Z"/><path d="M9 8.2c-.4-.6-1.1-.3-1.3.4-.6 2.1 2.8 5.9 5.4 6.7 1.2.4 2.2-.2 2.6-1.2l-2.2-1.1-1.1 1c-1.2-.6-2.3-1.7-2.9-2.9l.9-1.1Z"/></svg></a></div></div><div class="copyright"><span>© 2026 ATYAF — أطياف. جميع الحقوق محفوظة.</span><span>صُنع بذوق ✦</span></div></div></footer>
   <div class="drawer" id="cartDrawer" onclick="if(event.target===this)closeCart()"><div class="drawer-panel"><button class="close" onclick="closeCart()">×</button><h2>سلة مشترياتك</h2><div class="cart-list" id="cartList"></div><div class="cart-foot"><div class="total"><span>الإجمالي</span><span id="cartTotal">0 ر.س</span></div><button class="btn btn-primary" style="width:100%" onclick="openCheckout()">متابعة الطلب</button></div></div></div>
   <section id="atyafCartPage" aria-label="سلة التسوق"><div class="container">
 <div class="atyaf-cart-page-head"><div class="atyaf-cart-page-title"><span class="atyaf-cart-bag">▣</span><h2>سلة التسوق</h2></div><div class="atyaf-cart-head-actions"><b id="atyafCartPageCount">0 منتجات</b><button class="atyaf-cart-close" type="button" onclick="atyafCloseCartPage()" aria-label="إغلاق">×</button></div></div>
@@ -7950,6 +7950,44 @@ html body.atyaf-cart-page-open header.header #nav.nav .navrow>a {
 }
 html body.atyaf-cart-page-open header.header #nav.nav .navrow>a.atyaf-tab-active {color:#a57a19!important}
 </style>
+
+<style id="atyaf-v142-footer-logo-social">
+footer .atyaf-footer-logo{display:flex;align-items:center;justify-content:flex-start;min-height:64px;max-width:240px}
+footer .atyaf-footer-logo img{display:block;max-width:100%;width:auto;max-height:88px;height:auto;object-fit:contain;object-position:right center;border:0;background:transparent}
+footer .atyaf-footer-logo img[hidden]{display:none!important}
+footer .atyaf-footer-social{display:flex;flex-wrap:wrap;align-content:start;align-items:center;gap:10px}
+footer .atyaf-footer-social h3{width:100%;margin-bottom:8px}
+footer .atyaf-footer-social .atyaf-footer-social-link{display:inline-flex!important;align-items:center;justify-content:center;width:43px;height:43px;margin:0!important;padding:0!important;border:1px solid rgba(255,255,255,.26);border-radius:50%;color:inherit!important;background:rgba(255,255,255,.07);text-decoration:none;transition:background .2s,border-color .2s,transform .2s}
+footer .atyaf-footer-social .atyaf-footer-social-link svg{width:23px;height:23px;flex:none}
+footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.55);transform:translateY(-2px)}
+@media(max-width:480px){footer .atyaf-footer-logo{min-height:55px}footer .atyaf-footer-logo img{max-height:76px}}
+</style>
+
+<script id="atyaf-v142-footer-logo-sync">
+(function(){
+  'use strict';
+  function syncFooterLogo(){
+    var img=document.getElementById('atyafFooterLogoImage');
+    var fallback=document.getElementById('atyafFooterLogoFallback');
+    if(!img||!fallback)return;
+    var candidates=Array.from(document.querySelectorAll('header.header .atyaf-profile-image-slot img,header.header .atyaf-profile img,header.header .brand img,header.header img'));
+    var source=candidates.find(function(el){return el.getAttribute('src') && el.naturalWidth>0 && el.getBoundingClientRect().width>0;}) || candidates.find(function(el){return el.getAttribute('src') && el.naturalWidth>0;});
+    if(!source)return;
+    var url=source.currentSrc||source.src;
+    if(!url||img.getAttribute('src')===url)return;
+    img.onload=function(){img.hidden=false;fallback.hidden=true;};
+    img.onerror=function(){img.hidden=true;fallback.hidden=false;};
+    img.src=url;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncFooterLogo,{once:true});else syncFooterLogo();
+  window.addEventListener('load',syncFooterLogo,{once:true});
+  var header=document.querySelector('header.header');
+  if(header&&typeof MutationObserver==='function'){
+    var scheduled=false;
+    new MutationObserver(function(){if(scheduled)return;scheduled=true;requestAnimationFrame(function(){scheduled=false;syncFooterLogo();});}).observe(header,{subtree:true,attributes:true,attributeFilter:['src','style','class'],childList:true});
+  }
+})();
+</script>
 </body>
 </html>
 

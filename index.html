@@ -2099,34 +2099,6 @@ body.atyaf-cart-page-open #atyafCartPage {
   }
 }
 </style>
-<style id="atyaf-v134-solid-admin-header">
-/* V134: solid, administrator-controlled header and category navigation. */
-html body header.header,
-html body header.header .headrow.atyaf-head-balanced {
-  background:var(--atyaf-header-bg,#302720)!important;
-  background-color:var(--atyaf-header-bg,#302720)!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  opacity:1!important;
-  background-image:none!important;
-}
-html body header.header #nav.nav,
-html body header.header #nav.nav .navrow {
-  background:var(--atyaf-nav-bg,#302720)!important;
-  background-color:var(--atyaf-nav-bg,#302720)!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  background-image:none!important;
-  opacity:1!important;
-}
-/* Keep logo and action icons unchanged. No overlay or transparency. */
-@media(max-width:767px){
-  html body header.header,
-  html body header.header .headrow.atyaf-head-balanced{background:var(--atyaf-header-bg,#302720)!important}
-  html body header.header #nav.nav,
-  html body header.header #nav.nav .navrow{background:var(--atyaf-nav-bg,#302720)!important}
-}
-</style>
 </head>
 <body>
 <div id="atyafLoadingShell" role="status" aria-label="جارٍ تحميل متجر أطياف" aria-live="polite">
@@ -3645,7 +3617,7 @@ window.addEventListener('load',()=>{
 
 <script id="atyaf-store-colors-sync">
 (()=>{
- const defaults={pageBackground:'#fffdfa',surfaceBackground:'#ffffff',topbarBackground:'#17352e',topbarText:'#ffffff',headerBackground:'#302720',navBackground:'#302720',primaryText:'#17352e',secondaryText:'#707b75',accent:'#b47a4f',border:'#e4ddd2',searchBackground:'#f5f1ea',iconBackground:'#fffdfa',iconColor:'#17352e',cardBackground:'#fffdfa',buttonBackground:'#17352e',buttonText:'#ffffff',footerBackground:'#17352e',footerText:'#ffffff',introBackground:'#17352e'};
+ const defaults={pageBackground:'#fffdfa',surfaceBackground:'#ffffff',topbarBackground:'#17352e',topbarText:'#ffffff',headerBackground:'#fffdfa',navBackground:'#fffdfa',primaryText:'#17352e',secondaryText:'#707b75',accent:'#b47a4f',border:'#e4ddd2',searchBackground:'#f5f1ea',iconBackground:'#fffdfa',iconColor:'#17352e',cardBackground:'#fffdfa',buttonBackground:'#17352e',buttonText:'#ffffff',footerBackground:'#17352e',footerText:'#ffffff',introBackground:'#17352e'};
  const vars={pageBackground:'--atyaf-page-bg',surfaceBackground:'--atyaf-surface',topbarBackground:'--atyaf-topbar-bg',topbarText:'--atyaf-topbar-text',headerBackground:'--atyaf-header-bg',navBackground:'--atyaf-nav-bg',primaryText:'--atyaf-text',secondaryText:'--atyaf-muted',accent:'--atyaf-accent',border:'--atyaf-border',searchBackground:'--atyaf-search-bg',iconBackground:'--atyaf-icon-bg',iconColor:'--atyaf-icon-color',cardBackground:'--atyaf-card-bg',buttonBackground:'--atyaf-button-bg',buttonText:'--atyaf-button-text',footerBackground:'--atyaf-footer-bg',footerText:'--atyaf-footer-text',introBackground:'--atyaf-intro-bg'};
  const parse=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
  function apply(c){c={...defaults,...(c||{})};for(const [k,v] of Object.entries(vars))document.documentElement.style.setProperty(v,c[k])}
@@ -7770,7 +7742,21 @@ html body #atyafSearchPopover>button{
   sync();
 })();
 </script>
+<!-- V134: opaque main header and navigation only; preserve all other glass effects. -->
+<style id="atyaf-v134-opaque-main-header">
+  :root{--atyaf-main-header-solid:#302720}
+  html body header.header,
+  html body header.header .headrow.atyaf-head-balanced,
+  html body header.header #nav.nav{
+    background:var(--atyaf-main-header-solid)!important;
+    background-color:var(--atyaf-main-header-solid)!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    background-image:none!important;
+  }
+  html body header.header{isolation:isolate;opacity:1!important}
+  html body header.header #nav.nav .navrow{background:transparent!important}
+</style>
 </body>
 </html>
-
 

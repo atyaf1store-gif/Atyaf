@@ -7877,6 +7877,60 @@ html body.atyaf-cart-page-open header.header #nav.nav .navrow>a.atyaf-tab-active
 }
 html body.atyaf-cart-page-open header.header #nav.nav .navrow {background:transparent!important}
 </style>
+
+<!-- V139: cart-only genuinely translucent navigation, overriding earlier solid rules. -->
+<style id="atyaf-v139-cart-glass-header-final">
+/* Only the shopping-cart view is affected; all other pages retain V134 colors. */
+html body.atyaf-cart-page-open > header.header,
+html body.atyaf-cart-page-open header.header,
+html body.atyaf-cart-page-open header.header .headrow,
+html body.atyaf-cart-page-open header.header .atyaf-head-balanced,
+html body.atyaf-cart-page-open header.header #nav.nav,
+html body.atyaf-cart-page-open header.header #nav.nav .navrow {
+  background-color:transparent!important;
+  background-image:none!important;
+  background:transparent!important;
+  opacity:1!important;
+  box-shadow:none!important;
+}
+/* Apply glass on the parent only; stacking several tinted layers made it opaque. */
+html body.atyaf-cart-page-open > header.header,
+html body.atyaf-cart-page-open header.header {
+  background:rgba(48,39,32,.13)!important;
+  -webkit-backdrop-filter:blur(10px) saturate(115%)!important;
+  backdrop-filter:blur(10px) saturate(115%)!important;
+  border-bottom:1px solid rgba(48,39,32,.16)!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav {
+  border-top:1px solid rgba(48,39,32,.14)!important;
+  border-bottom:1px solid rgba(48,39,32,.14)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html body.atyaf-cart-page-open header.header .headrow,
+html body.atyaf-cart-page-open header.header .atyaf-head-balanced {
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html body.atyaf-cart-page-open header.header::before,
+html body.atyaf-cart-page-open header.header::after,
+html body.atyaf-cart-page-open header.header #nav.nav::before,
+html body.atyaf-cart-page-open header.header #nav.nav::after {
+  background:transparent!important;
+}
+/* Maintain readable controls over the light cart canvas. */
+html body.atyaf-cart-page-open header.header .atyaf-head-left,
+html body.atyaf-cart-page-open header.header .atyaf-head-right,
+html body.atyaf-cart-page-open header.header .atyaf-head-left button,
+html body.atyaf-cart-page-open header.header .atyaf-head-right button,
+html body.atyaf-cart-page-open header.header .atyaf-head-left svg,
+html body.atyaf-cart-page-open header.header .atyaf-head-right svg,
+html body.atyaf-cart-page-open header.header #nav.nav .navrow>a {
+  color:#302720!important;
+  stroke:currentColor;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow>a.atyaf-tab-active {color:#a57a19!important}
+</style>
 </body>
 </html>
 

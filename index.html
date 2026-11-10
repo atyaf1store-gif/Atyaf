@@ -2453,8 +2453,18 @@ body.atyaf-cart-page-open #atyafCartPage {
     function save(){localStorage.setItem('atyaaf-cart',JSON.stringify(state.cart));localStorage.setItem('atyaaf-favs',JSON.stringify(state.favs));updateCounts()}
     function updateCounts(){
       const c=document.getElementById('cartCount'),f=document.getElementById('favCount');
-      if(c)c.textContent=state.cart.reduce((a,x)=>a+(Number(x.qty)||0),0);
+      const quantity=state.cart.reduce((total,item)=>total+Math.max(0,Number(item.qty)||0),0);
+      if(c)c.textContent=String(quantity);
       if(f)f.textContent=state.favs.length;
+      // Update the mobile navigation in the same synchronous cart transaction.
+      const cartTab=document.querySelector('#atyafMobileBottomNav [data-atyaf-tab="cart"]');
+      const badge=cartTab?.querySelector('.atyaf-v132-cart-badge');
+      if(badge){
+        badge.textContent=quantity>99?'99+':String(quantity);
+        badge.hidden=quantity===0;
+        cartTab.setAttribute('aria-label',`السلة، ${quantity} منتج`);
+      }
+      document.dispatchEvent(new CustomEvent('atyaf:cart-count-changed',{detail:{quantity}}));
     }
     function renderProducts(){window.ATYAAF_LIVE_PRODUCTS=products;let q=(document.getElementById('searchInput').value||'').trim().toLowerCase(), list=products.filter(p=>(state.filter==='all'||p.tags.includes(state.filter))&&(state.brand==='كل الماركات'||p.brand===state.brand)&&(!q||[p.name,p.brand,p.desc].join(' ').toLowerCase().includes(q)));let sort=document.getElementById('sortSelect').value;if(sort==='price-low')list.sort((a,b)=>a.price-b.price);if(sort==='price-high')list.sort((a,b)=>b.price-a.price);if(sort==='new')list.sort((a,b)=>b.id-a.id);document.getElementById('resultText').textContent=q?`نتائج البحث عن «${q}»`:state.brand==='كل الماركات'?'منتجاتنا الأكثر حبًا':`منتجات ${state.brand}`;document.getElementById('productGrid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">لم نعثر على ما تبحث عنه. جرّب كلمة أخرى أو تصفح كل المنتجات.</div>';updateCounts()}
     function card(p){let soldOut=p.stock!==null&&p.stock!==undefined&&p.stock<=0;let liked=state.favs.map(String).includes(String(p.id));let visual=p.image?`<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;padding:18px">`:'';return `<article class="product" data-product-id="${p.id}"><div class="product-visual" style="--tone:${p.tone}">${visual}<span class="tag">${soldOut?'نفدت الكمية':p.label}</span><button class="favorite ${liked?'on':''}" onclick="toggleFav('${p.id}')">${liked?'♥':'♡'}</button><span class="cap"></span></div><div class="product-info"><small>${p.brand}</small><h3>${p.name}</h3><div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div><div class="atyaf-stock-indicator">${soldOut?'نفدت الكمية':p.stock==null?'الكمية غير محددة':`المتوفر: ${p.stock} قطعة`}</div>${soldOut?'':`<button type="button" class="atyaf-quick-bag" aria-label="إضافة المنتج إلى السلة" title="إضافة إلى السلة" onclick="event.stopPropagation();addCart('${p.id}')"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="8" width="15" height="13" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg></button>`}<div class="product-actions"><button class="btn btn-primary" ${soldOut?'disabled title="نفد المخزون"':''} onclick="addCart('${p.id}')">${soldOut?'نفدت الكمية':'أضف للسلة'}</button><button class="btn btn-outline" onclick="quickView('${p.id}')">عرض</button><button class="gift-buy-btn" onclick="buyAsGift('${p.id}')" title="شراء كهدية" aria-label="شراء كهدية">🎁</button></div></div></article>`}
@@ -7682,6 +7692,13 @@ html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]::after {
     cartTab.setAttribute('aria-label',`السلة، ${count} منتج`);
   }
   sync();
+  // Same-tab changes are synchronous; MutationObserver remains a compatibility fallback.
+  document.addEventListener('atyaf:cart-count-changed',event=>{
+    const count=Math.max(0,Math.floor(Number(event.detail?.quantity)||0));
+    badge.hidden=count===0;
+    badge.textContent=count>99?'99+':String(count);
+    cartTab.setAttribute('aria-label',`السلة، ${count} منتج`);
+  });
   if(counter)new MutationObserver(sync).observe(counter,{childList:true,characterData:true,subtree:true});
   window.addEventListener('storage',event=>{
     if(event.key==='atyaaf-cart'){

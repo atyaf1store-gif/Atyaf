@@ -2099,37 +2099,32 @@ body.atyaf-cart-page-open #atyafCartPage {
   }
 }
 </style>
-
-<!-- V134: solid header and navigation; colors follow admin store_colors settings. -->
 <style id="atyaf-v134-solid-admin-header">
-:root{--atyaf-header-bg:#302720;--atyaf-nav-bg:#302720}
+/* V134: solid, administrator-controlled header and category navigation. */
 html body header.header,
-html body header.header .headrow.atyaf-head-balanced{
+html body header.header .headrow.atyaf-head-balanced {
   background:var(--atyaf-header-bg,#302720)!important;
   background-color:var(--atyaf-header-bg,#302720)!important;
-  -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
-  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  opacity:1!important;
+  background-image:none!important;
 }
 html body header.header #nav.nav,
-html body header.header #nav.nav .navrow{
+html body header.header #nav.nav .navrow {
   background:var(--atyaf-nav-bg,#302720)!important;
   background-color:var(--atyaf-nav-bg,#302720)!important;
-  -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
-  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  background-image:none!important;
+  opacity:1!important;
 }
+/* Keep logo and action icons unchanged. No overlay or transparency. */
 @media(max-width:767px){
   html body header.header,
-  html body header.header .headrow.atyaf-head-balanced{
-    background:var(--atyaf-header-bg,#302720)!important;
-    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-  }
+  html body header.header .headrow.atyaf-head-balanced{background:var(--atyaf-header-bg,#302720)!important}
   html body header.header #nav.nav,
-  html body header.header #nav.nav .navrow{
-    background:var(--atyaf-nav-bg,#302720)!important;
-    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-  }
+  html body header.header #nav.nav .navrow{background:var(--atyaf-nav-bg,#302720)!important}
 }
 </style>
 </head>
@@ -7777,4 +7772,5 @@ html body #atyafSearchPopover>button{
 </script>
 </body>
 </html>
+
 

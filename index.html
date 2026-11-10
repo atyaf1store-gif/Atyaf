@@ -6,8 +6,31 @@
   <meta name="theme-color" content="#17352e" />
   <meta name="description" content="أطياف | ATYAF — متجر العطور والهدايا." />
   <title>أطياف | ATYAF</title>
-  <!-- Removed the simulated loading storefront. Keep the release API for legacy callers. -->
-  <script>window.atyafReleaseFirstPaint = function(){};</script>
+  <!-- V146: show the actual storefront while content loads; glass overlay only. -->
+  <script id="atyaf-first-paint-guard">
+  (function(){
+    document.documentElement.classList.add('atyaf-first-paint-pending');
+    let released=false;
+    window.atyafReleaseFirstPaint=function(){
+      if(released)return;
+      released=true;
+      document.documentElement.classList.remove('atyaf-first-paint-pending');
+    };
+    // Fallback if a remote service is slow or unavailable.
+    setTimeout(window.atyafReleaseFirstPaint,9000);
+  })();
+  </script>
+  <style id="atyaf-first-paint-guard-css">
+    /* Blur the REAL storefront; never replace it with mock content. */
+    html.atyaf-first-paint-pending body::after{
+      content:"";position:fixed;inset:0;z-index:2147483000;
+      pointer-events:none;background:rgba(255,255,255,.16);
+      -webkit-backdrop-filter:blur(5px) saturate(1.08);
+      backdrop-filter:blur(5px) saturate(1.08);
+      opacity:1;transition:opacity .25s ease;
+    }
+    @media(prefers-reduced-motion:reduce){html.atyaf-first-paint-pending body::after{transition:none}}
+  </style>
   <style>
     :root{--ink:#17231f;--muted:#707b75;--cream:#f8f4ed;--paper:#fffdfa;--green:#17352e;--green2:#214c41;--copper:#b47a4f;--gold:#d6aa62;--line:#e9e1d6;--danger:#b54c3f;--shadow:0 18px 50px #17352e12;--radius:22px;--font:Tahoma,Arial,sans-serif}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--cream);font-family:var(--font);line-height:1.6}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.container{width:min(1180px,calc(100% - 36px));margin:auto}.topbar{background:var(--green);color:#fff;display:flex;justify-content:center;gap:16px;align-items:center;font-size:13px;padding:8px 16px}.topbar button{background:none;color:#fff;font-size:18px;line-height:1}.header{background:#fffdfaee;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.headrow{height:86px;display:grid;grid-template-columns:1fr minmax(300px,480px) 1fr;align-items:center;gap:24px}.brand{display:flex;align-items:center;gap:11px;color:var(--green);text-decoration:none}.brand-mark{width:43px;height:43px;border:1px solid var(--copper);border-radius:50%;display:grid;place-items:center;color:var(--copper);font-family:Georgia,serif;font-size:25px;font-weight:bold}.brand strong{font-family:Georgia,serif;letter-spacing:2px;font-size:18px}.brand small{display:block;font-size:9px;letter-spacing:3px;color:var(--copper);margin-top:-5px}.search{display:flex;align-items:center;background:var(--cream);border:1px solid transparent;border-radius:999px;padding:0 16px;transition:.2s}.search:focus-within{border-color:var(--copper);box-shadow:0 0 0 4px #b47a4f16}.search input{width:100%;border:0;background:transparent;padding:12px 10px;outline:0}.search span{font-size:20px;color:var(--copper)}.actions{display:flex;justify-content:flex-start;gap:8px}.icon-btn{position:relative;width:42px;height:42px;background:transparent;border-radius:50%;font-size:21px;color:var(--green);transition:.2s}.icon-btn:hover{background:var(--cream);transform:translateY(-2px)}.count{position:absolute;top:0;right:0;background:var(--copper);color:white;border-radius:99px;min-width:17px;height:17px;font-size:10px;display:grid;place-items:center}.nav{border-top:1px solid #eee7dc}.navrow{display:flex;justify-content:center;gap:30px;padding:12px 0;font-size:14px}.nav a{color:var(--ink);text-decoration:none}.nav a:hover{color:var(--copper)}.menu-btn{display:none;background:transparent;font-size:24px;color:var(--green)}
@@ -2083,8 +2106,6 @@ body.atyaf-cart-page-open #atyafCartPage {
 </style>
 </head>
 <body>
-
-
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
 
 

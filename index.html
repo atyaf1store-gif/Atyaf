@@ -7757,6 +7757,27 @@ html body #atyafSearchPopover>button{
   html body header.header{isolation:isolate;opacity:1!important}
   html body header.header #nav.nav .navrow{background:transparent!important}
 </style>
+<!-- V135: glass header ONLY while the cart page is open. -->
+<style id="atyaf-v135-cart-only-glass-header">
+  html body.atyaf-cart-page-open header.header,
+  html body.atyaf-cart-page-open header.header .headrow.atyaf-head-balanced,
+  html body.atyaf-cart-page-open header.header #nav.nav {
+    background:rgba(48,39,32,.58)!important;
+    background-color:rgba(48,39,32,.58)!important;
+    background-image:none!important;
+    -webkit-backdrop-filter:blur(16px) saturate(125%)!important;
+    backdrop-filter:blur(16px) saturate(125%)!important;
+  }
+  html body.atyaf-cart-page-open header.header {
+    border-bottom:1px solid rgba(255,255,255,.22)!important;
+  }
+  html body.atyaf-cart-page-open header.header #nav.nav {
+    border-top-color:rgba(255,255,255,.18)!important;
+  }
+  html body.atyaf-cart-page-open header.header #nav.nav .navrow {
+    background:transparent!important;
+  }
+</style>
 </body>
 </html>
 

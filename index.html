@@ -7837,6 +7837,46 @@ html body.atyaf-cart-page-open header.header #nav.nav {
 }
 html body.atyaf-cart-page-open header.header #nav.nav .navrow {background:transparent!important}
 </style>
+<!-- V138: cart-only visibly transparent header. Keep V137 navigation and all storefront styles intact. -->
+<style id="atyaf-v138-cart-true-transparent-header">
+/* The cart is a fixed white page beneath the header; a dark translucent tint
+   still looked opaque. Use clear glass and cart-only dark icon contrast. */
+html body.atyaf-cart-page-open > header.header,
+html body.atyaf-cart-page-open header.header,
+html body.atyaf-cart-page-open header.header .headrow.atyaf-head-balanced,
+html body.atyaf-cart-page-open header.header #nav.nav {
+  background:rgba(255,255,255,.16)!important;
+  background-color:rgba(255,255,255,.16)!important;
+  background-image:none!important;
+  -webkit-backdrop-filter:blur(7px) saturate(110%)!important;
+  backdrop-filter:blur(7px) saturate(110%)!important;
+}
+html body.atyaf-cart-page-open header.header {
+  border-bottom:1px solid rgba(55,43,32,.18)!important;
+  box-shadow:0 2px 12px rgba(30,25,20,.05)!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav {
+  border-top:1px solid rgba(55,43,32,.16)!important;
+  border-bottom:1px solid rgba(55,43,32,.16)!important;
+}
+html body.atyaf-cart-page-open header.header .atyaf-head-left svg,
+html body.atyaf-cart-page-open header.header .atyaf-head-right svg {
+  stroke:#29221c!important;
+}
+html body.atyaf-cart-page-open header.header .atyaf-head-left .customer-tool,
+html body.atyaf-cart-page-open header.header .atyaf-head-right .customer-tool,
+html body.atyaf-cart-page-open header.header .menu-btn {
+  color:#29221c!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow>a[data-atyaf-main-tab] {
+  color:#29221c!important;
+  text-shadow:none!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow>a.atyaf-tab-active {
+  color:#a67716!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow {background:transparent!important}
+</style>
 </body>
 </html>
 

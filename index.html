@@ -2544,6 +2544,7 @@ body.atyaf-cart-page-open #atyafCartPage {
       const source = event.target.closest('.atyaf-v89-bag, .atyaf-quick-bag, .atyaf-cart-action, .product-actions .btn-primary, [onclick*="addCart("]');
       if (source) atyafCartClick = { element: source, time: performance.now() };
     }, true);
+    // V140: animate a real product thumbnail, never a decorative star.
     function atyafFlyToCart() {
       const click = atyafCartClick;
       atyafCartClick = null;
@@ -2552,50 +2553,51 @@ body.atyaf-cart-page-open #atyafCartPage {
       const target = Array.from(document.querySelectorAll('#atyafMobileBottomNav [data-atyaf-tab="cart"], #atyafMobileBottomNav [data-atyaf-tab="basket"], #atyafMobileBottomNav [onclick*="Cart"], .header [data-store-action="cart"], #cartBtn'))
         .find(el => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden');
       if (!target) return;
-      const from = (source.closest('.product, .atyaf-reference-card')?.querySelector('.product-visual img, img') || source).getBoundingClientRect();
+      const card = source.closest('.product, .atyaf-reference-card, [data-product-id], .atyaf-product-card');
+      const image = card?.querySelector('.product-visual img, .atyaf-v89-img img, .atyaf-reference-image img, img') ||
+        source.closest('.product-visual, .product-image')?.querySelector('img');
+      if (!image || !image.complete || !image.naturalWidth) return;
+      const from = image.getBoundingClientRect();
       const to = target.getBoundingClientRect();
-      if (!from.width || !to.width) return;
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduced || !Element.prototype.animate) return;
-      const flyer = document.createElement('span');
-      flyer.className = 'atyaf-v99-cart-flyer';
+      if (!from.width || !from.height || !to.width || !to.height) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !Element.prototype.animate) return;
+
+      const size = Math.min(76, Math.max(46, Math.min(from.width, from.height) * 0.46));
+      const flyer = document.createElement('img');
+      flyer.className = 'atyaf-v140-product-flyer';
+      flyer.alt = '';
       flyer.setAttribute('aria-hidden', 'true');
-      flyer.textContent = '✦';
-      flyer.style.cssText = 'position:fixed;z-index:2147483000;left:0;top:0;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#17352e;color:#f5cf79;font-size:21px;box-shadow:0 5px 18px #17352e55;pointer-events:none;will-change:transform,opacity';
+      flyer.src = image.currentSrc || image.src;
+      flyer.style.cssText = `position:fixed;left:0;top:0;width:${size}px;height:${size}px;object-fit:contain;box-sizing:border-box;padding:4px;border-radius:13px;background:rgba(255,255,255,.96);border:1px solid rgba(197,163,99,.34);box-shadow:0 8px 22px rgba(20,25,28,.22);pointer-events:none;z-index:2147483000;will-change:transform,opacity;`;
       document.body.appendChild(flyer);
-      const x = from.left + from.width / 2 - 15;
-      const y = from.top + from.height / 2 - 15;
-      const dx = to.left + to.width / 2 - 15 - x;
-      const dy = to.top + to.height / 2 - 15 - y;
-      // V131: deliberate, curved flight with a soft landing in the cart.
-      const duration = 1180;
-      const arc = Math.min(145, Math.max(55, Math.abs(dy) * 0.20));
+      const x = from.left + from.width / 2 - size / 2;
+      const y = from.top + from.height / 2 - size / 2;
+      const dx = to.left + to.width / 2 - size / 2 - x;
+      const dy = to.top + to.height / 2 - size / 2 - y;
+      const duration = 1250;
+      const arc = Math.min(145, Math.max(48, Math.abs(dy) * .17));
       const animation = flyer.animate([
         {transform:`translate3d(${x}px,${y}px,0) scale(1)`,opacity:1,offset:0},
-        {transform:`translate3d(${x + dx * .12}px,${y - arc * .45}px,0) scale(1.13)`,opacity:1,offset:.22},
-        {transform:`translate3d(${x + dx * .53}px,${y + dy * .32 - arc}px,0) scale(.96)`,opacity:1,offset:.56},
-        {transform:`translate3d(${x + dx * .86}px,${y + dy * .78 - arc * .28}px,0) scale(.62)`,opacity:.95,offset:.84},
-        {transform:`translate3d(${x + dx}px,${y + dy}px,0) scale(.16)`,opacity:0,offset:1}
-      ], {duration, easing:'cubic-bezier(.35,.05,.2,1)', fill:'forwards'});
+        {transform:`translate3d(${x + dx*.14}px,${y + dy*.07 - arc*.50}px,0) scale(1.08)`,opacity:1,offset:.24},
+        {transform:`translate3d(${x + dx*.53}px,${y + dy*.42 - arc}px,0) scale(.86)`,opacity:1,offset:.58},
+        {transform:`translate3d(${x + dx*.87}px,${y + dy*.80 - arc*.22}px,0) scale(.48)`,opacity:.94,offset:.85},
+        {transform:`translate3d(${x + dx}px,${y + dy}px,0) scale(.13)`,opacity:0,offset:1}
+      ], {duration,easing:'cubic-bezier(.32,.04,.22,1)',fill:'forwards'});
       let cleaned = false;
-      const cleanup = () => {
-        if (cleaned) return;
-        cleaned = true;
-        flyer.remove();
-      };
+      const cleanup = () => { if (cleaned) return; cleaned = true; flyer.remove(); };
       animation.onfinish = () => {
         cleanup();
         if (target.isConnected && typeof target.animate === 'function') {
           target.animate([
             {transform:'scale(1)',offset:0},
-            {transform:'scale(1.16)',offset:.38},
-            {transform:'scale(.96)',offset:.72},
+            {transform:'scale(1.14)',offset:.4},
+            {transform:'scale(.97)',offset:.75},
             {transform:'scale(1)',offset:1}
-          ], {duration:480,easing:'ease-out'});
+          ], {duration:450,easing:'ease-out'});
         }
       };
       animation.oncancel = cleanup;
-      window.setTimeout(cleanup, duration + 250);
+      window.setTimeout(cleanup,duration+300);
     }
     async function addCart(id){
       id=String(id||'').trim();

@@ -2099,6 +2099,33 @@ body.atyaf-cart-page-open #atyafCartPage {
   }
 }
 </style>
+
+<!-- V136: persistent mobile navigation across store views; keep original actions and styling. -->
+<style id="atyaf-v136-persistent-mobile-navigation">
+@media (max-width:767px) {
+  html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
+    position:fixed!important;
+    inset:auto 0 0 0!important;
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+    z-index:10080!important;
+    transform:none!important;
+    pointer-events:auto!important;
+  }
+  /* The cart is a full-screen overlay; reserve room for the persistent tabs. */
+  html body.atyaf-cart-page-open #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
+    display:grid!important;
+  }
+  html body.atyaf-cart-page-open #atyafCartPage {
+    padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;
+    scroll-padding-bottom:calc(92px + env(safe-area-inset-bottom,0px));
+  }
+  /* Avoid a second navigation row when the product detail modal is shown. */
+  #productModal.styaf-detail-mode .styaf-v47-bottom-nav {display:none!important}
+  #productModal.styaf-detail-mode .styaf-v47-product {padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))!important}
+}
+</style>
 </head>
 <body>
 <div id="atyafLoadingShell" role="status" aria-label="جارٍ تحميل متجر أطياف" aria-live="polite">

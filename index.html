@@ -7,63 +7,81 @@
   <meta name="description" content="أطياف | ATYAF — متجر العطور والهدايا." />
   <title>أطياف | ATYAF</title>
   <!-- V146: show the actual storefront while content loads; glass overlay only. -->
-<script id="atyaf-v150-cart-navigation-early">
-/* Capture at document level before legacy navigation listeners are registered. */
+<script id="atyaf-v151-cart-navigation-portal">
+/* Keep the real navigation inside the fixed cart stacking context. */
 (function(){
   'use strict';
-  function cartOpen(){
-    var page=document.getElementById('atyafCartPage');
-    return !!(page && (page.classList.contains('open') || document.body.classList.contains('atyaf-cart-page-open')));
-  }
-  function closeCart(){
-    var page=document.getElementById('atyafCartPage');
-    if(page)page.classList.remove('open');
-    document.body.classList.remove('atyaf-cart-page-open');
-    document.getElementById('cartDrawer')?.classList.remove('open');
-    try{window.atyafCloseCartPage?.();}catch(e){console.warn('Cart navigation:',e);}
-  }
-  function closeCatalogs(){
-    try{window.atyafCloseCuratedSection?.();window.atyafCloseBrandView?.();window.atyafCloseScentCatalog?.();}catch(e){console.warn('Catalog navigation:',e);}
-  }
-  function route(tab){
-    closeCart();
-    if(tab==='home'){
-      closeCatalogs();
-      window.scrollTo({top:0,behavior:'instant'});
-    }else if(tab==='brands'){
-      closeCatalogs();
-      var section=document.getElementById('brands');
-      if(section)section.scrollIntoView({block:'start',behavior:'instant'});
-      else window.scrollTo({top:0,behavior:'instant'});
-    }else if(tab==='trending'){
-      closeCatalogs();
-      var best=document.querySelector('#nav [data-atyaf-main-tab="best"]');
-      if(best)best.click();
-      else window.atyafOpenCuratedSection?.('best');
-    }else if(tab==='account'){
-      closeCatalogs();
-      if(typeof window.openCustomerCenter==='function')window.openCustomerCenter();
+  function init(){
+    const cart=document.getElementById('atyafCartPage');
+    const nav=document.getElementById('atyafMobileBottomNav');
+    if(!cart||!nav)return;
+    const marker=document.createComment('ATYAF bottom navigation original position');
+    nav.parentNode.insertBefore(marker,nav);
+    const isOpen=()=>cart.classList.contains('open')||document.body.classList.contains('atyaf-cart-page-open');
+    function syncPosition(){
+      if(isOpen()){
+        if(nav.parentNode!==cart)cart.appendChild(nav);
+      }else if(nav.parentNode!==marker.parentNode){
+        marker.parentNode.insertBefore(nav,marker.nextSibling);
+      }
     }
-    var nav=document.getElementById('atyafMobileBottomNav');
-    nav?.querySelectorAll('[data-atyaf-tab]').forEach(function(item){
-      var active=item.dataset.atyafTab===tab;
-      item.classList.toggle('active',active);
-      if(active)item.setAttribute('aria-current','page');
-      else item.removeAttribute('aria-current');
-    });
+    function closeCartView(){
+      if(typeof window.atyafCloseCartPage==='function')window.atyafCloseCartPage();
+      cart.classList.remove('open');
+      cart.style.setProperty('display','none','important');
+      document.body.classList.remove('atyaf-cart-page-open');
+      document.getElementById('cartDrawer')?.classList.remove('open');
+      syncPosition();
+      // Do not let the emergency display override prevent later cart opens.
+      requestAnimationFrame(()=>cart.style.removeProperty('display'));
+    }
+    function navigate(tab){
+      closeCartView();
+      const target=tab==='home'?'#home':tab==='brands'?'#brands':null;
+      if(tab==='trending'){
+        const best=document.querySelector('#nav [data-atyaf-main-tab="best"]');
+        if(best)best.click();
+        else document.getElementById('atyafBrandProductSections')?.scrollIntoView({block:'start'});
+      }else if(tab==='account'){
+        if(typeof window.openCustomerCenter==='function')window.openCustomerCenter();
+      }else if(target){
+        const section=document.querySelector(target);
+        if(section)requestAnimationFrame(()=>section.scrollIntoView({block:'start',behavior:'auto'}));
+        else window.scrollTo(0,0);
+      }
+      nav.querySelectorAll('[data-atyaf-tab]').forEach(item=>{
+        const selected=item.dataset.atyafTab===tab;
+        item.classList.toggle('active',selected);
+        if(selected)item.setAttribute('aria-current','page');
+        else item.removeAttribute('aria-current');
+      });
+    }
+    nav.addEventListener('click',function(event){
+      if(!isOpen())return;
+      const el=event.target instanceof Element?event.target.closest('[data-atyaf-tab]'):null;
+      if(!el||!nav.contains(el))return;
+      const tab=el.dataset.atyafTab;
+      if(tab==='cart')return;
+      if(!['home','brands','trending','account'].includes(tab))return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      navigate(tab);
+    },true);
+    new MutationObserver(syncPosition).observe(cart,{attributes:true,attributeFilter:['class']});
+    new MutationObserver(syncPosition).observe(document.body,{attributes:true,attributeFilter:['class']});
+    syncPosition();
   }
-  document.addEventListener('click',function(event){
-    if(!cartOpen())return;
-    var target=event.target instanceof Element?event.target:null;
-    var tab=target?.closest('#atyafMobileBottomNav [data-atyaf-tab]');
-    if(!tab || tab.dataset.atyafTab==='cart')return;
-    if(!['home','brands','trending','account'].includes(tab.dataset.atyafTab))return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    route(tab.dataset.atyafTab);
-  },true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
+<style id="atyaf-v151-cart-nav-portal-style">
+@media(max-width:767px){
+  html body #atyafCartPage.open > #atyafMobileBottomNav.atyaf-mobile-bottom-nav{
+    display:grid!important;position:fixed!important;inset:auto 0 0 0!important;
+    z-index:10080!important;pointer-events:auto!important;visibility:visible!important;
+  }
+}
+</style>
   <script id="atyaf-first-paint-guard">
   (function(){
     document.documentElement.classList.add('atyaf-first-paint-pending');

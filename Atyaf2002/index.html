@@ -329,7 +329,7 @@ function profileSectionEditor(){
  profileEditor.innerHTML=`<div class="grid">
  <div class="field"><label>الحالة</label><select data-v="enabled"><option value="true" ${s.enabled!==false?'selected':''}>ظاهر</option><option value="false" ${s.enabled===false?'selected':''}>مخفي</option></select></div>
  ${colorField('backgroundColor','لون خلفية الهيدر',s.backgroundColor||'#000000')}
- <div class="field"><label>الخط</label><select data-v="fontFamily"><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
+ <div class="field"><label>الخط</label><select data-v="fontFamily"><option value="'ATYAF Assaf TTF', Tahoma, Arial, sans-serif">عساف — الخط المرفوع (TTF)</option><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></div>
  <div class="field"><label>عرض الشعار للهاتف px (لا يغيّر ارتفاع الهيدر)</label><input data-v="phoneSize" type="number" min="24" max="260" value="${Number(s.phoneSize||42)}"></div>
  <div class="field"><label>عرض الشعار للآيباد/التابلت px</label><input data-v="tabletSize" type="number" min="30" max="360" value="${Number(s.tabletSize||64)}"></div>
  <div class="field"><label>عرض الشعار للكمبيوتر px</label><input data-v="desktopSize" type="number" min="30" max="420" value="${Number(s.desktopSize||s.tabletSize||64)}"></div>

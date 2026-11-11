@@ -8039,6 +8039,83 @@ footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer
   }
 })();
 </script>
+<!-- ATYAF V148: Navigation from the cart overlay; preserve all existing store handlers. -->
+<script id="atyaf-v148-cart-navigation">
+(function(){
+  'use strict';
+  const cart=()=>document.getElementById('atyafCartPage');
+  const isCartOpen=()=>Boolean(cart()?.classList.contains('open'));
+  function leaveCart(){
+    if(typeof window.atyafCloseCartPage==='function')window.atyafCloseCartPage();
+    else {cart()?.classList.remove('open');document.body.classList.remove('atyaf-cart-page-open');}
+  }
+  function activate(selector){
+    const el=document.querySelector(selector);
+    if(!el)return false;
+    el.click();
+    return true;
+  }
+  function goSection(section){
+    leaveCart();
+    // Defer until the cart overlay has been removed so the existing store navigation
+    // handlers can scroll/open their own sections without being obscured.
+    requestAnimationFrame(()=>{
+      switch(section){
+        case 'home':
+          window.atyafCloseCuratedSection?.();
+          window.atyafCloseBrandView?.();
+          window.atyafCloseScentCatalog?.();
+          window.scrollTo({top:0,behavior:'smooth'});
+          break;
+        case 'brands':
+          window.atyafCloseCuratedSection?.();
+          window.atyafCloseBrandView?.();
+          window.atyafCloseScentCatalog?.();
+          document.getElementById('brands')?.scrollIntoView({behavior:'smooth',block:'start'});
+          break;
+        case 'trending': activate('#nav [data-atyaf-main-tab="best"]');break;
+        case 'products': activate('#nav [data-atyaf-main-tab="products"]');break;
+        case 'scents': activate('#nav [data-atyaf-main-tab="scents"]');break;
+        case 'account':
+          if(typeof window.openCustomerCenter==='function')window.openCustomerCenter();
+          break;
+      }
+    });
+  }
+  // Capture cart navigation before older global listeners that assume the page is visible.
+  document.addEventListener('click',function(event){
+    if(!isCartOpen())return;
+    const nav=event.target.closest('#atyafMobileBottomNav [data-atyaf-tab]');
+    if(nav){
+      const section=nav.dataset.atyafTab;
+      if(section==='cart')return;
+      event.preventDefault();event.stopImmediatePropagation();
+      goSection(section);
+      document.querySelectorAll('#atyafMobileBottomNav .atyaf-bottom-tab').forEach(el=>{
+        el.classList.toggle('active',el===nav);
+      });
+      return;
+    }
+    const footerLink=event.target.closest('#atyafCartFooterMount a');
+    if(!footerLink)return;
+    const text=footerLink.textContent.trim();
+    const href=footerLink.getAttribute('href')||'';
+    let section=null;
+    if(text==='كل المنتجات'||href==='#products')section='products';
+    else if(text==='الماركات'||href==='#brands')section='brands';
+    else if(text==='الهدايا'||href==='#scents')section='scents';
+    if(section){event.preventDefault();event.stopImmediatePropagation();goSection(section);return;}
+    // Policy and contact dialogs must appear above the storefront, not behind the cart.
+    if(/showContactInfo|showShippingInfo|showReturnsInfo|atyafOpenPolicy|openInfoModal/.test(footerLink.getAttribute('onclick')||'')){
+      leaveCart();
+      return;
+    }
+    // Social links use their existing configured destinations and should open normally.
+  },true);
+  // In the fixed cart, footer navigation needs to remain clickable without a duplicate
+  // footer click listener intercepting its hash after this handler has routed it.
+})();
+</script>
 </body>
 </html>
 

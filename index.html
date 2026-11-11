@@ -2195,6 +2195,48 @@ body.atyaf-cart-page-open #atyafCartPage {
   opacity:1!important;-webkit-text-fill-color:#fff!important;
 }
 </style>
+
+<!-- V153: Profile controls from administration; resolves hard-coded later header colors and logo sizes. -->
+<style id="atyaf-v153-profile-admin-authority">
+/* Keep header geometry intact; only the admin-controlled color, font and logo width change. */
+html body header.header,
+html body.atyaf-cart-page-open header.header {
+  background:var(--atyaf-profile-header-bg,#302720)!important;
+  background-color:var(--atyaf-profile-header-bg,#302720)!important;
+  font-family:var(--atyaf-profile-font,Tahoma,Arial,sans-serif)!important;
+}
+html body header.header #nav.nav,
+html body.atyaf-cart-page-open header.header #nav.nav {
+  background:var(--atyaf-profile-header-bg,#302720)!important;
+  background-color:var(--atyaf-profile-header-bg,#302720)!important;
+  font-family:var(--atyaf-profile-font,Tahoma,Arial,sans-serif)!important;
+}
+html body header.header :is(.navrow a,button,input,.atyaf-profile,.atyaf-mobile-profile) {
+  font-family:var(--atyaf-profile-font,Tahoma,Arial,sans-serif)!important;
+}
+/* The logo is a wide image: control its width, not the header height. */
+@media(max-width:600px){
+ html body header.header .atyaf-mobile-profile .atyaf-profile-image-slot img {
+   width:min(var(--atyaf-profile-phone-size,200px),46vw)!important;
+   max-width:100%!important;height:auto!important;max-height:51px!important;
+   object-fit:contain!important;
+ }
+}
+@media(min-width:601px) and (max-width:1100px){
+ html body header.header .atyaf-profile .atyaf-profile-image-slot img {
+   width:min(var(--atyaf-profile-tablet-size,200px),34vw)!important;
+   max-width:100%!important;height:auto!important;max-height:66px!important;
+   object-fit:contain!important;
+ }
+}
+@media(min-width:1101px){
+ html body header.header .atyaf-profile .atyaf-profile-image-slot img {
+   width:min(var(--atyaf-profile-desktop-size,200px),28vw)!important;
+   max-width:100%!important;height:auto!important;max-height:72px!important;
+   object-fit:contain!important;
+ }
+}
+</style>
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -4064,7 +4106,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHeaderSearch()}
  const P=v=>{if(typeof v!=='string')return v||{};try{return JSON.parse(v)}catch(_){return {}}};
  function apply(v){
   const p=P(v),r=document.documentElement,url=String(p.logoImage||p.profileImage||p.image||p.imageUrl||'').trim();
-  r.style.setProperty('--atyaf-profile-header-bg',p.backgroundColor||'#000000');
+  r.style.setProperty('--atyaf-profile-header-bg',p.backgroundColor||'#302720');
   r.style.setProperty('--atyaf-profile-bar-bg',p.barBackgroundColor||'#000000');
   r.style.setProperty('--atyaf-profile-bar-text',p.barTextColor||'#ffffff');
   r.style.setProperty('--atyaf-profile-font',p.fontFamily||'Tahoma, Arial, sans-serif');

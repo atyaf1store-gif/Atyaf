@@ -8039,81 +8039,94 @@ footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer
   }
 })();
 </script>
-<!-- ATYAF V148: Navigation from the cart overlay; preserve all existing store handlers. -->
-<script id="atyaf-v148-cart-navigation">
+<!-- ATYAF V149: Cart bottom navigation — exit cart before routing. -->
+<style id="atyaf-v149-cart-bottom-navigation">
+@media(max-width:767px){
+  html body.atyaf-cart-page-open #atyafMobileBottomNav.atyaf-mobile-bottom-nav{
+    display:grid!important;position:fixed!important;z-index:10150!important;
+    pointer-events:auto!important;visibility:visible!important;opacity:1!important;
+  }
+  html body.atyaf-cart-page-open #atyafMobileBottomNav .atyaf-bottom-tab{
+    pointer-events:auto!important;touch-action:manipulation;
+  }
+}
+</style>
+<script id="atyaf-v149-cart-navigation">
 (function(){
   'use strict';
   const cart=()=>document.getElementById('atyafCartPage');
-  const isCartOpen=()=>Boolean(cart()?.classList.contains('open'));
-  function leaveCart(){
-    if(typeof window.atyafCloseCartPage==='function')window.atyafCloseCartPage();
-    else {cart()?.classList.remove('open');document.body.classList.remove('atyaf-cart-page-open');}
+  const nav=document.getElementById('atyafMobileBottomNav');
+  if(!nav)return;
+  const isOpen=()=>Boolean(cart()?.classList.contains('open')||document.body.classList.contains('atyaf-cart-page-open'));
+  function exitCart(){
+    try{window.atyafCloseCartPage?.();}catch(err){console.error('ATYAF cart close:',err);}
+    cart()?.classList.remove('open');
+    document.body.classList.remove('atyaf-cart-page-open');
+    document.getElementById('cartDrawer')?.classList.remove('open');
   }
-  function activate(selector){
-    const el=document.querySelector(selector);
-    if(!el)return false;
-    el.click();
-    return true;
+  function closeSubViews(){
+    window.atyafCloseCuratedSection?.();
+    window.atyafCloseBrandView?.();
+    window.atyafCloseScentCatalog?.();
   }
-  function goSection(section){
-    leaveCart();
-    // Defer until the cart overlay has been removed so the existing store navigation
-    // handlers can scroll/open their own sections without being obscured.
-    requestAnimationFrame(()=>{
-      switch(section){
-        case 'home':
-          window.atyafCloseCuratedSection?.();
-          window.atyafCloseBrandView?.();
-          window.atyafCloseScentCatalog?.();
-          window.scrollTo({top:0,behavior:'smooth'});
-          break;
-        case 'brands':
-          window.atyafCloseCuratedSection?.();
-          window.atyafCloseBrandView?.();
-          window.atyafCloseScentCatalog?.();
-          document.getElementById('brands')?.scrollIntoView({behavior:'smooth',block:'start'});
-          break;
-        case 'trending': activate('#nav [data-atyaf-main-tab="best"]');break;
-        case 'products': activate('#nav [data-atyaf-main-tab="products"]');break;
-        case 'scents': activate('#nav [data-atyaf-main-tab="scents"]');break;
-        case 'account':
-          if(typeof window.openCustomerCenter==='function')window.openCustomerCenter();
-          break;
-      }
+  function navigate(tab){
+    // Close the full-screen overlay synchronously before scrolling or opening a view.
+    exitCart();
+    if(tab==='home'){
+      closeSubViews();
+      window.scrollTo({top:0,behavior:'auto'});
+    }else if(tab==='brands'){
+      closeSubViews();
+      document.getElementById('brands')?.scrollIntoView({block:'start',behavior:'auto'});
+    }else if(tab==='trending'){
+      const main=document.querySelector('#nav [data-atyaf-main-tab="best"]');
+      if(main)main.click();
+      else if(typeof window.atyafOpenCuratedSection==='function')window.atyafOpenCuratedSection('best');
+    }else if(tab==='account'){
+      if(typeof window.openCustomerCenter==='function')window.openCustomerCenter();
+      else document.getElementById('customerCenterModal')?.classList.add('open');
+    }
+    // Update selected tab without triggering legacy navigation callbacks.
+    nav.querySelectorAll('[data-atyaf-tab]').forEach(el=>{
+      const selected=el.dataset.atyafTab===tab;
+      el.classList.toggle('active',selected);
+      if(selected)el.setAttribute('aria-current','page');
+      else el.removeAttribute('aria-current');
     });
   }
-  // Capture cart navigation before older global listeners that assume the page is visible.
-  document.addEventListener('click',function(event){
-    if(!isCartOpen())return;
-    const nav=event.target.closest('#atyafMobileBottomNav [data-atyaf-tab]');
-    if(nav){
-      const section=nav.dataset.atyafTab;
-      if(section==='cart')return;
-      event.preventDefault();event.stopImmediatePropagation();
-      goSection(section);
-      document.querySelectorAll('#atyafMobileBottomNav .atyaf-bottom-tab').forEach(el=>{
-        el.classList.toggle('active',el===nav);
-      });
-      return;
-    }
-    const footerLink=event.target.closest('#atyafCartFooterMount a');
-    if(!footerLink)return;
-    const text=footerLink.textContent.trim();
-    const href=footerLink.getAttribute('href')||'';
-    let section=null;
-    if(text==='كل المنتجات'||href==='#products')section='products';
-    else if(text==='الماركات'||href==='#brands')section='brands';
-    else if(text==='الهدايا'||href==='#scents')section='scents';
-    if(section){event.preventDefault();event.stopImmediatePropagation();goSection(section);return;}
-    // Policy and contact dialogs must appear above the storefront, not behind the cart.
-    if(/showContactInfo|showShippingInfo|showReturnsInfo|atyafOpenPolicy|openInfoModal/.test(footerLink.getAttribute('onclick')||'')){
-      leaveCart();
-      return;
-    }
-    // Social links use their existing configured destinations and should open normally.
+  // Capture before the older delegated handlers and inline onclick handlers.
+  nav.addEventListener('click',function(event){
+    if(!isOpen())return;
+    const target=event.target.closest('[data-atyaf-tab]');
+    if(!target||!nav.contains(target))return;
+    const tab=target.dataset.atyafTab;
+    if(tab==='cart')return;
+    if(!['home','brands','trending','account'].includes(tab))return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    navigate(tab);
   },true);
-  // In the fixed cart, footer navigation needs to remain clickable without a duplicate
-  // footer click listener intercepting its hash after this handler has routed it.
+  // The top navigation and footer links must also leave the cart before navigating.
+  document.addEventListener('click',function(event){
+    if(!isOpen())return;
+    const top=event.target.closest('#nav a[data-atyaf-main-tab]');
+    if(top){exitCart();return;}
+    const link=event.target.closest('#atyafCartFooterMount a');
+    if(!link)return;
+    const label=(link.textContent||'').trim();
+    const href=link.getAttribute('href')||'';
+    if(label==='كل المنتجات'||href==='#products'){
+      event.preventDefault();event.stopImmediatePropagation();exitCart();
+      document.querySelector('#nav [data-atyaf-main-tab="products"]')?.click();
+    }else if(label==='الماركات'||href==='#brands'){
+      event.preventDefault();event.stopImmediatePropagation();navigate('brands');
+    }else if(label==='الهدايا'||href==='#scents'){
+      event.preventDefault();event.stopImmediatePropagation();exitCart();
+      document.querySelector('#nav [data-atyaf-main-tab="scents"]')?.click();
+    }else if(/showContactInfo|showShippingInfo|showReturnsInfo|atyafOpenPolicy|openInfoModal/.test(link.getAttribute('onclick')||'')){
+      exitCart();
+    }
+  },true);
 })();
 </script>
 </body>

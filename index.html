@@ -2013,6 +2013,25 @@ body{padding-bottom:65px!important}
  #atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{display:none!important}
 }
 </style>
+<style id="atyaf-v155-reference-intro">
+/* V155: reference video — ivory field, gold accent, mirrored horizontal wordmark. */
+#atyafIntroV12.atyaf-v94-intro{background:var(--atyaf-intro-reference-bg,#f5f0e7)!important;perspective:900px}
+#atyafIntroV12.atyaf-v94-intro::before{background:var(--atyaf-intro-reference-accent,#d7a21d)!important}
+#atyafIntroV12 .atyaf-v112-brand{gap:clamp(4px,1.4vw,9px)!important;max-width:calc(100vw - 30px);transform-style:preserve-3d}
+#atyafIntroV12 .atyaf-v112-en{font-family:var(--atyaf-intro-reference-en-font,Georgia,serif)!important;font-size:var(--atyaf-intro-reference-en-size,clamp(15px,4.1vw,19px))!important;color:var(--atyaf-intro-reference-text,#241e19)!important;letter-spacing:-.35px}
+#atyafIntroV12 .atyaf-v112-ar{font-family:var(--atyaf-intro-reference-ar-font,'Amiri',Georgia,serif)!important;font-size:var(--atyaf-intro-reference-ar-size,clamp(18px,4.8vw,23px))!important;color:var(--atyaf-intro-reference-text,#241e19)!important;line-height:1.4}
+#atyafIntroV12 .atyaf-v112-logo{width:var(--atyaf-intro-reference-logo-size,48px)!important;height:var(--atyaf-intro-reference-logo-size,48px)!important;flex-basis:var(--atyaf-intro-reference-logo-size,48px)!important;border-color:var(--atyaf-intro-reference-accent,#d7a21d)!important;border-radius:12px!important;box-shadow:0 3px 8px rgba(48,33,12,.08)!important}
+#atyafIntroV12 .atyaf-v94-media{width:calc(var(--atyaf-intro-reference-logo-size,48px) - 4px)!important;height:calc(var(--atyaf-intro-reference-logo-size,48px) - 4px)!important;max-width:100%!important;max-height:100%!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{animation:atyaf155Left var(--atyaf-intro-reference-enter,1250ms) cubic-bezier(.16,1,.3,1) 60ms both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{animation:atyaf155Right var(--atyaf-intro-reference-enter,1250ms) cubic-bezier(.16,1,.3,1) 60ms both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:atyaf155Center var(--atyaf-intro-reference-enter,1250ms) cubic-bezier(.16,1,.3,1) 80ms both!important}
+@keyframes atyaf155Left{0%{opacity:0;transform:translate3d(-48vw,0,0);filter:blur(3px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:translate3d(0,0,0);filter:none}}
+@keyframes atyaf155Right{0%{opacity:0;transform:translate3d(48vw,0,0);filter:blur(3px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:translate3d(0,0,0);filter:none}}
+@keyframes atyaf155Center{0%{opacity:0;transform:scale(.72);filter:blur(5px)}65%{opacity:1;transform:scale(1.045);filter:none}100%{opacity:1;transform:scale(1);filter:none}}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after{animation:atyaf121ReflectionLeft 2150ms ease-in-out 180ms both!important;color:var(--atyaf-intro-reference-accent,#d7a21d)!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:atyaf121ReflectionRight 2150ms ease-in-out 180ms both!important;color:var(--atyaf-intro-reference-accent,#d7a21d)!important}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{display:none!important}}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
@@ -3310,17 +3329,17 @@ window.addEventListener("focus",atyafLoadLowerAds);
     if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg); } catch (_) { cfg = null; } }
     if (!cfg || typeof cfg !== 'object' || cfg.enabled === false || cfg.enabled === 'false') { close(true); return; }
     const mediaURL = validURL(cfg.mediaUrl);
-    const url = mediaURL || validURL(cfg.logoImage);
+    const url = validURL(cfg.logoImage) || mediaURL || (findHeaderLogo()?.tagName === 'IMG' ? validURL(findHeaderLogo().currentSrc || findHeaderLogo().src) : '');
     if (!url) { close(true); return; }
     // Settings sync runs repeatedly; never restart a completed or skipped intro.
     if (introAlreadyShown) { release(); return; }
     const video = false; // V112 splash always uses a static store logo.
     const headerLogo = findHeaderLogo();
     const headerLogoURL = headerLogo && headerLogo.tagName === 'IMG' ? validURL(headerLogo.currentSrc || headerLogo.src) : '';
-    const splashLogoURL = headerLogoURL || validURL(cfg.logoImage) || url;
+    const splashLogoURL = validURL(cfg.logoImage) || headerLogoURL || (cfg.mediaType === 'video' ? '' : url);
     const n = Number(cfg.duration);
-    const duration = Number.isFinite(n) && n > 0 ? Math.min(12000, Math.max(1500, n)) : 3200;
-    const signature = JSON.stringify([url, video, duration]);
+    const duration = Number.isFinite(n) && n > 0 ? Math.min(30000, Math.max(1500, n)) : 3200;
+    const signature = JSON.stringify([url, video, duration, cfg.backgroundColor, cfg.textColor, cfg.accentColor, cfg.logoSize, cfg.englishSize, cfg.arabicSize]);
     if (state && state.signature === signature) return;
     close(true);
     if (!document.body) { release(); return; }
@@ -3330,6 +3349,15 @@ window.addEventListener("focus",atyafLoadLowerAds);
     root.className = 'atyaf-v94-intro';
     root.setAttribute('role', 'region');
     root.setAttribute('aria-label', 'شاشة بداية أطياف');
+    const safeColor = (v, fallback) => typeof v === 'string' && /^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/.test(v.trim()) ? v.trim() : fallback;
+    const bounded = (v, min, max, fallback) => { const x = Number(v); return Number.isFinite(x) ? Math.min(max, Math.max(min, x)) : fallback; };
+    root.style.setProperty('--atyaf-intro-reference-bg', safeColor(cfg.backgroundColor, '#f5f0e7'));
+    root.style.setProperty('--atyaf-intro-reference-text', safeColor(cfg.textColor, '#241e19'));
+    root.style.setProperty('--atyaf-intro-reference-accent', safeColor(cfg.accentColor, '#d7a21d'));
+    root.style.setProperty('--atyaf-intro-reference-logo-size', bounded(cfg.logoSize, 28, 96, 48) + 'px');
+    root.style.setProperty('--atyaf-intro-reference-en-size', bounded(cfg.englishSize, 11, 36, 19) + 'px');
+    root.style.setProperty('--atyaf-intro-reference-ar-size', bounded(cfg.arabicSize, 12, 42, 23) + 'px');
+    root.style.setProperty('--atyaf-intro-reference-enter', bounded(cfg.entranceDuration, 400, 3000, 1250) + 'ms');
     const media = document.createElement(video ? 'video' : 'img');
     media.className = 'atyaf-v94-media';
     if (video) { media.muted = true; media.defaultMuted = true; media.autoplay = true; media.playsInline = true; media.preload = 'auto'; }
@@ -3346,16 +3374,16 @@ window.addEventListener("focus",atyafLoadLowerAds);
     brand.className = 'atyaf-v112-brand';
     const en = document.createElement('span');
     en.className = 'atyaf-v112-en';
-    en.textContent = 'ATYAF';
-    en.setAttribute('data-reflection', 'ATYAF');
+    en.textContent = String(cfg.englishName || 'ATYAF').slice(0,30);
+    en.setAttribute('data-reflection', en.textContent);
     const logoBox = document.createElement('span');
     logoBox.className = 'atyaf-v112-logo';
     const ar = document.createElement('span');
     ar.className = 'atyaf-v112-ar';
     ar.lang = 'ar';
     ar.dir = 'rtl';
-    ar.textContent = 'أطياف';
-    ar.setAttribute('data-reflection', 'أطياف');
+    ar.textContent = String(cfg.arabicName || 'أطياف').slice(0,30);
+    ar.setAttribute('data-reflection', ar.textContent);
     brand.append(en, logoBox, ar);
     logoBox.append(media);
     root.append(brand, skip, progress);
@@ -3375,6 +3403,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     if (video) media.addEventListener('ended', finish, { once: true });
     document.body.append(root);
     s.loadTimer = setTimeout(finish, 6000);
+    if (!splashLogoURL) { finish(); return; }
     media.src = splashLogoURL;
     if (video) media.play().catch(finish);
     else if (media.complete && media.naturalWidth > 0) loaded();

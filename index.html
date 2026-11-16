@@ -2032,6 +2032,26 @@ body{padding-bottom:65px!important}
 #atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:atyaf121ReflectionRight 2150ms ease-in-out 180ms both!important;color:var(--atyaf-intro-reference-accent,#d7a21d)!important}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{display:none!important}}
 </style>
+<style id="atyaf-v156-reference-correction">
+/* Match the supplied Gisaah recording: warm ivory, golden mirrored wordmark,
+   white central tile and slow horizontal convergence. Intro-only styles. */
+#atyafIntroV12.atyaf-v94-intro{background:#f6f2e9!important;color:#ad8532!important}
+#atyafIntroV12.atyaf-v94-intro::before{background:#d6a620!important;opacity:1!important}
+#atyafIntroV12 .atyaf-v112-brand{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;max-width:none!important;width:max-content!important;overflow:visible!important}
+#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{display:inline-block!important;visibility:visible!important;color:#ad8532!important;text-shadow:0 1px 1px #fff9!important;white-space:nowrap!important}
+#atyafIntroV12 .atyaf-v112-en{font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(19px,5.3vw,27px)!important;letter-spacing:-.7px!important}
+#atyafIntroV12 .atyaf-v112-ar{font-family:'Amiri',Georgia,serif!important;font-size:clamp(23px,6.4vw,32px)!important}
+#atyafIntroV12 .atyaf-v112-logo{display:grid!important;place-items:center!important;flex:0 0 53px!important;width:53px!important;height:53px!important;border:1px solid #e8dfd1!important;border-radius:10px!important;background:#fff!important;box-shadow:0 4px 14px #6b4e1e19!important;overflow:hidden!important}
+#atyafIntroV12 .atyaf-v94-media{display:block!important;width:49px!important;height:49px!important;max-width:49px!important;max-height:49px!important;opacity:1!important;object-fit:contain!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{animation:atyaf156En 1650ms cubic-bezier(.19,.82,.2,1) both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{animation:atyaf156Ar 1650ms cubic-bezier(.19,.82,.2,1) both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:atyaf156Logo 1400ms cubic-bezier(.19,.82,.2,1) both!important}
+@keyframes atyaf156En{0%{opacity:1;transform:translateX(-40vw);filter:none}100%{opacity:1;transform:translateX(0);filter:none}}
+@keyframes atyaf156Ar{0%{opacity:1;transform:translateX(40vw);filter:none}100%{opacity:1;transform:translateX(0);filter:none}}
+@keyframes atyaf156Logo{0%{opacity:.85;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
+#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{color:#bd9a51!important;filter:blur(.5px)!important}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important}}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
@@ -3338,7 +3358,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const headerLogoURL = headerLogo && headerLogo.tagName === 'IMG' ? validURL(headerLogo.currentSrc || headerLogo.src) : '';
     const splashLogoURL = validURL(cfg.logoImage) || headerLogoURL || (cfg.mediaType === 'video' ? '' : url);
     const n = Number(cfg.duration);
-    const duration = Number.isFinite(n) && n > 0 ? Math.min(30000, Math.max(1500, n)) : 3200;
+    const duration = Number.isFinite(n) && n > 0 ? Math.min(30000, Math.max(1500, n)) : 3800;
     const signature = JSON.stringify([url, video, duration, cfg.backgroundColor, cfg.textColor, cfg.accentColor, cfg.logoSize, cfg.englishSize, cfg.arabicSize]);
     if (state && state.signature === signature) return;
     close(true);
@@ -3351,13 +3371,13 @@ window.addEventListener("focus",atyafLoadLowerAds);
     root.setAttribute('aria-label', 'شاشة بداية أطياف');
     const safeColor = (v, fallback) => typeof v === 'string' && /^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/.test(v.trim()) ? v.trim() : fallback;
     const bounded = (v, min, max, fallback) => { const x = Number(v); return Number.isFinite(x) ? Math.min(max, Math.max(min, x)) : fallback; };
-    root.style.setProperty('--atyaf-intro-reference-bg', safeColor(cfg.backgroundColor, '#f5f0e7'));
-    root.style.setProperty('--atyaf-intro-reference-text', safeColor(cfg.textColor, '#241e19'));
-    root.style.setProperty('--atyaf-intro-reference-accent', safeColor(cfg.accentColor, '#d7a21d'));
+    root.style.setProperty('--atyaf-intro-reference-bg', safeColor(cfg.referenceBackgroundColor, '#f6f2e9'));
+    root.style.setProperty('--atyaf-intro-reference-text', safeColor(cfg.referenceTextColor, '#b18a37'));
+    root.style.setProperty('--atyaf-intro-reference-accent', safeColor(cfg.referenceAccentColor, '#d5a320'));
     root.style.setProperty('--atyaf-intro-reference-logo-size', bounded(cfg.logoSize, 28, 96, 48) + 'px');
-    root.style.setProperty('--atyaf-intro-reference-en-size', bounded(cfg.englishSize, 11, 36, 19) + 'px');
-    root.style.setProperty('--atyaf-intro-reference-ar-size', bounded(cfg.arabicSize, 12, 42, 23) + 'px');
-    root.style.setProperty('--atyaf-intro-reference-enter', bounded(cfg.entranceDuration, 400, 3000, 1250) + 'ms');
+    root.style.setProperty('--atyaf-intro-reference-en-size', bounded(cfg.referenceEnglishSize, 14, 44, 22) + 'px');
+    root.style.setProperty('--atyaf-intro-reference-ar-size', bounded(cfg.referenceArabicSize, 16, 48, 27) + 'px');
+    root.style.setProperty('--atyaf-intro-reference-enter', bounded(cfg.referenceEntranceDuration, 400, 3000, 1650) + 'ms');
     const media = document.createElement(video ? 'video' : 'img');
     media.className = 'atyaf-v94-media';
     if (video) { media.muted = true; media.defaultMuted = true; media.autoplay = true; media.playsInline = true; media.preload = 'auto'; }
@@ -3395,7 +3415,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       s.loaded = true;
       clearTimeout(s.loadTimer);
       root.classList.add('atyaf-v94-visible');
-      s.timer = setTimeout(finish, Math.max(duration, 2950));
+      s.timer = setTimeout(finish, Math.max(duration, 3500));
     };
     skip.addEventListener('click', finish);
     media.addEventListener('error', finish, { once: true });
@@ -8190,5 +8210,3 @@ footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer
 
 </body>
 </html>
-
-

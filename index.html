@@ -2429,19 +2429,87 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 @media(max-width:480px){footer .atyaf-footer-logo img{width:43px!important;height:43px!important;max-width:43px!important;max-height:43px!important;flex-basis:43px}footer .atyaf-footer-wordmark{font-size:17px}footer .atyaf-footer-wordmark-ar{font-size:17px}}
 </style>
 
-<style id="atyaf-v162-related-matches-home">
-/* Recommendations use the storefront's own .product cards and card() HTML. */
-#productModal.styaf-detail-mode .styaf-related-grid .product{
-  min-width:0; width:100%; max-width:100%; margin:0; cursor:pointer;
+<style id="atyaf-v163-related-cards-consistent">
+/* Scope the homepage card geometry to recommendations inside product details.
+   The existing card() renderer is preserved, including its click actions. */
+#productModal.styaf-detail-mode .styaf-v47-product .styaf-related-grid,
+#productModal.styaf-detail-mode .styaf-related-grid {
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-columns:auto!important;grid-auto-flow:row!important;
+  gap:9px!important;align-items:stretch!important;overflow:visible!important;
+  width:100%!important;max-width:100%!important;padding:8px 0 18px!important;
+  direction:rtl!important;
 }
-#productModal.styaf-detail-mode .styaf-related-grid .product .product-visual{
-  width:100%;
+#productModal.styaf-detail-mode .styaf-related-grid > .product {
+  box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+  position:relative!important;min-width:0!important;width:100%!important;
+  height:auto!important;margin:0!important;overflow:hidden!important;
+  border:1px solid #e5e5e5!important;border-radius:7px!important;
+  background:#fff!important;box-shadow:0 1px 3px #0000000a!important;
+  transform:none!important;cursor:pointer!important;
 }
-#productModal.styaf-detail-mode .styaf-related-grid .product .product-actions{
-  /* Same mobile visibility rules as homepage product cards. */
+#productModal.styaf-detail-mode .styaf-related-grid > .product > .product-visual {
+  box-sizing:border-box!important;position:relative!important;display:flex!important;
+  align-items:center!important;justify-content:center!important;flex:none!important;
+  width:100%!important;height:auto!important;min-height:0!important;
+  aspect-ratio:1 / 1.16!important;margin:0!important;padding:8px!important;
+  background:#fff!important;overflow:hidden!important;border-radius:0!important;
 }
-#productModal.styaf-detail-mode .styaf-related-grid .product button{
-  cursor:pointer;
+#productModal.styaf-detail-mode .styaf-related-grid > .product > .product-visual > img {
+  display:block!important;width:100%!important;height:100%!important;
+  max-width:100%!important;max-height:100%!important;object-fit:contain!important;
+  object-position:center!important;margin:auto!important;padding:0!important;
+  transform:none!important;
+}
+#productModal.styaf-detail-mode .styaf-related-grid .product-visual .cap,
+#productModal.styaf-detail-mode .styaf-related-grid .product-visual::before,
+#productModal.styaf-detail-mode .styaf-related-grid .product-visual::after,
+#productModal.styaf-detail-mode .styaf-related-grid .product .tag,
+#productModal.styaf-detail-mode .styaf-related-grid .product .product-info > small,
+#productModal.styaf-detail-mode .styaf-related-grid .product .atyaf-stock-indicator,
+#productModal.styaf-detail-mode .styaf-related-grid .product .product-actions {
+  display:none!important;
+}
+#productModal.styaf-detail-mode .styaf-related-grid .product .favorite {
+  display:grid!important;place-items:center!important;position:absolute!important;
+  top:9px!important;right:9px!important;left:auto!important;z-index:9!important;
+  width:32px!important;height:32px!important;min-width:32px!important;
+  padding:0!important;border-radius:50%!important;border:1px solid #f0f0f0!important;
+  background:#fff!important;color:#888!important;font-size:20px!important;
+  line-height:1!important;box-shadow:0 1px 4px #0000000b!important;
+}
+#productModal.styaf-detail-mode .styaf-related-grid .product > .product-info {
+  box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+  justify-content:center!important;gap:3px!important;flex:none!important;
+  min-width:0!important;width:100%!important;min-height:51px!important;height:auto!important;
+  margin:0!important;padding:7px 9px 8px!important;
+  background:#fff!important;border-top:1px solid #eee!important;
+  direction:rtl!important;text-align:right!important;
+}
+#productModal.styaf-detail-mode .styaf-related-grid .product .product-info > h3 {
+  display:block!important;max-width:100%!important;margin:0!important;padding:0!important;
+  font-size:12px!important;line-height:1.45!important;font-weight:400!important;
+  color:#555!important;white-space:nowrap!important;overflow:hidden!important;
+  text-overflow:ellipsis!important;direction:rtl!important;text-align:right!important;
+}
+#productModal.styaf-detail-mode .styaf-related-grid .product .product-info > .price {
+  display:flex!important;align-items:baseline!important;justify-content:flex-end!important;
+  flex-wrap:wrap!important;gap:5px!important;margin:0!important;
+  font-size:15px!important;font-weight:800!important;line-height:1.4!important;
+  color:#e74c3c!important;direction:ltr!important;
+}
+#productModal.styaf-detail-mode .styaf-related-grid .product .price > .old {
+  display:inline!important;font-size:11px!important;font-weight:400!important;
+  color:#999!important;text-decoration:line-through!important;white-space:nowrap!important;
+}
+#productModal.styaf-detail-mode .styaf-related-grid .product .atyaf-quick-bag {
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  position:absolute!important;bottom:8px!important;left:8px!important;right:auto!important;
+  width:30px!important;height:30px!important;padding:0!important;z-index:4!important;
+  border:1px solid #ddd!important;border-radius:50%!important;background:#fff!important;
+}
+@media(min-width:761px){
+  #productModal.styaf-detail-mode .styaf-related-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}
 }
 </style>
 </head>
@@ -8406,3 +8474,5 @@ footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer
 
 </body>
 </html>
+
+

@@ -4840,7 +4840,7 @@ document.addEventListener('DOMContentLoaded', function () {
   up.setAttribute('aria-label', 'العودة إلى أعلى الصفحة');
   up.setAttribute('title', 'العودة إلى الأعلى');
   // SVG avoids font-dependent arrow rendering on Safari/iOS.
-  up.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="23" height="23" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20V4M5.5 10.5 12 4l6.5 6.5" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  up.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="23" height="23" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20V4M5.5 10.5 12 4l6.5 6.5" stroke="#111" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   function scrollable(el) {
     if (!el || el === document.body || el === document.documentElement) return false;
@@ -8471,6 +8471,28 @@ footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer
   }
 })();
 </script>
+
+
+<!-- V164: invert ONLY the back-to-top control: white circular button, black arrow. -->
+<style id="atyaf-v164-inverted-back-to-top">
+html body button.styaf-v2-up,
+html body button.styaf-v2-up.visible {
+  background:#ffffff!important;
+  color:#111111!important;
+  -webkit-text-fill-color:#111111!important;
+  border:1px solid rgba(24,24,24,.20)!important;
+  box-shadow:0 4px 13px rgba(0,0,0,.15)!important;
+  text-shadow:none!important;
+}
+html body button.styaf-v2-up svg path {
+  stroke:#111111!important;
+  fill:none!important;
+}
+html body button.styaf-v2-up::before {
+  border-color:rgba(255,255,255,.60)!important;
+  border-top-color:#ffffff!important;
+}
+</style>
 
 </body>
 </html>

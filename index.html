@@ -3635,6 +3635,20 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const f=$("#atyafManagedFooter")||$("footer");if(!f)return;hide(f,s.enabled===false);
     const title=f.querySelector("h2,h3,h4,.logo,.brand");setText(title,s.storeName);
     const p=f.querySelector("p");setText(p,s.description);
+    // Footer identity is independently configurable; the header logo is only a fallback.
+    const footerLogo=document.getElementById('atyafFooterLogoImage');
+    if(footerLogo){
+      const custom=typeof s.logoImage==='string'?s.logoImage.trim():'';
+      footerLogo.dataset.footerCustomLogo=custom?'true':'false';
+      if(custom){
+        footerLogo.onload=function(){footerLogo.hidden=false};
+        footerLogo.onerror=function(){footerLogo.hidden=true};
+        if(footerLogo.getAttribute('src')!==custom)footerLogo.src=custom;
+        else if(footerLogo.complete&&footerLogo.naturalWidth)footerLogo.hidden=false;
+      }else if(typeof window.atyafSyncFooterLogo==='function'){
+        window.atyafSyncFooterLogo();
+      }
+    }
     if(s.copyright){const c=[...f.querySelectorAll("*")].find(x=>/©|حقوق|2026/.test(x.textContent));setText(c,s.copyright)}
     const links=[["instagram",/instagram/i],["tiktok",/tiktok/i],["whatsapp",/whatsapp/i]];
     links.forEach(([k,rx])=>{if(!s[k])return;const a=[...f.querySelectorAll("a")].find(x=>rx.test(x.textContent)||rx.test(x.href));if(a)a.href=s[k]});
@@ -8341,6 +8355,7 @@ footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer
     var img=document.getElementById('atyafFooterLogoImage');
     var fallback=document.getElementById('atyafFooterLogoFallback');
     if(!img||!fallback)return;
+    if(img.dataset.footerCustomLogo==='true')return;
     var candidates=Array.from(document.querySelectorAll('header.header .atyaf-profile-image-slot img,header.header .atyaf-profile img,header.header .brand img,header.header img'));
     var source=candidates.find(function(el){return el.getAttribute('src') && el.naturalWidth>0 && el.getBoundingClientRect().width>0;}) || candidates.find(function(el){return el.getAttribute('src') && el.naturalWidth>0;});
     if(!source)return;
@@ -8350,6 +8365,7 @@ footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer
     img.onerror=function(){img.hidden=true;fallback.hidden=false;};
     img.src=url;
   }
+  window.atyafSyncFooterLogo=syncFooterLogo;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncFooterLogo,{once:true});else syncFooterLogo();
   window.addEventListener('load',syncFooterLogo,{once:true});
   var header=document.querySelector('header.header');

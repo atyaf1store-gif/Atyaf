@@ -2032,25 +2032,38 @@ body{padding-bottom:65px!important}
 #atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:atyaf121ReflectionRight 2150ms ease-in-out 180ms both!important;color:var(--atyaf-intro-reference-accent,#d7a21d)!important}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{display:none!important}}
 </style>
-<style id="atyaf-v156-reference-correction">
-/* Match the supplied Gisaah recording: warm ivory, golden mirrored wordmark,
-   white central tile and slow horizontal convergence. Intro-only styles. */
-#atyafIntroV12.atyaf-v94-intro{background:#f6f2e9!important;color:#ad8532!important}
-#atyafIntroV12.atyaf-v94-intro::before{background:#d6a620!important;opacity:1!important}
-#atyafIntroV12 .atyaf-v112-brand{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;max-width:none!important;width:max-content!important;overflow:visible!important}
-#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{display:inline-block!important;visibility:visible!important;color:#ad8532!important;text-shadow:0 1px 1px #fff9!important;white-space:nowrap!important}
-#atyafIntroV12 .atyaf-v112-en{font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(19px,5.3vw,27px)!important;letter-spacing:-.7px!important}
-#atyafIntroV12 .atyaf-v112-ar{font-family:'Amiri',Georgia,serif!important;font-size:clamp(23px,6.4vw,32px)!important}
-#atyafIntroV12 .atyaf-v112-logo{display:grid!important;place-items:center!important;flex:0 0 53px!important;width:53px!important;height:53px!important;border:1px solid #e8dfd1!important;border-radius:10px!important;background:#fff!important;box-shadow:0 4px 14px #6b4e1e19!important;overflow:hidden!important}
-#atyafIntroV12 .atyaf-v94-media{display:block!important;width:49px!important;height:49px!important;max-width:49px!important;max-height:49px!important;opacity:1!important;object-fit:contain!important}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{animation:atyaf156En 1650ms cubic-bezier(.19,.82,.2,1) both!important}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{animation:atyaf156Ar 1650ms cubic-bezier(.19,.82,.2,1) both!important}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:atyaf156Logo 1400ms cubic-bezier(.19,.82,.2,1) both!important}
-@keyframes atyaf156En{0%{opacity:1;transform:translateX(-40vw);filter:none}100%{opacity:1;transform:translateX(0);filter:none}}
-@keyframes atyaf156Ar{0%{opacity:1;transform:translateX(40vw);filter:none}100%{opacity:1;transform:translateX(0);filter:none}}
-@keyframes atyaf156Logo{0%{opacity:.85;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
-#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{color:#bd9a51!important;filter:blur(.5px)!important}
-@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important}}
+<style id="atyaf-v157-video-matched-reflection">
+/* Reference recording: golden, horizontally mirrored duplicates outside the main wordmarks.
+   The reflection is an actual mirrored text copy, not a glow or vertical reflection. */
+#atyafIntroV12.atyaf-v94-intro{background:#f5f0e7!important}
+#atyafIntroV12 .atyaf-v112-brand{display:flex!important;direction:ltr!important;align-items:center!important;justify-content:center!important;gap:7px!important;width:max-content!important;max-width:none!important;overflow:visible!important;isolation:isolate!important}
+#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{position:relative!important;display:inline-block!important;visibility:visible!important;white-space:nowrap!important;overflow:visible!important;color:#201a16!important;text-shadow:none!important;opacity:1}
+#atyafIntroV12 .atyaf-v112-en{font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(17px,4.5vw,22px)!important;font-weight:400!important;letter-spacing:-.6px!important}
+#atyafIntroV12 .atyaf-v112-ar{font-family:'Amiri',Georgia,serif!important;font-size:clamp(20px,5.4vw,27px)!important;font-weight:500!important;line-height:1.4!important}
+#atyafIntroV12 .atyaf-v112-logo{display:grid!important;place-items:center!important;flex:0 0 50px!important;width:50px!important;height:50px!important;border:1px solid #e5c46e!important;border-radius:10px!important;background:#fff!important;box-shadow:0 3px 7px rgba(50,35,15,.08)!important;overflow:hidden!important}
+#atyafIntroV12 .atyaf-v94-media{display:block!important;width:46px!important;height:46px!important;max-width:46px!important;max-height:46px!important;object-fit:contain!important;opacity:1!important}
+#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{
+ content:attr(data-reflection)!important;position:absolute!important;top:0!important;display:block!important;
+ width:100%!important;height:100%!important;white-space:nowrap!important;
+ font:inherit!important;letter-spacing:inherit!important;line-height:inherit!important;
+ color:#c99a2c!important;text-shadow:none!important;pointer-events:none!important;
+ -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 85%)!important;
+ mask-image:linear-gradient(90deg,transparent 0%,#000 85%)!important;
+ filter:none!important;transform-origin:center!important;opacity:0;
+}
+#atyafIntroV12 .atyaf-v112-en::after{right:calc(100% + 4px)!important;left:auto!important;direction:ltr!important;text-align:center!important}
+#atyafIntroV12 .atyaf-v112-ar::after{left:calc(100% + 4px)!important;right:auto!important;direction:rtl!important;text-align:center!important;-webkit-mask-image:linear-gradient(270deg,transparent 0%,#000 85%)!important;mask-image:linear-gradient(270deg,transparent 0%,#000 85%)!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{animation:atyaf157En 1750ms cubic-bezier(.22,.8,.2,1) both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{animation:atyaf157Ar 1750ms cubic-bezier(.22,.8,.2,1) both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:atyaf157Logo 1750ms cubic-bezier(.22,.8,.2,1) both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after{animation:atyaf157MirrorLeft 2800ms ease-in-out 150ms both!important}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:atyaf157MirrorRight 2800ms ease-in-out 150ms both!important}
+@keyframes atyaf157En{0%{transform:translateX(-42vw);opacity:1}100%{transform:translateX(0);opacity:1}}
+@keyframes atyaf157Ar{0%{transform:translateX(42vw);opacity:1}100%{transform:translateX(0);opacity:1}}
+@keyframes atyaf157Logo{0%{transform:scale(.93);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes atyaf157MirrorLeft{0%,8%{opacity:0;transform:translateX(20px) scaleX(-1)}22%,67%{opacity:.95;transform:translateX(0) scaleX(-1)}100%{opacity:0;transform:translateX(-42px) scaleX(-1)}}
+@keyframes atyaf157MirrorRight{0%,8%{opacity:0;transform:translateX(-20px) scaleX(-1)}22%,67%{opacity:.95;transform:translateX(0) scaleX(-1)}100%{opacity:0;transform:translateX(42px) scaleX(-1)}}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important}#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{display:none!important}}
 </style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */

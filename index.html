@@ -2125,6 +2125,72 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
   }
 }
 </style>
+<style id="atyaf-v159-reference-gold-echo">
+/* V159: match supplied 1.3s recording: readable gold echo on OUTER sides,
+   original wordmarks remain crisp and black. No reversed/mirrored glyphs. */
+#atyafIntroV12 .atyaf-v112-en::after,
+#atyafIntroV12 .atyaf-v112-ar::after{
+  content:attr(data-reflection)!important;
+  display:block!important;
+  position:absolute!important;
+  top:0!important;
+  width:max-content!important;
+  min-width:100%!important;
+  height:auto!important;
+  color:var(--atyaf-intro-reference-accent,#d5a320)!important;
+  font:inherit!important;
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  letter-spacing:inherit!important;
+  line-height:inherit!important;
+  white-space:nowrap!important;
+  text-shadow:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  -webkit-mask-image:none!important;
+  mask-image:none!important;
+  pointer-events:none!important;
+  transform-origin:center!important;
+  opacity:0;
+}
+#atyafIntroV12 .atyaf-v112-en::after{
+  left:auto!important;right:calc(100% + 16px)!important;
+  direction:ltr!important;text-align:right!important;
+}
+#atyafIntroV12 .atyaf-v112-ar::after{
+  left:calc(100% + 16px)!important;right:auto!important;
+  direction:rtl!important;text-align:left!important;
+}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after{
+  animation:atyaf159GoldLeft 2700ms cubic-bezier(.2,.7,.2,1) 0ms both!important;
+}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{
+  animation:atyaf159GoldRight 2700ms cubic-bezier(.2,.7,.2,1) 0ms both!important;
+}
+@keyframes atyaf159GoldLeft{
+  0%{opacity:0;transform:translate3d(-36px,0,0)}
+  17%{opacity:1;transform:translate3d(-14px,0,0)}
+  40%,58%{opacity:1;transform:translate3d(0,0,0)}
+  78%{opacity:.55;transform:translate3d(-8px,0,0)}
+  100%{opacity:0;transform:translate3d(-14px,8px,0)}
+}
+@keyframes atyaf159GoldRight{
+  0%{opacity:0;transform:translate3d(36px,0,0)}
+  17%{opacity:1;transform:translate3d(14px,0,0)}
+  40%,58%{opacity:1;transform:translate3d(0,0,0)}
+  78%{opacity:.55;transform:translate3d(8px,0,0)}
+  100%{opacity:0;transform:translate3d(14px,8px,0)}
+}
+/* Echo stays readable on narrow phones, without shrinking the original mark. */
+@media(max-width:420px){
+ #atyafIntroV12 .atyaf-v112-en::after{right:calc(100% + 9px)!important}
+ #atyafIntroV12 .atyaf-v112-ar::after{left:calc(100% + 9px)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after,
+ #atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:none!important;opacity:0!important}
+}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
@@ -7806,3 +7872,482 @@ html body header.header #nav.nav .navrow > a[data-atyaf-main-tab]::after {
   html body main#store #atyafScentsCatalog > .section-head #atyafScentsAll {
     order:2!important;
     flex:0 0 auto!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    width:auto!important;
+    min-height:26px!important;
+    padding:0!important;
+    margin:0!important;
+    background:none!important;
+    border:0!important;
+    box-shadow:none!important;
+    color:#55514d!important;
+    font-family:Tahoma,Arial,sans-serif!important;
+    font-size:12px!important;
+    font-weight:500!important;
+    line-height:1.4!important;
+    white-space:nowrap!important;
+    direction:rtl!important;
+  }
+  html body main#store #atyafScentTiles {
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    direction:rtl!important;
+    align-items:flex-start!important;
+    gap:12px!important;
+    width:100%!important;
+    max-width:100%!important;
+    padding:0 0 3px!important;
+    margin:0!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-width:none!important;
+    scroll-snap-type:x proximity!important;
+  }
+  html body main#store #atyafScentTiles::-webkit-scrollbar{display:none!important}
+  html body main#store #atyafScentTiles > .atyaf-scent-tile {
+    box-sizing:border-box!important;
+    flex:0 0 calc((100% - 48px)/5)!important;
+    width:calc((100% - 48px)/5)!important;
+    min-width:0!important;
+    max-width:none!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    gap:6px!important;
+    padding:0!important;
+    margin:0!important;
+    background:none!important;
+    border:0!important;
+    box-shadow:none!important;
+    color:#292929!important;
+    scroll-snap-align:start!important;
+  }
+  html body main#store #atyafScentTiles .atyaf-scent-art {
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    aspect-ratio:1!important;
+    height:auto!important;
+    border-radius:50%!important;
+    border:1px solid #e7e5e0!important;
+    background:#f8f8f6!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+    display:grid!important;
+    place-items:center!important;
+    font-size:28px!important;
+  }
+  html body main#store #atyafScentTiles .atyaf-scent-art img {
+    width:100%!important;height:100%!important;
+    display:block!important;object-fit:cover!important;
+    border-radius:50%!important;
+  }
+  html body main#store #atyafScentTiles .atyaf-scent-tile strong {
+    display:block!important;
+    max-width:100%!important;
+    font-family:Tahoma,Arial,sans-serif!important;
+    font-size:12px!important;
+    font-weight:700!important;
+    line-height:1.4!important;
+    color:#282828!important;
+    white-space:nowrap!important;
+    text-align:center!important;
+  }
+}
+</style>
+
+<!-- V132: reference-matched mobile bottom navigation, active highlight and live cart count -->
+<style id="atyaf-v132-bottom-navigation">
+@media (max-width:767px) {
+  html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    direction:ltr!important;align-items:center!important;gap:0!important;
+    height:calc(68px + env(safe-area-inset-bottom,0px))!important;
+    min-height:0!important;padding:5px 5px calc(6px + env(safe-area-inset-bottom,0px))!important;
+    background:#fff!important;border-top:1px solid #e9e9e9!important;
+    box-shadow:0 -2px 9px rgba(0,0,0,.025)!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab {
+    position:relative!important;display:flex!important;flex-direction:column!important;
+    align-items:center!important;justify-content:center!important;
+    width:100%!important;min-width:0!important;height:56px!important;min-height:0!important;
+    padding:3px 0!important;margin:0!important;gap:4px!important;
+    background:transparent!important;border:0!important;color:#777773!important;
+    font-family:Arial,Tahoma,sans-serif!important;text-decoration:none!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab > svg {
+    display:block!important;box-sizing:border-box!important;
+    width:24px!important;height:24px!important;min-width:0!important;min-height:0!important;
+    padding:0!important;border-radius:0!important;background:transparent!important;
+    stroke:currentColor!important;stroke-width:1.8!important;fill:none!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab > span {
+    display:block!important;color:inherit!important;font:500 10px/1.2 Tahoma,Arial,sans-serif!important;
+    white-space:nowrap!important;letter-spacing:0!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab.active {
+    color:#c39a35!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab.active::before {
+    content:"";position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+    width:43px;height:2px;border-radius:99px;
+    background:linear-gradient(90deg,transparent,#d7b15d 28%,#e4c97c 50%,#d7b15d 72%,transparent);
+    box-shadow:0 2px 9px rgba(214,168,65,.42);pointer-events:none;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > svg {
+    width:44px!important;height:44px!important;min-width:0!important;min-height:0!important;
+    box-sizing:border-box!important;padding:11px!important;
+    border-radius:50%!important;background:#1b1c1b!important;
+    color:#e6ba4b!important;stroke:#e6ba4b!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] {
+    gap:0!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > span {
+    margin-top:1px!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="cart"] .atyaf-v132-cart-badge {
+    position:absolute!important;top:0!important;left:calc(50% + 8px)!important;
+    display:grid!important;place-items:center!important;
+    min-width:16px!important;height:16px!important;padding:0 3px!important;
+    box-sizing:border-box!important;border-radius:999px!important;
+    border:1.5px solid #fff!important;background:#e74838!important;
+    color:#fff!important;font:700 10px/1 Arial,sans-serif!important;
+    box-shadow:0 1px 3px rgba(0,0,0,.1)!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-v132-cart-badge[hidden]{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #atyafMobileBottomNav .atyaf-bottom-tab{transition:none!important}
+}
+</style>
+<script id="atyaf-v132-cart-badge-sync">
+(()=>{
+  'use strict';
+  const nav=document.getElementById('atyafMobileBottomNav');
+  const cartTab=nav?.querySelector('[data-atyaf-tab="cart"]');
+  if(!cartTab||cartTab.querySelector('.atyaf-v132-cart-badge'))return;
+  const badge=document.createElement('span');
+  badge.className='atyaf-v132-cart-badge';
+  badge.setAttribute('aria-hidden','true');
+  cartTab.appendChild(badge);
+  const counter=document.getElementById('cartCount');
+  function sync(){
+    let count=Number.parseInt(counter?.textContent||'',10);
+    if(!Number.isFinite(count)){
+      try{
+        const items=JSON.parse(localStorage.getItem('atyaaf-cart')||'[]');
+        count=Array.isArray(items)?items.reduce((sum,item)=>sum+Math.max(0,Number(item.qty)||0),0):0;
+      }catch{count=0;}
+    }
+    count=Math.max(0,Math.floor(count));
+    badge.hidden=count===0;
+    badge.textContent=count>99?'99+':String(count);
+    cartTab.setAttribute('aria-label',`السلة، ${count} منتج`);
+  }
+  sync();
+  // Same-tab changes are synchronous; MutationObserver remains a compatibility fallback.
+  document.addEventListener('atyaf:cart-count-changed',event=>{
+    const count=Math.max(0,Math.floor(Number(event.detail?.quantity)||0));
+    badge.hidden=count===0;
+    badge.textContent=count>99?'99+':String(count);
+    cartTab.setAttribute('aria-label',`السلة، ${count} منتج`);
+  });
+  if(counter)new MutationObserver(sync).observe(counter,{childList:true,characterData:true,subtree:true});
+  window.addEventListener('storage',event=>{
+    if(event.key==='atyaaf-cart'){
+      try{
+        const items=JSON.parse(event.newValue||'[]');
+        const count=Array.isArray(items)?items.reduce((sum,item)=>sum+Math.max(0,Number(item.qty)||0),0):0;
+        badge.hidden=count===0;badge.textContent=count>99?'99+':String(count);
+        cartTab.setAttribute('aria-label',`السلة، ${count} منتج`);
+      }catch{sync();}
+    }
+  });
+})();
+</script>
+
+<!-- V133: precise search icon and search field correction; other store systems unchanged. -->
+<style id="atyaf-v133-search-precision">
+html body header.header .atyaf-head-left .atyaf-search-toggle{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  width:38px!important;min-width:38px!important;height:40px!important;min-height:40px!important;
+  flex:0 0 38px!important;padding:0!important;margin:0!important;
+  border:0!important;border-radius:10px!important;background:transparent!important;
+  color:#fff!important;box-shadow:none!important;line-height:1!important;
+  -webkit-tap-highlight-color:transparent;
+}
+html body header.header .atyaf-head-left .atyaf-search-toggle svg{
+  display:block!important;width:25px!important;height:25px!important;
+  min-width:25px!important;min-height:25px!important;
+  max-width:25px!important;max-height:25px!important;
+  flex:0 0 25px!important;overflow:visible!important;
+  stroke:currentColor!important;stroke-width:1.9!important;fill:none!important;
+  transform:none!important;position:static!important;
+}
+html body header.header .atyaf-head-left .atyaf-search-toggle:focus-visible{
+  outline:2px solid #d7ab50!important;outline-offset:2px!important;
+}
+html body #atyafSearchPopover{
+  display:none!important;position:fixed!important;
+  top:calc(var(--atyaf-search-panel-top,110px) + 8px)!important;
+  left:12px!important;right:12px!important;
+  width:auto!important;max-width:520px!important;
+  margin:0 auto!important;padding:7px 9px!important;
+  border:1px solid rgba(185,159,121,.35)!important;border-radius:17px!important;
+  background:rgba(255,253,249,.97)!important;
+  box-shadow:0 12px 32px rgba(0,0,0,.18)!important;
+  backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;
+  direction:rtl!important;align-items:center!important;gap:8px!important;
+  z-index:2147482000!important;
+}
+html body #atyafSearchPopover.open{display:flex!important}
+html body #atyafSearchPopover #searchInput{
+  display:block!important;flex:1 1 auto!important;min-width:0!important;
+  height:42px!important;padding:0 12px!important;margin:0!important;
+  background:transparent!important;border:0!important;outline:none!important;
+  font-size:14px!important;line-height:1.5!important;color:#27332e!important;
+  text-align:right!important;box-shadow:none!important;
+}
+html body #atyafSearchPopover>button{
+  display:grid!important;place-items:center!important;flex:0 0 36px!important;
+  width:36px!important;height:36px!important;padding:0!important;
+  border-radius:50%!important;background:#f2eee7!important;color:#534f48!important;
+  font-size:23px!important;line-height:1!important;
+}
+@media(max-width:390px){html body header.header .atyaf-head-left .atyaf-search-toggle{
+  width:34px!important;min-width:34px!important;flex-basis:34px!important;
+}}
+@media(prefers-reduced-motion:reduce){html body #atyafSearchPopover{transition:none!important}}
+</style>
+<script id="atyaf-v133-search-position">
+(()=>{
+  'use strict';
+  const pop=document.getElementById('atyafSearchPopover');
+  const toggle=document.querySelector('header.header .atyaf-search-toggle');
+  const header=document.querySelector('header.header');
+  if(!pop||!toggle||!header)return;
+  // A fixed popup inside a translated toolbar is clipped/mispositioned on iOS.
+  // Reparent only the popup, preserving its input, handlers and search logic.
+  document.body.appendChild(pop);
+  const sync=()=>{
+    const rect=header.getBoundingClientRect();
+    const top=Math.max(0,Math.min(window.innerHeight-70,rect.bottom));
+    document.documentElement.style.setProperty('--atyaf-search-panel-top',top+'px');
+    toggle.setAttribute('aria-expanded',String(pop.classList.contains('open')));
+  };
+  new MutationObserver(sync).observe(pop,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('resize',sync,{passive:true});
+  window.addEventListener('scroll',()=>{if(pop.classList.contains('open'))sync()},{passive:true});
+  sync();
+})();
+</script>
+<!-- V134: opaque main header and navigation only; preserve all other glass effects. -->
+<style id="atyaf-v134-opaque-main-header">
+  :root{--atyaf-main-header-solid:#302720}
+  html body header.header,
+  html body header.header .headrow.atyaf-head-balanced,
+  html body header.header #nav.nav{
+    background:var(--atyaf-main-header-solid)!important;
+    background-color:var(--atyaf-main-header-solid)!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    background-image:none!important;
+  }
+  html body header.header{isolation:isolate;opacity:1!important}
+  html body header.header #nav.nav .navrow{background:transparent!important}
+</style>
+<!-- V135: glass header ONLY while the cart page is open. -->
+<style id="atyaf-v135-cart-only-glass-header">
+  html body.atyaf-cart-page-open header.header,
+  html body.atyaf-cart-page-open header.header .headrow.atyaf-head-balanced,
+  html body.atyaf-cart-page-open header.header #nav.nav {
+    background:rgba(48,39,32,.58)!important;
+    background-color:rgba(48,39,32,.58)!important;
+    background-image:none!important;
+    -webkit-backdrop-filter:blur(16px) saturate(125%)!important;
+    backdrop-filter:blur(16px) saturate(125%)!important;
+  }
+  html body.atyaf-cart-page-open header.header {
+    border-bottom:1px solid rgba(255,255,255,.22)!important;
+  }
+  html body.atyaf-cart-page-open header.header #nav.nav {
+    border-top-color:rgba(255,255,255,.18)!important;
+  }
+  html body.atyaf-cart-page-open header.header #nav.nav .navrow {
+    background:transparent!important;
+  }
+</style>
+
+<!-- V137: cart-only corrective patch. Overrides older rules that hid bottom navigation. -->
+<style id="atyaf-v137-cart-header-and-bottom-nav-fix">
+@media (max-width:767px) {
+  html body.atyaf-cart-page-open #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
+    display:grid!important;
+    position:fixed!important;
+    inset:auto 0 0 0!important;
+    visibility:visible!important;
+    opacity:1!important;
+    transform:none!important;
+    z-index:10100!important;
+    pointer-events:auto!important;
+  }
+  html body.atyaf-cart-page-open #atyafCartPage {
+    padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))!important;
+    scroll-padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))!important;
+  }
+}
+/* Only cart view uses translucent glass; main storefront remains solid. */
+html body.atyaf-cart-page-open > header.header,
+html body.atyaf-cart-page-open header.header,
+html body.atyaf-cart-page-open header.header .headrow.atyaf-head-balanced,
+html body.atyaf-cart-page-open header.header #nav.nav {
+  background-color:rgba(48,39,32,.38)!important;
+  background:rgba(48,39,32,.38)!important;
+  background-image:none!important;
+  -webkit-backdrop-filter:blur(13px) saturate(125%)!important;
+  backdrop-filter:blur(13px) saturate(125%)!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow {background:transparent!important}
+</style>
+<!-- V138: cart-only visibly transparent header. Keep V137 navigation and all storefront styles intact. -->
+<style id="atyaf-v138-cart-true-transparent-header">
+/* The cart is a fixed white page beneath the header; a dark translucent tint
+   still looked opaque. Use clear glass and cart-only dark icon contrast. */
+html body.atyaf-cart-page-open > header.header,
+html body.atyaf-cart-page-open header.header,
+html body.atyaf-cart-page-open header.header .headrow.atyaf-head-balanced,
+html body.atyaf-cart-page-open header.header #nav.nav {
+  background:rgba(255,255,255,.16)!important;
+  background-color:rgba(255,255,255,.16)!important;
+  background-image:none!important;
+  -webkit-backdrop-filter:blur(7px) saturate(110%)!important;
+  backdrop-filter:blur(7px) saturate(110%)!important;
+}
+html body.atyaf-cart-page-open header.header {
+  border-bottom:1px solid rgba(55,43,32,.18)!important;
+  box-shadow:0 2px 12px rgba(30,25,20,.05)!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav {
+  border-top:1px solid rgba(55,43,32,.16)!important;
+  border-bottom:1px solid rgba(55,43,32,.16)!important;
+}
+html body.atyaf-cart-page-open header.header .atyaf-head-left svg,
+html body.atyaf-cart-page-open header.header .atyaf-head-right svg {
+  stroke:#29221c!important;
+}
+html body.atyaf-cart-page-open header.header .atyaf-head-left .customer-tool,
+html body.atyaf-cart-page-open header.header .atyaf-head-right .customer-tool,
+html body.atyaf-cart-page-open header.header .menu-btn {
+  color:#29221c!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow>a[data-atyaf-main-tab] {
+  color:#29221c!important;
+  text-shadow:none!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow>a.atyaf-tab-active {
+  color:#a67716!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow {background:transparent!important}
+</style>
+
+<!-- V139: cart-only genuinely translucent navigation, overriding earlier solid rules. -->
+<style id="atyaf-v139-cart-glass-header-final">
+/* Only the shopping-cart view is affected; all other pages retain V134 colors. */
+html body.atyaf-cart-page-open > header.header,
+html body.atyaf-cart-page-open header.header,
+html body.atyaf-cart-page-open header.header .headrow,
+html body.atyaf-cart-page-open header.header .atyaf-head-balanced,
+html body.atyaf-cart-page-open header.header #nav.nav,
+html body.atyaf-cart-page-open header.header #nav.nav .navrow {
+  background-color:transparent!important;
+  background-image:none!important;
+  background:transparent!important;
+  opacity:1!important;
+  box-shadow:none!important;
+}
+/* Apply glass on the parent only; stacking several tinted layers made it opaque. */
+html body.atyaf-cart-page-open > header.header,
+html body.atyaf-cart-page-open header.header {
+  background:rgba(48,39,32,.13)!important;
+  -webkit-backdrop-filter:blur(10px) saturate(115%)!important;
+  backdrop-filter:blur(10px) saturate(115%)!important;
+  border-bottom:1px solid rgba(48,39,32,.16)!important;
+}
+html body.atyaf-cart-page-open header.header #nav.nav {
+  border-top:1px solid rgba(48,39,32,.14)!important;
+  border-bottom:1px solid rgba(48,39,32,.14)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html body.atyaf-cart-page-open header.header .headrow,
+html body.atyaf-cart-page-open header.header .atyaf-head-balanced {
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html body.atyaf-cart-page-open header.header::before,
+html body.atyaf-cart-page-open header.header::after,
+html body.atyaf-cart-page-open header.header #nav.nav::before,
+html body.atyaf-cart-page-open header.header #nav.nav::after {
+  background:transparent!important;
+}
+/* Maintain readable controls over the light cart canvas. */
+html body.atyaf-cart-page-open header.header .atyaf-head-left,
+html body.atyaf-cart-page-open header.header .atyaf-head-right,
+html body.atyaf-cart-page-open header.header .atyaf-head-left button,
+html body.atyaf-cart-page-open header.header .atyaf-head-right button,
+html body.atyaf-cart-page-open header.header .atyaf-head-left svg,
+html body.atyaf-cart-page-open header.header .atyaf-head-right svg,
+html body.atyaf-cart-page-open header.header #nav.nav .navrow>a {
+  color:#302720!important;
+  stroke:currentColor;
+}
+html body.atyaf-cart-page-open header.header #nav.nav .navrow>a.atyaf-tab-active {color:#a57a19!important}
+</style>
+
+<style id="atyaf-v142-footer-logo-social">
+footer .atyaf-footer-logo{display:flex;align-items:center;justify-content:flex-start;min-height:64px;max-width:240px}
+footer .atyaf-footer-logo img{display:block;max-width:100%;width:auto;max-height:88px;height:auto;object-fit:contain;object-position:right center;border:0;background:transparent}
+footer .atyaf-footer-logo img[hidden]{display:none!important}
+footer .atyaf-footer-social{display:flex;flex-wrap:wrap;align-content:start;align-items:center;gap:10px}
+footer .atyaf-footer-social h3{width:100%;margin-bottom:8px}
+footer .atyaf-footer-social .atyaf-footer-social-link{display:inline-flex!important;align-items:center;justify-content:center;width:43px;height:43px;margin:0!important;padding:0!important;border:0!important;border-radius:0;color:inherit!important;background:transparent!important;box-shadow:none!important;text-decoration:none;transition:background .2s,border-color .2s,transform .2s}
+footer .atyaf-footer-social .atyaf-footer-social-link svg{width:27px;height:27px;flex:none}
+footer .atyaf-footer-social .atyaf-footer-social-link:hover,footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{background:transparent!important;border-color:transparent!important;transform:translateY(-2px)}
+@media(max-width:480px){footer .atyaf-footer-logo{min-height:55px}footer .atyaf-footer-logo img{max-height:76px}}
+</style>
+
+<script id="atyaf-v142-footer-logo-sync">
+(function(){
+  'use strict';
+  function syncFooterLogo(){
+    var img=document.getElementById('atyafFooterLogoImage');
+    var fallback=document.getElementById('atyafFooterLogoFallback');
+    if(!img||!fallback)return;
+    var candidates=Array.from(document.querySelectorAll('header.header .atyaf-profile-image-slot img,header.header .atyaf-profile img,header.header .brand img,header.header img'));
+    var source=candidates.find(function(el){return el.getAttribute('src') && el.naturalWidth>0 && el.getBoundingClientRect().width>0;}) || candidates.find(function(el){return el.getAttribute('src') && el.naturalWidth>0;});
+    if(!source)return;
+    var url=source.currentSrc||source.src;
+    if(!url||img.getAttribute('src')===url)return;
+    img.onload=function(){img.hidden=false;fallback.hidden=true;};
+    img.onerror=function(){img.hidden=true;fallback.hidden=false;};
+    img.src=url;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncFooterLogo,{once:true});else syncFooterLogo();
+  window.addEventListener('load',syncFooterLogo,{once:true});
+  var header=document.querySelector('header.header');
+  if(header&&typeof MutationObserver==='function'){
+    var scheduled=false;
+    new MutationObserver(function(){if(scheduled)return;scheduled=true;requestAnimationFrame(function(){scheduled=false;syncFooterLogo();});}).observe(header,{subtree:true,attributes:true,attributeFilter:['src','style','class'],childList:true});
+  }
+})();
+</script>
+
+</body>
+</html>
+
+

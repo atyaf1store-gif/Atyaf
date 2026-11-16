@@ -263,7 +263,7 @@ const schemas={
  header:{title:'الهيدر',fields:[['storeName','اسم المتجر'],['searchPlaceholder','نص البحث'],['logoText','نص الشعار'],['enabled','ظاهر','bool']]},
  nav:{title:'القائمة الرئيسية',fields:[['home','الرئيسية'],['brands','الماركات'],['best','الأكثر مبيعاً'],['new','وصل حديثاً'],['offers','العروض'],['scents','الروائح'],['contact','تواصل معنا'],['enabled','ظاهر','bool']]},
  gift:{title:'قسم الهدية',fields:[['kicker','النص الصغير'],['title','العنوان'],['text','الوصف'],['button','نص الزر'],['link','الرابط'],['enabled','ظاهر','bool']]},
- footer:{title:'الفوتر',fields:[['storeName','اسم المتجر'],['description','الوصف'],['phone','الهاتف'],['email','البريد'],['instagram','Instagram'],['tiktok','TikTok'],['whatsapp','WhatsApp'],['copyright','حقوق النشر'],['enabled','ظاهر','bool']]},
+ footer:{title:'الفوتر',fields:[['storeName','اسم المتجر'],['description','الوصف'],['phone','الهاتف'],['email','البريد'],['instagram','Instagram'],['facebook','Facebook (رابط الصفحة)'],['tiktok','TikTok'],['whatsapp','WhatsApp'],['copyright','حقوق النشر'],['enabled','ظاهر','bool']]},
  policies:{title:'السياسات',fields:[['enabled','ظاهر','bool'],['about','من نحن','area'],['privacy','الخصوصية','area'],['terms','الشروط','area'],['returns','الاستبدال والاسترجاع','area'],['shipping','الشحن','area'],['customerService','خدمة العملاء','area']]}
 };
 
@@ -359,9 +359,9 @@ function introSectionEditor(){
     ${bool('showProgress','إظهار شريط التقدم',true)}
     ${bool('showOnce','العرض مرة واحدة في الجلسة',true)}
     ${choice('align','محاذاة المحتوى',[['center','الوسط'],['right','اليمين'],['left','اليسار']],'center')}
-    ${colorField('backgroundColor','لون الخلفية',v('backgroundColor','#17352e'))}
-    ${colorField('textColor','لون النص',v('textColor','#ffffff'))}
-    ${colorField('accentColor','لون شريط التقدم',v('accentColor','#d4aa75'))}
+    ${colorField('backgroundColor','لون الخلفية',v('backgroundColor','#f5f0e7'))}
+    ${colorField('textColor','لون النص',v('textColor','#241e19'))}
+    ${colorField('accentColor','لون الذهب والانعكاسات',v('accentColor','#d7a21d'))}
     ${colorField('overlayColor','لون الطبقة فوق الخلفية',v('overlayColor','#102820'))}
     ${num('overlayOpacity','شفافية الطبقة %',45,0,100)}
     ${colorField('buttonColor','لون خلفية الزر',v('buttonColor','#ffffff'))}
@@ -369,7 +369,13 @@ function introSectionEditor(){
     ${num('buttonRadius','استدارة زر الدخول px',12,0,40)}
     ${choice('fontFamily','الخط',[['Georgia, serif','Georgia'],['Tahoma, Arial, sans-serif','Tahoma'],['Arial, sans-serif','Arial'],["'Times New Roman', serif",'Times New Roman']],'Tahoma, Arial, sans-serif')}
     ${num('titleSize','حجم العنوان الرئيسي px',66,22,110)}
-    ${num('duration','مدة ظهور الشاشة ms',4500,1500,30000,100)}
+    ${text('englishName','اسم المتجر بالإنجليزية في شاشة البداية','ATYAF')}
+    ${text('arabicName','اسم المتجر بالعربية في شاشة البداية','أطياف')}
+    ${num('logoSize','مقاس الشعار في شاشة البداية px',48,28,96)}
+    ${num('englishSize','حجم الاسم الإنجليزي px',19,11,36)}
+    ${num('arabicSize','حجم الاسم العربي px',23,12,42)}
+    ${num('entranceDuration','مدة دخول النصوص والشعار ms',1250,400,3000,50)}
+    ${num('duration','مدة ظهور الشاشة ms',3500,1500,30000,100)}
     ${choice('mediaType','نوع الخلفية',[['image','صورة'],['video','فيديو']],'image')}
     ${choice('mediaFit','طريقة ملء الخلفية',[['cover','تغطية كاملة'],['contain','عرض الصورة كاملة']],'cover')}
     ${choice('mediaPosition','موضع الخلفية',[['center','الوسط'],['top','أعلى'],['bottom','أسفل']],'center')}
@@ -425,9 +431,35 @@ async function deleteNavLink(i){if(!confirm('حذف هذا الرابط من ا�
 function simpleEditor(el,key){
  if(key==='nav'){navLinksEditor(el);return}
  const sc=schemas[key],s=getSetting(key,{enabled:true});
+ if(key==='footer'){
+   const image=typeof s.logoImage==='string'?s.logoImage:'';
+   const fields=sc.fields.map(([k,l,t])=>t==='bool'?`<div class="field"><label>${l}</label><select data-k="${k}"><option value="true" ${s[k]!==false?'selected':''}>ظاهر</option><option value="false" ${s[k]===false?'selected':''}>مخفي</option></select></div>`:`<div class="field"><label>${l}</label><input data-k="${k}" value="${esc(s[k]||'')}"></div>`).join('');
+   el.innerHTML=`<div class="grid">${fields}<div class="field full upload"><b>شعار الفوتر (قسم التفاصيل والروابط) — مستقل عن شعار الهيدر</b><p style="font-size:13px">ارفع صورة شعار خاصة بالفوتر. عند عدم اختيار صورة، يُستخدم شعار الهيدر تلقائيًا.</p><input id="atyafFooterLogoFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">${image?`<div style="margin-top:12px"><img src="${esc(image)}" alt="معاينة شعار الفوتر" style="max-width:240px;max-height:110px;object-fit:contain"><br><button type="button" class="btn red" onclick="removeFooterLogo()">حذف شعار الفوتر فقط</button></div>`:''}</div></div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveSimple('footer',this.closest('.section-editor'))">حفظ الفوتر والشعار</button><button class="btn alt" onclick="toggleSection('footer')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('footer')">حذف القسم</button></div>`;
+   return;
+ }
  el.innerHTML=`<div class="grid">${sc.fields.map(([k,l,t])=>t==='area'?`<div class="field full"><label>${l}</label><textarea data-k="${k}" rows="5">${esc(s[k]||'')}</textarea></div>`:t==='bool'?`<div class="field"><label>${l}</label><select data-k="${k}"><option value="true" ${s[k]!==false?'selected':''}>ظاهر</option><option value="false" ${s[k]===false?'selected':''}>مخفي</option></select></div>`:`<div class="field"><label>${l}</label><input data-k="${k}" value="${esc(s[k]||'')}"></div>`).join('')}</div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="saveSimple('${key}',this.closest('.section-editor'))">حفظ</button><button class="btn alt" onclick="toggleSection('${key}')">إظهار/إخفاء</button><button class="btn red" onclick="deleteSection('${key}')">حذف القسم</button></div>`;
 }
-async function saveSimple(key,card){let s=getSetting(key,{});card.querySelectorAll('[data-k]').forEach(x=>s[x.dataset.k]=x.tagName==='SELECT'?x.value==='true':x.value);await putSetting(key,s);await loadAll();stat('تم حفظ '+schemas[key].title)}
+async function saveSimple(key,card){
+ try{
+  let s={...getSetting(key,{})};
+  card.querySelectorAll('[data-k]').forEach(x=>s[x.dataset.k]=x.tagName==='SELECT'?x.value==='true':x.value);
+  if(key==='footer'){
+   const file=card.querySelector('#atyafFooterLogoFile')?.files?.[0];
+   if(file){
+    if(!['image/png','image/jpeg','image/webp','image/svg+xml'].includes(file.type))throw Error('اختر صورة PNG أو JPG أو WEBP أو SVG');
+    if(file.size>8*1024*1024)throw Error('حجم الشعار يجب ألا يتجاوز 8 ميجابايت');
+    stat('جاري رفع شعار الفوتر…');
+    s.logoImage=(await uploadFiles([file],'footer'))[0];
+   }
+  }
+  await putSetting(key,s);await loadAll();stat('تم حفظ '+schemas[key].title+' بنجاح ✓');
+ }catch(e){console.error('saveSimple',e);stat('تعذر الحفظ: '+(e?.message||e),true)}
+}
+async function removeFooterLogo(){
+ if(!confirm('حذف شعار الفوتر المخصص والعودة لشعار الهيدر؟'))return;
+ try{const s={...getSetting('footer',{})};delete s.logoImage;await putSetting('footer',s);await loadAll();stat('تم حذف شعار الفوتر المخصص ✓')}
+ catch(e){stat('تعذر حذف شعار الفوتر: '+(e?.message||e),true)}
+}
 
 function listEditor(el,key,defaults){
  let s=getSetting(key,{enabled:true,items:defaults}),items=Array.isArray(s.items)?s.items:[];

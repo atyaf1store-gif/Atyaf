@@ -2562,6 +2562,26 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
  #atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,
  #atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important}
 }
+/* V168: original dark wordmarks and icon move as ONE locked brand unit. */
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart){
+ animation:atyaf168BrandRise 1500ms cubic-bezier(.22,.75,.2,1) both!important;
+}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{
+ animation:atyaf168LogoAppear 700ms cubic-bezier(.22,.75,.2,1) both!important;
+}
+@keyframes atyaf168BrandRise{0%,35%{transform:translate3d(0,0,0)}100%{transform:translate3d(0,-16px,0)}}
+@keyframes atyaf168LogoAppear{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart{animation:none!important;transform:translate3d(0,-16px,0)!important}
+#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-en,
+#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-ar{
+ animation:none!important;opacity:0!important;
+}
+.atyaf-v168-flying-brand{position:fixed!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;pointer-events:none!important;z-index:2147483001!important;transform-origin:center center!important;white-space:nowrap!important;will-change:transform,opacity!important;filter:none!important}
+.atyaf-v168-flying-brand .atyaf-v112-en,.atyaf-v168-flying-brand .atyaf-v112-ar{position:relative!important;display:inline-block!important;opacity:1!important;transform:none!important;animation:none!important;color:#29231f!important;filter:none!important;text-shadow:none!important;white-space:nowrap!important}
+.atyaf-v168-flying-brand .atyaf-v112-en::after,.atyaf-v168-flying-brand .atyaf-v112-ar::after{content:none!important;display:none!important}
+.atyaf-v168-flying-brand .atyaf-v112-logo{display:grid!important;place-items:center!important;flex:none!important;opacity:1!important;transform:none!important;animation:none!important}
+.atyaf-v168-flying-brand .atyaf-v94-media{display:block!important;visibility:visible!important;opacity:1!important;animation:none!important;transform:none!important}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand{animation:none!important;transform:none!important}}
 </style>
 </head>
 <body>
@@ -3609,25 +3629,46 @@ window.addEventListener("focus",atyafLoadLowerAds);
       release();
       return;
     }
-    // V166: gold words exit independently; ONLY the logo flies to the header.
+    // V168: fly the complete ATYAF + logo + أطياف group as one rigid unit.
+    // The gold echo copies remain on the splash and depart toward the edges.
     const brand = s.root.querySelector('.atyaf-v112-brand');
     if (!brand) { s.root.classList.add('atyaf-v94-exit'); setTimeout(() => s.root.remove(), 600); release(); return; }
-    brand.classList.add('atyaf-v166-depart');
-    const flying = s.media.cloneNode(true);
-    flying.className = 'atyaf-intro-flying-logo atyaf-v166-flying-logo';
+    const brandRect = brand.getBoundingClientRect();
+    if (!brandRect.width || !brandRect.height) { s.root.classList.add('atyaf-v94-exit'); setTimeout(() => s.root.remove(), 600); release(); return; }
+    const flying = brand.cloneNode(true);
+    flying.className = 'atyaf-v168-flying-brand';
+    // Use computed typography and dimensions before detaching from the intro root.
+    const originalParts = brand.querySelectorAll('.atyaf-v112-en,.atyaf-v112-ar,.atyaf-v112-logo');
+    const flyingParts = flying.querySelectorAll('.atyaf-v112-en,.atyaf-v112-ar,.atyaf-v112-logo');
+    originalParts.forEach((part, i) => {
+      const computed = getComputedStyle(part);
+      const cloned = flyingParts[i];
+      if (!cloned) return;
+      cloned.style.fontFamily = computed.fontFamily;
+      cloned.style.fontSize = computed.fontSize;
+      cloned.style.fontWeight = computed.fontWeight;
+      cloned.style.letterSpacing = computed.letterSpacing;
+      if (part.classList.contains('atyaf-v112-logo')) {
+        cloned.style.width = computed.width;
+        cloned.style.height = computed.height;
+        cloned.style.borderRadius = computed.borderRadius;
+        cloned.style.background = computed.background;
+        cloned.style.border = computed.border;
+      }
+    });
     Object.assign(flying.style, {
-      position:'fixed', left:source.left+'px', top:source.top+'px',
-      width:source.width+'px', height:source.height+'px',
-      margin:'0', opacity:'1', transform:'translate3d(0,0,0) scale(1)',
-      transition:'transform 880ms cubic-bezier(.18,.72,.18,1), opacity 140ms ease 790ms',
-      zIndex:'2147483001', pointerEvents:'none'
+      left:brandRect.left+'px',top:brandRect.top+'px',
+      width:brandRect.width+'px',height:brandRect.height+'px',
+      margin:'0',opacity:'1',transform:'translate3d(0,0,0) scale(1)',
+      transition:'transform 880ms cubic-bezier(.18,.72,.18,1), opacity 140ms ease 790ms'
     });
     document.body.appendChild(flying);
-    s.media.style.visibility = 'hidden';
+    brand.classList.add('atyaf-v166-depart');
+    brand.style.visibility = 'hidden';
     release();
-    const dx = dest.left + dest.width/2 - (source.left + source.width/2);
-    const dy = dest.top + dest.height/2 - (source.top + source.height/2);
-    const scale = Math.min(dest.width/source.width, dest.height/source.height);
+    const dx = dest.left + dest.width/2 - (brandRect.left + brandRect.width/2);
+    const dy = dest.top + dest.height/2 - (brandRect.top + brandRect.height/2);
+    const scale = Math.min(1, dest.width / brandRect.width);
     requestAnimationFrame(() => requestAnimationFrame(() => {
       flying.style.transform = `translate3d(${dx}px,${dy}px,0) scale(${scale})`;
     }));

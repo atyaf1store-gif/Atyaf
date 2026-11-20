@@ -2512,13 +2512,13 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
   #productModal.styaf-detail-mode .styaf-related-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}
 }
 </style>
-<style id="atyaf-v166-precise-intro-flight">
+<style id="atyaf-v167-precise-intro-flight">
 /* Only splash screen. Reference: gold text fixed while logo rises, then words
    depart into opposite screen edges while logo flies to the real header mark. */
 #atyafIntroV12.atyaf-v94-intro{background:var(--atyaf-intro-reference-bg,#f6f2e9)!important;overflow:hidden!important}
 #atyafIntroV12 .atyaf-v112-brand{overflow:visible!important;transform:none!important;filter:none!important}
 #atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{
- color:var(--atyaf-intro-reference-accent,#d5a320)!important;
+ color:#29231f!important;
  filter:none!important;text-shadow:none!important;white-space:nowrap!important;
 }
 #atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{
@@ -2534,9 +2534,11 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 #atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{
  animation:atyaf166Logo 1500ms cubic-bezier(.22,.75,.2,1) both!important;
 }
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after,
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after{
+ animation:atyaf159GoldLeft 2700ms cubic-bezier(.2,.7,.2,1) both!important;
+}
 #atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{
- animation:none!important;opacity:.7!important;
+ animation:atyaf159GoldRight 2700ms cubic-bezier(.2,.7,.2,1) both!important;
 }
 @keyframes atyaf166Left{from{opacity:0;transform:translateX(-32vw)}to{opacity:1;transform:translateX(0)}}
 @keyframes atyaf166Right{from{opacity:0;transform:translateX(32vw)}to{opacity:1;transform:translateX(0)}}

@@ -2208,6 +2208,29 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
 #atyafIntroV12.atyaf-v166-depart .atyaf-v112-brand{visibility:hidden!important}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v166-echo{display:none!important}#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{transform:none!important}}
 </style>
+<style id="atyaf-v167-unified-intro-wordmark-fix">
+/* Keep the three pieces as ONE centered wordmark. The old image-only
+   breathing animation moved the logo independently, leaving orphan text. */
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo .atyaf-v94-media,
+#atyafIntroV12.atyaf-v94-visible .atyaf-v94-media{
+  animation:none!important;
+  transform:none!important;
+  transition:none!important;
+  opacity:1!important;
+}
+/* No second static copy can survive when the wordmark begins its flight. */
+#atyafIntroV12.atyaf-v166-depart .atyaf-v112-brand{
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.atyaf-intro-flying-brand .atyaf-v94-media{
+  animation:none!important;
+  transform:none!important;
+  transition:none!important;
+  opacity:1!important;
+}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}

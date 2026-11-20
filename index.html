@@ -2208,19 +2208,6 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
 #atyafIntroV12.atyaf-v166-depart .atyaf-v112-brand{visibility:hidden!important}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v166-echo{display:none!important}#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{transform:none!important}}
 </style>
-<style id="atyaf-v168-synchronized-intro-reveal">
-/* Reveal the actual storefront gradually as the centered brand rises.
-   The flying wordmark stays above the fading splash until it reaches the header. */
-#atyafIntroV12.atyaf-v94-intro{
-  opacity:1!important;
-  transition:opacity 850ms cubic-bezier(.22,.65,.25,1)!important;
-}
-#atyafIntroV12.atyaf-v166-lift:not(.atyaf-v166-depart){opacity:.76!important}
-#atyafIntroV12.atyaf-v166-depart{opacity:0!important;pointer-events:none!important}
-@media(prefers-reduced-motion:reduce){
-  #atyafIntroV12.atyaf-v94-intro{transition:none!important}
-}
-</style>
 <style id="atyaf-v167-unified-intro-wordmark-fix">
 /* Keep the three pieces as ONE centered wordmark. The old image-only
    breathing animation moved the logo independently, leaving orphan text. */
@@ -2243,6 +2230,18 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
   transition:none!important;
   opacity:1!important;
 }
+</style>
+<style id="atyaf-v168-third-screen-gold-wall-motion">
+/* Intro only: the center wordmark rises from 50vh to 33.33vh. */
+#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{
+ transform:translate3d(0,calc(-1 * (100dvh / 6)),0)!important;
+ transition:transform 760ms cubic-bezier(.22,.78,.19,1)!important;
+}
+/* Gold reflections enter and exit beyond the viewport edges without blurring. */
+#atyafIntroV12 .atyaf-v166-echo{opacity:0!important;animation:none!important;filter:none!important;will-change:transform,opacity!important}
+#atyafIntroV12 .atyaf-v166-echo.atyaf-v168-entered{opacity:1!important}
+#atyafIntroV12.atyaf-v166-depart .atyaf-v166-echo{animation:none!important}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{transform:none!important;transition:none!important}}
 </style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
@@ -3610,6 +3609,17 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const dest = target?.getBoundingClientRect();
     // Start the outward gold echoes while the original wordmark flies to the header.
     s.root.classList.add('atyaf-v166-depart');
+    // Exit the same way the reflections entered: fully through each screen wall.
+    s.root.querySelectorAll('.atyaf-v166-echo').forEach(echo => {
+      const rect = echo.getBoundingClientRect();
+      const side = echo.classList.contains('atyaf-v166-echo-left') ? 'left' : 'right';
+      const distance = side === 'left' ? -(rect.right + 28) : (innerWidth - rect.left + 28);
+      if (echo._atyafMotion) echo._atyafMotion.cancel();
+      if (echo.animate) echo._atyafMotion = echo.animate([
+        {transform:'translate3d(0,0,0)',opacity:1},
+        {transform:`translate3d(${distance}px,0,0)`,opacity:1}
+      ],{duration:680,easing:'cubic-bezier(.5,.05,.85,.55)',fill:'forwards'});
+    });
     if (source && source.width > 0 && dest && dest.width > 0 && dest.height > 0) {
       const clone = brand.cloneNode(true);
       clone.className = 'atyaf-intro-flying-brand';
@@ -3639,7 +3649,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       setTimeout(() => clone.remove(),1050);
     }
     // Do not remove the echo layer until its outward exit is complete.
-    setTimeout(() => {s.root.remove();release();},920);
+    setTimeout(() => {s.root.remove();release();},760);
   }
   function placeEchoes(s) {
     if (state !== s || !s.root.isConnected) return;
@@ -3664,6 +3674,17 @@ window.addEventListener("focus",atyafLoadLowerAds);
         ? (rect.left-rootRect.left-rect.width-18)+'px'
         : (rect.right-rootRect.left+18)+'px';
       s.root.appendChild(echo);
+      // Begin completely behind the appropriate viewport edge; travel into
+      // the final stationary position, with no fade-in or ghost duplicate.
+      const target = echo.getBoundingClientRect();
+      const distance = side === 'left' ? -(target.right + 24) : (innerWidth - target.left + 24);
+      echo.classList.add('atyaf-v168-entered');
+      if (echo.animate) {
+        echo._atyafMotion = echo.animate([
+          {transform:`translate3d(${distance}px,0,0)`,opacity:1},
+          {transform:'translate3d(0,0,0)',opacity:1}
+        ],{duration:920,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
+      }
     });
   }
   window.atyafApplyAdminIntroV12 = function (raw) {
@@ -3743,7 +3764,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       s.echoTimer = setTimeout(() => placeEchoes(s), 900);
       s.liftTimer = setTimeout(() => {
         if (state === s) root.classList.add('atyaf-v166-lift');
-      }, Math.max(1200,total-600));
+      }, Math.max(1300,total-1550));
       s.timer = setTimeout(finish,total);
     };
     skip.addEventListener('click', finish);

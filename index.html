@@ -2208,6 +2208,19 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
 #atyafIntroV12.atyaf-v166-depart .atyaf-v112-brand{visibility:hidden!important}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v166-echo{display:none!important}#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{transform:none!important}}
 </style>
+<style id="atyaf-v168-synchronized-intro-reveal">
+/* Reveal the actual storefront gradually as the centered brand rises.
+   The flying wordmark stays above the fading splash until it reaches the header. */
+#atyafIntroV12.atyaf-v94-intro{
+  opacity:1!important;
+  transition:opacity 850ms cubic-bezier(.22,.65,.25,1)!important;
+}
+#atyafIntroV12.atyaf-v166-lift:not(.atyaf-v166-depart){opacity:.76!important}
+#atyafIntroV12.atyaf-v166-depart{opacity:0!important;pointer-events:none!important}
+@media(prefers-reduced-motion:reduce){
+  #atyafIntroV12.atyaf-v94-intro{transition:none!important}
+}
+</style>
 <style id="atyaf-v167-unified-intro-wordmark-fix">
 /* Keep the three pieces as ONE centered wordmark. The old image-only
    breathing animation moved the logo independently, leaving orphan text. */
@@ -3626,7 +3639,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
       setTimeout(() => clone.remove(),1050);
     }
     // Do not remove the echo layer until its outward exit is complete.
-    setTimeout(() => {s.root.remove();release();},720);
+    setTimeout(() => {s.root.remove();release();},920);
   }
   function placeEchoes(s) {
     if (state !== s || !s.root.isConnected) return;

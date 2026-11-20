@@ -2582,6 +2582,29 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 .atyaf-v168-flying-brand .atyaf-v112-logo{display:grid!important;place-items:center!important;flex:none!important;opacity:1!important;transform:none!important;animation:none!important}
 .atyaf-v168-flying-brand .atyaf-v94-media{display:block!important;visibility:visible!important;opacity:1!important;animation:none!important;transform:none!important}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand{animation:none!important;transform:none!important}}
+/* V169: the dark ATYAF + icon + أطياف are a single synchronized moving unit. */
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart){
+  animation:atyaf169UnifiedArrivalAndRise 1500ms cubic-bezier(.22,.75,.2,1) both!important;
+  transform-origin:center center!important;
+}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-en,
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-ar,
+#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-logo{
+  animation:none!important;
+  opacity:1!important;
+  transform:none!important;
+  filter:none!important;
+  transition:none!important;
+}
+@keyframes atyaf169UnifiedArrivalAndRise{
+  0%{opacity:0;transform:translate3d(0,12px,0) scale(.94)}
+  35%{opacity:1;transform:translate3d(0,0,0) scale(1)}
+  62%{opacity:1;transform:translate3d(0,0,0) scale(1)}
+  100%{opacity:1;transform:translate3d(0,-16px,0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+ #atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart){animation:none!important;opacity:1!important;transform:none!important}
+}
 </style>
 </head>
 <body>
@@ -8600,4 +8623,5 @@ html body button.styaf-v2-up::before {
 
 </body>
 </html>
+
 

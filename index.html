@@ -2191,6 +2191,23 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
  #atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:none!important;opacity:0!important}
 }
 </style>
+<style id="atyaf-v166-precise-reference-intro">
+/* Only the splash is affected. The golden echoes stay anchored as the dark mark lifts. */
+#atyafIntroV12.atyaf-v94-intro{background:#f6eee7!important;overflow:hidden!important}
+#atyafIntroV12 .atyaf-v112-brand{z-index:2!important;position:relative!important;filter:none!important}
+#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{color:#211c19!important;filter:none!important}
+#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{display:none!important}
+#atyafIntroV12 .atyaf-v166-echo{position:absolute!important;top:0;left:0;z-index:1;display:block!important;width:max-content;max-width:none;white-space:nowrap;color:var(--atyaf-intro-reference-accent,#d6a21e)!important;opacity:0;pointer-events:none;filter:none!important;text-shadow:none!important;will-change:transform,opacity}
+#atyafIntroV12.atyaf-v94-visible .atyaf-v166-echo{animation:atyaf166EchoEnter 420ms ease-out both}
+@keyframes atyaf166EchoEnter{from{opacity:0}to{opacity:1}}
+#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{transform:translate3d(0,-24px,0)!important;transition:transform 430ms cubic-bezier(.2,.75,.25,1)!important}
+#atyafIntroV12.atyaf-v166-depart .atyaf-v166-echo-left{animation:atyaf166OutLeft 660ms cubic-bezier(.5,0,.8,.4) both!important}
+#atyafIntroV12.atyaf-v166-depart .atyaf-v166-echo-right{animation:atyaf166OutRight 660ms cubic-bezier(.5,0,.8,.4) both!important}
+@keyframes atyaf166OutLeft{to{opacity:0;transform:translate3d(-110vw,0,0)}}
+@keyframes atyaf166OutRight{to{opacity:0;transform:translate3d(110vw,0,0)}}
+#atyafIntroV12.atyaf-v166-depart .atyaf-v112-brand{visibility:hidden!important}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12 .atyaf-v166-echo{display:none!important}#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{transform:none!important}}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
@@ -2511,125 +2528,6 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 @media(min-width:761px){
   #productModal.styaf-detail-mode .styaf-related-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}
 }
-</style>
-<style id="atyaf-v167-precise-intro-flight">
-/* Only splash screen. Reference: gold text fixed while logo rises, then words
-   depart into opposite screen edges while logo flies to the real header mark. */
-#atyafIntroV12.atyaf-v94-intro{background:var(--atyaf-intro-reference-bg,#f6f2e9)!important;overflow:hidden!important}
-#atyafIntroV12 .atyaf-v112-brand{overflow:visible!important;transform:none!important;filter:none!important}
-#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{
- color:#29231f!important;
- filter:none!important;text-shadow:none!important;white-space:nowrap!important;
-}
-#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{
- color:var(--atyaf-intro-reference-accent,#d5a320)!important;
- filter:none!important;opacity:.75;
-}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en{
- animation:atyaf166Left 700ms cubic-bezier(.2,.8,.2,1) both!important;
-}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar{
- animation:atyaf166Right 700ms cubic-bezier(.2,.8,.2,1) both!important;
-}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{
- animation:atyaf166Logo 1500ms cubic-bezier(.22,.75,.2,1) both!important;
-}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after{
- animation:atyaf159GoldLeft 2700ms cubic-bezier(.2,.7,.2,1) both!important;
-}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{
- animation:atyaf159GoldRight 2700ms cubic-bezier(.2,.7,.2,1) both!important;
-}
-@keyframes atyaf166Left{from{opacity:0;transform:translateX(-32vw)}to{opacity:1;transform:translateX(0)}}
-@keyframes atyaf166Right{from{opacity:0;transform:translateX(32vw)}to{opacity:1;transform:translateX(0)}}
-@keyframes atyaf166Logo{0%{opacity:0;transform:translateY(12px) scale(.9)}45%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:1;transform:translateY(-16px) scale(1)}}
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-en{
- animation:atyaf166ExitLeft 850ms cubic-bezier(.55,0,.9,.5) both!important;
-}
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-ar{
- animation:atyaf166ExitRight 850ms cubic-bezier(.55,0,.9,.5) both!important;
-}
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-en::after,
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-ar::after{
- opacity:0!important;transition:opacity 700ms ease!important;
-}
-@keyframes atyaf166ExitLeft{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-110vw)}}
-@keyframes atyaf166ExitRight{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(110vw)}}
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-logo{opacity:0!important}
-.atyaf-v166-flying-logo{object-fit:contain!important;filter:none!important;animation:none!important}
-@media(prefers-reduced-motion:reduce){
- #atyafIntroV12.atyaf-v94-visible .atyaf-v112-en,
- #atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar,
- #atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{animation:none!important;opacity:1!important;transform:none!important}
-}
-/* V168: original dark wordmarks and icon move as ONE locked brand unit. */
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart){
- animation:atyaf168BrandRise 1500ms cubic-bezier(.22,.75,.2,1) both!important;
-}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-logo{
- animation:atyaf168LogoAppear 700ms cubic-bezier(.22,.75,.2,1) both!important;
-}
-@keyframes atyaf168BrandRise{0%,35%{transform:translate3d(0,0,0)}100%{transform:translate3d(0,-16px,0)}}
-@keyframes atyaf168LogoAppear{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart{animation:none!important;transform:translate3d(0,-16px,0)!important}
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-en,
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart .atyaf-v112-ar{
- animation:none!important;opacity:0!important;
-}
-.atyaf-v168-flying-brand{position:fixed!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;pointer-events:none!important;z-index:2147483001!important;transform-origin:center center!important;white-space:nowrap!important;will-change:transform,opacity!important;filter:none!important}
-.atyaf-v168-flying-brand .atyaf-v112-en,.atyaf-v168-flying-brand .atyaf-v112-ar{position:relative!important;display:inline-block!important;opacity:1!important;transform:none!important;animation:none!important;color:#29231f!important;filter:none!important;text-shadow:none!important;white-space:nowrap!important}
-.atyaf-v168-flying-brand .atyaf-v112-en::after,.atyaf-v168-flying-brand .atyaf-v112-ar::after{content:none!important;display:none!important}
-.atyaf-v168-flying-brand .atyaf-v112-logo{display:grid!important;place-items:center!important;flex:none!important;opacity:1!important;transform:none!important;animation:none!important}
-.atyaf-v168-flying-brand .atyaf-v94-media{display:block!important;visibility:visible!important;opacity:1!important;animation:none!important;transform:none!important}
-@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand{animation:none!important;transform:none!important}}
-/* V169: the dark ATYAF + icon + أطياف are a single synchronized moving unit. */
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart){
-  animation:atyaf169UnifiedArrivalAndRise 1500ms cubic-bezier(.22,.75,.2,1) both!important;
-  transform-origin:center center!important;
-}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-en,
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-ar,
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-logo{
-  animation:none!important;
-  opacity:1!important;
-  transform:none!important;
-  filter:none!important;
-  transition:none!important;
-}
-@keyframes atyaf169UnifiedArrivalAndRise{
-  0%{opacity:0;transform:translate3d(0,12px,0) scale(.94)}
-  35%{opacity:1;transform:translate3d(0,0,0) scale(1)}
-  62%{opacity:1;transform:translate3d(0,0,0) scale(1)}
-  100%{opacity:1;transform:translate3d(0,-16px,0) scale(1)}
-}
-@media(prefers-reduced-motion:reduce){
- #atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart){animation:none!important;opacity:1!important;transform:none!important}
-}
-</style>
-
-<style id="atyaf-v170-exact-two-second-splash">
-/* V170: all rules scoped to the existing intro, never to storefront cards/navigation. */
-#atyafIntroV12.atyaf-v94-intro{background:#F6F3EC!important;transition:opacity 800ms cubic-bezier(.22,1,.36,1)!important}
-#atyafIntroV12.atyaf-v94-intro::before{background:#D49A3A!important}
-#atyafIntroV12 .atyaf-v112-brand{gap:8px!important;direction:ltr!important;white-space:nowrap!important;max-width:calc(100vw - 22px)!important}
-#atyafIntroV12 .atyaf-v112-en,#atyafIntroV12 .atyaf-v112-ar{color:#111111!important;-webkit-text-fill-color:#111111!important;text-shadow:none!important;opacity:1!important}
-#atyafIntroV12 .atyaf-v112-logo{background:#FFFFFF!important;border-radius:14px!important;box-shadow:0 5px 20px rgba(24,21,15,.10)!important;overflow:hidden!important;flex-shrink:0!important}
-#atyafIntroV12 .atyaf-v112-logo .atyaf-v94-media{object-fit:contain!important;filter:none!important;animation:none!important}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart){animation:atyaf170Brand 700ms cubic-bezier(.22,1,.36,1) both!important}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-en,
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-ar,
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart) > .atyaf-v112-logo{animation:none!important;transform:none!important;opacity:1!important}
-@keyframes atyaf170Brand{0%{opacity:0;transform:translate3d(0,0,0)}22%{opacity:1}100%{opacity:1;transform:translate3d(0,-20px,0)}}
-/* The two golden echoes stay outside the dark wordmarks, then sink and vanish. */
-#atyafIntroV12 .atyaf-v112-en::after,#atyafIntroV12 .atyaf-v112-ar::after{color:#D49A3A!important;-webkit-text-fill-color:#D49A3A!important;filter:none!important;text-shadow:none!important;pointer-events:none!important;opacity:1!important;animation:none!important;transition:none!important}
-#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:atyaf170Echo 1200ms cubic-bezier(.22,1,.36,1) both!important}
-@keyframes atyaf170Echo{0%,58.33%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(25px)}}
-#atyafIntroV12 .atyaf-v112-brand.atyaf-v166-depart{animation:none!important;transform:translate3d(0,-20px,0)!important}
-#atyafIntroV12.atyaf-v94-exit{opacity:0!important;pointer-events:none!important}
-.atyaf-v168-flying-brand{transition:transform 800ms cubic-bezier(.22,1,.36,1),opacity 120ms linear 700ms!important}
-.atyaf-v168-flying-brand .atyaf-v112-en,.atyaf-v168-flying-brand .atyaf-v112-ar{color:#111111!important;-webkit-text-fill-color:#111111!important}
-.atyaf-v168-flying-brand .atyaf-v112-logo{background:#FFFFFF!important;border-radius:14px!important;box-shadow:0 5px 20px rgba(24,21,15,.10)!important}
-@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v94-visible .atyaf-v112-brand:not(.atyaf-v166-depart),#atyafIntroV12.atyaf-v94-visible .atyaf-v112-en::after,#atyafIntroV12.atyaf-v94-visible .atyaf-v112-ar::after{animation:none!important}#atyafIntroV12.atyaf-v94-intro{transition:none!important}}
 </style>
 </head>
 <body>
@@ -3664,64 +3562,73 @@ window.addEventListener("focus",atyafLoadLowerAds);
     state = null;
     clearTimeout(s.timer);
     clearTimeout(s.loadTimer);
+    clearTimeout(s.echoTimer);
+    clearTimeout(s.liftTimer);
     if (s.video) { try { s.media.pause(); } catch (_) {} }
-    if (immediate) { s.root.remove(); release(); return; }
-    const target = findHeaderLogo();
-    const source = s.media.getBoundingClientRect();
-    const dest = target && target.getBoundingClientRect();
-    const canFly = !s.video && s.loaded && dest && source.width > 0 && source.height > 0 &&
-      dest.width > 0 && dest.height > 0 && !matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!canFly) {
-      s.root.classList.add('atyaf-v94-exit');
-      setTimeout(() => s.root.remove(), 460);
-      release();
-      return;
+    if (immediate || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      s.root.remove(); release(); return;
     }
-    // V168: fly the complete ATYAF + logo + أطياف group as one rigid unit.
-    // The gold echo copies remain on the splash and depart toward the edges.
     const brand = s.root.querySelector('.atyaf-v112-brand');
-    if (!brand) { s.root.classList.add('atyaf-v94-exit'); setTimeout(() => s.root.remove(), 600); release(); return; }
-    const brandRect = brand.getBoundingClientRect();
-    if (!brandRect.width || !brandRect.height) { s.root.classList.add('atyaf-v94-exit'); setTimeout(() => s.root.remove(), 600); release(); return; }
-    const flying = brand.cloneNode(true);
-    flying.className = 'atyaf-v168-flying-brand';
-    // Use computed typography and dimensions before detaching from the intro root.
-    const originalParts = brand.querySelectorAll('.atyaf-v112-en,.atyaf-v112-ar,.atyaf-v112-logo');
-    const flyingParts = flying.querySelectorAll('.atyaf-v112-en,.atyaf-v112-ar,.atyaf-v112-logo');
-    originalParts.forEach((part, i) => {
-      const computed = getComputedStyle(part);
-      const cloned = flyingParts[i];
-      if (!cloned) return;
-      cloned.style.fontFamily = computed.fontFamily;
-      cloned.style.fontSize = computed.fontSize;
-      cloned.style.fontWeight = computed.fontWeight;
-      cloned.style.letterSpacing = computed.letterSpacing;
-      if (part.classList.contains('atyaf-v112-logo')) {
-        cloned.style.width = computed.width;
-        cloned.style.height = computed.height;
-        cloned.style.borderRadius = computed.borderRadius;
-        cloned.style.background = computed.background;
-        cloned.style.border = computed.border;
+    const target = findHeaderLogo();
+    const source = brand?.getBoundingClientRect();
+    const dest = target?.getBoundingClientRect();
+    // Start the outward gold echoes while the original wordmark flies to the header.
+    s.root.classList.add('atyaf-v166-depart');
+    if (source && source.width > 0 && dest && dest.width > 0 && dest.height > 0) {
+      const clone = brand.cloneNode(true);
+      clone.className = 'atyaf-intro-flying-brand';
+      clone.style.cssText = `left:${source.left}px;top:${source.top}px;width:${source.width}px;height:${source.height}px;opacity:1;transform:none;transition:none;`;
+      clone.querySelectorAll('.atyaf-v112-en,.atyaf-v112-ar,.atyaf-v112-logo').forEach(el => {
+        el.style.setProperty('animation','none','important');
+        el.style.setProperty('opacity','1','important');
+        el.style.setProperty('transform','none','important');
+        el.style.setProperty('filter','none','important');
+      });
+      document.body.appendChild(clone);
+      const dx = dest.left + dest.width / 2 - (source.left + source.width / 2);
+      const dy = dest.top + dest.height / 2 - (source.top + source.height / 2);
+      const scale = Math.min(1, Math.max(.08, dest.height / source.height));
+      if (clone.animate) {
+        const flight = clone.animate([
+          {transform:'translate3d(0,0,0) scale(1)',opacity:1,offset:0},
+          {transform:'translate3d(0,-16px,0) scale(.96)',opacity:1,offset:.18},
+          {transform:`translate3d(${dx}px,${dy}px,0) scale(${scale})`,opacity:1,offset:.88},
+          {transform:`translate3d(${dx}px,${dy}px,0) scale(${scale})`,opacity:0,offset:1}
+        ],{duration:850,easing:'cubic-bezier(.25,.7,.25,1)',fill:'forwards'});
+        flight.onfinish = () => clone.remove();
+      } else {
+        clone.style.transition='transform 750ms ease,opacity 750ms ease';
+        requestAnimationFrame(() => {clone.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${scale})`;clone.style.opacity='0';});
       }
+      setTimeout(() => clone.remove(),1050);
+    }
+    // Do not remove the echo layer until its outward exit is complete.
+    setTimeout(() => {s.root.remove();release();},720);
+  }
+  function placeEchoes(s) {
+    if (state !== s || !s.root.isConnected) return;
+    const en = s.root.querySelector('.atyaf-v112-en');
+    const ar = s.root.querySelector('.atyaf-v112-ar');
+    if (!en || !ar) return;
+    const rootRect = s.root.getBoundingClientRect();
+    [[en,'left'],[ar,'right']].forEach(([word,side]) => {
+      const rect = word.getBoundingClientRect();
+      const echo = document.createElement('span');
+      echo.className = 'atyaf-v166-echo atyaf-v166-echo-' + side;
+      echo.textContent = word.textContent;
+      echo.lang = word.lang || (side === 'right' ? 'ar' : 'en');
+      echo.dir = word.dir || (side === 'right' ? 'rtl' : 'ltr');
+      const computed = getComputedStyle(word);
+      echo.style.font = computed.font;
+      echo.style.letterSpacing = computed.letterSpacing;
+      echo.style.lineHeight = computed.lineHeight;
+      echo.style.top = (rect.top-rootRect.top) + 'px';
+      // Position each gold copy OUTSIDE the dark names, like the reference.
+      echo.style.left = side === 'left'
+        ? (rect.left-rootRect.left-rect.width-18)+'px'
+        : (rect.right-rootRect.left+18)+'px';
+      s.root.appendChild(echo);
     });
-    Object.assign(flying.style, {
-      left:brandRect.left+'px',top:brandRect.top+'px',
-      width:brandRect.width+'px',height:brandRect.height+'px',
-      margin:'0',opacity:'1',transform:'translate3d(0,0,0) scale(1)',
-      transition:'transform 800ms cubic-bezier(.22,1,.36,1), opacity 120ms linear 700ms'
-    });
-    document.body.appendChild(flying);
-    brand.classList.add('atyaf-v166-depart');
-    brand.style.visibility = 'hidden';
-    s.root.classList.add('atyaf-v94-exit');
-    release();
-    const dx = dest.left + dest.width/2 - (brandRect.left + brandRect.width/2);
-    const dy = dest.top + dest.height/2 - (brandRect.top + brandRect.height/2);
-    const scale = 0.65; // V170: preserve the complete dark wordmark group at 65% size
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      flying.style.transform = `translate3d(${dx}px,${dy}px,0) scale(${scale})`;
-    }));
-    setTimeout(() => { s.root.remove(); flying.remove(); }, 820);
   }
   window.atyafApplyAdminIntroV12 = function (raw) {
     let cfg = raw;
@@ -3737,7 +3644,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const headerLogoURL = headerLogo && headerLogo.tagName === 'IMG' ? validURL(headerLogo.currentSrc || headerLogo.src) : '';
     const splashLogoURL = validURL(cfg.logoImage) || headerLogoURL || (cfg.mediaType === 'video' ? '' : url);
     const n = Number(cfg.duration);
-    const duration = 2000; // V170: fixed 0–700–1200–2000ms sequence
+    const duration = Number.isFinite(n) && n > 0 ? Math.min(30000, Math.max(1500, n)) : 3800;
     const signature = JSON.stringify([url, video, duration, cfg.backgroundColor, cfg.textColor, cfg.accentColor, cfg.logoSize, cfg.englishSize, cfg.arabicSize]);
     if (state && state.signature === signature) return;
     close(true);
@@ -3786,7 +3693,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     brand.append(en, logoBox, ar);
     logoBox.append(media);
     root.append(brand, skip, progress);
-    const s = { root, media, video, signature, timer: 0, loadTimer: 0, loaded: false };
+    const s = { root, media, video, signature, timer: 0, loadTimer: 0, echoTimer: 0, liftTimer: 0, loaded: false };
     state = s;
     const finish = () => { if (state === s) close(false); };
     const loaded = () => {
@@ -3794,7 +3701,14 @@ window.addEventListener("focus",atyafLoadLowerAds);
       s.loaded = true;
       clearTimeout(s.loadTimer);
       root.classList.add('atyaf-v94-visible');
-      s.timer = setTimeout(finish, 1200);
+      const total = Math.max(duration, 3500);
+      // Dark brand and logo first appear together in the center. Golden text
+      // remains stationary as the dark wordmark lifts, then flies to the header.
+      s.echoTimer = setTimeout(() => placeEchoes(s), 900);
+      s.liftTimer = setTimeout(() => {
+        if (state === s) root.classList.add('atyaf-v166-lift');
+      }, Math.max(1200,total-600));
+      s.timer = setTimeout(finish,total);
     };
     skip.addEventListener('click', finish);
     media.addEventListener('error', finish, { once: true });

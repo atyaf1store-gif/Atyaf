@@ -7695,7 +7695,7 @@ window.addEventListener('pageshow',refresh);
     overflow:visible!important;
     isolation:isolate!important;
     transform:none;
-    animation:atyafV115WaPulse 2.6s ease-in-out infinite!important;
+    animation:atyafV169WaBreath 1.85s ease-in-out infinite!important;
   }
   html body #atyafV90WhatsApp svg {
     display:block!important;
@@ -7714,10 +7714,20 @@ window.addEventListener('pageshow',refresh);
     border-radius:50%!important;
     pointer-events:none!important;
     z-index:-1!important;
-    animation:atyafV115WaHalo 2.6s ease-out infinite!important;
+    animation:atyafV169WaGlow 1.85s ease-in-out infinite!important;
   }
-  html body #atyafV90WhatsApp::after {content:none!important;display:none!important}
-  html body #atyafV90WhatsApp:active {animation-play-state:paused!important;transform:scale(.95)!important}
+  html body #atyafV90WhatsApp::after {
+    content:""!important;
+    display:block!important;
+    position:absolute!important;
+    inset:-9px!important;
+    border-radius:50%!important;
+    background:radial-gradient(circle,rgba(37,211,102,.22) 0%,rgba(37,211,102,.13) 48%,rgba(37,211,102,0) 74%)!important;
+    pointer-events:none!important;
+    z-index:-2!important;
+    animation:atyafV169WaOuterGlow 1.85s ease-in-out infinite!important;
+  }
+  html body #atyafV90WhatsApp:active {animation-play-state:paused!important}
   html body .styaf-v2-up {
     left:18px!important;
     bottom:calc(139px + env(safe-area-inset-bottom,0px))!important;
@@ -7751,18 +7761,24 @@ window.addEventListener('pageshow',refresh);
   }
   html body .styaf-v2-up:not(.visible)::before {animation-play-state:paused}
 }
-@keyframes atyafV115WaPulse {
-  0%,100% {box-shadow:0 4px 12px rgba(0,0,0,.16),0 0 0 0 rgba(32,207,99,.14)}
-  50% {box-shadow:0 4px 12px rgba(0,0,0,.16),0 0 0 4px rgba(32,207,99,.08)}
+/* V169: soft, synchronized WhatsApp breathing pulse matching the supplied video. */
+@keyframes atyafV169WaBreath {
+  0%,100% {transform:scale(1);box-shadow:0 3px 11px rgba(0,0,0,.12),0 0 0 2px rgba(37,211,102,.10)}
+  50% {transform:scale(1.065);box-shadow:0 4px 16px rgba(0,0,0,.13),0 0 0 6px rgba(37,211,102,.16)}
 }
-@keyframes atyafV115WaHalo {
-  0% {opacity:.65;transform:scale(.96)}
-  75%,100% {opacity:0;transform:scale(1.14)}
+@keyframes atyafV169WaGlow {
+  0%,100% {opacity:.30;transform:scale(.98)}
+  50% {opacity:.75;transform:scale(1.08)}
+}
+@keyframes atyafV169WaOuterGlow {
+  0%,100% {opacity:.28;transform:scale(.94)}
+  50% {opacity:.95;transform:scale(1.14)}
 }
 @keyframes atyafV115ArrowRing {to {transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce) {
   html body #atyafV90WhatsApp,
   html body #atyafV90WhatsApp::before,
+  html body #atyafV90WhatsApp::after,
   html body .styaf-v2-up::before {animation:none!important}
   html body #atyafV90WhatsApp::before {opacity:.35!important}
 }

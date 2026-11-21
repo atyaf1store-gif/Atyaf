@@ -8910,6 +8910,12 @@ footer.querySelectorAll('[data-footer-nav]').forEach(function(link){link.addEven
    </form>
    <div id="atyafAuthMessage" aria-live="polite" hidden></div>
   </div>
+<div id="atyafDemoProfile" hidden>
+ <div class="demo-hero"><div class="demo-cover">أطياف</div><span class="demo-pill">✧ عضو أطياف · عرض تجريبي</span><h2 id="atyafDemoName"></h2><div class="demo-city" id="atyafDemoCity"></div><div class="demo-shortcuts"><button type="button" data-demo-shortcut="orders">♧ طلباتي</button><button type="button" data-demo-shortcut="favorites">♡ المفضلة</button></div></div>
+ <div class="demo-tabs" role="tablist" aria-label="إعدادات الحساب"><button type="button" data-demo-tab="personal" aria-selected="true">البيانات الشخصية</button><button type="button" data-demo-tab="settings" aria-selected="false">الإعدادات</button><button type="button" data-demo-tab="security" aria-selected="false">الأمان</button></div>
+ <div id="atyafDemoTabContent" aria-live="polite"></div>
+ <div class="demo-footer"><button id="atyafDemoLogout" type="button">تسجيل الخروج</button></div>
+</div>
   <button class="auth-back" id="atyafAuthHome" type="button">← العودة للصفحة الرئيسية</button>
  </div>
 </section>
@@ -8940,12 +8946,7 @@ footer.querySelectorAll('[data-footer-nav]').forEach(function(link){link.addEven
 #atyafDemoProfile .demo-footer{text-align:center;padding:10px 0 22px}
 #atyafDemoProfile .demo-footer button{background:none;border:0;color:#b17817;font:inherit;font-size:13px}
 </style>
-<div id="atyafDemoProfile" hidden>
- <div class="demo-hero"><div class="demo-cover">أطياف</div><span class="demo-pill">✧ عضو أطياف · عرض تجريبي</span><h2 id="atyafDemoName"></h2><div class="demo-city" id="atyafDemoCity"></div><div class="demo-shortcuts"><button type="button" data-demo-shortcut="orders">♧ طلباتي</button><button type="button" data-demo-shortcut="favorites">♡ المفضلة</button></div></div>
- <div class="demo-tabs" role="tablist" aria-label="إعدادات الحساب"><button type="button" data-demo-tab="personal" aria-selected="true">البيانات الشخصية</button><button type="button" data-demo-tab="settings" aria-selected="false">الإعدادات</button><button type="button" data-demo-tab="security" aria-selected="false">الأمان</button></div>
- <div id="atyafDemoTabContent" aria-live="polite"></div>
- <div class="demo-footer"><button id="atyafDemoLogout" type="button">تسجيل الخروج</button></div>
-</div>
+
 <script id="atyaf-v186-demo-auth-js">
 (function(){
 'use strict';

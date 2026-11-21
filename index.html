@@ -8844,6 +8844,107 @@ footer.querySelectorAll('[data-footer-nav]').forEach(function(link){link.addEven
 })();
 </script>
 
+
+<!-- V185: customer authentication, backed by the existing Supabase Auth project. -->
+<style id="atyaf-v185-auth-style">
+#atyafAuthScreen{position:fixed;inset:0;z-index:214748310;background:#fff;overflow-y:auto;overscroll-behavior:contain;display:none;color:#302c2a;font-family:inherit}
+#atyafAuthScreen.is-open{display:block}
+#atyafAuthScreen *{box-sizing:border-box}
+#atyafAuthScreen .auth-wrap{width:min(440px,100%);margin:auto;padding:calc(42px + env(safe-area-inset-top,0px)) 24px calc(38px + env(safe-area-inset-bottom,0px))}
+#atyafAuthScreen .auth-head{text-align:center;margin:0 auto 29px}
+#atyafAuthScreen .auth-logo{display:block;max-height:72px;max-width:100px;object-fit:contain;margin:0 auto 10px}
+#atyafAuthScreen .auth-brand{font-size:23px;font-weight:750;letter-spacing:.6px;margin:0}
+#atyafAuthScreen .auth-caption{font-size:13px;color:#8b929c;margin:12px 0 0}
+#atyafAuthScreen .auth-switch{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;background:#f3f5f8;border:1px solid #e5e8ef;border-radius:15px;margin-bottom:21px}
+#atyafAuthScreen .auth-switch button{border:0;background:transparent;border-radius:11px;min-height:42px;color:#6f7785;font:inherit;font-size:13px;cursor:pointer}
+#atyafAuthScreen .auth-switch button[aria-selected=true]{background:#e8ab0a;color:#32240c;font-weight:700;box-shadow:0 2px 7px #d7a31a30}
+#atyafAuthScreen .auth-panel{border:1px solid #edf0f4;border-radius:20px;padding:20px 18px;box-shadow:0 7px 35px #1a26300a}
+#atyafAuthScreen .auth-field{display:block;margin:0 0 15px}
+#atyafAuthScreen .auth-field>span{display:block;margin:0 0 8px;font-size:12px;color:#6e7685;font-weight:600}
+#atyafAuthScreen .auth-field input,#atyafAuthScreen .auth-field select{width:100%;min-height:47px;border:1px solid #e0e5ed;border-radius:12px;padding:11px 13px;background:white;font:inherit;font-size:14px;color:#252b33;outline:none;direction:rtl}
+#atyafAuthScreen .auth-field input:focus,#atyafAuthScreen .auth-field select:focus{border-color:#d8a313;box-shadow:0 0 0 3px #e8ab0a18}
+#atyafAuthScreen .auth-primary{width:100%;border:0;border-radius:12px;min-height:48px;background:#e9ad0c;color:#33270d;font:inherit;font-size:14px;font-weight:750;cursor:pointer;margin-top:8px}
+#atyafAuthScreen button:disabled{opacity:.6;cursor:wait}
+#atyafAuthScreen .auth-subaction{border:0;background:none;color:#ad821c;font:inherit;font-size:12px;padding:8px 0;cursor:pointer}
+#atyafAuthScreen .auth-inline{text-align:center;font-size:12px;color:#818994;margin-top:14px}
+#atyafAuthScreen .auth-back{display:block;margin:24px auto 0;border:0;background:none;color:#828a96;font:inherit;font-size:13px;cursor:pointer}
+#atyafAuthScreen .auth-error{font-size:12px;line-height:1.8;padding:9px 11px;margin:12px 0;border-radius:9px;background:#fff4ef;color:#a34225}
+#atyafAuthScreen .auth-error.ok{background:#eff9f1;color:#287347}
+#atyafAuthScreen [hidden]{display:none!important}
+@media(max-width:360px){#atyafAuthScreen .auth-wrap{padding-left:14px;padding-right:14px}}
+</style>
+<section id="atyafAuthScreen" role="dialog" aria-modal="true" aria-label="حساب العميل" dir="rtl">
+ <div class="auth-wrap">
+  <header class="auth-head"><img id="atyafAuthLogo" class="auth-logo" alt="شعار أطياف" hidden><h1 class="auth-brand">ATYAF | أطياف</h1><p class="auth-caption" id="atyafAuthCaption">سجّل دخولك للمتابعة</p></header>
+  <div class="auth-switch" role="tablist" aria-label="نوع الحساب"><button type="button" data-auth-tab="login" role="tab" aria-selected="true">تسجيل الدخول</button><button type="button" data-auth-tab="signup" role="tab" aria-selected="false">حساب جديد</button></div>
+  <div class="auth-panel">
+   <form id="atyafLoginForm" autocomplete="on">
+    <label class="auth-field"><span>رقم الهاتف</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="مثال: +9677XXXXXXXX" required></label>
+    <label class="auth-field"><span>كلمة المرور</span><input name="password" type="password" autocomplete="current-password" minlength="6" placeholder="أدخل كلمة المرور" required></label>
+    <button class="auth-subaction" id="atyafForgotPassword" type="button">نسيت كلمة المرور؟</button>
+    <button class="auth-primary" type="submit">تسجيل الدخول</button>
+    <div class="auth-inline">ليس لديك حساب؟ <button class="auth-subaction" type="button" data-auth-goto="signup">سجّل الآن</button></div>
+   </form>
+   <form id="atyafSignupForm" hidden autocomplete="on">
+    <label class="auth-field"><span>الاسم الكامل</span><input name="full_name" autocomplete="name" maxlength="120" minlength="3" required placeholder="أدخل اسمك الكامل"></label>
+    <label class="auth-field"><span>رقم الهاتف</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="مثال: +9677XXXXXXXX"></label>
+    <label class="auth-field"><span>المدينة</span><input name="city" maxlength="100" required placeholder="أدخل مدينتك"></label>
+    <label class="auth-field"><span>العنوان التفصيلي</span><input name="address" maxlength="300" required placeholder="الحي، الشارع، أقرب معلم"></label>
+    <label class="auth-field"><span>كلمة المرور</span><input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="8 أحرف على الأقل"></label>
+    <button class="auth-primary" type="submit">إنشاء الحساب</button>
+    <div class="auth-inline">لديك حساب بالفعل؟ <button class="auth-subaction" type="button" data-auth-goto="login">سجّل دخولك</button></div>
+   </form>
+   <form id="atyafRecoveryForm" hidden>
+    <p style="font-size:13px;color:#707987;line-height:1.8">سنرسل رمز تحقق برسالة نصية إلى رقم هاتفك، إذا كانت خدمة الرسائل مفعّلة.</p>
+    <label class="auth-field"><span>رقم الهاتف</span><input name="phone" type="tel" autocomplete="tel" required placeholder="+9677XXXXXXXX"></label>
+    <button class="auth-primary" type="submit">إرسال رمز التحقق</button>
+    <button class="auth-subaction" type="button" data-auth-goto="login">العودة لتسجيل الدخول</button>
+   </form>
+   <form id="atyafOtpForm" hidden>
+    <label class="auth-field"><span>رمز التحقق المرسل للهاتف</span><input name="token" type="text" inputmode="numeric" autocomplete="one-time-code" minlength="4" maxlength="10" required></label>
+    <button class="auth-primary" type="submit">التحقق من الرمز</button>
+   </form>
+   <form id="atyafNewPasswordForm" hidden>
+    <label class="auth-field"><span>كلمة المرور الجديدة</span><input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required></label>
+    <button class="auth-primary" type="submit">تحديث كلمة المرور</button>
+   </form>
+   <div id="atyafAuthMessage" aria-live="polite" hidden></div>
+  </div>
+  <button class="auth-back" id="atyafAuthHome" type="button">← العودة للصفحة الرئيسية</button>
+ </div>
+</section>
+<script id="atyaf-v185-auth-js">
+(function(){
+ 'use strict';
+ const root=document.getElementById('atyafAuthScreen');
+ const ids=['atyafLoginForm','atyafSignupForm','atyafRecoveryForm','atyafOtpForm','atyafNewPasswordForm'];
+ const forms=Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
+ const message=document.getElementById('atyafAuthMessage');
+ let recoveryPhone='',lastFocus=null;
+ function client(){return window.atyafDb||null}
+ function notice(msg,ok=false){message.hidden=false;message.className='auth-error'+(ok?' ok':'');message.textContent=msg}
+ function clearNotice(){message.hidden=true;message.textContent=''}
+ function show(which){Object.entries(forms).forEach(([id,form])=>{form.hidden=id!==which});root.querySelectorAll('[data-auth-tab]').forEach(b=>b.setAttribute('aria-selected',String((which==='atyafSignupForm'?'signup':'login')===b.dataset.authTab)));document.getElementById('atyafAuthCaption').textContent=which==='atyafSignupForm'?'أنشئ حسابك وابدأ التسوق':which==='atyafLoginForm'?'سجّل دخولك للمتابعة':'استعادة الوصول إلى حسابك';clearNotice()}
+ function phone(raw){let v=String(raw||'').trim().replace(/[\s\-()]/g,'');if(/^00\d+$/.test(v))v='+'+v.slice(2);if(/^7\d{8}$/.test(v))v='+967'+v;if(!/^\+[1-9]\d{7,14}$/.test(v))throw new Error('أدخل رقم هاتف صحيحًا بصيغة دولية، مثل +9677XXXXXXXX');return v}
+ function getData(form){return Object.fromEntries(new FormData(form).entries())}
+ function err(e){const msg=String(e?.message||'تعذّر تنفيذ الطلب');if(/phone provider|sms|unsupported|not enabled|disabled/i.test(msg))return 'تسجيل الهاتف غير مفعّل في إعدادات Supabase أو خدمة الرسائل غير متاحة. يرجى تفعيل مصادقة الهاتف ومزوّد SMS.';if(/invalid login credentials/i.test(msg))return 'رقم الهاتف أو كلمة المرور غير صحيحة.';if(/rate limit/i.test(msg))return 'تم تجاوز عدد المحاولات. حاول لاحقًا.';return msg}
+ async function run(form,callback){const btn=form.querySelector('[type=submit]');btn.disabled=true;clearNotice();try{const sb=client();if(!sb)throw new Error('تعذّر الاتصال بخدمة الحسابات. تحقق من اتصال الإنترنت.');await callback(sb,getData(form))}catch(e){notice(err(e))}finally{btn.disabled=false}}
+ function open(){lastFocus=document.activeElement;document.getElementById('customerCenterModal')?.classList.remove('open');root.classList.add('is-open');document.body.style.overflow='hidden';show('atyafLoginForm');const logo=document.getElementById('atyafAuthLogo');const headerLogo=[...document.querySelectorAll('header.header img')].find(el=>el.currentSrc||el.src);if(headerLogo){logo.src=headerLogo.currentSrc||headerLogo.src;logo.hidden=false}root.querySelector('input')?.focus({preventScroll:true})}
+ function close(){root.classList.remove('is-open');document.body.style.overflow='';lastFocus?.focus?.({preventScroll:true})}
+ window.openCustomerCenter=open;window.closeCustomerCenter=close;
+ document.getElementById('atyafAuthHome').addEventListener('click',()=>{close();window.scrollTo({top:0,behavior:'smooth'})});
+ root.querySelectorAll('[data-auth-tab]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.authTab==='signup'?'atyafSignupForm':'atyafLoginForm')));
+ root.querySelectorAll('[data-auth-goto]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.authGoto==='signup'?'atyafSignupForm':'atyafLoginForm')));
+ document.getElementById('atyafForgotPassword').addEventListener('click',()=>show('atyafRecoveryForm'));
+ forms.atyafLoginForm.addEventListener('submit',e=>{e.preventDefault();run(e.currentTarget,async(sb,d)=>{const {data,error}=await sb.auth.signInWithPassword({phone:phone(d.phone),password:d.password});if(error)throw error;if(!data.user)throw new Error('لم يكتمل تسجيل الدخول');notice('تم تسجيل الدخول بنجاح.',true);setTimeout(close,500)})});
+ forms.atyafSignupForm.addEventListener('submit',e=>{e.preventDefault();run(e.currentTarget,async(sb,d)=>{const fullName=d.full_name.trim(),city=d.city.trim(),address=d.address.trim();if(fullName.length<3||!city||!address)throw new Error('يرجى استكمال الاسم والمدينة والعنوان.');const {data,error}=await sb.auth.signUp({phone:phone(d.phone),password:d.password,options:{data:{full_name:fullName,city,address}}});if(error)throw error;if(data.session){notice('تم إنشاء الحساب وتسجيل الدخول بنجاح.',true);setTimeout(close,750)}else{show('atyafLoginForm');notice('تم إنشاء الحساب. أكمل تأكيد رقم الهاتف حسب إعدادات الرسائل ثم سجّل دخولك.',true)}})});
+ forms.atyafRecoveryForm.addEventListener('submit',e=>{e.preventDefault();run(e.currentTarget,async(sb,d)=>{recoveryPhone=phone(d.phone);const {error}=await sb.auth.signInWithOtp({phone:recoveryPhone,options:{shouldCreateUser:false}});if(error)throw error;show('atyafOtpForm');notice('أرسلنا رمز التحقق إلى هاتفك.',true)})});
+ forms.atyafOtpForm.addEventListener('submit',e=>{e.preventDefault();run(e.currentTarget,async(sb,d)=>{const {error}=await sb.auth.verifyOtp({phone:recoveryPhone,token:d.token.trim(),type:'sms'});if(error)throw error;show('atyafNewPasswordForm');notice('تم التحقق من رقم الهاتف. أدخل كلمة مرور جديدة.',true)})});
+ forms.atyafNewPasswordForm.addEventListener('submit',e=>{e.preventDefault();run(e.currentTarget,async(sb,d)=>{const {error}=await sb.auth.updateUser({password:d.password});if(error)throw error;show('atyafLoginForm');notice('تم تحديث كلمة المرور بنجاح.',true)})});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root.classList.contains('is-open'))close()});
+})();
+</script>
+
 </body>
 </html>
 

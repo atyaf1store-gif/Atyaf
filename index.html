@@ -2256,6 +2256,18 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
  object-fit:contain!important;
 }
 </style>
+<style id="atyaf-v175-two-second-half-gold-intro">
+/* V175: all intro motion is confined to 2 seconds; other pages untouched. */
+#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{
+ transition:transform 760ms cubic-bezier(.22,.78,.19,1)!important;
+}
+#atyafIntroV12 .atyaf-v166-echo{
+ filter:none!important;text-shadow:none!important;
+}
+@media(prefers-reduced-motion:reduce){
+ #atyafIntroV12 .atyaf-v166-echo{clip-path:none!important;-webkit-clip-path:none!important}
+}
+</style>
 <style id="atyaf-intro-flight-v97">
 /* Splash logo flies into the existing header logo; no header layout changes. */
 #atyafIntroV12.atyaf-v94-intro{transition:opacity .62s cubic-bezier(.22,1,.36,1)!important}
@@ -3637,10 +3649,10 @@ window.addEventListener("focus",atyafLoadLowerAds);
       if (echo.animate) echo._atyafMotion = echo.animate([
         { transform: 'translate3d(0,0,0)', opacity: 1 },
         { transform: `translate3d(${distance}px,0,0)`, opacity: 1 }
-      ], { duration: 520, easing: 'cubic-bezier(.45,0,.8,.55)', fill: 'forwards' });
+      ], { duration: 220, easing: 'cubic-bezier(.45,0,.8,.55)', fill: 'forwards' });
     });
     // Do not remove the echo layer until its outward exit is complete.
-    setTimeout(() => {s.root.remove();release();},560);
+    setTimeout(() => {s.root.remove();release();},240);
   }
   function placeEchoes(s) {
     if (state !== s || !s.root.isConnected) return;
@@ -3665,17 +3677,12 @@ window.addEventListener("focus",atyafLoadLowerAds);
         ? (rect.left-rootRect.left-rect.width-18)+'px'
         : (rect.right-rootRect.left+18)+'px';
       s.root.appendChild(echo);
-      // Begin completely behind the appropriate viewport edge; travel into
-      // the final stationary position, with no fade-in or ghost duplicate.
-      const target = echo.getBoundingClientRect();
-      const distance = side === 'left' ? -(target.right + 24) : (innerWidth - target.left + 24);
+      // V175: show exactly the inner half of each gold word from frame one.
+      // The outer half is clipped, not blurred, faded, or displaced.
       echo.classList.add('atyaf-v168-entered');
-      if (echo.animate) {
-        echo._atyafMotion = echo.animate([
-          {transform:`translate3d(${distance}px,0,0)`,opacity:1},
-          {transform:'translate3d(0,0,0)',opacity:1}
-        ],{duration:920,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
-      }
+      echo.style.clipPath = side === 'left' ? 'inset(0 0 0 50%)' : 'inset(0 50% 0 0)';
+      echo.style.webkitClipPath = echo.style.clipPath;
+      echo.dataset.atyafSide = side;
     });
   }
   window.atyafApplyAdminIntroV12 = function (raw) {
@@ -3692,7 +3699,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const headerLogoURL = headerLogo && headerLogo.tagName === 'IMG' ? validURL(headerLogo.currentSrc || headerLogo.src) : '';
     const splashLogoURL = validURL(cfg.logoImage) || headerLogoURL || (cfg.mediaType === 'video' ? '' : url);
     const n = Number(cfg.duration);
-    const duration = Number.isFinite(n) && n > 0 ? Math.min(30000, Math.max(1500, n)) : 3800;
+    const duration = 2000; // V175: complete intro, including exit, in two seconds.
     const signature = JSON.stringify([url, video, duration, cfg.backgroundColor, cfg.textColor, cfg.accentColor, cfg.logoSize, cfg.englishSize, cfg.arabicSize]);
     if (state && state.signature === signature) return;
     close(true);
@@ -3749,14 +3756,30 @@ window.addEventListener("focus",atyafLoadLowerAds);
       s.loaded = true;
       clearTimeout(s.loadTimer);
       root.classList.add('atyaf-v94-visible');
-      const total = Math.max(duration, 3500);
-      // Dark brand and logo first appear together in the center. Golden text
-      // remains stationary as the dark wordmark lifts, then flies to the header.
-      s.echoTimer = setTimeout(() => placeEchoes(s), 370);
+      // 0–0.55s: centered dark logo + only the inner halves of gold names.
+      // 0.55–1.35s: lift dark wordmark to the upper third while both
+      // gold names simultaneously reveal their remaining outer halves.
+      // 1.75–2.00s: finish and open the storefront without further waiting.
+      placeEchoes(s);
       s.liftTimer = setTimeout(() => {
-        if (state === s) root.classList.add('atyaf-v166-lift');
-      }, Math.max(1150,Math.round(total*.37)));
-      s.timer = setTimeout(finish,Math.max(total,3700));
+        if (state !== s) return;
+        root.classList.add('atyaf-v166-lift');
+        root.querySelectorAll('.atyaf-v166-echo').forEach(echo => {
+          const side = echo.dataset.atyafSide;
+          const from = side === 'left' ? 'inset(0 0 0 50%)' : 'inset(0 50% 0 0)';
+          const to = 'inset(0 0 0 0)';
+          if (echo.animate) {
+            echo._atyafMotion = echo.animate([
+              { clipPath: from, webkitClipPath: from },
+              { clipPath: to, webkitClipPath: to }
+            ], { duration: 760, easing: 'cubic-bezier(.22,.78,.19,1)', fill: 'forwards' });
+          } else {
+            echo.style.clipPath = to;
+            echo.style.webkitClipPath = to;
+          }
+        });
+      }, 550);
+      s.timer = setTimeout(finish, 1750);
     };
     skip.addEventListener('click', finish);
     media.addEventListener('error', finish, { once: true });

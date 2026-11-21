@@ -8753,6 +8753,97 @@ footer.querySelectorAll('.atyaf-v170-group-toggle').forEach(function(button){but
 footer.querySelectorAll('[data-footer-nav]').forEach(function(link){link.addEventListener('click',function(event){var target=link.getAttribute('data-footer-nav');if(target==='home'){event.preventDefault();if(typeof window.atyafCloseCartPage==='function')window.atyafCloseCartPage();window.scrollTo({top:0,behavior:'smooth'});return;}if(typeof window.atyafCloseCartPage==='function')window.atyafCloseCartPage();});});
 })();
 </script>
+
+<!-- V184: compact Arabic mobile navigation matching the supplied reference -->
+<style id="atyaf-v184-compact-arabic-bottom-navigation">
+@media (max-width:767px) {
+  html body #atyafMobileBottomNav.atyaf-mobile-bottom-nav {
+    height:calc(64px + env(safe-area-inset-bottom,0px))!important;
+    min-height:0!important;
+    padding:3px 4px calc(5px + env(safe-area-inset-bottom,0px))!important;
+    direction:ltr!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    align-items:center!important;
+    background:rgba(255,255,255,.97)!important;
+    border-top:1px solid #e7e4df!important;
+    box-shadow:0 -2px 8px rgba(0,0,0,.035)!important;
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab {
+    box-sizing:border-box!important;
+    height:54px!important;min-height:0!important;
+    gap:3px!important;padding:2px 0!important;
+    justify-content:center!important;
+    color:#777571!important;
+    -webkit-tap-highlight-color:transparent;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab > svg {
+    width:23px!important;height:23px!important;
+    stroke-width:1.8!important;
+    stroke-linecap:round!important;stroke-linejoin:round!important;
+    flex-shrink:0!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab > span:not(.atyaf-v132-cart-badge) {
+    font-family:inherit!important;
+    font-size:10px!important;line-height:1.2!important;
+    font-weight:600!important;
+    letter-spacing:0!important;
+    white-space:nowrap!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab.active {color:#d3a52d!important}
+  html body #atyafMobileBottomNav .atyaf-bottom-tab.active::before {
+    top:-3px!important;width:43px!important;height:2px!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] {
+    gap:1px!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > svg {
+    width:39px!important;height:39px!important;
+    padding:10px!important;
+    border-radius:50%!important;
+    background:#1b1b1b!important;
+    stroke:#e4b644!important;color:#e4b644!important;
+    box-shadow:0 2px 5px rgba(0,0,0,.10)!important;
+    transform-origin:50% 50%;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"] > span {
+    margin-top:0!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"].atyaf-v184-rotate > svg {
+    animation:atyaf-v184-trending-spin .85s cubic-bezier(.25,.7,.2,1) both!important;
+  }
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="cart"] .atyaf-v132-cart-badge {
+    top:0!important;left:calc(50% + 7px)!important;
+    min-width:16px!important;height:16px!important;
+  }
+}
+@keyframes atyaf-v184-trending-spin {
+  0%{transform:rotate(-40deg) scale(.92)}
+  70%{transform:rotate(370deg) scale(1.05)}
+  100%{transform:rotate(360deg) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+  html body #atyafMobileBottomNav .atyaf-bottom-tab[data-atyaf-tab="trending"].atyaf-v184-rotate > svg {animation:none!important}
+}
+</style>
+<script id="atyaf-v184-trending-interaction">
+(()=>{
+  'use strict';
+  const nav=document.getElementById('atyafMobileBottomNav');
+  const trending=nav?.querySelector('[data-atyaf-tab="trending"]');
+  if(!trending)return;
+  trending.addEventListener('click',()=>{
+    trending.classList.remove('atyaf-v184-rotate');
+    if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+    void trending.offsetWidth;
+    trending.classList.add('atyaf-v184-rotate');
+  });
+  trending.addEventListener('animationend',event=>{
+    if(event.animationName==='atyaf-v184-trending-spin')trending.classList.remove('atyaf-v184-rotate');
+  });
+})();
+</script>
+
 </body>
 </html>
 

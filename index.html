@@ -2235,11 +2235,11 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
 /* Intro only: the center wordmark rises from 50vh to 33.33vh. */
 #atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{
  transform:translate3d(0,calc(-1 * (100dvh / 6)),0)!important;
- transition:transform 760ms cubic-bezier(.22,.78,.19,1)!important;
+ transition:transform 700ms cubic-bezier(.22,.78,.19,1)!important;
 }
 /* Gold reflections enter and exit beyond the viewport edges without blurring. */
 #atyafIntroV12 .atyaf-v166-echo{opacity:0!important;animation:none!important;filter:none!important;will-change:transform,opacity!important}
-#atyafIntroV12 .atyaf-v166-echo.atyaf-v168-entered{opacity:1!important}
+#atyafIntroV12 .atyaf-v166-echo.atyaf-v168-entered{opacity:1!important;animation:none!important}
 #atyafIntroV12.atyaf-v166-depart .atyaf-v166-echo{animation:none!important}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{transform:none!important;transition:none!important}}
 </style>
@@ -2259,7 +2259,7 @@ html.atyaf-first-paint-pending body:has(#atyafIntroV12)::after{
 <style id="atyaf-v175-two-second-half-gold-intro">
 /* V175: all intro motion is confined to 2 seconds; other pages untouched. */
 #atyafIntroV12.atyaf-v166-lift .atyaf-v112-brand{
- transition:transform 760ms cubic-bezier(.22,.78,.19,1)!important;
+ transition:transform 700ms cubic-bezier(.22,.78,.19,1)!important;
 }
 #atyafIntroV12 .atyaf-v166-echo{
  filter:none!important;text-shadow:none!important;
@@ -3646,13 +3646,14 @@ window.addEventListener("focus",atyafLoadLowerAds);
       const rect = echo.getBoundingClientRect();
       const left = echo.classList.contains('atyaf-v166-echo-left');
       const distance = left ? -(rect.right + 36) : (innerWidth - rect.left + 36);
+      const currentTransform = getComputedStyle(echo).transform;
       if (echo.animate) echo._atyafMotion = echo.animate([
-        { transform: 'translate3d(0,0,0)', opacity: 1 },
-        { transform: `translate3d(${distance}px,0,0)`, opacity: 1 }
-      ], { duration: 220, easing: 'cubic-bezier(.45,0,.8,.55)', fill: 'forwards' });
+        { transform: currentTransform === 'none' ? 'translate3d(0,0,0)' : currentTransform, opacity: 1 },
+        { transform: `translate3d(${(Number(echo.dataset.atyafTravel)||0) + distance}px,0,0)`, opacity: 1 }
+      ], { duration: 180, easing: 'cubic-bezier(.45,0,.8,.55)', fill: 'forwards' });
     });
     // Do not remove the echo layer until its outward exit is complete.
-    setTimeout(() => {s.root.remove();release();},240);
+    setTimeout(() => {s.root.remove();release();},190);
   }
   function placeEchoes(s) {
     if (state !== s || !s.root.isConnected) return;
@@ -3672,17 +3673,20 @@ window.addEventListener("focus",atyafLoadLowerAds);
       echo.style.letterSpacing = computed.letterSpacing;
       echo.style.lineHeight = computed.lineHeight;
       echo.style.top = (rect.top-rootRect.top) + 'px';
-      // Position each gold copy OUTSIDE the dark names, like the reference.
-      echo.style.left = side === 'left'
-        ? (rect.left-rootRect.left-rect.width-18)+'px'
-        : (rect.right-rootRect.left+18)+'px';
-      s.root.appendChild(echo);
-      // V175: show exactly the inner half of each gold word from frame one.
-      // The outer half is clipped, not blurred, faded, or displaced.
-      echo.classList.add('atyaf-v168-entered');
-      echo.style.clipPath = side === 'left' ? 'inset(0 0 0 50%)' : 'inset(0 50% 0 0)';
-      echo.style.webkitClipPath = echo.style.clipPath;
+      // V177: the viewport edges are the actual walls. Initially half of
+      // each golden word sits beyond its corresponding screen boundary.
+      const width = echo.getBoundingClientRect().width || rect.width;
+      const initialLeft = side === 'left' ? -width / 2 : rootRect.width - width / 2;
+      const targetLeft = side === 'left'
+        ? rect.left - rootRect.left - width - 18
+        : rect.right - rootRect.left + 18;
+      echo.style.left = initialLeft + 'px';
+      echo.style.opacity = '1';
+      echo.style.clipPath = 'none';
+      echo.style.webkitClipPath = 'none';
+      echo.dataset.atyafTravel = String(targetLeft - initialLeft);
       echo.dataset.atyafSide = side;
+      echo.classList.add('atyaf-v168-entered');
     });
   }
   window.atyafApplyAdminIntroV12 = function (raw) {
@@ -3699,7 +3703,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const headerLogoURL = headerLogo && headerLogo.tagName === 'IMG' ? validURL(headerLogo.currentSrc || headerLogo.src) : '';
     const splashLogoURL = validURL(cfg.logoImage) || headerLogoURL || (cfg.mediaType === 'video' ? '' : url);
     const n = Number(cfg.duration);
-    const duration = 2000; // V175: complete intro, including exit, in two seconds.
+    const duration = 2000; // V176: complete intro, including exit, in two seconds.
     const signature = JSON.stringify([url, video, duration, cfg.backgroundColor, cfg.textColor, cfg.accentColor, cfg.logoSize, cfg.englishSize, cfg.arabicSize]);
     if (state && state.signature === signature) return;
     close(true);
@@ -3756,30 +3760,27 @@ window.addEventListener("focus",atyafLoadLowerAds);
       s.loaded = true;
       clearTimeout(s.loadTimer);
       root.classList.add('atyaf-v94-visible');
-      // 0–0.55s: centered dark logo + only the inner halves of gold names.
-      // 0.55–1.35s: lift dark wordmark to the upper third while both
-      // gold names simultaneously reveal their remaining outer halves.
-      // 1.75–2.00s: finish and open the storefront without further waiting.
+      // 0–0.42s: only the inner half of each gold name is inside
+      // the viewport, emerging from the LEFT and RIGHT screen walls.
+      // At 0.42s, both words slide inward from their walls exactly as
+      // the central dark wordmark rises to the upper third.
       placeEchoes(s);
       s.liftTimer = setTimeout(() => {
         if (state !== s) return;
         root.classList.add('atyaf-v166-lift');
         root.querySelectorAll('.atyaf-v166-echo').forEach(echo => {
-          const side = echo.dataset.atyafSide;
-          const from = side === 'left' ? 'inset(0 0 0 50%)' : 'inset(0 50% 0 0)';
-          const to = 'inset(0 0 0 0)';
+          const dx = Number(echo.dataset.atyafTravel) || 0;
           if (echo.animate) {
             echo._atyafMotion = echo.animate([
-              { clipPath: from, webkitClipPath: from },
-              { clipPath: to, webkitClipPath: to }
-            ], { duration: 760, easing: 'cubic-bezier(.22,.78,.19,1)', fill: 'forwards' });
+              { transform: 'translate3d(0,0,0)' },
+              { transform: `translate3d(${dx}px,0,0)` }
+            ], { duration: 700, easing: 'cubic-bezier(.22,.78,.19,1)', fill: 'forwards' });
           } else {
-            echo.style.clipPath = to;
-            echo.style.webkitClipPath = to;
+            echo.style.transform = `translate3d(${dx}px,0,0)`;
           }
         });
-      }, 550);
-      s.timer = setTimeout(finish, 1750);
+      }, 420);
+      s.timer = setTimeout(finish, 1800);
     };
     skip.addEventListener('click', finish);
     media.addEventListener('error', finish, { once: true });

@@ -2604,6 +2604,24 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
   #productModal.styaf-detail-mode .styaf-related-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}
 }
 </style>
+
+<style id="atyaf-v181-reference-cart">
+/* Product rows styled after the supplied Gisaah screenshot; scope limited to cart. */
+#atyafCartPage .atyaf-cart-items{gap:12px!important}
+#atyafCartPage .atyaf-cart-row{grid-template-columns:clamp(92px,27vw,132px) minmax(0,1fr) 34px!important;min-height:176px!important;padding:14px!important;border:1px solid #e9e7e1!important;border-radius:20px!important;box-shadow:0 5px 17px rgba(37,33,24,.045)!important;background:#fff!important}
+#atyafCartPage .atyaf-cart-row>.atyaf-cart-img{width:100%!important;height:142px!important;border:0!important;border-radius:14px!important;background:#fff!important}
+#atyafCartPage .atyaf-cart-img img{padding:8px!important;object-fit:contain!important}
+#atyafCartPage .atyaf-cart-details{align-self:stretch!important;display:flex!important;flex-direction:column!important;align-items:flex-end!important;justify-content:center!important}
+#atyafCartPage .atyaf-cart-details h3{font-size:clamp(14px,3.6vw,17px)!important;line-height:1.5!important;font-weight:700!important;color:#38373b!important;margin-bottom:8px!important}
+#atyafCartPage .atyaf-cart-brand{font-size:12px;color:#969da5;margin-bottom:13px;min-height:15px}
+#atyafCartPage .atyaf-cart-price{color:#b58a31!important;font-size:clamp(15px,3.6vw,18px)!important;font-weight:800!important;margin-bottom:12px!important;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+#atyafCartPage .atyaf-cart-price del{color:#969da5;font-size:12px;font-weight:400}
+#atyafCartPage .atyaf-cart-row>.atyaf-cart-remove{align-self:start!important;color:#87909c!important;width:34px!important;height:36px!important}
+#atyafCartPage .atyaf-cart-remove svg{width:21px!important;height:21px!important;stroke-width:1.6!important}
+#atyafCartPage .atyaf-cart-qty button{background:#f4f3f0!important;color:#6a7079!important;border-radius:10px!important}
+#favoritesModal .atyaf-fav-add{background:#e0aa12!important;color:#fff!important;border:0!important}
+@media(max-width:480px){#atyafCartPage .atyaf-cart-row{grid-template-columns:clamp(80px,25vw,110px) minmax(0,1fr) 27px!important;min-height:158px!important;padding:11px!important;gap:9px!important}#atyafCartPage .atyaf-cart-row>.atyaf-cart-img{height:130px!important}#atyafCartPage .atyaf-cart-row>.atyaf-cart-remove{width:27px!important}}
+</style>
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -3004,7 +3022,7 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
         return `<article class="atyaf-fav-card" data-product-id="${escapeHtml(id)}">
           <div class="atyaf-fav-visual">${img}</div>
           <div class="atyaf-fav-copy"><small>${escapeHtml(p.brand)}</small><h3>${escapeHtml(p.name)}</h3><div class="atyaf-fav-price" dir="ltr">${money(p.price)}</div>
-          <div class="atyaf-fav-buttons"><button type="button" class="atyaf-fav-view" data-fav-action="view" data-fav-id="${safeId}">عرض التفاصيل</button><button type="button" class="atyaf-fav-remove" data-fav-action="remove" data-fav-id="${safeId}" aria-label="حذف ${escapeHtml(p.name)} من المفضلة">♡ إزالة</button></div></div>
+          <div class="atyaf-fav-buttons"><button type="button" class="atyaf-fav-view" data-fav-action="view" data-fav-id="${safeId}">عرض التفاصيل</button><button type="button" class="atyaf-fav-add" data-fav-action="add" data-fav-id="${safeId}" aria-label="إضافة ${escapeHtml(p.name)} إلى السلة">إضافة للسلة</button><button type="button" class="atyaf-fav-remove" data-fav-action="remove" data-fav-id="${safeId}" aria-label="حذف ${escapeHtml(p.name)} من المفضلة">♡ إزالة</button></div></div>
         </article>`;
       }).join(''):empty;
     }
@@ -3013,12 +3031,20 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
       document.getElementById('favoritesModal')?.classList.add('open');
     }
     function closeFavorites(){document.getElementById('favoritesModal')?.classList.remove('open')}
-    document.getElementById('favoritesList')?.addEventListener('click',function(e){
+    document.getElementById('favoritesList')?.addEventListener('click',async function(e){
       const button=e.target.closest('button[data-fav-action]');
       if(!button)return;
       e.preventDefault();e.stopPropagation();
       let id;try{id=decodeURIComponent(button.dataset.favId||'')}catch(_){return}
-      if(button.dataset.favAction==='remove'){
+      if(button.dataset.favAction==='add'){
+        const success=await addCart(id);
+        if(success){
+          const index=state.favs.findIndex(v=>String(v)===id);
+          if(index>=0){state.favs.splice(index,1);save();renderProducts();document.dispatchEvent(new CustomEvent('atyaf:favorites-changed',{detail:{id}}));}
+          renderFavoritesList();
+          if(typeof renderAtyafCartPage==='function')renderAtyafCartPage();
+        }
+      }else if(button.dataset.favAction==='remove'){
         if(state.favs.some(v=>String(v)===id))toggleFav(id);
         else renderFavoritesList();
       }else if(button.dataset.favAction==='view'){
@@ -4435,7 +4461,7 @@ const cartProductView=x=>{
   const ce=document.getElementById('atyafCartPageCount');if(ce)ce.textContent=count+' '+(count===1?'منتج':'منتجات');
   box.innerHTML=!state.cart?.length?'<div class="atyaf-cart-empty-page">السلة فارغة حاليًا.</div>':state.cart.map(x=>{
    const p=cartProductView(x),img=p.image,q=Math.max(1,Number(x.qty)||1),price=Number(p.price)||0;
-   return `<article class="atyaf-cart-row"><div class="atyaf-cart-img">${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy">`:''}</div><div class="atyaf-cart-details"><h3>${escapeHtml(p.name)}</h3><div class="atyaf-cart-price">${money(price)}</div><div class="atyaf-cart-qty"><button type="button" aria-label="نقص الكمية" onclick="atyafCartPageQty('${String(x.id)}',-1)">−</button><b>${q}</b><button type="button" aria-label="زيادة الكمية" onclick="atyafCartPageQty('${String(x.id)}',1)">＋</button></div></div><button class="atyaf-cart-remove" type="button" aria-label="حذف المنتج" onclick="atyafCartPageRemove('${String(x.id)}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v6M14 11v6"/></svg></button></article>`
+   return `<article class="atyaf-cart-row"><div class="atyaf-cart-img">${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy">`:''}</div><div class="atyaf-cart-details"><h3>${escapeHtml(p.name)}</h3><div class="atyaf-cart-brand">${escapeHtml((productOf(x.id)||{}).brand||'')}</div><div class="atyaf-cart-price">${money(price)}${Number((productOf(x.id)||{}).old_price||(productOf(x.id)||{}).original_price||0)>price?`<del>${money(Number((productOf(x.id)||{}).old_price||(productOf(x.id)||{}).original_price))}</del>`:''}</div><div class="atyaf-cart-qty"><button type="button" aria-label="نقص الكمية" onclick="atyafCartPageQty('${String(x.id)}',-1)">−</button><b>${q}</b><button type="button" aria-label="زيادة الكمية" onclick="atyafCartPageQty('${String(x.id)}',1)">＋</button></div></div><button class="atyaf-cart-remove" type="button" aria-label="حذف المنتج" onclick="atyafCartPageRemove('${String(x.id)}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v6M14 11v6"/></svg></button></article>`
   }).join('');
   const sub=typeof cartTotal==='function'?cartTotal():0,fin=typeof checkoutPayable==='function'?checkoutPayable():sub;
   const discount=Math.max(0,sub-fin);

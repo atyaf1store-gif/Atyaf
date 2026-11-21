@@ -8875,13 +8875,12 @@ footer.querySelectorAll('[data-footer-nav]').forEach(function(link){link.addEven
 </style>
 <section id="atyafAuthScreen" role="dialog" aria-modal="true" aria-label="حساب العميل" dir="rtl">
  <div class="auth-wrap">
-  <header class="auth-head"><img id="atyafAuthLogo" class="auth-logo" alt="شعار أطياف" hidden><h1 class="auth-brand">ATYAF | أطياف</h1><p class="auth-caption" id="atyafAuthCaption">سجّل دخولك للمتابعة</p></header>
+  <header class="auth-head"><img id="atyafAuthLogo" class="auth-logo" alt="شعار أطياف" hidden><h1 class="auth-brand">ATYAF | أطياف</h1><p class="auth-caption" id="atyafAuthCaption">ادخل إلى ملفك الشخصي</p></header>
   <div class="auth-switch" role="tablist" aria-label="نوع الحساب"><button type="button" data-auth-tab="login" role="tab" aria-selected="true">تسجيل الدخول</button><button type="button" data-auth-tab="signup" role="tab" aria-selected="false">حساب جديد</button></div>
   <div class="auth-panel">
    <form id="atyafLoginForm" autocomplete="on">
     <label class="auth-field"><span>رقم الهاتف</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="مثال: +9677XXXXXXXX" required></label>
-    <label class="auth-field"><span>كلمة المرور</span><input name="password" type="password" autocomplete="current-password" minlength="6" placeholder="أدخل كلمة المرور" required></label>
-    <button class="auth-subaction" id="atyafForgotPassword" type="button">نسيت كلمة المرور؟</button>
+    
     <button class="auth-primary" type="submit">تسجيل الدخول</button>
     <div class="auth-inline">ليس لديك حساب؟ <button class="auth-subaction" type="button" data-auth-goto="signup">سجّل الآن</button></div>
    </form>
@@ -8890,14 +8889,13 @@ footer.querySelectorAll('[data-footer-nav]').forEach(function(link){link.addEven
     <label class="auth-field"><span>رقم الهاتف</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="مثال: +9677XXXXXXXX"></label>
     <label class="auth-field"><span>المدينة</span><input name="city" maxlength="100" required placeholder="أدخل مدينتك"></label>
     <label class="auth-field"><span>العنوان التفصيلي</span><input name="address" maxlength="300" required placeholder="الحي، الشارع، أقرب معلم"></label>
-    <label class="auth-field"><span>كلمة المرور</span><input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="8 أحرف على الأقل"></label>
     <button class="auth-primary" type="submit">إنشاء الحساب</button>
     <div class="auth-inline">لديك حساب بالفعل؟ <button class="auth-subaction" type="button" data-auth-goto="login">سجّل دخولك</button></div>
    </form>
    <form id="atyafRecoveryForm" hidden>
-    <p style="font-size:13px;color:#707987;line-height:1.8">يمكنك استخدام صفحة العميل دون رسائل تحقق. بيانات الحساب محفوظة على هذا الجهاز فقط.</p>
+    <p style="font-size:13px;color:#707987;line-height:1.8">يمكنك إنشاء ملف جديد على هذا الجهاز عند الحاجة.</p>
     <label class="auth-field"><span>رقم الهاتف</span><input name="phone" type="tel" autocomplete="tel" required placeholder="+9677XXXXXXXX"></label>
-    <button class="auth-primary" type="submit">العودة إلى تسجيل الدخول</button>
+    <button class="auth-primary" type="submit">متابعة</button>
     <button class="auth-subaction" type="button" data-auth-goto="login">العودة لتسجيل الدخول</button>
    </form>
    <form id="atyafOtpForm" hidden>
@@ -8911,7 +8909,7 @@ footer.querySelectorAll('[data-footer-nav]').forEach(function(link){link.addEven
    <div id="atyafAuthMessage" aria-live="polite" hidden></div>
   </div>
 <div id="atyafDemoProfile" hidden>
- <div class="demo-hero"><div class="demo-cover"><img id="atyafProfileBrandLogo" alt="ATYAF" hidden></div><span class="demo-pill">✧ عضو أطياف</span><h2 id="atyafDemoName"></h2><div class="demo-city" id="atyafDemoCity"></div><div class="demo-shortcuts"><button type="button" data-demo-shortcut="orders">♧ طلباتي</button><button type="button" data-demo-shortcut="favorites">♡ المفضلة</button></div></div>
+ <div class="demo-hero"><div class="demo-cover"><img id="atyafMemberLogo" alt="شعار متجر أطياف" hidden></div><span class="demo-pill">✧ عضو أطياف</span><h2 id="atyafDemoName"></h2><div class="demo-city" id="atyafDemoCity"></div><div class="demo-shortcuts"><button type="button" data-demo-shortcut="orders">♧ طلباتي</button><button type="button" data-demo-shortcut="favorites">♡ المفضلة</button></div></div>
  <div class="demo-tabs" role="tablist" aria-label="إعدادات الحساب"><button type="button" data-demo-tab="personal" aria-selected="true">البيانات الشخصية</button><button type="button" data-demo-tab="settings" aria-selected="false">الإعدادات</button><button type="button" data-demo-tab="security" aria-selected="false">الأمان</button></div>
  <div id="atyafDemoTabContent" aria-live="polite"></div>
  <div class="demo-footer"><button id="atyafDemoLogout" type="button">تسجيل الخروج</button></div>
@@ -8947,79 +8945,58 @@ footer.querySelectorAll('[data-footer-nav]').forEach(function(link){link.addEven
 #atyafDemoProfile .demo-footer button{background:none;border:0;color:#b17817;font:inherit;font-size:13px}
 </style>
 
-<style id="atyaf-v188-member-polish">
-#atyafDemoProfile .demo-cover{justify-content:center!important;background:linear-gradient(125deg,#e4ae36,#f6d47c)!important;height:84px!important}
-#atyafDemoProfile .demo-cover img{display:block;max-height:68px;max-width:190px;object-fit:contain;filter:drop-shadow(0 3px 5px #0002)}
-#atyafDemoProfile .demo-cover img[hidden]{display:none}
-#atyafDemoProfile .demo-hero{background:linear-gradient(135deg,#132e27,#101719)!important;box-shadow:0 14px 32px #10251d20}
-#atyafDemoProfile .demo-tabs button[aria-selected=true]{background:#d9ab58!important;color:#1e3028!important}
-#atyafDemoProfile .demo-card{border-color:#e7e4db!important}
-#atyafDemoProfile .demo-shortcuts button{border:1px solid #e5dfd1!important;box-shadow:0 3px 10px #0001}
-#atyafDemoProfile .atyaf-language-switch{display:flex;gap:8px;margin-top:10px}
-#atyafDemoProfile .atyaf-language-switch button{flex:1;border:1px solid #d7d7cf;border-radius:12px;background:#fff;padding:12px;color:#263b32;font:inherit;font-weight:700}
-#atyafDemoProfile .atyaf-language-switch button[aria-pressed=true]{background:#17352e;color:#fff;border-color:#17352e}
-#atyafDemoProfile .demo-row{align-items:center}
-#atyafDemoProfile .demo-action{background:#17352e}
-#atyafDemoProfile .demo-danger{background:#a93e3e}
-html[lang=en] #atyafAuthScreen,html[lang=en] #atyafDemoProfile{direction:ltr}
-</style>
-<script id="atyaf-v188-member-js">
-(function(){
+<script id="atyaf-v188-member-profile-js">
+(()=>{
 'use strict';
-const root=document.getElementById('atyafAuthScreen');if(!root)return;
-const profile=document.getElementById('atyafDemoProfile'), content=document.getElementById('atyafDemoTabContent');
-const head=root.querySelector('.auth-head'),switcher=root.querySelector('.auth-switch'),panel=root.querySelector('.auth-panel'),msg=document.getElementById('atyafAuthMessage');
-const forms={login:document.getElementById('atyafLoginForm'),signup:document.getElementById('atyafSignupForm'),recovery:document.getElementById('atyafRecoveryForm')};
-const KEY='atyaf_member_profile_v188',LANG='atyaf_store_language_v188';let user=null,tab='personal',previousFocus=null;
-const dictionary={
-'تسوق':'Shop','الفئات':'Categories','رائج':'Trending','السلة':'Cart','حسابي':'My Account','الرئيسية':'Home','المنتجات':'Products','العروض':'Offers','الروائح':'Scents','جميع المنتجات':'All Products','تسوق الآن':'Shop Now','أضف للسلة':'Add to Cart','إضافة للسلة':'Add to Cart','المفضلة':'Favorites','طلباتي':'My Orders','البيانات الشخصية':'Personal Details','الإعدادات':'Settings','الأمان':'Security','تسجيل الخروج':'Sign Out','تسجيل الدخول':'Sign In','حساب جديد':'New Account','الاسم الكامل':'Full Name','رقم الهاتف':'Phone Number','كلمة المرور':'Password','المدينة':'City','العنوان التفصيلي':'Detailed Address','إنشاء الحساب':'Create Account','العودة للصفحة الرئيسية':'Back to Home','← العودة للصفحة الرئيسية':'← Back to Home','نوع الحساب':'Account Type','مشترك':'Member','اللغة':'Language','العربية':'Arabic','الإنجليزية':'English','حذف الحساب':'Delete Account','حذف حسابي':'Delete My Account','عضو أطياف':'ATYAF Member','✧ عضو أطياف':'✧ ATYAF Member','عميل أطياف':'ATYAF Customer','اليمن':'Yemen','تعديل البيانات':'Edit Details','حفظ البيانات':'Save Details','تغيير كلمة المرور':'Change Password','لا توجد طلبات محفوظة على هذا الجهاز حتى الآن.':'No orders saved on this device yet.','لا توجد منتجات في المفضلة':'No favorite products yet.','تم حفظ البيانات':'Details saved','حفظ':'Save','بحث':'Search','ابحث عن منتج':'Search for a product','إتمام الطلب':'Checkout','متابعة التسوق':'Continue Shopping','إضافة إلى السلة':'Add to Cart','قد تعجبك':'You May Also Like','العودة':'Back','إغلاق':'Close','الإجمالي':'Total','الكمية':'Quantity','السعر':'Price','التفاصيل':'Details','الطلبات':'Orders','إدارة الحساب':'Manage Account','نسيت كلمة المرور؟':'Forgot Password?','سجّل الآن':'Sign Up','سجّل دخولك':'Sign In','لديك حساب بالفعل؟':'Already have an account?','ليس لديك حساب؟':'Don’t have an account?','حذف من المفضلة':'Remove from Favorites','تأكيد الطلب':'Confirm Order','عطور':'Perfumes','بخور':'Incense','هدايا':'Gifts','توصيل':'Delivery','تواصل معنا':'Contact Us','اتصل بنا':'Contact Us','الصفحة الرئيسية':'Home','جميع الفئات':'All Categories','إرسال الطلب':'Place Order','الخصوصية':'Privacy','سياسة الخصوصية':'Privacy Policy','الشروط والأحكام':'Terms & Conditions'};
-let lang='ar';try{lang=localStorage.getItem(LANG)==='en'?'en':'ar'}catch{}
-const tracked=new Map();let translating=false;
-function translateNode(node){if(node.nodeType!==Node.TEXT_NODE||!node.parentElement)return;const parent=node.parentElement;if(parent.closest('script,style,noscript,textarea,[contenteditable],option,[data-no-translate],.atyaf-fav-copy,.product-name,.product-title'))return;const raw=node.nodeValue,trim=raw.trim();if(!trim||trim.length>95)return;if(!tracked.has(node))tracked.set(node,raw);const original=tracked.get(node),text=original.trim();if(!dictionary[text])return;node.nodeValue=lang==='en'?original.replace(text,dictionary[text]):original}
-function translateTree(rootNode){if(translating)return;translating=true;try{if(rootNode.nodeType===Node.TEXT_NODE)translateNode(rootNode);else if(rootNode.nodeType===Node.ELEMENT_NODE||rootNode.nodeType===Node.DOCUMENT_NODE){const walker=document.createTreeWalker(rootNode,NodeFilter.SHOW_TEXT);while(walker.nextNode())translateNode(walker.currentNode);if(rootNode.querySelectorAll)rootNode.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{if(!el.dataset.atyafArPlaceholder)el.dataset.atyafArPlaceholder=el.placeholder;el.placeholder=lang==='en'?(dictionary[el.dataset.atyafArPlaceholder]||el.dataset.atyafArPlaceholder):el.dataset.atyafArPlaceholder})}}finally{translating=false}}
-function setLanguage(next){lang=next==='en'?'en':'ar';try{localStorage.setItem(LANG,lang)}catch{}document.documentElement.lang=lang;document.documentElement.dir=lang==='en'?'ltr':'rtl';translateTree(document);if(user)render()}
-window.atyafSetLanguage=setLanguage;
-const observer=new MutationObserver(mutations=>{if(translating)return;for(const m of mutations){for(const node of m.addedNodes){if(node.nodeType===1||node.nodeType===3)translateTree(node)}}});
-function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');return x&&typeof x.name==='string'&&typeof x.phone==='string'?x:null}catch{return null}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(user));return true}catch{notify('تعذر حفظ البيانات على هذا الجهاز.');return false}}
-function erase(){try{localStorage.removeItem(KEY)}catch{}}
-function el(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
-function t(ar){return lang==='en'?(dictionary[ar]||ar):ar}
-function card(title){const c=el('section',undefined,'demo-card');c.append(el('h3',t(title)));return c}
-function row(k,v){const r=el('div',undefined,'demo-row');r.append(el('strong',t(k)),el('span',t(v)));return r}
-function button(label,action,cls='demo-action'){const b=el('button',t(label),cls);b.type='button';b.addEventListener('click',action);return b}
-function field(label,key){const l=el('label',t(label),'demo-field'),i=el('input');i.value=user[key]||'';i.maxLength=key==='address'?300:120;i.addEventListener('change',()=>{user[key]=i.value.trim();save();if(key==='name'||key==='city')renderHeader()});l.append(i);return l}
-function renderHeader(){document.getElementById('atyafDemoName').textContent=user.name||t('عميل أطياف');document.getElementById('atyafDemoCity').textContent='⌖ '+(user.city||t('اليمن'))}
-function render(){if(!user)return;renderHeader();content.replaceChildren();profile.querySelectorAll('[data-demo-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.demoTab===tab)));const c=card(tab==='personal'?'البيانات الشخصية':tab==='settings'?'الإعدادات':'الأمان');
-if(tab==='personal'){c.append(field('الاسم الكامل','name'),field('رقم الهاتف','phone'),field('المدينة','city'),field('العنوان التفصيلي','address'),button('حفظ البيانات',()=>{save();renderHeader();notify(t('تم حفظ البيانات'),true)}))}
-else if(tab==='settings'){c.append(row('نوع الحساب','مشترك'),row('اللغة',lang==='en'?'الإنجليزية':'العربية'));const bar=el('div',undefined,'atyaf-language-switch');[['ar','العربية'],['en','الإنجليزية']].forEach(([code,label])=>{const b=button(label,()=>setLanguage(code));b.setAttribute('aria-pressed',String(lang===code));bar.append(b)});c.append(bar,button('تسجيل الخروج',logout))}
-else{c.append(el('p',lang==='en'?'Your account details are saved on this device.':'يمكنك إدارة بيانات العضوية المحفوظة على هذا الجهاز.','demo-note'));const danger=card('حذف الحساب');danger.append(button('حذف حسابي',()=>{if(confirm(lang==='en'?'Delete your saved profile on this device?':'هل تريد حذف بيانات العضوية المحفوظة على هذا الجهاز؟')){erase();logout() }},'demo-action demo-danger'));content.append(danger)}content.prepend(c);translateTree(profile)}
-function notify(text,ok=false){msg.hidden=false;msg.className='auth-error'+(ok?' ok':'');msg.textContent=text}
-function showForm(which){profile.hidden=true;head.hidden=false;switcher.hidden=false;panel.hidden=false;Object.entries(forms).forEach(([name,f])=>{f.hidden=name!==which});document.getElementById('atyafOtpForm').hidden=true;document.getElementById('atyafNewPasswordForm').hidden=true;switcher.querySelectorAll('[data-auth-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.authTab===(which==='signup'?'signup':'login'))));document.getElementById('atyafAuthCaption').textContent=which==='signup'?'أنشئ حسابك وابدأ التسوق':which==='login'?'سجّل دخولك للمتابعة':'العودة لتسجيل الدخول';msg.hidden=true;translateTree(root)}
-function showProfile(){head.hidden=true;switcher.hidden=true;panel.hidden=true;profile.hidden=false;tab='personal';render();root.querySelector('.auth-wrap').scrollTop=0}
-function logo(){const target=document.getElementById('atyafProfileBrandLogo');const images=[...document.querySelectorAll('.atyaf-profile img,.atyaf-mobile-profile img,header.header img,#atyafAuthLogo')];const img=images.find(i=>(i.currentSrc||i.src)&&!i.src.startsWith('data:image/svg+xml'));if(img){target.src=img.currentSrc||img.src;target.hidden=false;const auth=document.getElementById('atyafAuthLogo');auth.src=target.src;auth.hidden=false}else{target.hidden=true;target.parentElement.textContent='ATYAF'}}
-function open(){previousFocus=document.activeElement;document.getElementById('customerCenterModal')?.classList.remove('open');root.classList.add('is-open');document.body.style.overflow='hidden';user=read();if(user)showProfile();else showForm('login');logo()}
-function close(){root.classList.remove('is-open');document.body.style.overflow='';previousFocus?.focus?.({preventScroll:true})}
-function logout(){user=null;forms.login.reset();showForm('login')}
-function values(f){return Object.fromEntries(new FormData(f).entries())}
+const root=document.getElementById('atyafAuthScreen');
+const profile=document.getElementById('atyafDemoProfile');
+const content=document.getElementById('atyafDemoTabContent');
+const head=root.querySelector('.auth-head'),switcher=root.querySelector('.auth-switch'),panel=root.querySelector('.auth-panel');
+const forms={login:document.getElementById('atyafLoginForm'),signup:document.getElementById('atyafSignupForm')};
+const msg=document.getElementById('atyafAuthMessage');
+const KEY='atyaf_member_profile_v188',OLD='atyaf_demo_profile_v186';
+let user=null,tab='personal',previousFocus=null;
+const text=(tag,value,cls)=>{const n=document.createElement(tag);if(value!==undefined)n.textContent=value;if(cls)n.className=cls;return n};
+const button=(value,action,cls='demo-action')=>{const n=text('button',value,cls);n.type='button';n.addEventListener('click',action);return n};
+function read(){try{let v=localStorage.getItem(KEY);if(!v){const old=sessionStorage.getItem(OLD);if(old){v=old;localStorage.setItem(KEY,old);sessionStorage.removeItem(OLD)}}const d=JSON.parse(v||'null');return d&&typeof d.name==='string'&&d.name.trim()?d:null}catch{return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(user));return true}catch{alert('تعذر حفظ البيانات في المتصفح. تحقق من إعدادات التخزين.');return false}}
+function remove(){try{localStorage.removeItem(KEY);sessionStorage.removeItem(OLD)}catch{}}
 function validPhone(s){return /^[+0-9][0-9+\s()\-]{6,20}$/.test(String(s||'').trim())}
+function notify(s){msg.hidden=false;msg.className='auth-error';msg.textContent=s}
+function row(k,v){const d=text('div',undefined,'demo-row');d.append(text('strong',k),text('span',v||'—'));return d}
+function card(title){const d=text('section',undefined,'demo-card');d.append(text('h3',title));return d}
+function field(label,key,max=180){const l=text('label',label,'demo-field'),input=document.createElement('input');input.value=user[key]||'';input.maxLength=max;input.setAttribute('aria-label',label);input.addEventListener('change',()=>{const v=input.value.trim();if(key==='phone'&&!validPhone(v)){alert('يرجى إدخال رقم هاتف صحيح.');input.value=user.phone||'';return}if(key==='name'&&!v){alert('الاسم مطلوب.');input.value=user.name||'';return}user[key]=v;save();document.getElementById('atyafDemoName').textContent=user.name;document.getElementById('atyafDemoCity').textContent='⌖ '+(user.city||'اليمن')});l.append(input);return l}
+function orders(){const box=card('طلباتي');let items=[];try{items=JSON.parse(localStorage.getItem('atyaf_orders')||'[]')}catch{}if(!Array.isArray(items))items=[];box.append(text('p','الطلبات المسجلة من هذا المتصفح فقط. الطلبات من الأجهزة الأخرى لا تظهر هنا.','demo-note'));if(!items.length){box.append(text('p','لا توجد طلبات مسجلة على هذا الجهاز حتى الآن.','demo-note'));return box}for(const order of items.slice(0,30)){const o=text('div',undefined,'atyaf-member-order');o.append(row('رقم الطلب',String(order.number||'—')),row('التاريخ',String(order.date||'—')),row('الإجمالي',String(order.total??'—')),row('الحالة',String(order.status==='new'?'تم إرسال الطلب':order.status||'—')));box.append(o)}return box}
+function render(){if(!user)return;document.getElementById('atyafDemoName').textContent=user.name||'عميل أطياف';document.getElementById('atyafDemoCity').textContent='⌖ '+(user.city||'اليمن');profile.querySelectorAll('[data-demo-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.demoTab===tab)));content.replaceChildren();if(tab==='personal'){const c=card('البيانات الشخصية');c.append(field('الاسم الكامل','name',120),field('رقم الهاتف','phone',24),field('المدينة','city',100),field('العنوان التفصيلي','address',300));content.append(c)}else if(tab==='settings'){const c=card('الإعدادات');c.append(row('نوع الحساب','مشترك'),row('اللغة','العربية'),row('الملف الشخصي','محفوظ على هذا الجهاز'),button('تسجيل الخروج',logout));content.append(c)}else if(tab==='security'){const c=card('الخصوصية والأمان');c.append(text('p','ملفك الشخصي محفوظ على هذا الجهاز. لا تستخدمه لتخزين معلومات حساسة.','demo-note'));const d=card('حذف الملف الشخصي');d.append(button('حذف ملفي الشخصي',()=>{if(confirm('هل تريد حذف الملف الشخصي المحفوظ على هذا الجهاز؟')){remove();user=null;showForm('signup')}},'demo-action demo-danger'));content.append(c,d)}else if(tab==='orders'){content.append(orders())}}
+function showForm(which){profile.hidden=true;head.hidden=false;switcher.hidden=false;panel.hidden=false;Object.entries(forms).forEach(([key,f])=>f.hidden=key!==which);for(const id of ['atyafRecoveryForm','atyafOtpForm','atyafNewPasswordForm'])document.getElementById(id).hidden=true;switcher.querySelectorAll('[data-auth-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.authTab===which)));document.getElementById('atyafAuthCaption').textContent=which==='signup'?'أنشئ ملفك الشخصي وابدأ التسوق':'افتح ملفك الشخصي';msg.hidden=true}
+function showProfile(){head.hidden=true;switcher.hidden=true;panel.hidden=true;profile.hidden=false;tab='personal';render();root.querySelector('.auth-wrap').scrollTop=0}
+function syncLogo(){const img=document.getElementById('atyafMemberLogo');const auth=document.getElementById('atyafAuthLogo');const source=[...document.querySelectorAll('.atyaf-profile img,.atyaf-mobile-profile img,header.header img')].find(i=>(i.currentSrc||i.src)&&i.complete&&i.naturalWidth);if(source){const src=source.currentSrc||source.src;img.src=src;img.hidden=false;auth.src=src;auth.hidden=false}else if(auth.src&&auth.naturalWidth){img.src=auth.src;img.hidden=false}}
+function open(){previousFocus=document.activeElement;document.getElementById('customerCenterModal')?.classList.remove('open');root.classList.add('is-open');document.body.style.overflow='hidden';user=read();if(user)showProfile();else showForm('signup');syncLogo()}
+function close(){root.classList.remove('is-open');document.body.style.overflow='';previousFocus?.focus?.({preventScroll:true})}
+function logout(){user=null;showForm('login')}
 window.openCustomerCenter=open;window.closeCustomerCenter=close;
 document.getElementById('atyafAuthHome').addEventListener('click',()=>{close();window.scrollTo({top:0,behavior:'smooth'})});
-switcher.querySelectorAll('[data-auth-tab]').forEach(b=>b.addEventListener('click',()=>showForm(b.dataset.authTab==='signup'?'signup':'login')));
+switcher.querySelectorAll('[data-auth-tab]').forEach(b=>b.addEventListener('click',()=>showForm(b.dataset.authTab)));
 root.querySelectorAll('[data-auth-goto]').forEach(b=>b.addEventListener('click',()=>showForm(b.dataset.authGoto==='signup'?'signup':'login')));
-document.getElementById('atyafForgotPassword').addEventListener('click',()=>{notify(lang==='en'?'Your profile is stored on this device. You can create a new local profile.':'العضوية محفوظة على هذا الجهاز؛ يمكنك إنشاء ملف عضوية جديد.')});
-forms.signup.addEventListener('submit',e=>{e.preventDefault();const d=values(e.currentTarget);if(!validPhone(d.phone)){notify('يرجى إدخال رقم هاتف صحيح.');return}user={name:String(d.full_name).trim(),phone:String(d.phone).trim(),city:String(d.city).trim(),address:String(d.address).trim()};if(!save())return;e.currentTarget.reset();showProfile()});
-forms.login.addEventListener('submit',e=>{e.preventDefault();const d=values(e.currentTarget);if(!validPhone(d.phone)){notify('يرجى إدخال رقم هاتف صحيح.');return}const existing=read();if(!existing||existing.phone!==String(d.phone).trim()){notify(lang==='en'?'No saved membership with this phone on this device. Create a new account.':'لا توجد عضوية محفوظة بهذا الرقم على هذا الجهاز. أنشئ حسابًا جديدًا.');return}user=existing;showProfile()});
-forms.recovery.addEventListener('submit',e=>{e.preventDefault();showForm('login')});
+forms.signup.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));if(!validPhone(d.phone)){notify('يرجى إدخال رقم هاتف صحيح.');return}if(String(d.full_name||'').trim().length<3){notify('يرجى إدخال الاسم الكامل.');return}user={name:String(d.full_name).trim(),phone:String(d.phone).trim(),city:String(d.city).trim(),address:String(d.address).trim()};if(save()){e.currentTarget.reset();showProfile()}});
+forms.login.addEventListener('submit',e=>{e.preventDefault();const saved=read(),d=Object.fromEntries(new FormData(e.currentTarget));if(!saved){notify('لا يوجد ملف شخصي محفوظ على هذا الجهاز. اختر حساب جديد.');return}if(String(saved.phone).replace(/\D/g,'')!==String(d.phone).replace(/\D/g,'')){notify('رقم الهاتف لا يطابق الملف المحفوظ على هذا الجهاز.');return}user=saved;showProfile()});
 profile.querySelectorAll('[data-demo-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.demoTab;render()}));
-profile.querySelectorAll('[data-demo-shortcut]').forEach(b=>b.addEventListener('click',()=>{const type=b.dataset.demoShortcut;close();if(type==='favorites'){document.querySelector('[onclick*="showFavorites"],[onclick*="openFavorites"]')?.click()||document.querySelector('[data-store-action="favorites"],[data-store-action="fav"]')?.click()||document.getElementById('favoritesModal')?.classList.add('open')}else{const existing=document.querySelector('[data-store-action="orders"],[onclick*="showOrders"],[onclick*="openOrders"]');if(existing)existing.click();else alert(lang==='en'?'Orders are not yet synchronized with the customer profile.':'الطلبات المرسلة عبر واتساب ليست مرتبطة تلقائيًا بصفحة العضوية بعد.')}}));
+profile.querySelectorAll('[data-demo-shortcut]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.demoShortcut==='orders'){tab='orders';render()}else{close();if(typeof window.showFavorites==='function')window.showFavorites();else document.querySelector('[onclick*="showFavorites"]')?.click()}}));
 document.getElementById('atyafDemoLogout').addEventListener('click',logout);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root.classList.contains('is-open'))close()});
-setLanguage(lang);observer.observe(document.body,{childList:true,subtree:true});
 })();
 </script>
 
+<style id="atyaf-v188-member-polish">
+#atyafDemoProfile .demo-cover{justify-content:center;height:92px;background:linear-gradient(120deg,#e4ad32,#f5d783);padding:12px}
+#atyafDemoProfile .demo-cover img{display:block;max-width:100%;max-height:76px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 3px 4px #241a1025)}
+#atyafDemoProfile .demo-cover img[hidden]{display:none}
+#atyafDemoProfile .demo-hero{box-shadow:0 15px 34px #0c181c24}
+#atyafDemoProfile .demo-shortcuts button{transition:transform .18s,box-shadow .18s}
+#atyafDemoProfile .demo-shortcuts button:active{transform:scale(.98)}
+#atyafDemoProfile .atyaf-member-order{border:1px solid #eceef0;border-radius:12px;padding:10px 13px;margin:12px 0;background:#fafbfc}
+#atyafDemoProfile .demo-tabs{overflow-x:auto;scrollbar-width:none}
+</style>
 </body>
 </html>
-
 

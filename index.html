@@ -2622,6 +2622,32 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 #favoritesModal .atyaf-fav-add{background:#e0aa12!important;color:#fff!important;border:0!important}
 @media(max-width:480px){#atyafCartPage .atyaf-cart-row{grid-template-columns:clamp(80px,25vw,110px) minmax(0,1fr) 27px!important;min-height:158px!important;padding:11px!important;gap:9px!important}#atyafCartPage .atyaf-cart-row>.atyaf-cart-img{height:130px!important}#atyafCartPage .atyaf-cart-row>.atyaf-cart-remove{width:27px!important}}
 </style>
+
+<style id="atyaf-v182-favorites-reference">
+/* Full-screen favorites, reference-inspired layout; other dialogs are unaffected. */
+#favoritesModal.modal{position:fixed!important;inset:0!important;z-index:120!important;display:none!important;align-items:stretch!important;justify-content:center!important;padding:0!important;background:#fff!important;overflow:hidden!important}
+#favoritesModal.modal.open{display:flex!important}
+#favoritesModal .modal-card{position:relative!important;float:none!important;margin:0 auto!important;padding:calc(env(safe-area-inset-top,0px) + 22px) 16px calc(94px + env(safe-area-inset-bottom,0px))!important;width:min(100%,720px)!important;max-width:720px!important;height:100dvh!important;max-height:100dvh!important;overflow-y:auto!important;overscroll-behavior:contain!important;border:0!important;border-radius:0!important;background:#fff!important;box-shadow:none!important;box-sizing:border-box!important}
+#favoritesModal .modal-card>h2{font-size:24px!important;font-weight:800!important;line-height:1.4!important;text-align:right!important;color:#303239!important;margin:10px 0 3px!important;padding-right:48px!important}
+#favoritesModal .modal-card>h2::before{content:'♥';color:#e5ac12;font-size:24px;margin-left:12px;vertical-align:middle}
+#favoritesModal .atyaf-fav-count{text-align:right!important;color:#9da2a9!important;font-size:12px!important;margin:0 0 26px!important}
+#favoritesModal .modal-card>.close{position:absolute!important;top:calc(env(safe-area-inset-top,0px) + 17px)!important;left:16px!important;right:auto!important;float:none!important;width:34px!important;height:34px!important;border-radius:50%!important;border:1px solid #e7e7e7!important;background:#fff!important;color:#7e858d!important;font-size:22px!important}
+#favoritesModal #favoritesList{display:flex!important;flex-direction:column!important;gap:12px!important;margin:0!important}
+#favoritesModal .atyaf-fav-card{position:relative!important;display:grid!important;grid-template-columns:112px minmax(0,1fr) 46px!important;grid-template-rows:minmax(125px,auto)!important;align-items:center!important;gap:12px!important;padding:16px 12px!important;min-height:155px!important;border:1px solid #e9e9e6!important;border-radius:19px!important;background:#fff!important;box-shadow:0 3px 12px rgba(0,0,0,.025)!important;box-sizing:border-box!important}
+#favoritesModal .atyaf-fav-visual{grid-column:1!important;grid-row:1!important;display:flex!important;align-items:center!important;justify-content:center!important;width:112px!important;height:124px!important;min-width:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;cursor:pointer}
+#favoritesModal .atyaf-fav-visual img{width:100%!important;height:100%!important;max-width:100%!important;object-fit:contain!important}
+#favoritesModal .atyaf-fav-copy{grid-column:2!important;grid-row:1!important;align-self:stretch!important;display:flex!important;flex-direction:column!important;align-items:flex-end!important;justify-content:space-between!important;gap:8px!important;min-width:0!important;text-align:right!important;padding:0 0 5px!important}
+#favoritesModal .atyaf-fav-copy h3{margin:0!important;width:100%!important;font-size:14px!important;line-height:1.65!important;font-weight:700!important;color:#3d3e43!important;text-align:right!important}
+#favoritesModal .atyaf-fav-copy small{width:100%!important;margin:0!important;color:#a5abb1!important;font-size:12px!important;text-align:right!important}
+#favoritesModal .atyaf-fav-prices{display:flex!important;flex-direction:column!important;align-items:flex-end!important;gap:3px!important;width:100%!important;margin-top:auto!important}
+#favoritesModal .atyaf-fav-price{font-size:16px!important;font-weight:800!important;color:#ae852c!important;white-space:nowrap!important}
+#favoritesModal .atyaf-fav-old-price{font-size:12px!important;color:#9ba1aa!important;text-decoration:line-through!important}
+#favoritesModal .atyaf-fav-add{grid-column:3!important;grid-row:1!important;align-self:end!important;justify-self:center!important;display:grid!important;place-items:center!important;width:43px!important;height:49px!important;min-height:49px!important;padding:0!important;border:0!important;border-radius:13px!important;background:#e7ac09!important;color:#fff!important;box-shadow:none!important}
+#favoritesModal .atyaf-fav-add svg{width:21px;height:21px}
+#favoritesModal .atyaf-fav-remove{position:absolute!important;top:15px!important;right:13px!important;left:auto!important;display:grid!important;place-items:center!important;width:32px!important;height:32px!important;padding:5px!important;border:0!important;border-radius:0!important;background:transparent!important;color:#87909b!important;box-shadow:none!important;z-index:2!important}
+#favoritesModal .atyaf-fav-remove svg{width:19px;height:19px}
+@media(max-width:420px){#favoritesModal .atyaf-fav-card{grid-template-columns:94px minmax(0,1fr) 39px!important;gap:9px!important;padding:12px 9px!important;min-height:145px!important}#favoritesModal .atyaf-fav-visual{width:94px!important;height:112px!important}#favoritesModal .atyaf-fav-copy h3{font-size:13px!important}#favoritesModal .atyaf-fav-add{width:38px!important;height:44px!important;min-height:44px!important}#favoritesModal .atyaf-fav-remove{top:9px!important;right:7px!important}}
+</style>
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -3019,10 +3045,14 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
         const id=String(p.id);
         const safeId=encodeURIComponent(id);
         const img=p.image?`<img loading="lazy" src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}">`:'<div class="atyaf-fav-noimage" aria-hidden="true">✦</div>';
-        return `<article class="atyaf-fav-card" data-product-id="${escapeHtml(id)}">
-          <div class="atyaf-fav-visual">${img}</div>
-          <div class="atyaf-fav-copy"><small>${escapeHtml(p.brand)}</small><h3>${escapeHtml(p.name)}</h3><div class="atyaf-fav-price" dir="ltr">${money(p.price)}</div>
-          <div class="atyaf-fav-buttons"><button type="button" class="atyaf-fav-view" data-fav-action="view" data-fav-id="${safeId}">عرض التفاصيل</button><button type="button" class="atyaf-fav-add" data-fav-action="add" data-fav-id="${safeId}" aria-label="إضافة ${escapeHtml(p.name)} إلى السلة">إضافة للسلة</button><button type="button" class="atyaf-fav-remove" data-fav-action="remove" data-fav-id="${safeId}" aria-label="حذف ${escapeHtml(p.name)} من المفضلة">♡ إزالة</button></div></div>
+        const oldPrice=Number(p.old_price??p.oldPrice??p.compare_at_price??p.compareAtPrice??0);
+        const currentPrice=Number(p.price??0);
+        const oldMarkup=Number.isFinite(oldPrice)&&oldPrice>currentPrice?`<del class="atyaf-fav-old-price" dir="ltr">${money(oldPrice)}</del>`:'';
+        return `<article class="atyaf-fav-card" data-product-id="${escapeHtml(id)}" dir="ltr">
+          <button type="button" class="atyaf-fav-remove" data-fav-action="remove" data-fav-id="${safeId}" aria-label="حذف ${escapeHtml(p.name)} من المفضلة" title="حذف من المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 4h4m-8 3 1 13h10l1-13M10 11v6m4-6v6"/></svg></button>
+          <button type="button" class="atyaf-fav-visual" data-fav-action="view" data-fav-id="${safeId}" aria-label="عرض تفاصيل ${escapeHtml(p.name)}">${img}</button>
+          <div class="atyaf-fav-copy" dir="rtl"><h3>${escapeHtml(p.name)}</h3><small>${escapeHtml(p.brand||'')}</small><div class="atyaf-fav-prices"><div class="atyaf-fav-price" dir="ltr">${money(p.price)}</div>${oldMarkup}</div></div>
+          <button type="button" class="atyaf-fav-add" data-fav-action="add" data-fav-id="${safeId}" aria-label="إضافة ${escapeHtml(p.name)} إلى السلة" title="إضافة للسلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="7" width="14" height="14" rx="2"/><path d="M9 10V7a3 3 0 0 1 6 0M9 14l3 2 3-2"/></svg></button>
         </article>`;
       }).join(''):empty;
     }

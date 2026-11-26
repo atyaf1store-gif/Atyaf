@@ -2657,9 +2657,13 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 #atyafIntroV12 .atyaf-v112-ar{letter-spacing:-.25px!important}
 </style>
 <style id="atyaf-v192-logo-only">
-#atyafIntroV12.atyaf-v192-splash{position:fixed;inset:0;z-index:2147483002;display:grid;place-items:center;background:#f6eee7;opacity:1;transition:opacity 220ms ease;isolation:isolate;overflow:hidden}
+#atyafIntroV12.atyaf-v192-splash{position:fixed;inset:0;z-index:2147483002;display:grid;place-items:center;background:#fff!important;opacity:1;transition:opacity 220ms ease;isolation:isolate;overflow:hidden}
 #atyafIntroV12.atyaf-v192-splash img{display:block;width:clamp(100px,32vw,150px);height:clamp(100px,32vw,150px);object-fit:contain;opacity:0;transform:scale(.96);transition:opacity 180ms ease,transform 240ms ease;max-width:80vw}
+#atyafIntroV12.atyaf-v192-splash .atyaf-v193-lockup{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;direction:ltr;opacity:0;transform:scale(.94);transition:opacity 180ms ease,transform 240ms ease}
+#atyafIntroV12.atyaf-v192-splash.ready .atyaf-v193-lockup{opacity:1;transform:none}
 #atyafIntroV12.atyaf-v192-splash.ready img{opacity:1;transform:none}
+#atyafIntroV12.atyaf-v192-splash .atyaf-v193-name{color:#111!important;font:500 clamp(25px,7vw,34px)/1.2 Georgia,'Times New Roman',serif!important;letter-spacing:.5px;text-align:center;margin:0;padding:0}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v192-splash .atyaf-v193-lockup{transition:none;transform:none}}
 #atyafIntroV12.atyaf-v192-splash.leaving{opacity:0;pointer-events:none}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v192-splash,#atyafIntroV12.atyaf-v192-splash img{transition:none;transform:none}}
 </style>
@@ -3707,13 +3711,13 @@ window.addEventListener("focus",atyafLoadLowerAds);
     if(!src||!document.body){release();return}
     shown=true;
     const root=document.createElement('section');root.id='atyafIntroV12';root.className='atyaf-v192-splash';root.setAttribute('role','status');root.setAttribute('aria-label','أطياف');
-    const bg=cfg.referenceBackgroundColor||cfg.backgroundColor; if(typeof bg==='string'&&/^#[0-9a-f]{6}$/i.test(bg))root.style.backgroundColor=bg;
-    const img=document.createElement('img');img.alt='أطياف';img.decoding='async';img.loading='eager';root.append(img);
+    root.style.backgroundColor='#ffffff';
+    const img=document.createElement('img');img.alt='أطياف';img.decoding='async';img.loading='eager';const lockup=document.createElement('div');lockup.className='atyaf-v193-lockup';const name=document.createElement('div');name.className='atyaf-v193-name';name.textContent='Atyaf';lockup.append(img,name);root.append(lockup);
     const s={root,timer:0};active=s;
-    const ready=()=>{if(active!==s||s.ready)return;s.ready=true;clearTimeout(s.timer);root.classList.add('ready');release();s.timer=setTimeout(()=>{if(active!==s)return;root.classList.add('leaving');s.timer=setTimeout(close,220)},780)};
+    const ready=()=>{if(active!==s||s.ready)return;s.ready=true;clearTimeout(s.timer);root.classList.add('ready');release();s.timer=setTimeout(()=>{if(active!==s)return;root.classList.add('leaving');s.timer=setTimeout(close,220)},3000)};
     img.addEventListener('load',ready,{once:true});img.addEventListener('error',close,{once:true});
     document.body.append(root);s.timer=setTimeout(close,1800);img.src=src;if(img.complete&&img.naturalWidth)ready();
-    root.addEventListener('click',close,{once:true});
+
   };
 })();
 

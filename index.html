@@ -2669,6 +2669,15 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 #atyafIntroV12.atyaf-v193-splash.leaving{opacity:0;pointer-events:none}
 @media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v193-splash,#atyafIntroV12.atyaf-v193-splash .v193-brand{transition:none}#atyafIntroV12.atyaf-v193-splash.expanded .v193-mark::after{animation:none;display:none}}
 </style>
+<style id="atyaf-v195-favorites-stock">
+#favoritesModal .v195-sold-out{background:#f7f7f7!important}
+#favoritesModal .v195-sold-out .atyaf-fav-visual img{filter:grayscale(1);opacity:.38}
+#favoritesModal .v195-sold-out .atyaf-fav-copy{opacity:.65}
+#favoritesModal .atyaf-fav-visual{position:relative!important}
+#favoritesModal .v195-stock-label{position:absolute;inset:auto 0 8px;z-index:1;background:#303030e8;color:white;font-size:10px;font-weight:700;line-height:1.5;padding:5px 2px;border-radius:6px;direction:rtl;text-align:center}
+#favoritesModal .atyaf-fav-add:disabled{background:#a5a5a5!important;cursor:not-allowed;opacity:.65}
+@media(max-width:767px){html body:has(#favoritesModal.open) #atyafMobileBottomNav{display:grid!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:214748299!important;transform:none!important}}
+</style>
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -2856,6 +2865,7 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
         if(Array.isArray(pr.data)&&pr.data.length)products=pr.data.filter(x=>x&&x.is_active!==false&&x.active!==false).map(mapSupabaseProduct);
         atyafGeneralSettings=general||{};
         renderProducts();
+        if(document.getElementById('favoritesModal')?.classList.contains('open'))renderFavoritesList();
       }catch(e){console.warn('ATYAAF connection:',e);}
     }
 
@@ -3065,15 +3075,16 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
       box.innerHTML=list.length?list.map(p=>{
         const id=String(p.id);
         const safeId=encodeURIComponent(id);
+        const soldOut=p.stock!=null&&Number(p.stock)<=0;
         const img=p.image?`<img loading="lazy" src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}">`:'<div class="atyaf-fav-noimage" aria-hidden="true">✦</div>';
         const oldPrice=Number(p.old_price??p.oldPrice??p.compare_at_price??p.compareAtPrice??0);
         const currentPrice=Number(p.price??0);
         const oldMarkup=Number.isFinite(oldPrice)&&oldPrice>currentPrice?`<del class="atyaf-fav-old-price" dir="ltr">${money(oldPrice)}</del>`:'';
-        return `<article class="atyaf-fav-card" data-product-id="${escapeHtml(id)}" dir="ltr">
+        return `<article class="atyaf-fav-card ${soldOut?'v195-sold-out':''}" data-product-id="${escapeHtml(id)}" dir="ltr">
           <button type="button" class="atyaf-fav-remove" data-fav-action="remove" data-fav-id="${safeId}" aria-label="حذف ${escapeHtml(p.name)} من المفضلة" title="حذف من المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 4h4m-8 3 1 13h10l1-13M10 11v6m4-6v6"/></svg></button>
-          <button type="button" class="atyaf-fav-visual" data-fav-action="view" data-fav-id="${safeId}" aria-label="عرض تفاصيل ${escapeHtml(p.name)}">${img}</button>
+          <button type="button" class="atyaf-fav-visual" data-fav-action="view" data-fav-id="${safeId}" aria-label="عرض تفاصيل ${escapeHtml(p.name)}">${img}${soldOut?'<span class="v195-stock-label">انتهى المخزون</span>':''}</button>
           <div class="atyaf-fav-copy" dir="rtl"><h3>${escapeHtml(p.name)}</h3><small>${escapeHtml(p.brand||'')}</small><div class="atyaf-fav-prices"><div class="atyaf-fav-price" dir="ltr">${money(p.price)}</div>${oldMarkup}</div></div>
-          <button type="button" class="atyaf-fav-add" data-fav-action="add" data-fav-id="${safeId}" aria-label="إضافة ${escapeHtml(p.name)} إلى السلة" title="إضافة للسلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="7" width="14" height="14" rx="2"/><path d="M9 10V7a3 3 0 0 1 6 0M9 14l3 2 3-2"/></svg></button>
+          <button type="button" class="atyaf-fav-add" ${soldOut?'disabled':''} data-fav-action="add" data-fav-id="${safeId}" aria-label="إضافة ${escapeHtml(p.name)} إلى السلة" title="إضافة للسلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="7" width="14" height="14" rx="2"/><path d="M9 10V7a3 3 0 0 1 6 0M9 14l3 2 3-2"/></svg></button>
         </article>`;
       }).join(''):empty;
     }
@@ -3088,13 +3099,13 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
       e.preventDefault();e.stopPropagation();
       let id;try{id=decodeURIComponent(button.dataset.favId||'')}catch(_){return}
       if(button.dataset.favAction==='add'){
-        const success=await addCart(id);
-        if(success){
-          const index=state.favs.findIndex(v=>String(v)===id);
-          if(index>=0){state.favs.splice(index,1);save();renderProducts();document.dispatchEvent(new CustomEvent('atyaf:favorites-changed',{detail:{id}}));}
-          renderFavoritesList();
-          if(typeof renderAtyafCartPage==='function')renderAtyafCartPage();
-        }
+        if(button.disabled)return;
+        button.disabled=true;
+        try{
+          const success=await addCart(id);
+          if(success&&typeof renderAtyafCartPage==='function')renderAtyafCartPage();
+        }catch(error){console.warn('ATYAF favorite cart:',error);}
+        finally{if(button.isConnected)button.disabled=products.some(p=>String(p.id)===id&&p.stock!=null&&Number(p.stock)<=0);}
       }else if(button.dataset.favAction==='remove'){
         if(state.favs.some(v=>String(v)===id))toggleFav(id);
         else renderFavoritesList();
@@ -3105,7 +3116,7 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
     // V99: capture the real add-to-cart source without altering existing handlers.
     let atyafCartClick = null;
     document.addEventListener('click', function(event) {
-      const source = event.target.closest('.atyaf-v89-bag, .atyaf-quick-bag, .atyaf-cart-action, .product-actions .btn-primary, [onclick*="addCart("]');
+      const source = event.target.closest('.atyaf-fav-add, .atyaf-v89-bag, .atyaf-quick-bag, .atyaf-cart-action, .product-actions .btn-primary, [onclick*="addCart("]');
       if (source) atyafCartClick = { element: source, time: performance.now() };
     }, true);
     // V140: animate a real product thumbnail, never a decorative star.

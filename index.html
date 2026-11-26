@@ -2656,6 +2656,13 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 #atyafIntroV12 .atyaf-v112-en{letter-spacing:-.45px!important}
 #atyafIntroV12 .atyaf-v112-ar{letter-spacing:-.25px!important}
 </style>
+<style id="atyaf-v192-logo-only">
+#atyafIntroV12.atyaf-v192-splash{position:fixed;inset:0;z-index:2147483002;display:grid;place-items:center;background:#f6eee7;opacity:1;transition:opacity 220ms ease;isolation:isolate;overflow:hidden}
+#atyafIntroV12.atyaf-v192-splash img{display:block;width:clamp(100px,32vw,150px);height:clamp(100px,32vw,150px);object-fit:contain;opacity:0;transform:scale(.96);transition:opacity 180ms ease,transform 240ms ease;max-width:80vw}
+#atyafIntroV12.atyaf-v192-splash.ready img{opacity:1;transform:none}
+#atyafIntroV12.atyaf-v192-splash.leaving{opacity:0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v192-splash,#atyafIntroV12.atyaf-v192-splash img{transition:none;transform:none}}
+</style>
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -3683,183 +3690,30 @@ window.addEventListener("focus",atyafLoadLowerAds);
 </script>
 <script>
 
-/* ATYAF classic intro: centered admin media; isolated from storefront. */
-(function () {
+/* V192: logo-only splash, bounded loading and one display per page. */
+(function(){
   'use strict';
-  let state = null;
-  // Display at most once per page load, even when admin settings auto-refresh.
-  let introAlreadyShown = false;
-  const release = () => { try { window.atyafReleaseFirstPaint?.(); } catch (e) { console.warn('ATYAF intro:', e); } };
-  function validURL(input) {
-    if (typeof input !== 'string' || !input.trim()) return '';
-    try { const u = new URL(input.trim(), location.href); return ['https:', 'http:'].includes(u.protocol) ? u.href : ''; }
-    catch (_) { return ''; }
-  }
-  function findHeaderLogo() {
-    // The storefront has separate desktop/mobile logos; choose the visible one.
-    const nodes = [...document.querySelectorAll('header.header .atyaf-profile-image-slot img, header.header .atyaf-profile-image-slot, header.header .atyaf-profile img, header.header .brand img')];
-    return nodes.find(el => {
-      const r = el.getBoundingClientRect();
-      const st = getComputedStyle(el);
-      return r.width > 8 && r.height > 8 && st.display !== 'none' && st.visibility !== 'hidden' && r.top >= -5;
-    }) || null;
-  }
-  function close(immediate) {
-    if (!state) { release(); return; }
-    const s = state;
-    state = null;
-    clearTimeout(s.timer);
-    clearTimeout(s.loadTimer);
-    clearTimeout(s.echoTimer);
-    clearTimeout(s.liftTimer);
-    if (s.video) { try { s.media.pause(); } catch (_) {} }
-    if (immediate || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      s.root.remove(); release(); return;
-    }
-    // Fade the complete intro as a single composited layer. Avoid cancelling
-    // moving text and forcing synchronous layout at the end of the animation.
-    s.root.classList.add('atyaf-v179-exit');
-    setTimeout(() => { s.root.remove(); release(); }, 170);
-  }
-  function placeEchoes(s) {
-    if (state !== s || !s.root.isConnected) return;
-    const en = s.root.querySelector('.atyaf-v112-en');
-    const ar = s.root.querySelector('.atyaf-v112-ar');
-    if (!en || !ar) return;
-    const rootRect = s.root.getBoundingClientRect();
-    // The reference has a SECOND, golden wordmark at the ORIGINAL center
-    // height. It must remain there while the dark wordmark rises to 1/3.
-    [[en, 'left'], [ar, 'right']].forEach(([word, side]) => {
-      const rect = word.getBoundingClientRect();
-      const echo = document.createElement('span');
-      echo.className = 'atyaf-v166-echo atyaf-v166-echo-' + side;
-      echo.textContent = word.textContent;
-      echo.lang = word.lang || (side === 'right' ? 'ar' : 'en');
-      echo.dir = word.dir || (side === 'right' ? 'rtl' : 'ltr');
-      const computed = getComputedStyle(word);
-      echo.style.font = computed.font;
-      echo.style.letterSpacing = computed.letterSpacing;
-      echo.style.lineHeight = computed.lineHeight;
-      echo.style.top = (rect.top - rootRect.top) + 'px';
-      echo.style.left = '0px';
-      echo.style.opacity = '1';
-      echo.style.clipPath = 'none';
-      echo.style.transform = 'translate3d(0,0,0)';
-      echo.style.webkitClipPath = 'none';
-      // Append BEFORE measuring. Detached elements have zero width,
-      // which previously prevented the golden words from appearing.
-      s.root.appendChild(echo);
-      const width = echo.getBoundingClientRect().width || rect.width;
-      // Exactly half the word is visible at the corresponding wall.
-      const initialLeft = side === 'left' ? -width / 2 : rootRect.width - width / 2;
-      const targetLeft = side === 'left'
-        ? rect.left - rootRect.left - width - 18
-        : rect.right - rootRect.left + 18;
-      echo.style.left = initialLeft + 'px';
-      echo.dataset.atyafTravel = String(targetLeft - initialLeft);
-      echo.dataset.atyafSide = side;
-      echo.classList.add('atyaf-v168-entered');
-    });
-  }
-  window.atyafApplyAdminIntroV12 = function (raw) {
-    let cfg = raw;
-    if (typeof cfg === 'string') { try { cfg = JSON.parse(cfg); } catch (_) { cfg = null; } }
-    if (!cfg || typeof cfg !== 'object' || cfg.enabled === false || cfg.enabled === 'false') { close(true); return; }
-    const mediaURL = validURL(cfg.mediaUrl);
-    const url = validURL(cfg.logoImage) || mediaURL || (findHeaderLogo()?.tagName === 'IMG' ? validURL(findHeaderLogo().currentSrc || findHeaderLogo().src) : '');
-    if (!url) { close(true); return; }
-    // Settings sync runs repeatedly; never restart a completed or skipped intro.
-    if (introAlreadyShown) { release(); return; }
-    const video = false; // V112 splash always uses a static store logo.
-    const headerLogo = findHeaderLogo();
-    const headerLogoURL = headerLogo && headerLogo.tagName === 'IMG' ? validURL(headerLogo.currentSrc || headerLogo.src) : '';
-    const splashLogoURL = validURL(cfg.logoImage) || headerLogoURL || (cfg.mediaType === 'video' ? '' : url);
-    const n = Number(cfg.duration);
-    const duration = 2000; // V176: complete intro, including exit, in two seconds.
-    const signature = JSON.stringify([url, video, duration, cfg.backgroundColor, cfg.textColor, cfg.accentColor, cfg.logoSize, cfg.englishSize, cfg.arabicSize]);
-    if (state && state.signature === signature) return;
-    close(true);
-    if (!document.body) { release(); return; }
-    introAlreadyShown = true;
-    const root = document.createElement('section');
-    root.id = 'atyafIntroV12';
-    root.className = 'atyaf-v94-intro';
-    root.setAttribute('role', 'region');
-    root.setAttribute('aria-label', 'شاشة بداية أطياف');
-    const safeColor = (v, fallback) => typeof v === 'string' && /^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/.test(v.trim()) ? v.trim() : fallback;
-    const bounded = (v, min, max, fallback) => { const x = Number(v); return Number.isFinite(x) ? Math.min(max, Math.max(min, x)) : fallback; };
-    root.style.setProperty('--atyaf-intro-reference-bg', safeColor(cfg.referenceBackgroundColor, '#f6f2e9'));
-    root.style.setProperty('--atyaf-intro-reference-text', safeColor(cfg.referenceTextColor, '#b18a37'));
-    root.style.setProperty('--atyaf-intro-reference-accent', safeColor(cfg.referenceAccentColor, '#d5a320'));
-    root.style.setProperty('--atyaf-intro-reference-logo-size', Math.min(112, bounded(cfg.logoSize, 28, 96, 48) * 1.30) + 'px');
-    root.style.setProperty('--atyaf-intro-reference-en-size', Math.min(52, bounded(cfg.referenceEnglishSize, 14, 44, 22) * 1.27) + 'px');
-    root.style.setProperty('--atyaf-intro-reference-ar-size', Math.min(58, bounded(cfg.referenceArabicSize, 16, 48, 27) * 1.27) + 'px');
-    root.style.setProperty('--atyaf-intro-reference-enter', bounded(cfg.referenceEntranceDuration, 400, 3000, 1650) + 'ms');
-    const media = document.createElement(video ? 'video' : 'img');
-    media.className = 'atyaf-v94-media';
-    if (video) { media.muted = true; media.defaultMuted = true; media.autoplay = true; media.playsInline = true; media.preload = 'auto'; }
-    else { media.alt = ''; media.decoding = 'async'; media.loading = 'eager'; }
-    const skip = document.createElement('button');
-    skip.type = 'button'; skip.className = 'atyaf-v94-skip'; skip.textContent = 'تخطي';
-    skip.setAttribute('aria-label', 'تخطي شاشة البداية');
-    const progress = document.createElement('div');
-    progress.className = 'atyaf-v94-progress';
-    progress.style.animationDuration = duration + 'ms';
-    progress.setAttribute('aria-hidden', 'true');
-    // Reference layout: ATYAF [store logo] أطياف, horizontally centered.
-    const brand = document.createElement('div');
-    brand.className = 'atyaf-v112-brand';
-    const en = document.createElement('span');
-    en.className = 'atyaf-v112-en';
-    en.textContent = String(cfg.englishName || 'ATYAF').slice(0,30);
-    en.setAttribute('data-reflection', en.textContent);
-    const logoBox = document.createElement('span');
-    logoBox.className = 'atyaf-v112-logo';
-    const ar = document.createElement('span');
-    ar.className = 'atyaf-v112-ar';
-    ar.lang = 'ar';
-    ar.dir = 'rtl';
-    ar.textContent = 'اطيـــاف'; // V180: elongated dark Arabic intro wordmark only.
-    ar.setAttribute('data-reflection', ar.textContent);
-    brand.append(en, logoBox, ar);
-    logoBox.append(media);
-    root.append(brand, skip, progress);
-    const s = { root, media, video, signature, timer: 0, loadTimer: 0, echoTimer: 0, liftTimer: 0, loaded: false };
-    state = s;
-    const finish = () => { if (state === s) close(false); };
-    const loaded = () => {
-      if (state !== s || s.loaded) return;
-      s.loaded = true;
-      clearTimeout(s.loadTimer);
-      root.classList.add('atyaf-v94-visible');
-      // 0–0.42s: only the inner half of each gold name is inside
-      // the viewport, emerging from the LEFT and RIGHT screen walls.
-      // At 0.42s, both words slide inward from their walls exactly as
-      // the central dark wordmark rises to the upper third.
-      placeEchoes(s);
-      s.liftTimer = setTimeout(() => {
-        if (state !== s) return;
-        root.classList.add('atyaf-v166-lift');
-        root.querySelectorAll('.atyaf-v166-echo').forEach(echo => {
-          const dx = Number(echo.dataset.atyafTravel) || 0;
-          // CSS transitions keep the GPU compositor in charge and prevent
-          // Web Animations fill/cancel flicker on iOS Safari.
-          echo.style.transform = `translate3d(${dx}px,0,0)`;
-        });
-      }, 420);
-      s.timer = setTimeout(finish, 1830);
-    };
-    skip.addEventListener('click', finish);
-    media.addEventListener('error', finish, { once: true });
-    media.addEventListener(video ? 'loadeddata' : 'load', loaded, { once: true });
-    if (video) media.addEventListener('ended', finish, { once: true });
-    document.body.append(root);
-    s.loadTimer = setTimeout(finish, 6000);
-    if (!splashLogoURL) { finish(); return; }
-    media.src = splashLogoURL;
-    if (video) media.play().catch(finish);
-    else if (media.complete && media.naturalWidth > 0) loaded();
-    release();
+  let shown=false, active=null;
+  const release=()=>window.atyafReleaseFirstPaint?.();
+  function url(v){try{if(typeof v!=='string'||!v.trim())return '';const u=new URL(v,location.href);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
+  function close(){if(!active)return;const s=active;active=null;clearTimeout(s.timer);s.root.remove();release()}
+  window.atyafApplyAdminIntroV12=function(raw){
+    let cfg=raw; if(typeof cfg==='string'){try{cfg=JSON.parse(cfg)}catch{cfg=null}}
+    if(shown)return;
+    if(!cfg||typeof cfg!=='object'||cfg.enabled===false||cfg.enabled==='false'){release();return}
+    const images=[...document.querySelectorAll('header.header .atyaf-profile-image-slot img,header.header .atyaf-profile img,header.header .brand img')];
+    const header=images.map(i=>url(i.currentSrc||i.src)).find(Boolean);
+    const src=url(cfg.logoImage)||header||(cfg.mediaType!=='video'?url(cfg.mediaUrl):'');
+    if(!src||!document.body){release();return}
+    shown=true;
+    const root=document.createElement('section');root.id='atyafIntroV12';root.className='atyaf-v192-splash';root.setAttribute('role','status');root.setAttribute('aria-label','أطياف');
+    const bg=cfg.referenceBackgroundColor||cfg.backgroundColor; if(typeof bg==='string'&&/^#[0-9a-f]{6}$/i.test(bg))root.style.backgroundColor=bg;
+    const img=document.createElement('img');img.alt='أطياف';img.decoding='async';img.loading='eager';root.append(img);
+    const s={root,timer:0};active=s;
+    const ready=()=>{if(active!==s||s.ready)return;s.ready=true;clearTimeout(s.timer);root.classList.add('ready');release();s.timer=setTimeout(()=>{if(active!==s)return;root.classList.add('leaving');s.timer=setTimeout(close,220)},780)};
+    img.addEventListener('load',ready,{once:true});img.addEventListener('error',close,{once:true});
+    document.body.append(root);s.timer=setTimeout(close,1800);img.src=src;if(img.complete&&img.naturalWidth)ready();
+    root.addEventListener('click',close,{once:true});
   };
 })();
 
@@ -9083,6 +8937,112 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root.classList.cont
  window.addEventListener('resize',setTop,{passive:true});setTop();
 })();
 </script>
+
+<!-- V191: consistent functional footer links across storefront, cart, and favorites -->
+<style id="atyaf-v191-footer-links-css">
+  #infoModal.atyaf-v191-info-top{z-index:2147483100!important;}
+  #infoModal.atyaf-v191-info-top .modal-card{width:min(620px,calc(100vw - 24px));max-height:85dvh;overflow-y:auto;}
+  footer.atyaf-v170-footer a{cursor:pointer}
+  footer.atyaf-v170-footer a:focus-visible{outline:2px solid #dca71c;outline-offset:4px}
+</style>
+<script id="atyaf-v191-footer-links-js">
+(function(){
+ 'use strict';
+ const selector='footer.atyaf-v170-footer a';
+ const $=id=>document.getElementById(id);
+ function closeLayers(){
+   try{if(typeof window.atyafCloseCartPage==='function')window.atyafCloseCartPage()}catch(e){console.warn('Cart close:',e)}
+   $('atyafCartPage')?.classList.remove('open');
+   document.body.classList.remove('atyaf-cart-page-open');
+   $('cartDrawer')?.classList.remove('open');
+   try{if(typeof window.closeFavorites==='function')window.closeFavorites()}catch(e){console.warn('Favorites close:',e)}
+   $('favoritesModal')?.classList.remove('open');
+   $('atyafAuthScreen')?.classList.remove('is-open');
+   document.body.style.overflow='';
+ }
+ function navigate(target){
+   closeLayers();
+   if(target==='home'){
+     const all=document.querySelector('#nav [data-atyaf-main-tab="all"]');
+     all?.click();
+     requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'smooth'}));
+     return;
+   }
+   if(target==='offers'){
+     const offers=document.querySelector('#nav [data-atyaf-main-tab="offers"],#nav [data-atyaf-main-tab="sale"]');
+     if(offers){offers.click();return;}
+   }
+   const id=target==='brands'?'brands':'products';
+   const nav=document.querySelector('#nav [data-atyaf-main-tab="'+(target==='brands'?'brands':'all')+'"]');
+   if(nav)nav.click();
+   requestAnimationFrame(()=>$(id)?.scrollIntoView({block:'start',behavior:'smooth'}));
+ }
+ function info(title,body){
+   const modal=$('infoModal');
+   if(!modal)return;
+   $('infoModalTitle').textContent=title;
+   $('infoModalBody').replaceChildren();
+   const paragraph=document.createElement('p');paragraph.textContent=body;
+   $('infoModalBody').append(paragraph);
+   modal.classList.add('atyaf-v191-info-top','open');
+ }
+ function policy(key,title){
+   const settings=window.ATYAAF_POLICIES||window.ATYAF_ADMIN_SETTINGS?.policies||{};
+   const value=String(settings[key]||'').trim();
+   if(typeof window.atyafOpenPolicy==='function')window.atyafOpenPolicy(key,title);
+   else info(title,value||'لم تتم إضافة تفاصيل هذه السياسة بعد.');
+   $('infoModal')?.classList.add('atyaf-v191-info-top');
+ }
+ function contact(kind){
+   const settings=window.atyafGeneralSettings||window.ATYAF_ADMIN_SETTINGS?.general||{};
+   const phone=String(settings.phone||settings.whatsapp||'').trim();
+   const email=String(settings.email||'').trim();
+   const address=String(settings.address||settings.location||'').trim();
+   if(kind==='branches')info('فروعنا',address||'لم تُضف عناوين الفروع إلى إعدادات المتجر بعد.');
+   else if(kind==='about'){
+     const about=String(settings.about||settings.about_us||'').trim();
+     info('من نحن',about||'أطياف — عطور مختارة بعناية، لتصنع لحظات تبقى.');
+   } else info(kind==='support'?'الدعم وخدمة العملاء':'تواصل معنا',[
+     phone?'الهاتف / واتساب: '+phone:'',email?'البريد الإلكتروني: '+email:'',address?'العنوان: '+address:''
+   ].filter(Boolean).join('\n')||'يمكنك التواصل معنا عبر وسائل الاتصال المعلنة في المتجر.');
+ }
+ document.addEventListener('click',function(event){
+   const link=event.target instanceof Element?event.target.closest(selector):null;
+   if(!link)return;
+   const nav=link.dataset.footerNav;
+   if(nav){event.preventDefault();event.stopImmediatePropagation();navigate(nav);return;}
+   const label=(link.textContent||'').trim();
+   if(link.classList.contains('atyaf-footer-social-link'))return;
+   const action={
+     'اتصل بنا':()=>contact('contact'),'تواصل معنا':()=>contact('contact'),
+     'الدعم':()=>contact('support'),'من نحن':()=>contact('about'),
+     'فروعنا':()=>contact('branches'),
+     'الشحن والتوصيل':()=>policy('shipping','الشحن والتوصيل'),
+     'الاستبدال والاسترجاع':()=>policy('returns','الاستبدال والاسترجاع'),
+     'سياسة الاسترجاع':()=>policy('returns','سياسة الاسترجاع'),
+     'السياسات':()=>policy('returns','السياسات')
+   }[label];
+   if(!action)return;
+   event.preventDefault();event.stopImmediatePropagation();
+   try{action()}catch(error){console.error('Footer action failed:',error);info('معلومات المتجر','تعذر عرض المعلومات حاليًا. حاول مجددًا.');}
+ },true);
+ // Footer copies are created dynamically inside the cart. Delegate accordion clicks
+ // so copied menus work without duplicating event handlers.
+ document.addEventListener('click',function(event){
+   const btn=event.target instanceof Element?event.target.closest('#atyafCartFooterMount .atyaf-v170-group-toggle'):null;
+   if(!btn)return;
+   const group=btn.closest('.atyaf-v170-group');
+   const content=group?.querySelector('.atyaf-v170-group-content');
+   if(!group||!content)return;
+   event.preventDefault();event.stopImmediatePropagation();
+   const open=btn.getAttribute('aria-expanded')!=='true';
+   btn.setAttribute('aria-expanded',String(open));
+   group.classList.toggle('open',open);
+   content.hidden=!open;
+ },true);
+})();
+</script>
+
 </body>
 </html>
 

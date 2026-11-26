@@ -2871,6 +2871,7 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
         if(pr.error)throw pr.error;
         if(Array.isArray(pr.data)&&pr.data.length)products=pr.data.filter(x=>x&&x.is_active!==false&&x.active!==false).map(mapSupabaseProduct);
         atyafGeneralSettings=general||{};
+        document.dispatchEvent(new Event("atyaf:contact-updated"));
         renderProducts();
         if(document.getElementById('favoritesModal')?.classList.contains('open'))renderFavoritesList();
       }catch(e){console.warn('ATYAAF connection:',e);}
@@ -9126,6 +9127,40 @@ new MutationObserver(schedule).observe(document.body,{childList:true,subtree:tru
  html body #productModal.styaf-detail-mode .styaf-detail-photo>.atyaf-product-back{top:10px!important;right:12px!important;}
 }
 </style>
+<style id="atyaf-v199-contact">
+html body .atyaf-v170-contact-row{direction:rtl!important;display:flex!important;flex-wrap:nowrap!important;justify-content:space-between!important;align-items:center!important;gap:8px!important;padding:20px 0!important}
+html body .atyaf-v170-contact-row a{display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:4px!important;min-width:0;color:#c5cbd2!important;font-size:clamp(9px,2.55vw,12px)!important;line-height:1.5!important;white-space:nowrap!important;margin:0!important}
+html body .atyaf-v170-contact-row svg{width:15px!important;height:15px!important;flex:0 0 15px!important}
+html body .atyaf-v170-contact-row a[aria-label="البريد الإلكتروني"] span{overflow-wrap:anywhere;white-space:normal;text-align:center;direction:ltr}
+html body .atyaf-v170-contact-row a[aria-label="الهاتف"] span{direction:ltr}
+</style>
+<script id="atyaf-v199-contact-js">
+(()=>{
+'use strict';
+const selector='.atyaf-v170-contact-row';
+function sync(){
+ const g={...(typeof atyafGeneralSettings==='object'?atyafGeneralSettings:{}),...(window.ATYAF_ADMIN_SETTINGS?.general||{})};
+ const phone=String(g.phone||g.whatsapp||'').trim();
+ const email=String(g.email||'').trim();
+ document.querySelectorAll(selector).forEach(row=>{
+ const p=row.querySelector('[aria-label="الهاتف"]'),e=row.querySelector('[aria-label="البريد الإلكتروني"]'),b=row.querySelector('[aria-label="فروعنا"]');
+ if(!p||!e||!b)return;
+ if(row.firstElementChild!==p)row.prepend(p);
+ if(p.nextElementSibling!==e)p.after(e);
+ const number=phone.replace(/[\s()\-]/g,'');
+ for(const [a,value,href,fallback] of [[p,phone,/^\+?\d{7,16}$/.test(number)?'tel:'+number:'','اتصل بنا'],[e,email,/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)?'mailto:'+email:'','البريد الإلكتروني']]){
+ const label=href?value:fallback;
+ if(a.querySelector('span').textContent!==label)a.querySelector('span').textContent=label;
+ if(href){a.removeAttribute('onclick');if(a.getAttribute('href')!==href)a.setAttribute('href',href)}else{a.setAttribute('href','javascript:void(0)');a.setAttribute('onclick','showContactInfo()')}
+ }
+ });
+}
+let queued=false;function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;sync()})}
+document.addEventListener('atyaf:settings-applied',schedule);document.addEventListener('atyaf:contact-updated',schedule);
+new MutationObserver(records=>{if(records.some(r=>Array.from(r.addedNodes).some(n=>n.nodeType===1&&(n.matches(selector)||n.querySelector(selector)))))schedule()}).observe(document.body,{childList:true,subtree:true});
+sync();
+})();
+</script>
 </body>
 </html>
 

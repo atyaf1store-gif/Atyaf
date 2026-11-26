@@ -2656,16 +2656,18 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 #atyafIntroV12 .atyaf-v112-en{letter-spacing:-.45px!important}
 #atyafIntroV12 .atyaf-v112-ar{letter-spacing:-.25px!important}
 </style>
-<style id="atyaf-v192-logo-only">
-#atyafIntroV12.atyaf-v192-splash{position:fixed;inset:0;z-index:2147483002;display:grid;place-items:center;background:#fff!important;opacity:1;transition:opacity 220ms ease;isolation:isolate;overflow:hidden}
-#atyafIntroV12.atyaf-v192-splash img{display:block;width:clamp(100px,32vw,150px);height:clamp(100px,32vw,150px);object-fit:contain;opacity:0;transform:scale(.96);transition:opacity 180ms ease,transform 240ms ease;max-width:80vw}
-#atyafIntroV12.atyaf-v192-splash .atyaf-v193-lockup{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;direction:ltr;opacity:0;transform:scale(.94);transition:opacity 180ms ease,transform 240ms ease}
-#atyafIntroV12.atyaf-v192-splash.ready .atyaf-v193-lockup{opacity:1;transform:none}
-#atyafIntroV12.atyaf-v192-splash.ready img{opacity:1;transform:none}
-#atyafIntroV12.atyaf-v192-splash .atyaf-v193-name{color:#111!important;font:500 clamp(25px,7vw,34px)/1.2 Georgia,'Times New Roman',serif!important;letter-spacing:.5px;text-align:center;margin:0;padding:0}
-@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v192-splash .atyaf-v193-lockup{transition:none;transform:none}}
-#atyafIntroV12.atyaf-v192-splash.leaving{opacity:0;pointer-events:none}
-@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v192-splash,#atyafIntroV12.atyaf-v192-splash img{transition:none;transform:none}}
+<style id="atyaf-v193-logo-splash">
+#atyafIntroV12.atyaf-v193-splash{position:fixed;inset:0;z-index:2147483002;display:grid;place-items:center;background:#fff!important;opacity:1;transition:opacity 280ms ease;isolation:isolate;overflow:hidden;touch-action:none}
+#atyafIntroV12.atyaf-v193-splash .v193-brand{display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;transform:scale(1);transition:opacity 160ms ease,transform 420ms cubic-bezier(.2,.75,.25,1);direction:ltr}
+#atyafIntroV12.atyaf-v193-splash .v193-mark{position:relative;overflow:hidden;width:clamp(84px,25vw,112px);height:clamp(84px,25vw,112px);border-radius:20%;isolation:isolate}
+#atyafIntroV12.atyaf-v193-splash img{display:block;width:100%;height:100%;object-fit:contain}
+#atyafIntroV12.atyaf-v193-splash .v193-name{font-family:Georgia,'Times New Roman',serif;font-size:clamp(20px,5.8vw,26px);font-weight:600;line-height:1.2;color:#111;letter-spacing:.4px}
+#atyafIntroV12.atyaf-v193-splash.ready .v193-brand{opacity:1}
+#atyafIntroV12.atyaf-v193-splash.expanded .v193-brand{transform:scale(1.48)}
+#atyafIntroV12.atyaf-v193-splash.expanded .v193-mark::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.7) 49%,transparent 73%);animation:atyaf193Shine 420ms ease-out both}
+@keyframes atyaf193Shine{from{transform:translateX(-110%)}to{transform:translateX(110%)}}
+#atyafIntroV12.atyaf-v193-splash.leaving{opacity:0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){#atyafIntroV12.atyaf-v193-splash,#atyafIntroV12.atyaf-v193-splash .v193-brand{transition:none}#atyafIntroV12.atyaf-v193-splash.expanded .v193-mark::after{animation:none;display:none}}
 </style>
 </head>
 <body>
@@ -3694,7 +3696,7 @@ window.addEventListener("focus",atyafLoadLowerAds);
 </script>
 <script>
 
-/* V192: logo-only splash, bounded loading and one display per page. */
+/* V193: centered logo and wordmark, one-second hold, shine and three-second final hold. */
 (function(){
   'use strict';
   let shown=false, active=null;
@@ -3710,14 +3712,25 @@ window.addEventListener("focus",atyafLoadLowerAds);
     const src=url(cfg.logoImage)||header||(cfg.mediaType!=='video'?url(cfg.mediaUrl):'');
     if(!src||!document.body){release();return}
     shown=true;
-    const root=document.createElement('section');root.id='atyafIntroV12';root.className='atyaf-v192-splash';root.setAttribute('role','status');root.setAttribute('aria-label','أطياف');
-    root.style.backgroundColor='#ffffff';
-    const img=document.createElement('img');img.alt='أطياف';img.decoding='async';img.loading='eager';const lockup=document.createElement('div');lockup.className='atyaf-v193-lockup';const name=document.createElement('div');name.className='atyaf-v193-name';name.textContent='Atyaf';lockup.append(img,name);root.append(lockup);
+    const root=document.createElement('section');root.id='atyafIntroV12';root.className='atyaf-v193-splash';root.setAttribute('role','status');root.setAttribute('aria-label','أطياف');
+    const brand=document.createElement('div');brand.className='v193-brand';
+    const mark=document.createElement('div');mark.className='v193-mark';
+    const img=document.createElement('img');img.alt='';img.decoding='async';img.loading='eager';mark.append(img);
+    const name=document.createElement('span');name.className='v193-name';name.textContent='Atyaf';
+    brand.append(mark,name);root.append(brand);
     const s={root,timer:0};active=s;
-    const ready=()=>{if(active!==s||s.ready)return;s.ready=true;clearTimeout(s.timer);root.classList.add('ready');release();s.timer=setTimeout(()=>{if(active!==s)return;root.classList.add('leaving');s.timer=setTimeout(close,220)},3000)};
+    const ready=()=>{
+      if(active!==s||s.ready)return;
+      s.ready=true;clearTimeout(s.timer);root.classList.add('ready');release();
+      s.timer=setTimeout(()=>{
+        if(active!==s)return;root.classList.add('expanded');
+        s.timer=setTimeout(()=>{
+          if(active!==s)return;root.classList.add('leaving');s.timer=setTimeout(close,280);
+        },3420);
+      },1000);
+    };
     img.addEventListener('load',ready,{once:true});img.addEventListener('error',close,{once:true});
     document.body.append(root);s.timer=setTimeout(close,1800);img.src=src;if(img.complete&&img.naturalWidth)ready();
-
   };
 })();
 

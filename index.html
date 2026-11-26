@@ -2678,6 +2678,13 @@ footer .atyaf-footer-social .atyaf-footer-social-link:focus-visible{outline:2px 
 #favoritesModal .atyaf-fav-add:disabled{background:#a5a5a5!important;cursor:not-allowed;opacity:.65}
 @media(max-width:767px){html body:has(#favoritesModal.open) #atyafMobileBottomNav{display:grid!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:214748299!important;transform:none!important}}
 </style>
+<style id="atyaf-v197-product-back">
+#productModal.styaf-detail-mode .modal-card>.close{display:none!important}
+#productModal.styaf-detail-mode .styaf-detail-photo>.atyaf-product-back{position:absolute!important;top:12px!important;right:12px!important;left:auto!important;z-index:20!important;display:grid!important;place-items:center;width:44px;height:44px;padding:0;border:1px solid #e8e3dc;border-radius:50%;background:rgba(255,255,255,.94);color:#292521;box-shadow:0 3px 12px #00000012;transition:transform .18s ease,background .18s ease;touch-action:manipulation;cursor:pointer}
+#productModal .atyaf-product-back:active{transform:scale(.92);background:#f4eee6}
+#productModal .atyaf-product-back:focus-visible{outline:2px solid #b48c36;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){#productModal .atyaf-product-back{transition:none}}
+</style>
 </head>
 <body>
   <!-- Animates only the opening; it does not modify the header, cards, navigation or Supabase logic. -->
@@ -3482,6 +3489,7 @@ function openCart(){renderCart();document.getElementById('cartDrawer').classList
         <section class="styaf-detail-grid">
           <div class="styaf-detail-gallery">
             <div class="styaf-detail-photo">${hero}
+              <button type="button" class="atyaf-product-back" aria-label="رجوع" title="رجوع" onclick="closeProductDetails()"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
               ${uniquePhotos.length>1?`<div class="styaf-gallery-thumbs styaf-v47-dots" id="styafGalleryThumbs">${dots}</div><span class="styaf-v47-counter" id="styafV47Counter" dir="ltr">1/${uniquePhotos.length}</span>`:''}
             </div>
           </div>
